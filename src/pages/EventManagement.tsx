@@ -20,6 +20,7 @@ import {
   Tag,
   UserCog,
   Handshake,
+  UserCheck,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
@@ -43,6 +44,7 @@ import { EventGalleryTab } from '@/components/events/gallery';
 import { TestEventConfigSection } from '@/components/events/admin';
 import { EventPromoCodeManagement } from '@/components/events/promo';
 import { EventStaffingManagement, EventPartnerManagement } from '@/components/events/staffing';
+import { EventRsvpManagement } from '@/components/events/rsvp';
 
 import { toast } from 'sonner';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
@@ -58,7 +60,7 @@ import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmTabContentHeader } from '@/components/common/headers/FmTabContentHeader';
 import { FmContentContainer } from '@/components/common/layout/FmContentContainer';
 
-type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'promo-codes' | 'social' | 'ux_display' | 'staffing' | 'partners' | 'admin' | 'view';
+type EventTab = 'overview' | 'gallery' | 'artists' | 'tiers' | 'orders' | 'rsvps' | 'ticket-status' | 'sales' | 'reports' | 'tracking' | 'promo-codes' | 'social' | 'ux_display' | 'staffing' | 'partners' | 'admin' | 'view';
 
 export default function EventManagement() {
   const { t } = useTranslation('common');
@@ -227,6 +229,12 @@ export default function EventManagement() {
           description: t('eventNav.ordersDescription'),
         },
         {
+          id: 'rsvps',
+          label: t('eventNav.rsvps'),
+          icon: UserCheck,
+          description: t('eventNav.rsvpsDescription'),
+        },
+        {
           id: 'ticket-status',
           label: t('eventNav.ticketStatus'),
           icon: BarChart3,
@@ -311,6 +319,7 @@ export default function EventManagement() {
     { id: 'ux_display', label: t('eventNav.uxDisplay'), icon: Palette },
     { id: 'tiers', label: t('eventNav.ticketTiers'), icon: Ticket },
     { id: 'orders', label: t('eventNav.orders'), icon: ShoppingBag },
+    { id: 'rsvps', label: t('eventNav.rsvps'), icon: UserCheck },
     { id: 'ticket-status', label: t('eventNav.ticketStatus'), icon: BarChart3 },
     { id: 'tracking', label: t('eventNav.trackingLinks'), icon: Link2 },
     { id: 'promo-codes', label: t('eventNav.promoCodes'), icon: Tag },
@@ -632,6 +641,14 @@ export default function EventManagement() {
         <FmContentContainer scrollable>
           <PageErrorBoundary section='Orders'>
             <EventOrderManagement eventId={id} />
+          </PageErrorBoundary>
+        </FmContentContainer>
+      )}
+
+      {activeTab === 'rsvps' && id && (
+        <FmContentContainer scrollable>
+          <PageErrorBoundary section='RSVPs'>
+            <EventRsvpManagement eventId={id} />
           </PageErrorBoundary>
         </FmContentContainer>
       )}

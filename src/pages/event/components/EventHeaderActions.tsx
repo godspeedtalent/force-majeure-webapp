@@ -20,7 +20,9 @@ interface EventHeaderActionsProps {
   isPastEvent?: boolean;
   /** Event data for Instagram Story sharing */
   eventData?: EventShareData;
-  /** When true, user has tickets for this event - shows "You're going!" state */
+  /** When true, user is attending (has tickets or RSVP) - shows "You're going!" state */
+  isAttending?: boolean;
+  /** @deprecated Use isAttending instead */
   hasTickets?: boolean;
 }
 
@@ -42,26 +44,39 @@ export const EventHeaderActions = ({
   onShareClick,
   isPastEvent = false,
   eventData,
+  isAttending = false,
   hasTickets = false,
 }: EventHeaderActionsProps) => {
   const { t } = useTranslation('common');
 
-  // Determine button state based on ticket ownership
-  const isTicketHolder = hasTickets;
-  const isDisabled = isInterestLoading || isPastEvent || isTicketHolder;
+  // Determine button state based on attendance (tickets or RSVP)
+  // Use isAttending if provided, fall back to hasTickets for backward compatibility
+  const userIsAttending = isAttending || hasTickets;
+  const isDisabled = isInterestLoading || isPastEvent || userIsAttending;
 
   // Get appropriate aria label and tooltip
   const getInterestLabel = () => {
-    if (isTicketHolder) return t('eventActions.youreGoing');
+    if (userIsAttending) return t('eventActions.youreGoing');
     if (isInterested) return t('eventActions.removeInterest');
     return t('eventActions.markAsInterested');
   };
 
+  // Get tooltip content for attending users
+  const getAttendingTooltip = () => {
+    if (!userIsAttending) return undefined;
+    // Show count of others (excluding the current user)
+    const othersCount = Math.max(0, interestCount - 1);
+    if (othersCount > 0) {
+      return t('eventActions.youreGoingWithOthers', { count: othersCount });
+    }
+    return t('eventActions.youreGoing');
+  };
+
   return (
     <div className='flex items-center gap-2 flex-shrink-0'>
-      {/* Interest Button - shows "You're going!" for ticket holders */}
+      {/* Interest Button - shows "You're going!" for attendees (ticket holders or RSVP) */}
       <FmPortalTooltip
-        content={isTicketHolder ? t('eventActions.youreGoing') : undefined}
+        content={getAttendingTooltip()}
         side='bottom'
       >
         <button
@@ -70,14 +85,14 @@ export const EventHeaderActions = ({
           onClick={isDisabled ? undefined : onInterestClick}
           disabled={isDisabled}
           className={`h-10 px-3 rounded-none flex items-center justify-center gap-2 transition-all duration-200 relative overflow-hidden ${
-            isTicketHolder
+            userIsAttending
               ? 'bg-fm-gold/20 text-fm-gold border border-fm-gold cursor-default'
               : isPastEvent
                 ? 'bg-white/5 text-muted-foreground border border-transparent cursor-default disabled:opacity-50'
                 : `bg-white/5 text-muted-foreground border border-transparent hover:bg-white/10 hover:text-fm-gold hover:border-fm-gold hover:scale-105 active:scale-95 cursor-pointer ${isInterestLoading ? 'disabled:opacity-50 disabled:cursor-not-allowed' : ''}`
           }`}
         >
-          {isTicketHolder ? (
+          {userIsAttending ? (
             <Ticket className='h-4 w-4 text-fm-gold' />
           ) : (
             <Star
@@ -88,8 +103,8 @@ export const EventHeaderActions = ({
               }`}
             />
           )}
-          {shouldShowInterestCount && interestCount > 0 && !isTicketHolder && (
-            <span className='text-xs text-muted-foreground'>
+          {shouldShowInterestCount && interestCount > 0 && (
+            <span className={`text-xs ${userIsAttending ? 'text-fm-gold' : 'text-muted-foreground'}`}>
               {interestCount.toLocaleString()}
             </span>
           )}

@@ -30,6 +30,8 @@ const MOCK_TICKET_DATA: TicketPDFData = {
   attendeeEmail: 'john.doe@example.com',
   orderNumber: 'ORD-2024-001234',
   purchaserName: 'John Doe',
+  // Sample event image from Unsplash (electronic music/concert)
+  eventImageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80',
 };
 
 export const PDFPreview = ({ config }: PDFPreviewProps) => {

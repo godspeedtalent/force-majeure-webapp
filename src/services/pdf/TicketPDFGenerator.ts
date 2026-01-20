@@ -15,6 +15,21 @@ import { DEFAULT_TICKET_PDF_CONFIG } from '@/features/template-designer/config/d
 
 const pdfLogger = logger.createNamespace('TicketPDFGenerator');
 
+/** Company logo URL (light version for dark backgrounds) */
+const COMPANY_LOGO_URL = '/images/fm-logo-light.png';
+
+/** Canela Deck font paths */
+const CANELA_REGULAR_PATH = '/fonts/CanelaDeck-Regular-Trial.otf';
+const CANELA_MEDIUM_PATH = '/fonts/CanelaDeck-Medium-Trial.otf';
+const CANELA_BOLD_PATH = '/fonts/CanelaDeck-Bold-Trial.otf';
+
+/** Font cache to avoid reloading */
+let fontCache: {
+  regular?: ArrayBuffer;
+  medium?: ArrayBuffer;
+  bold?: ArrayBuffer;
+} = {};
+
 /**
  * Ticket data structure for PDF generation
  */
@@ -31,6 +46,8 @@ export interface TicketPDFData {
   attendeeEmail?: string;
   orderNumber: string;
   purchaserName: string;
+  /** Event hero image URL for display on ticket */
+  eventImageUrl?: string;
 }
 
 /**
@@ -46,6 +63,148 @@ export interface PDFGenerationOptions {
  * Handles all PDF generation logic for tickets
  */
 export class TicketPDFGenerator {
+  /**
+   * Load a font file and return as ArrayBuffer
+   * @private
+   */
+  private static async loadFont(fontPath: string): Promise<ArrayBuffer | null> {
+    try {
+      const fullUrl = fontPath.startsWith('/')
+        ? `${window.location.origin}${fontPath}`
+        : fontPath;
+
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        pdfLogger.warn('Failed to load font', { fontPath, status: response.status });
+        return null;
+      }
+
+      return await response.arrayBuffer();
+    } catch (error) {
+      pdfLogger.warn('Error loading font', {
+        fontPath,
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Load and register Canela fonts with the PDF document
+   * @private
+   */
+  private static async registerCanela(doc: jsPDF): Promise<boolean> {
+    try {
+      // Load fonts (use cache if available)
+      if (!fontCache.regular) {
+        fontCache.regular = (await this.loadFont(CANELA_REGULAR_PATH)) ?? undefined;
+      }
+      if (!fontCache.medium) {
+        fontCache.medium = (await this.loadFont(CANELA_MEDIUM_PATH)) ?? undefined;
+      }
+      if (!fontCache.bold) {
+        fontCache.bold = (await this.loadFont(CANELA_BOLD_PATH)) ?? undefined;
+      }
+
+      // Register fonts with jsPDF
+      if (fontCache.regular) {
+        const regularBase64 = this.arrayBufferToBase64(fontCache.regular);
+        doc.addFileToVFS('CanelaDeck-Regular.otf', regularBase64);
+        doc.addFont('CanelaDeck-Regular.otf', 'Canela Deck', 'normal');
+      }
+
+      if (fontCache.medium) {
+        const mediumBase64 = this.arrayBufferToBase64(fontCache.medium);
+        doc.addFileToVFS('CanelaDeck-Medium.otf', mediumBase64);
+        doc.addFont('CanelaDeck-Medium.otf', 'Canela Deck', 'medium');
+      }
+
+      if (fontCache.bold) {
+        const boldBase64 = this.arrayBufferToBase64(fontCache.bold);
+        doc.addFileToVFS('CanelaDeck-Bold.otf', boldBase64);
+        doc.addFont('CanelaDeck-Bold.otf', 'Canela Deck', 'bold');
+      }
+
+      return !!fontCache.regular;
+    } catch (error) {
+      pdfLogger.warn('Error registering Canela fonts', {
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Convert ArrayBuffer to base64 string
+   * @private
+   */
+  private static arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  /**
+   * Load an image from URL and convert to base64 data URL
+   * @private
+   */
+  private static async loadImageAsDataURL(
+    imageUrl: string
+  ): Promise<string | null> {
+    try {
+      // Handle relative URLs
+      const fullUrl = imageUrl.startsWith('/')
+        ? `${window.location.origin}${imageUrl}`
+        : imageUrl;
+
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        pdfLogger.warn('Failed to load image', { imageUrl, status: response.status });
+        return null;
+      }
+
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      pdfLogger.warn('Error loading image', {
+        imageUrl,
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+      return null;
+    }
+  }
+
+  /**
+   * Get image dimensions that fit within max bounds while maintaining aspect ratio
+   * @private
+   */
+  private static getScaledDimensions(
+    originalWidth: number,
+    originalHeight: number,
+    maxWidth: number,
+    maxHeight: number
+  ): { width: number; height: number } {
+    const aspectRatio = originalWidth / originalHeight;
+
+    let width = maxWidth;
+    let height = maxWidth / aspectRatio;
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = maxHeight * aspectRatio;
+    }
+
+    return { width, height };
+  }
+
   /**
    * Add ticket content to a PDF page
    * @private
@@ -63,6 +222,7 @@ export class TicketPDFGenerator {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = cfg.spacing.margin;
+    const contentWidth = pageWidth - margin * 2;
 
     // Colors from config
     const goldColor = cfg.colors.primary;
@@ -85,11 +245,25 @@ export class TicketPDFGenerator {
 
     let yPosition = margin;
 
-    // Header Section
-    doc.setFontSize(fontSize.headerSize);
-    doc.setTextColor(goldColor);
-    doc.text(content.headerTitle, pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 10;
+    // Company Logo (top center)
+    if (toggles.showLogo) {
+      const logoDataUrl = await this.loadImageAsDataURL(COMPANY_LOGO_URL);
+      if (logoDataUrl) {
+        const logoHeight = 12; // mm
+        const logoWidth = 40; // mm (approximate aspect ratio for the FM logo)
+        const logoX = (pageWidth - logoWidth) / 2;
+        doc.addImage(logoDataUrl, 'PNG', logoX, yPosition, logoWidth, logoHeight);
+        yPosition += logoHeight + 5;
+      }
+    }
+
+    // Header Section (text header - only if no logo or as subtitle)
+    if (!toggles.showLogo) {
+      doc.setFontSize(fontSize.headerSize);
+      doc.setTextColor(goldColor);
+      doc.text(content.headerTitle, pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 10;
+    }
 
     if (toggles.showSubtitle) {
       doc.setFontSize(fontSize.labelSize);
@@ -97,9 +271,7 @@ export class TicketPDFGenerator {
       doc.text(content.headerSubtitle, pageWidth / 2, yPosition, {
         align: 'center',
       });
-      yPosition += 15;
-    } else {
-      yPosition += 5;
+      yPosition += 8;
     }
 
     // Divider line
@@ -107,6 +279,40 @@ export class TicketPDFGenerator {
     doc.setLineWidth(0.5);
     doc.line(margin, yPosition, pageWidth - margin, yPosition);
     yPosition += cfg.spacing.sectionGap;
+
+    // Event Hero Image (if available and enabled)
+    if (toggles.showEventImage && ticketData.eventImageUrl) {
+      const eventImageDataUrl = await this.loadImageAsDataURL(
+        ticketData.eventImageUrl
+      );
+      if (eventImageDataUrl) {
+        const maxImageHeight = 45; // mm
+        const maxImageWidth = contentWidth;
+        // Use a reasonable default aspect ratio (16:9)
+        const { width: imgWidth, height: imgHeight } = this.getScaledDimensions(
+          16,
+          9,
+          maxImageWidth,
+          maxImageHeight
+        );
+        const imgX = (pageWidth - imgWidth) / 2;
+
+        // Add gold border around image
+        doc.setDrawColor(goldColor);
+        doc.setLineWidth(0.5);
+        doc.rect(imgX - 1, yPosition - 1, imgWidth + 2, imgHeight + 2, 'S');
+
+        doc.addImage(
+          eventImageDataUrl,
+          'JPEG',
+          imgX,
+          yPosition,
+          imgWidth,
+          imgHeight
+        );
+        yPosition += imgHeight + cfg.spacing.sectionGap;
+      }
+    }
 
     // Event Name
     doc.setFontSize(fontSize.titleSize);
@@ -245,6 +451,12 @@ export class TicketPDFGenerator {
         format,
       });
 
+      // Register Canela font
+      const fontRegistered = await this.registerCanela(doc);
+      if (fontRegistered) {
+        doc.setFont('Canela Deck', 'normal');
+      }
+
       // Use the shared addTicketPageContent method
       await this.addTicketPageContent(doc, ticketData, options, config);
 
@@ -254,6 +466,7 @@ export class TicketPDFGenerator {
       pdfLogger.info('PDF generated successfully', {
         ticketId: ticketData.ticketId,
         eventName: ticketData.eventName,
+        fontRegistered,
       });
 
       return pdfBase64;
@@ -300,6 +513,12 @@ export class TicketPDFGenerator {
         format,
       });
 
+      // Register Canela font
+      const fontRegistered = await this.registerCanela(doc);
+      if (fontRegistered) {
+        doc.setFont('Canela Deck', 'normal');
+      }
+
       // Generate first ticket content on first page
       await this.addTicketPageContent(doc, tickets[0], options, config);
 
@@ -313,6 +532,7 @@ export class TicketPDFGenerator {
 
       pdfLogger.info('Multiple tickets PDF generated', {
         ticketCount: tickets.length,
+        fontRegistered,
       });
 
       return pdfBase64;
@@ -338,6 +558,7 @@ export class TicketPDFGenerator {
     event: {
       title: string;
       start_time: string;
+      image_url?: string;
       venue: {
         name: string;
         address?: string;
@@ -377,6 +598,7 @@ export class TicketPDFGenerator {
         attendeeEmail: ticket.attendee_email,
         orderNumber: orderData.order_id,
         purchaserName: orderData.purchaser_name,
+        eventImageUrl: orderData.event.image_url,
       }));
 
       return await this.generateMultipleTickets(ticketData);

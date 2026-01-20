@@ -6,7 +6,6 @@ import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logApiError } from '@/shared';
 import { logger } from '@/shared';
-import { EmailService } from '@/services/email/EmailService';
 import type { ArtistRegistrationFormData } from '../types/registration';
 import { checkUserCanRegister } from './useExistingArtistCheck';
 
@@ -182,20 +181,6 @@ export function useArtistRegistrationSubmit() {
 
       logger.info('Artist registration submitted successfully', { data });
       toast.success(t('artistRegistrationErrors.submitSuccess'), { duration: 6000 });
-
-      // Send confirmation email
-      if (user?.email) {
-        EmailService.sendArtistRegistrationConfirmation({
-          artistName: formData.stageName,
-          email: user.email,
-          city: formData.cityId || 'Not specified',
-          genres: formData.genres.map(g => g.name),
-          registrationDate: new Date().toISOString(),
-        }).catch((err: unknown) => {
-          // Log but don't fail the registration if email fails
-          logger.error('Failed to send artist registration confirmation email', { error: err });
-        });
-      }
 
       const registrationId = data?.[0]?.id;
 

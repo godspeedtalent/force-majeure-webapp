@@ -78,6 +78,11 @@ const brandAnimations = {
     '0%, 100%': { boxShadow: '0 0 2px 0 hsl(var(--fm-purple) / 0.3)' },
     '50%': { boxShadow: '0 0 8px 2px hsl(var(--fm-purple) / 0.4)' },
   },
+  // Border shimmer - traveling highlight effect around border
+  'border-shimmer-gold': {
+    '0%': { backgroundPosition: '200% 0' },
+    '100%': { backgroundPosition: '-200% 0' },
+  },
 };
 
 // Interactive feedback animations
@@ -263,6 +268,7 @@ export const animations = {
   'border-shimmer': createAnimation('border-shimmer', '2s', 'infinite'),
   'glow-gold': createAnimation('glow-gold', '4s', 'ease-in-out', 'infinite'),
   'glow-purple': createAnimation('glow-purple', '4s', 'ease-in-out', 'infinite'),
+  'border-shimmer-gold': createAnimation('border-shimmer-gold', '3s', 'linear', 'infinite'),
 
   // Feedback animations
   'input-pulse': createAnimation('input-pulse', '0.15s'),

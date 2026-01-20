@@ -120,6 +120,10 @@
     "artistUpdateFailedDescription": "No se pudieron guardar los cambios de artistas",
     "rsvpSettingsUpdated": "Configuración de RSVP actualizada",
     "rsvpSettingsUpdateFailed": "Error al actualizar configuración de RSVP",
+    "rsvpConfirmed": "¡Estás en la lista para {{eventTitle}}! Revisa tu correo para tu entrada.",
+    "rsvpCancelled": "Tu RSVP para {{eventTitle}} ha sido cancelado.",
+    "rsvpAtCapacity": "Este evento ha alcanzado su capacidad. Puedes unirte a la lista de espera.",
+    "rsvpFailed": "Error al confirmar RSVP. Por favor, inténtalo de nuevo.",
     "updateStatusFailed": "Error al actualizar el estado del evento",
     "mockDataImportFailed": "Error al importar datos simulados",
     "mockDataPurgeFailed": "Error al purgar datos de prueba"

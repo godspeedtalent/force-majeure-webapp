@@ -416,6 +416,8 @@ export class MockOrderService extends TestDataService {
         for (let i = 0; i < registeredOrderCount; i++) {
           const email = this.generateTestEmail();
           const displayName = this.generateFakeName();
+          // ~20% of test profiles will be private (guest_list_visible = false)
+          const guestListVisible = this.randomBoolean(0.8);
 
           // Use test_profiles table instead of profiles (no FK to auth.users)
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -424,6 +426,7 @@ export class MockOrderService extends TestDataService {
             .insert({
               email,
               display_name: displayName,
+              guest_list_visible: guestListVisible,
             })
             .select('id, email')
             .single();
@@ -1035,6 +1038,7 @@ export class MockOrderService extends TestDataService {
   /**
    * Create test profiles for mock orders
    * Uses dedicated test_profiles table that doesn't require auth.users
+   * Randomly assigns guest_list_visible (public/private) for variation
    */
   private async createTestProfiles(
     count: number
@@ -1044,6 +1048,8 @@ export class MockOrderService extends TestDataService {
     for (let i = 0; i < count; i++) {
       const email = this.generateTestEmail();
       const displayName = this.generateFakeName();
+      // ~20% of test profiles will be private (guest_list_visible = false)
+      const guestListVisible = this.randomBoolean(0.8);
 
       // Create a test profile in the dedicated test_profiles table
       // This table has no FK constraint to auth.users
@@ -1053,6 +1059,7 @@ export class MockOrderService extends TestDataService {
         .insert({
           email,
           display_name: displayName,
+          guest_list_visible: guestListVisible,
         })
         .select('id, email')
         .single();

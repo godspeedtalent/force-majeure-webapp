@@ -5,7 +5,7 @@
  */
 
 // Template identifiers
-export type EmailTemplateId = 'order-receipt' | 'artist-registration';
+export type EmailTemplateId = 'order-receipt';
 export type PDFTemplateId = 'ticket';
 export type TemplateId = EmailTemplateId | PDFTemplateId;
 export type TemplateType = 'email' | 'pdf';
@@ -73,7 +73,9 @@ export interface EmailTogglesConfig {
 
 // Toggle configuration for PDF templates
 export interface PDFTogglesConfig {
+  showLogo: boolean;
   showSubtitle: boolean;
+  showEventImage: boolean;
   showVenueAddress: boolean;
   showAttendeeName: boolean;
   showPurchaserName: boolean;
@@ -112,9 +114,7 @@ export type TemplateConfig = EmailTemplateConfig | PDFTemplateConfig;
 export function isEmailTemplateConfig(
   config: TemplateConfig
 ): config is EmailTemplateConfig {
-  return (
-    config.id === 'order-receipt' || config.id === 'artist-registration'
-  );
+  return config.id === 'order-receipt';
 }
 
 export function isPDFTemplateConfig(
@@ -137,12 +137,6 @@ export const TEMPLATE_METADATA: TemplateMetadata[] = [
     id: 'order-receipt',
     name: 'Order Receipt',
     description: 'Email sent after successful ticket purchase',
-    type: 'email',
-  },
-  {
-    id: 'artist-registration',
-    name: 'Artist Registration',
-    description: 'Email sent to confirm artist registration',
     type: 'email',
   },
   {

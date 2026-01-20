@@ -14,6 +14,9 @@ export interface Attendee {
   avatarUrl?: string | null;
   isFriend: boolean;
   type: 'ticket_holder' | 'rsvp' | 'interested' | 'guest';
+  isPrivate?: boolean;
+  /** Display category for ordering in the unified list */
+  displayCategory: 'public_ticket' | 'public_rsvp' | 'private_ticket' | 'private_rsvp' | 'public_interested' | 'private_interested' | 'guest';
 }
 
 interface GuestData {
@@ -35,6 +38,20 @@ function getInitials(name: string | null | undefined): string {
 }
 
 /**
+ * Get display category based on type and privacy
+ */
+function getDisplayCategory(
+  type: Attendee['type'],
+  isPrivate: boolean
+): Attendee['displayCategory'] {
+  if (type === 'guest') return 'guest';
+  if (type === 'ticket_holder') return isPrivate ? 'private_ticket' : 'public_ticket';
+  if (type === 'rsvp') return isPrivate ? 'private_rsvp' : 'public_rsvp';
+  if (type === 'interested') return isPrivate ? 'private_interested' : 'public_interested';
+  return 'public_ticket'; // fallback
+}
+
+/**
  * Convert profile data to Attendee format
  */
 function profileToAttendee(
@@ -42,10 +59,24 @@ function profileToAttendee(
   profile: ProfileData | null,
   type: Attendee['type'],
   friendIds: string[]
-): Attendee | null {
-  // Skip if profile opted out of guest list
-  if (profile?.guest_list_visible === false) {
-    return null;
+): Attendee {
+  // Check if profile opted out of guest list visibility
+  const isPrivate = profile?.guest_list_visible === false;
+  const displayCategory = getDisplayCategory(type, isPrivate);
+
+  if (isPrivate) {
+    // Return a private attendee placeholder with blurred info
+    return {
+      id: profile?.id || userId,
+      userId,
+      name: 'Private',
+      avatar: '??',
+      avatarUrl: profile?.avatar_url, // Keep avatar for blurring
+      isFriend: false, // Don't reveal friend status for private users
+      type,
+      isPrivate: true,
+      displayCategory,
+    };
   }
 
   const displayName = profile?.display_name || profile?.full_name || 'Anonymous';
@@ -58,6 +89,8 @@ function profileToAttendee(
     avatarUrl: profile?.avatar_url,
     isFriend: friendIds.includes(userId),
     type,
+    isPrivate: false,
+    displayCategory,
   };
 }
 
@@ -65,16 +98,16 @@ function profileToAttendee(
  * Convert guest data to Attendee format
  */
 function guestToAttendee(guest: GuestData): Attendee {
-  const displayName = guest.full_name || 'Guest';
-
   return {
     id: guest.id,
     userId: `guest-${guest.id}`, // Prefix to distinguish from real user IDs
-    name: displayName,
-    avatar: getInitials(displayName),
+    name: 'Guest', // Don't display actual guest names
+    avatar: '??',
     avatarUrl: null,
-    isFriend: false, // Guests can't be friends
+    isFriend: false,
     type: 'guest',
+    isPrivate: true, // Guests are treated as private
+    displayCategory: 'guest',
   };
 }
 
@@ -163,89 +196,89 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
   // the data source differences
   // ============================================================================
 
-  // Combine ticket holders and RSVPs into "going" attendees
-  const goingAttendees: Attendee[] = [];
-  const seenGoingIds = new Set<string>();
+  const allAttendees: Attendee[] = [];
+  const seenIds = new Set<string>();
 
   // Add ticket holders
   for (const holder of ticketHolders) {
-    if (seenGoingIds.has(holder.userId)) continue;
-    seenGoingIds.add(holder.userId);
-
-    const attendee = profileToAttendee(holder.userId, holder.profile, 'ticket_holder', friendIds);
-    if (attendee) goingAttendees.push(attendee);
+    if (seenIds.has(holder.userId)) continue;
+    seenIds.add(holder.userId);
+    allAttendees.push(profileToAttendee(holder.userId, holder.profile, 'ticket_holder', friendIds));
   }
 
   // Add RSVPs (skip if already in ticket holders)
   for (const holder of rsvpHolders) {
-    if (seenGoingIds.has(holder.userId)) continue;
-    seenGoingIds.add(holder.userId);
-
-    const attendee = profileToAttendee(holder.userId, holder.profile, 'rsvp', friendIds);
-    if (attendee) goingAttendees.push(attendee);
+    if (seenIds.has(holder.userId)) continue;
+    seenIds.add(holder.userId);
+    allAttendees.push(profileToAttendee(holder.userId, holder.profile, 'rsvp', friendIds));
   }
 
   // Add guest ticket holders (these are anonymous guests)
-  const guestAttendees: Attendee[] = [];
   for (const holder of guestHolders) {
     if (!holder.guest) continue;
     const guestId = `guest-${holder.guest.id}`;
-    if (seenGoingIds.has(guestId)) continue;
-    seenGoingIds.add(guestId);
-
-    const attendee = guestToAttendee(holder.guest);
-    guestAttendees.push(attendee);
+    if (seenIds.has(guestId)) continue;
+    seenIds.add(guestId);
+    allAttendees.push(guestToAttendee(holder.guest));
   }
 
-  // Convert interested users (excluding those already going)
-  const interestedAttendees: Attendee[] = [];
+  // Add interested users (excluding those already going)
   for (const holder of interestedHolders) {
-    if (seenGoingIds.has(holder.userId)) continue; // Skip if already going
-
-    const attendee = profileToAttendee(holder.userId, holder.profile, 'interested', friendIds);
-    if (attendee) interestedAttendees.push(attendee);
+    if (seenIds.has(holder.userId)) continue;
+    allAttendees.push(profileToAttendee(holder.userId, holder.profile, 'interested', friendIds));
   }
 
-  // Separate by category for modal sections
-  // Friends = any going attendee that is a friend (not guests)
-  const friendsGoing = goingAttendees.filter(a => a.isFriend);
+  // Define display order for categories
+  const categoryOrder: Record<Attendee['displayCategory'], number> = {
+    public_ticket: 1,
+    public_rsvp: 2,
+    private_ticket: 3,
+    private_rsvp: 4,
+    guest: 5,
+    public_interested: 6,
+    private_interested: 7,
+  };
 
-  // Other Users = going attendees that are NOT friends AND are real users (not guests)
-  // These are users with profiles who opted into the guest list
-  const otherUsers = goingAttendees.filter(a => !a.isFriend);
+  // Sort by category order, then by friend status (friends first within each category)
+  const sortedAttendees = [...allAttendees].sort((a, b) => {
+    const orderDiff = categoryOrder[a.displayCategory] - categoryOrder[b.displayCategory];
+    if (orderDiff !== 0) return orderDiff;
+    // Within same category, friends first
+    if (a.isFriend && !b.isFriend) return -1;
+    if (!a.isFriend && b.isFriend) return 1;
+    return 0;
+  });
 
-  // Private users = users who opted out of visibility (guest_list_visible === false)
-  // These are tracked separately - we count them but show as "Private"
-  // Guests and Private Users are grouped together for display
-  const guestsAndPrivate = guestAttendees;
+  // Separate going vs interested for counts
+  const goingAttendees = sortedAttendees.filter(a => a.type !== 'interested');
+  const interestedAttendees = sortedAttendees.filter(a => a.type === 'interested');
 
-  // All going includes everyone
-  const allGoing = [...goingAttendees, ...guestAttendees];
+  // Guest count for display
+  const guestCount = sortedAttendees.filter(a => a.displayCategory === 'guest').length;
 
-  // Preview for the card (first 5 attendees, prioritize friends)
-  const attendeePreview = [...friendsGoing, ...otherUsers]
+  // Preview for the card (first 5 public attendees, prioritize friends)
+  const publicGoingAttendees = goingAttendees.filter(a => !a.isPrivate);
+  const attendeePreview = publicGoingAttendees
     .slice(0, 5)
     .map(a => ({ name: a.name, avatar: a.avatar }));
 
   return {
     // For backward compatibility with existing EventGuestList component
     attendeePreview,
-    attendeeList: allGoing,
+    attendeeList: goingAttendees,
 
-    // New structured data for AttendeeModal sections
-    friendsGoing,
-    otherUsers,
-    guestsAndPrivate,
-    interestedUsers: interestedAttendees,
+    // Unified sorted list for the modal (going + interested, in display order)
+    sortedAttendees,
 
-    // Legacy alias
-    allGoing,
+    // Separate lists for going vs interested
+    goingAttendees,
+    interestedAttendees,
+
+    // Guest count for grouped display
+    guestCount,
 
     // Counts
-    totalGoingCount: allGoing.length,
-    friendsGoingCount: friendsGoing.length,
-    otherUsersCount: otherUsers.length,
-    guestsAndPrivateCount: guestsAndPrivate.length,
+    totalGoingCount: goingAttendees.length,
     interestedCount: interestedAttendees.length,
 
     // Loading state

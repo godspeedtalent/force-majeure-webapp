@@ -4,8 +4,14 @@
  * Renders a live preview of email templates with the current configuration.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { Send, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
+import { EmailService } from '@/services/email/EmailService';
+import { useAuth } from '@/features/auth/services/AuthContext';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import type { OrderReceiptEmailData } from '@/types/email';
 import type { EmailTemplateConfig } from '../../types';
 
@@ -61,6 +67,10 @@ const MOCK_EMAIL_DATA: OrderReceiptEmailData = {
 };
 
 export const EmailPreview = ({ config }: EmailPreviewProps) => {
+  const { t } = useTranslation('pages');
+  const { user } = useAuth();
+  const [isSending, setIsSending] = useState(false);
+
   const previewHtml = useMemo(() => {
     // Generate the email HTML with the current config
     // Note: The template will need to be updated to accept config
@@ -68,14 +78,58 @@ export const EmailPreview = ({ config }: EmailPreviewProps) => {
     return generateOrderReceiptEmailHTML(MOCK_EMAIL_DATA, config);
   }, [config]);
 
+  const handleSendSampleEmail = async () => {
+    if (!user?.email) {
+      toast.error(t('templateDesigner.noEmailError', 'No email address found for current user'));
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const result = await EmailService.sendSampleEmail(user.email, config);
+      if (result.success) {
+        toast.success(t('templateDesigner.sampleEmailSent', 'Sample email sent to {{email}}', { email: user.email }));
+      } else {
+        toast.error(result.error || t('templateDesigner.sampleEmailError', 'Failed to send sample email'));
+      }
+    } catch {
+      toast.error(t('templateDesigner.sampleEmailError', 'Failed to send sample email'));
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
-    <div className='h-full overflow-auto rounded-none border border-white/20 bg-white'>
-      <iframe
-        srcDoc={previewHtml}
-        title='Email Preview'
-        className='h-full min-h-[600px] w-full border-none'
-        sandbox='allow-same-origin'
-      />
+    <div className='flex h-full flex-col'>
+      {/* Send Sample Email Button */}
+      <div className='flex items-center justify-between border-b border-white/20 bg-black/40 p-[10px]'>
+        <span className='text-sm text-muted-foreground'>
+          {t('templateDesigner.previewLabel', 'Live Preview')}
+        </span>
+        <FmCommonButton
+          variant='gold'
+          size='sm'
+          onClick={handleSendSampleEmail}
+          disabled={isSending || !user?.email}
+        >
+          {isSending ? (
+            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+          ) : (
+            <Send className='mr-2 h-4 w-4' />
+          )}
+          {t('templateDesigner.sendSampleEmail', 'Send Sample Email')}
+        </FmCommonButton>
+      </div>
+
+      {/* Email Preview */}
+      <div className='flex-1 overflow-auto rounded-none border border-white/20 bg-white'>
+        <iframe
+          srcDoc={previewHtml}
+          title='Email Preview'
+          className='h-full min-h-[600px] w-full border-none'
+          sandbox='allow-same-origin'
+        />
+      </div>
     </div>
   );
 };

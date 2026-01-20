@@ -7,17 +7,13 @@ import {
   OrderEventForEmail,
 } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
-import { generateArtistRegistrationEmailHTML } from './templates/ArtistRegistrationEmail';
+import {
+  generateRsvpConfirmationEmailHTML,
+  RsvpConfirmationEmailData,
+} from './templates/RsvpConfirmationEmail';
 import { logger } from '@/shared';
 import { TicketPDFService } from './TicketPDFService';
-
-export interface ArtistRegistrationEmailData {
-  artistName: string;
-  email: string;
-  city: string;
-  genres: string[];
-  registrationDate: string;
-}
+import type { EmailTemplateConfig } from '@/features/template-designer/types';
 
 /**
  * EmailService - Handles sending emails via Supabase Edge Functions
@@ -219,38 +215,165 @@ export class EmailService {
   }
 
   /**
-   * Send artist registration confirmation email
+   * Send a sample email using the current template configuration.
+   * Used by the Template Designer to test email templates.
    */
-  static async sendArtistRegistrationConfirmation(
-    data: ArtistRegistrationEmailData
+  static async sendSampleEmail(
+    toEmail: string,
+    config?: EmailTemplateConfig
   ): Promise<EmailSendResult> {
-    try {
-      // Generate HTML email
-      const htmlContent = generateArtistRegistrationEmailHTML(data);
+    const sampleData: OrderReceiptEmailData = {
+      orderId: 'SAMPLE-' + Date.now(),
+      orderDate: new Date().toISOString(),
+      event: {
+        title: 'Midnight Resonance: A Force Majeure Experience',
+        date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        time: '22:00',
+        venue: {
+          name: 'The Warehouse',
+          address: '123 Industrial Ave',
+          city: 'Los Angeles, CA 90012',
+        },
+        imageUrl:
+          'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&h=300&fit=crop',
+      },
+      purchaser: {
+        fullName: 'Sample User',
+        email: toEmail,
+        phone: '+1 (555) 123-4567',
+      },
+      orderSummary: {
+        items: [
+          {
+            ticketTierName: 'General Admission',
+            quantity: 2,
+            unitPrice: 75.0,
+            subtotal: 150.0,
+          },
+          {
+            ticketTierName: 'VIP Experience',
+            quantity: 1,
+            unitPrice: 150.0,
+            subtotal: 150.0,
+          },
+        ],
+        subtotal: 300.0,
+        serviceFee: 15.0,
+        processingFee: 8.7,
+        ticketProtection: 12.0,
+        tax: 26.86,
+        total: 362.56,
+        currency: 'USD',
+      },
+    };
 
-      // Call Supabase Edge Function to send email
+    try {
+      const htmlContent = generateOrderReceiptEmailHTML(sampleData, config);
+
       const { data: response, error } = await supabase.functions.invoke(
         'send-email',
         {
           body: {
-            to: [data.email],
-            subject: `Artist Registration Received - Force Majeure`,
+            to: [toEmail],
+            subject: `[Sample] Order Confirmation - ${sampleData.event.title}`,
             html: htmlContent,
           },
         }
       );
 
       if (error) {
-        logger.error('Error sending artist registration email:', error);
+        logger.error('Error sending sample email:', error);
         return {
           success: false,
           error: error.message,
         };
       }
 
-      logger.info('Artist registration confirmation email sent', {
-        artistName: data.artistName,
-        email: data.email,
+      logger.info('Sample email sent successfully', { email: toEmail });
+
+      return {
+        success: true,
+        messageId: response?.messageId,
+      };
+    } catch (error) {
+      logger.error('Unexpected error sending sample email:', { error });
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Send RSVP confirmation email with PDF ticket
+   */
+  static async sendRsvpConfirmation(
+    data: RsvpConfirmationEmailData
+  ): Promise<EmailSendResult> {
+    try {
+      // Generate PDF ticket for RSVP
+      let pdfAttachment: string | undefined;
+      if (data.pdfTicketAttachment) {
+        pdfAttachment = data.pdfTicketAttachment;
+      } else {
+        try {
+          pdfAttachment = await TicketPDFService.generateRsvpTicketPDF(data);
+          if (pdfAttachment) {
+            logger.info('RSVP PDF ticket generated successfully', {
+              rsvpId: data.rsvpId,
+            });
+          }
+        } catch (pdfError) {
+          // Log error but continue sending email without PDF attachment
+          logger.warn(
+            'Failed to generate RSVP PDF ticket, sending email without attachment',
+            {
+              rsvpId: data.rsvpId,
+              error: pdfError instanceof Error ? pdfError.message : 'Unknown',
+            }
+          );
+        }
+      }
+
+      // Generate HTML email
+      const htmlContent = generateRsvpConfirmationEmailHTML({
+        ...data,
+        pdfTicketAttachment: pdfAttachment,
+      });
+
+      // Call Supabase Edge Function to send email
+      const { data: response, error } = await supabase.functions.invoke(
+        'send-email',
+        {
+          body: {
+            to: [data.attendee.email],
+            subject: `RSVP Confirmed - ${data.event.title}`,
+            html: htmlContent,
+            attachments: pdfAttachment
+              ? [
+                  {
+                    filename: `rsvp-ticket-${data.rsvpId}.pdf`,
+                    content: pdfAttachment,
+                    contentType: 'application/pdf',
+                  },
+                ]
+              : undefined,
+          },
+        }
+      );
+
+      if (error) {
+        logger.error('Error sending RSVP confirmation email:', error);
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+
+      logger.info('RSVP confirmation email sent', {
+        rsvpId: data.rsvpId,
+        eventTitle: data.event.title,
+        attendeeEmail: data.attendee.email,
       });
 
       return {
@@ -258,7 +381,9 @@ export class EmailService {
         messageId: response?.messageId,
       };
     } catch (error) {
-      logger.error('Unexpected error sending artist registration email:', { error });
+      logger.error('Unexpected error sending RSVP confirmation email:', {
+        error,
+      });
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

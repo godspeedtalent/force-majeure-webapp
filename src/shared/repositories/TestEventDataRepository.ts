@@ -16,11 +16,13 @@ interface TestProfileRow {
   id: string;
   email: string;
   display_name: string | null;
+  guest_list_visible: boolean | null;
+  avatar_url: string | null;
 }
 
 /**
  * Map test_profile to standard ProfileData shape
- * Test profiles are simpler - no avatar, always visible
+ * Test profiles support guest_list_visible for public/private variation
  */
 function mapTestProfileToProfileData(testProfile: TestProfileRow): ProfileData {
   return {
@@ -28,8 +30,8 @@ function mapTestProfileToProfileData(testProfile: TestProfileRow): ProfileData {
     display_name: testProfile.display_name,
     full_name: testProfile.display_name, // Test profiles don't have separate full_name
     email: testProfile.email,
-    avatar_url: null, // Test profiles don't have avatars
-    guest_list_visible: true, // Test profiles are always visible
+    avatar_url: testProfile.avatar_url,
+    guest_list_visible: testProfile.guest_list_visible ?? true, // Default to visible if null
   };
 }
 
@@ -143,7 +145,9 @@ export class TestEventDataRepository implements IEventDataRepository {
           test_profile:test_profiles(
             id,
             email,
-            display_name
+            display_name,
+            guest_list_visible,
+            avatar_url
           )
         `)
         .eq('event_id', eventId)
@@ -201,7 +205,9 @@ export class TestEventDataRepository implements IEventDataRepository {
           test_profile:test_profiles(
             id,
             email,
-            display_name
+            display_name,
+            guest_list_visible,
+            avatar_url
           )
         `)
         .eq('event_id', eventId);
@@ -238,7 +244,9 @@ export class TestEventDataRepository implements IEventDataRepository {
           test_profile:test_profiles(
             id,
             email,
-            display_name
+            display_name,
+            guest_list_visible,
+            avatar_url
           )
         `)
         .eq('event_id', eventId)

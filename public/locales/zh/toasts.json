@@ -120,6 +120,10 @@
     "artistUpdateFailedDescription": "无法保存艺术家更改",
     "rsvpSettingsUpdated": "预约设置已更新",
     "rsvpSettingsUpdateFailed": "更新预约设置失败",
+    "rsvpConfirmed": "您已在{{eventTitle}}的宾客名单上！请查收邮件获取您的门票。",
+    "rsvpCancelled": "您对{{eventTitle}}的预约已取消。",
+    "rsvpAtCapacity": "此活动已满员。您可以加入候补名单。",
+    "rsvpFailed": "预约失败，请重试。",
     "updateStatusFailed": "更新活动状态失败",
     "mockDataImportFailed": "导入模拟数据失败",
     "mockDataPurgeFailed": "清除测试数据失败"

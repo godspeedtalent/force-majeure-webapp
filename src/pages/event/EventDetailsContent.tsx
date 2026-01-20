@@ -93,7 +93,7 @@ export const EventDetailsContent = ({
     isInterested,
     toggleInterest,
     isLoading: isInterestLoading,
-    hasTickets,
+    isAttending,
   } = useEventInterest(event.id, displayTitle, event.status);
   
   const [selectedArtist, setSelectedArtist] =
@@ -240,17 +240,6 @@ export const EventDetailsContent = ({
           </FmCommonCollapsibleSection>
         )}
 
-        {/* Guest List - conditionally shows based on feature flag and event settings */}
-        {guestListEnabled && (
-          <EventGuestList
-            attendeePreview={attendeePreview}
-            ticketCount={totalGoingCount}
-            isLoggedIn={!!user}
-            onCardClick={handleAttendeeCardClick}
-            onPromptLogin={handlePromptLogin}
-          />
-        )}
-
         {/* Event Information - always shows */}
         <EventInfoSection
           longDateLabel={longDateLabel}
@@ -259,8 +248,21 @@ export const EventDetailsContent = ({
           venue={event.venue}
           venueLogo={event.venueDetails?.logo}
           onVenueSelect={handleVenueSelect}
-          className={!guestListEnabled ? 'lg:col-span-2' : ''}
+          className='lg:col-span-2'
         />
+
+        {/* Guest List - spans full width as its own row */}
+        {guestListEnabled && (
+          <div className='lg:col-span-2'>
+            <EventGuestList
+              attendeePreview={attendeePreview}
+              ticketCount={totalGoingCount}
+              isLoggedIn={!!user}
+              onCardClick={handleAttendeeCardClick}
+              onPromptLogin={handlePromptLogin}
+            />
+          </div>
+        )}
 
         {/* Call Times - only shows if lineup exists, spans full width */}
         <EventCallTimes
@@ -323,7 +325,7 @@ export const EventDetailsContent = ({
       onInterestClick={handleInterestClick}
       onShareClick={handleOpenShareModal}
       isPastEvent={isPastEvent}
-      hasTickets={hasTickets}
+      isAttending={isAttending}
       eventData={{
         id: event.id,
         heroImage: event.heroImage,

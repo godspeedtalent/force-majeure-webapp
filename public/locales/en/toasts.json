@@ -121,6 +121,10 @@
     "artistUpdateFailedDescription": "Could not save artist changes",
     "rsvpSettingsUpdated": "RSVP settings updated",
     "rsvpSettingsUpdateFailed": "Failed to update RSVP settings",
+    "rsvpConfirmed": "You're on the list for {{eventTitle}}! Check your email for your ticket.",
+    "rsvpCancelled": "Your RSVP for {{eventTitle}} has been cancelled.",
+    "rsvpAtCapacity": "This event has reached capacity. You can join the waitlist.",
+    "rsvpFailed": "Failed to RSVP. Please try again.",
     "updateStatusFailed": "Failed to update event status",
     "mockDataImportFailed": "Failed to import mock data",
     "mockDataPurgeFailed": "Failed to purge test data"

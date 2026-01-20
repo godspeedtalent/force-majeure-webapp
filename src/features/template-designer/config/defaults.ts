@@ -73,47 +73,6 @@ export const DEFAULT_ORDER_RECEIPT_CONFIG: EmailTemplateConfig = {
   },
 };
 
-// Default Artist Registration Email configuration
-export const DEFAULT_ARTIST_REGISTRATION_CONFIG: EmailTemplateConfig = {
-  id: 'artist-registration',
-  name: 'Artist Registration',
-  colors: EMAIL_DEFAULT_COLORS,
-  typography: {
-    headerSize: 28,
-    titleSize: 24,
-    bodySize: 14,
-    labelSize: 13,
-    footerSize: 11,
-  },
-  spacing: {
-    margin: 40,
-    padding: 30,
-    sectionGap: 20,
-  },
-  content: {
-    headerTitle: 'FORCE MAJEURE',
-    headerSubtitle: 'Artist Registration Confirmed',
-    successMessage: 'Welcome to Force Majeure!',
-    successSubtext: 'Your artist registration has been confirmed.',
-    ticketNotice: '',
-    ctaPrimaryText: 'View My Profile',
-    ctaSecondaryText: 'Explore Events',
-    footerContact: 'Questions? Contact us at artists@forcemajeure.com',
-    footerCopyright: 'Force Majeure. All rights reserved.',
-  },
-  toggles: {
-    showHeroImage: false,
-    showSuccessIcon: true,
-    showPurchaserInfo: false,
-    showOrderBreakdown: false,
-    showTicketProtection: false,
-    showServiceFee: false,
-    showProcessingFee: false,
-    showCtaButtons: true,
-    showFooter: true,
-  },
-};
-
 // Default Ticket PDF configuration
 export const DEFAULT_TICKET_PDF_CONFIG: PDFTemplateConfig = {
   id: 'ticket',
@@ -140,7 +99,9 @@ export const DEFAULT_TICKET_PDF_CONFIG: PDFTemplateConfig = {
     footerTicketId: 'Ticket ID:',
   },
   toggles: {
+    showLogo: true,
     showSubtitle: true,
+    showEventImage: true,
     showVenueAddress: true,
     showAttendeeName: true,
     showPurchaserName: true,
@@ -154,7 +115,6 @@ export const DEFAULT_TICKET_PDF_CONFIG: PDFTemplateConfig = {
 // Export all defaults as a record for easy access
 export const DEFAULT_EMAIL_CONFIGS: Record<string, EmailTemplateConfig> = {
   'order-receipt': DEFAULT_ORDER_RECEIPT_CONFIG,
-  'artist-registration': DEFAULT_ARTIST_REGISTRATION_CONFIG,
 };
 
 export const DEFAULT_PDF_CONFIGS: Record<string, PDFTemplateConfig> = {

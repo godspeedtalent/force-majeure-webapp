@@ -664,6 +664,16 @@ All colors MUST be HSL.
   }
 }
 
+/* Gold shimmer border animation - traveling highlight effect */
+@keyframes border-shimmer-gold {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* Mobile touch feedback - applies hover-like effects on active for touch devices */
 @media (hover: none) {
   .fm-touch-feedback:active:not(:disabled) {

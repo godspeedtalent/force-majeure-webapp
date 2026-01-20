@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { eventInterestService } from '../services/eventInterestService';
+import { rsvpService } from '../services/rsvpService';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger, supabase } from '@/shared';
 
@@ -38,6 +39,18 @@ export function useEventInterest(eventId: string, eventTitle?: string, eventStat
     enabled: !!user,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Query: Check if user has an RSVP for this event
+  const { data: hasRsvp = false, isLoading: isCheckingRsvp } = useQuery({
+    queryKey: ['user-has-rsvp', eventId, user?.id],
+    queryFn: () => rsvpService.hasUserRsvp(eventId, user?.id),
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  // Combined: User is "attending" if they have tickets OR an RSVP
+  const isAttending = hasTickets || hasRsvp;
+  const isCheckingAttendance = isCheckingTickets || isCheckingRsvp;
 
   // Query: Get interest count (includes test interests for test events)
   const { data: interestCount = 0 } = useQuery({
@@ -205,8 +218,12 @@ export function useEventInterest(eventId: string, eventTitle?: string, eventStat
     toggleInterest,
     isLoading:
       markInterestedMutation.isPending || unmarkInterestedMutation.isPending,
-    // Ticket holder status - users with tickets are automatically "going"
+    // Attendance status - users with tickets OR RSVPs are automatically "going"
+    // and cannot toggle their interest state
+    isAttending,
+    isCheckingAttendance,
+    // Individual checks for backward compatibility
     hasTickets,
-    isCheckingTickets,
+    hasRsvp,
   };
 }

@@ -3,12 +3,31 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { rsvpService, RsvpStats } from '../services/rsvpService';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger } from '@/shared';
+import { logger, supabase } from '@/shared';
+import { EmailService } from '@/services/email/EmailService';
 
-export function useEventRsvp(eventId: string, eventTitle?: string, eventStatus?: string) {
+export interface RsvpEventData {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  venue: {
+    name: string;
+    address?: string;
+    city?: string;
+  };
+  imageUrl?: string;
+}
+
+export function useEventRsvp(
+  eventId: string,
+  eventTitle?: string,
+  eventStatus?: string,
+  eventData?: RsvpEventData
+) {
   const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   // Query: Get RSVP stats (count, capacity, isFull) - includes test RSVPs for test events
   const { data: rsvpStats = { count: 0, capacity: null, isFull: false } } = useQuery<RsvpStats>({
@@ -67,16 +86,107 @@ export function useEventRsvp(eventId: string, eventTitle?: string, eventStatus?:
 
       return { previousHasRsvp, previousStats };
     },
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.success) {
         if (result.action === 'confirmed') {
-          toast.success(t('events.rsvpConfirmed', { eventTitle: eventTitle || 'event' }));
+          toast.success(
+            t('events.rsvpConfirmed', { eventTitle: eventTitle || 'event' })
+          );
           logger.info('User confirmed RSVP', {
             event_id: eventId,
             event_title: eventTitle,
           });
+
+          // Send RSVP confirmation email with PDF ticket
+          if (result.rsvpId && user?.email) {
+            try {
+              // Get full event data if not provided
+              let fullEventData = eventData;
+              if (!fullEventData) {
+                const { data: fetchedEvent } = await supabase
+                  .from('events')
+                  .select(
+                    `
+                    id,
+                    title,
+                    start_time,
+                    hero_image,
+                    venues (
+                      name,
+                      address,
+                      city
+                    )
+                  `
+                  )
+                  .eq('id', eventId)
+                  .single();
+
+                if (fetchedEvent) {
+                  // Parse the event data
+                  const startTime = new Date(fetchedEvent.start_time || '');
+                  fullEventData = {
+                    id: fetchedEvent.id,
+                    title: fetchedEvent.title,
+                    date: startTime.toISOString().split('T')[0],
+                    time: startTime.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                    }),
+                    venue: {
+                      name:
+                        (fetchedEvent.venues as { name?: string } | null)
+                          ?.name || 'TBA',
+                      address: (
+                        fetchedEvent.venues as { address?: string } | null
+                      )?.address,
+                      city: (fetchedEvent.venues as { city?: string } | null)
+                        ?.city,
+                    },
+                    imageUrl: fetchedEvent.hero_image ?? undefined,
+                  };
+                }
+              }
+
+              if (fullEventData) {
+                // Send confirmation email
+                const emailResult = await EmailService.sendRsvpConfirmation({
+                  rsvpId: result.rsvpId,
+                  event: fullEventData,
+                  attendee: {
+                    fullName: profile?.full_name || user.email.split('@')[0],
+                    email: user.email,
+                  },
+                });
+
+                if (emailResult.success) {
+                  logger.info('RSVP confirmation email sent successfully', {
+                    rsvpId: result.rsvpId,
+                    eventId,
+                  });
+                } else {
+                  logger.warn('Failed to send RSVP confirmation email', {
+                    rsvpId: result.rsvpId,
+                    eventId,
+                    error: emailResult.error,
+                  });
+                }
+              }
+            } catch (emailError) {
+              // Don't fail the RSVP if email fails - just log it
+              logger.error('Error sending RSVP confirmation email', {
+                error:
+                  emailError instanceof Error
+                    ? emailError.message
+                    : 'Unknown error',
+                rsvpId: result.rsvpId,
+                eventId,
+              });
+            }
+          }
         } else {
-          toast.success(t('events.rsvpCancelled', { eventTitle: eventTitle || 'event' }));
+          toast.success(
+            t('events.rsvpCancelled', { eventTitle: eventTitle || 'event' })
+          );
           logger.info('User cancelled RSVP', {
             event_id: eventId,
             event_title: eventTitle,

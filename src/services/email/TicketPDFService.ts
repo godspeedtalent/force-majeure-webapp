@@ -1,4 +1,5 @@
 import { OrderReceiptEmailData } from '@/types/email';
+import { RsvpConfirmationEmailData } from './templates/RsvpConfirmationEmail';
 import { logger } from '@/shared';
 import { TicketPDFGenerator } from '@/services/pdf/TicketPDFGenerator';
 import { supabase } from '@/shared';
@@ -272,6 +273,77 @@ export class TicketPDFService {
     }
 
     return true;
+  }
+
+  /**
+   * Generate PDF ticket for an RSVP confirmation
+   *
+   * @param data - RSVP confirmation email data
+   * @param options - PDF generation options
+   * @returns Base64 encoded PDF string or undefined if generation fails
+   */
+  static async generateRsvpTicketPDF(
+    data: RsvpConfirmationEmailData,
+    options: TicketPDFOptions = {}
+  ): Promise<string | undefined> {
+    try {
+      // Validate options
+      if (!this.validateOptions(options)) {
+        pdfLogger.error('Invalid PDF options provided for RSVP', { options });
+        return undefined;
+      }
+
+      // Parse the event date and time
+      const eventDate = new Date(data.event.date);
+      const formattedDate = eventDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      // Generate a unique QR code data for this RSVP ticket
+      // Format: RSVP-{rsvpId}-{eventId}-{timestamp}
+      const qrCodeData = `RSVP-${data.rsvpId}-${data.event.id}-${Date.now()}`;
+
+      // Generate the ticket PDF
+      const pdfBase64 = await TicketPDFGenerator.generateSingleTicket(
+        {
+          ticketId: data.rsvpId,
+          qrCodeData,
+          eventName: data.event.title,
+          eventDate: formattedDate,
+          eventTime: data.event.time,
+          venueName: data.event.venue.name,
+          venueAddress: data.event.venue.address
+            ? `${data.event.venue.address}${data.event.venue.city ? `, ${data.event.venue.city}` : ''}`
+            : undefined,
+          ticketTierName: 'RSVP - Free Entry',
+          attendeeName: data.attendee.fullName,
+          attendeeEmail: data.attendee.email,
+          orderNumber: `RSVP-${data.rsvpId.slice(0, 8).toUpperCase()}`,
+          purchaserName: data.attendee.fullName,
+          eventImageUrl: data.event.imageUrl,
+        },
+        {
+          format: options.format || 'Letter',
+          orientation: options.orientation || 'portrait',
+        }
+      );
+
+      pdfLogger.info('RSVP PDF generated successfully', {
+        rsvpId: data.rsvpId,
+        eventTitle: data.event.title,
+      });
+
+      return pdfBase64;
+    } catch (error) {
+      pdfLogger.error('Error generating RSVP ticket PDF', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        rsvpId: data.rsvpId,
+      });
+      return undefined;
+    }
   }
 }
 

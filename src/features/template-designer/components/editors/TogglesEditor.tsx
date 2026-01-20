@@ -72,7 +72,9 @@ export const PDFTogglesEditor = ({
   onChange: (toggles: Partial<PDFTogglesConfig>) => void;
 }) => {
   const fields: { key: keyof PDFTogglesConfig; label: string }[] = [
+    { key: 'showLogo', label: 'Show Company Logo' },
     { key: 'showSubtitle', label: 'Show Subtitle' },
+    { key: 'showEventImage', label: 'Show Event Image' },
     { key: 'showVenueAddress', label: 'Show Venue Address' },
     { key: 'showAttendeeName', label: 'Show Attendee Name' },
     { key: 'showPurchaserName', label: 'Show Purchaser Name' },
