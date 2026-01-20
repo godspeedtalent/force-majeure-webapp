@@ -383,7 +383,40 @@
     "orderPlaced": "Pedido realizado",
     "at": "a las",
     "event": "Evento",
-    "ticket": "Entrada"
+    "ticket": "Entrada",
+    "viewTickets": "Ver Entradas"
+  },
+  "wallet": {
+    "title": "Mi Billetera",
+    "subtitle": "Tus entradas y próximos shows",
+    "tabs": {
+      "upcoming": "Próximos",
+      "past": "Pasados"
+    },
+    "noUpcoming": "Sin shows próximos",
+    "noUpcomingDescription": "Explora eventos para encontrar tu próximo show",
+    "noPast": "Sin shows pasados",
+    "noPastDescription": "Tus eventos pasados aparecerán aquí",
+    "browseEvents": "Explorar Eventos",
+    "scanAtEntry": "Muestra este código QR en la entrada",
+    "downloadPdf": "Descargar PDF",
+    "downloadAll": "Descargar Todas las Entradas",
+    "ticketStatus": {
+      "valid": "Válida",
+      "used": "Usada",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada"
+    },
+    "ticketFor": "Entrada para",
+    "viewTicket": "Ver Entrada",
+    "backToWallet": "Volver a billetera",
+    "ticketNotFound": "Entrada no encontrada",
+    "previousTicket": "Entrada anterior",
+    "nextTicket": "Siguiente entrada",
+    "ticketCount": "Entrada {{current}} de {{total}}",
+    "orderTickets": "Entradas del Pedido",
+    "orderTicketsSubtitle": "Entradas de tu pedido",
+    "ticketsFromOrder": "Entradas del Pedido #{{orderId}}"
   },
   "ticketScanning": {
     "title": "Escanear Entradas",
@@ -624,6 +657,41 @@
       "activity": "Actividad",
       "engagement": "Participación",
       "demographics": "Demografía"
+    }
+  },
+  "templateDesigner": {
+    "title": "Diseñador de Plantillas",
+    "description": "Personalizar plantillas de correo electrónico y PDF",
+    "exportSuccess": "Configuración exportada",
+    "importSuccess": "Configuración importada",
+    "importError": "Archivo de configuración inválido",
+    "resetSuccess": "Restablecido a valores predeterminados",
+    "sections": {
+      "colors": "Colores",
+      "typography": "Tipografía",
+      "spacing": "Espaciado",
+      "content": "Contenido",
+      "visibility": "Visibilidad",
+      "pageSettings": "Configuración de Página"
+    },
+    "templates": {
+      "orderReceipt": "Recibo de Pedido",
+      "artistRegistration": "Registro de Artista",
+      "ticketPdf": "PDF de Boleto"
+    },
+    "labels": {
+      "template": "Plantilla",
+      "pageFormat": "Formato de Página",
+      "orientation": "Orientación",
+      "portrait": "Vertical",
+      "landscape": "Horizontal",
+      "qrSize": "Tamaño del Código QR (mm)",
+      "primary": "Primario (Acento)",
+      "secondary": "Secundario (Fondo)",
+      "text": "Texto",
+      "mutedText": "Texto Atenuado",
+      "border": "Borde",
+      "success": "Éxito"
     }
   }
 }

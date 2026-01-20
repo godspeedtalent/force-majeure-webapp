@@ -134,9 +134,9 @@ All colors MUST be HSL.
     /* Danger: Chili Red #D64933 */
     --fm-danger: 9 65% 52%;
 
-    /* Test Mode: Bright Purple #A78BDF */
-    --fm-purple: 268 50% 65%;
-    --fm-purple-rgb: 167 139 223; /* RGB equivalent for rgba usage */
+    /* Test Mode: Bright Purple #C4A8F0 - lightened for better contrast on black */
+    --fm-purple: 268 65% 80%;
+    --fm-purple-rgb: 196 168 240; /* RGB equivalent for rgba usage */
 
     /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;
@@ -232,9 +232,9 @@ All colors MUST be HSL.
     /* Danger: Chili Red #D64933 */
     --fm-danger: 9 65% 52%;
 
-    /* Test Mode: Bright Purple #A78BDF */
-    --fm-purple: 268 50% 65%;
-    --fm-purple-rgb: 167 139 223; /* RGB equivalent for rgba usage */
+    /* Test Mode: Bright Purple #C4A8F0 - lightened for better contrast on black */
+    --fm-purple: 268 65% 80%;
+    --fm-purple-rgb: 196 168 240; /* RGB equivalent for rgba usage */
 
     /* Legacy colors (deprecated - use above instead) */
     --fm-charcoal: 0 0% 13%;

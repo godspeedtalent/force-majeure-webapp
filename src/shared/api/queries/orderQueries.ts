@@ -7,6 +7,7 @@ import {
   CreateOrderItemData,
   OrderItem,
 } from '@/features/orders/services/orderService';
+import { getEventDataRepository } from '@/shared/repositories';
 
 /**
  * Order Queries
@@ -16,7 +17,8 @@ import {
  *
  * Usage:
  * ```ts
- * const { data: orders } = useOrdersByEventId(eventId);
+ * const { data: orders } = useEventOrders(eventId, eventStatus); // Recommended - uses repository
+ * const { data: orders } = useOrdersByEventId(eventId); // Production only
  * const { data: order } = useOrderById(orderId);
  * const cancelMutation = useCancelOrder();
  * ```
@@ -30,6 +32,9 @@ export const orderKeys = {
   all: ['orders'] as const,
   lists: () => [...orderKeys.all, 'list'] as const,
   byEvent: (eventId: string) => [...orderKeys.lists(), 'event', eventId] as const,
+  /** Query key for orders by event with status awareness (uses repository pattern) */
+  byEventWithStatus: (eventId: string, eventStatus?: string) =>
+    [...orderKeys.lists(), 'event', eventId, eventStatus ?? 'production'] as const,
   byUser: (userId: string) => [...orderKeys.lists(), 'user', userId] as const,
   details: () => [...orderKeys.all, 'detail'] as const,
   detail: (id: string) => [...orderKeys.details(), id] as const,
@@ -42,7 +47,31 @@ export const orderKeys = {
 // ============================================================================
 
 /**
+ * Fetch orders for an event using repository pattern
+ *
+ * This is the RECOMMENDED hook for fetching event orders. It automatically
+ * queries the correct table (orders or test_orders) based on event status.
+ *
+ * @param eventId - Event ID
+ * @param eventStatus - Event status (e.g., 'test', 'published', 'draft')
+ */
+export function useEventOrdersQuery(eventId: string | undefined, eventStatus?: string) {
+  return useQuery<Order[], Error>({
+    queryKey: orderKeys.byEventWithStatus(eventId || '', eventStatus),
+    queryFn: () => {
+      if (!eventId) throw new Error('Event ID is required');
+      const repository = getEventDataRepository(eventStatus);
+      return repository.getOrdersByEventId(eventId);
+    },
+    enabled: Boolean(eventId),
+  });
+}
+
+/**
  * Fetch orders for an event with profile and items
+ *
+ * NOTE: This queries production tables only. For test event support,
+ * use useEventOrdersQuery instead.
  *
  * @param eventId - Event ID
  */

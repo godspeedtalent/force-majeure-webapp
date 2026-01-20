@@ -32,8 +32,9 @@ export const EventOrderManagement = ({ eventId }: EventOrderManagementProps) => 
   const { t: tToast } = useTranslation('toasts');
   const navigate = useNavigate();
   const { hasAnyRole } = useUserPermissions();
-  const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId);
   const { data: event } = useEventById(eventId);
+  // Pass event status to hook so it queries test_orders for test events
+  const { orders, isLoading, cancelOrder, refundOrder } = useEventOrders(eventId, event?.status);
   const [selectedOrder, setSelectedOrder] = useState<EventOrder | null>(null);
   const [orderForAction, setOrderForAction] = useState<EventOrder | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);

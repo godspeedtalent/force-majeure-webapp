@@ -13,6 +13,8 @@ interface FmRsvpButtonProps
   eventId: string;
   /** Event title for toast messages */
   eventTitle?: string;
+  /** Event status - used to include test RSVPs for test events */
+  eventStatus?: string;
   /** Past event state - shows 'Past Event' text and disables button */
   isPastEvent?: boolean;
   /** Disable animations (respects prefers-reduced-motion) */
@@ -37,6 +39,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
     {
       eventId,
       eventTitle,
+      eventStatus,
       className,
       isPastEvent = false,
       disableAnimations = false,
@@ -48,7 +51,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
     const { t } = useTranslation('common');
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { hasRsvp, isFull, isLoading, toggleRsvp, isCheckingRsvp } = useEventRsvp(eventId, eventTitle);
+    const { hasRsvp, isFull, isLoading, toggleRsvp, isCheckingRsvp } = useEventRsvp(eventId, eventTitle, eventStatus);
 
     const [isHovered, setIsHovered] = useState(false);
     const [ripples, setRipples] = useState<Array<{ x: number; y: number; id: number }>>([]);

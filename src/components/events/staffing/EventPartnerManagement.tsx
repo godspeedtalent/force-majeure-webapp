@@ -8,6 +8,9 @@ import {
   GripVertical,
   Eye,
   EyeOff,
+  Star,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -41,6 +44,7 @@ export const EventPartnerManagement = ({
     addPartner,
     removePartner,
     togglePartnerVisibility,
+    updatePartnerImportance,
     isAdding,
   } = useEventPartners(eventId);
 
@@ -172,12 +176,20 @@ export const EventPartnerManagement = ({
                       </div>
                     )}
 
-                    <div>
+                    <div className='flex-1'>
                       <div className='flex items-center gap-2'>
                         <p className='font-medium'>{org?.name || t('partners.unknown')}</p>
                         {isHidden && (
                           <span className='text-xs text-muted-foreground bg-white/10 px-2 py-0.5'>
                             {t('partners.hiddenBadge')}
+                          </span>
+                        )}
+                        {partner.importance > 1 && (
+                          <span className='text-xs text-fm-gold bg-fm-gold/10 px-2 py-0.5 flex items-center gap-1'>
+                            <Star className='h-3 w-3' />
+                            {partner.importance === 3
+                              ? t('partners.importancePrimary')
+                              : t('partners.importanceFeatured')}
                           </span>
                         )}
                       </div>
@@ -190,7 +202,44 @@ export const EventPartnerManagement = ({
                   </div>
 
                   {/* Actions */}
-                  <div className='flex items-center gap-3'>
+                  <div className='flex items-center gap-2'>
+                    {/* Importance Controls */}
+                    <div className='flex items-center gap-1 mr-2 border-r border-white/10 pr-3'>
+                      <FmPortalTooltip content={t('partners.decreaseImportance')}>
+                        <FmCommonIconButton
+                          variant='secondary'
+                          icon={ChevronDown}
+                          size='sm'
+                          onClick={() =>
+                            updatePartnerImportance({
+                              partnerId: partner.id,
+                              importance: partner.importance - 1,
+                            })
+                          }
+                          disabled={partner.importance <= 1}
+                          aria-label={t('partners.decreaseImportance')}
+                        />
+                      </FmPortalTooltip>
+                      <span className='text-xs text-muted-foreground min-w-[20px] text-center'>
+                        {partner.importance}
+                      </span>
+                      <FmPortalTooltip content={t('partners.increaseImportance')}>
+                        <FmCommonIconButton
+                          variant='secondary'
+                          icon={ChevronUp}
+                          size='sm'
+                          onClick={() =>
+                            updatePartnerImportance({
+                              partnerId: partner.id,
+                              importance: partner.importance + 1,
+                            })
+                          }
+                          disabled={partner.importance >= 3}
+                          aria-label={t('partners.increaseImportance')}
+                        />
+                      </FmPortalTooltip>
+                    </div>
+
                     <FmPortalTooltip
                       content={isHidden ? t('partners.showPartner') : t('partners.hidePartner')}
                     >

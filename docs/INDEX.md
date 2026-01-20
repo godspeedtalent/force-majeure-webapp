@@ -173,4 +173,4 @@ docs/
 
 ---
 
-*Last updated: January 4, 2026*
+*Last updated: January 20, 2026*

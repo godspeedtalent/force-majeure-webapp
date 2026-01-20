@@ -28,7 +28,9 @@
     "adminOnly": "Solo administradores",
     "followOnInstagram": "Síguenos en Instagram",
     "accountSettings": "Configuración de cuenta",
-    "artistProfile": "Perfil de Artista"
+    "artistProfile": "Perfil de Artista",
+    "wallet": "Mi Billetera",
+    "orders": "Mis Pedidos"
   },
   "buttons": {
     "save": "Guardar",
@@ -1538,6 +1540,35 @@
     "updateFailed": "Error al actualizar rol del personal",
     "removeFailed": "Error al eliminar miembro del personal"
   },
+  "orgStaff": {
+    "title": "Personal de la Organización",
+    "listDescription": "Usuarios asignados a esta organización",
+    "addStaff": "Añadir Miembro del Personal",
+    "addStaffDescription": "Asignar un usuario para ayudar a gestionar esta organización",
+    "searchUser": "Buscar un usuario...",
+    "role": "Rol",
+    "roleStaff": "Personal",
+    "roleAdmin": "Administrador",
+    "staffDescription": "Puede ver la organización y escanear entradas en eventos",
+    "adminDescription": "Puede gestionar la configuración de la organización y otros miembros del personal",
+    "addToOrganization": "Añadir a la Organización",
+    "noStaff": "Sin personal asignado",
+    "noStaffHint": "Añadir usuarios para ayudar a gestionar esta organización",
+    "addedOn": "Añadido el {{date}}",
+    "clickToChangeRole": "Clic para cambiar rol",
+    "remove": "Eliminar",
+    "removeTitle": "Eliminar Personal",
+    "removeConfirm": "¿Eliminar este miembro del personal de la organización?",
+    "unknownUser": "Usuario Desconocido",
+    "unknown": "Desconocido",
+    "staffAdded": "Miembro del personal añadido a la organización",
+    "roleUpdated": "Rol del personal actualizado",
+    "removed": "Miembro del personal eliminado",
+    "alreadyAdded": "El usuario ya es miembro del personal",
+    "addFailed": "Error al añadir miembro del personal",
+    "updateFailed": "Error al actualizar rol del personal",
+    "removeFailed": "Error al eliminar miembro del personal"
+  },
   "partners": {
     "title": "Organizaciones Asociadas",
     "listDescription": "Organizaciones colaborando en este evento (patrocinadores, co-promotores, etc.)",
@@ -1572,7 +1603,13 @@
     "partnerHidden": "Socio oculto de la página del evento",
     "partnerVisible": "Socio visible en la página del evento",
     "visibilityFailed": "Error al actualizar la visibilidad del socio",
-    "hiddenBadge": "Oculto"
+    "hiddenBadge": "Oculto",
+    "importancePrimary": "Patrocinador Principal",
+    "importanceFeatured": "Destacado",
+    "increaseImportance": "Aumentar prominencia",
+    "decreaseImportance": "Disminuir prominencia",
+    "importanceUpdated": "Prominencia del socio actualizada",
+    "importanceFailed": "Error al actualizar la prominencia del socio"
   },
   "eventOverview": {
     "title": "Resumen del Evento",
@@ -1621,6 +1658,8 @@
     "testModeDisabled": "Modo de prueba deshabilitado",
     "hasOrdersWarning": "Este evento tiene {{count}} orden(es) y no puede convertirse en un evento de prueba.",
     "hasBeenPublishedWarning": "Este evento ha sido publicado y no puede convertirse en un evento de prueba.",
+    "canExitTestModeDescription": "No existen datos simulados. Puedes salir del modo de prueba y volver al estado de borrador.",
+    "purgeMockDataToExitTestMode": "Este evento tiene {{count}} orden(es) simulada(s). Elimina los datos de prueba a continuación para salir del modo de prueba.",
     "mockDataTools": "Herramientas de Datos Simulados",
     "mockDataToolsDescription": "Generar órdenes, boletos e invitados simulados para probar flujos de compra e informes.",
     "showSettings": "Configuración",
@@ -1670,7 +1709,22 @@
     "randomizeOrderTimesDescription": "Distribuir órdenes aleatoriamente dentro del rango de fechas para datos realistas de ventas en el tiempo",
     "ticketGroupCount": "Grupos de Boletos a Generar",
     "ticketGroupCountDescription": "Número de nuevos grupos de boletos a crear (cada uno con al menos un nivel). Establecer en 0 para omitir.",
-    "existingGroups": "Grupos existentes"
+    "existingGroups": "Grupos existentes",
+    "tabs": {
+      "currentState": "Estado Actual",
+      "importMore": "Importar Más"
+    },
+    "summary": {
+      "title": "Resumen de Datos de Prueba",
+      "orders": "Órdenes",
+      "tickets": "Boletos",
+      "ticketGroups": "Grupos de Boletos",
+      "rsvps": "Confirmaciones",
+      "interests": "Intereses",
+      "noMockData": "No se han generado datos de prueba todavía.",
+      "generatedAt": "Última generación",
+      "users": "Usuarios de Prueba"
+    }
   },
   "mockProgress": {
     "overallProgress": "Progreso General",
@@ -2497,7 +2551,10 @@
       "title": "¡Pago Exitoso!",
       "description": "Tus entradas han sido compradas exitosamente",
       "emailNotice": "Recibirás un correo de confirmación con tus entradas en breve.",
-      "viewTickets": "Ver Mis Entradas"
+      "viewTickets": "Ver Mis Entradas",
+      "sendingEmail": "Enviando confirmación...",
+      "emailSent": "¡Correo de confirmación enviado!",
+      "emailFailed": "Entrega de correo retrasada, revisa tu billetera"
     },
     "cancelled": {
       "title": "Pago Cancelado",
@@ -3149,7 +3206,8 @@
     "pending": "Pendiente",
     "completed": "Completado",
     "cancelled": "Cancelado",
-    "refunded": "Reembolsado"
+    "refunded": "Reembolsado",
+    "paid": "Pagado"
   },
   "orderManagement": {
     "title": "Gestión de Pedidos",

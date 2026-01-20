@@ -5,15 +5,15 @@ import { rsvpService, RsvpStats } from '../services/rsvpService';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 
-export function useEventRsvp(eventId: string, eventTitle?: string) {
+export function useEventRsvp(eventId: string, eventTitle?: string, eventStatus?: string) {
   const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Query: Get RSVP stats (count, capacity, isFull)
+  // Query: Get RSVP stats (count, capacity, isFull) - includes test RSVPs for test events
   const { data: rsvpStats = { count: 0, capacity: null, isFull: false } } = useQuery<RsvpStats>({
-    queryKey: ['event-rsvp-stats', eventId],
-    queryFn: () => rsvpService.getRsvpStats(eventId),
+    queryKey: ['event-rsvp-stats', eventId, eventStatus],
+    queryFn: () => rsvpService.getRsvpStats(eventId, eventStatus),
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, User as UserIcon, Building2, Scan, Mail, Home, Settings, Music } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Scan, Mail, Home, Settings, Music, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -89,6 +89,11 @@ export function UserMenuDropdown({ onOpenChange }: UserMenuDropdownProps) {
           icon: UserIcon,
           onClick: () => navigate('/profile'),
         },
+        {
+          label: t('nav.wallet'),
+          icon: Wallet,
+          onClick: () => navigate('/wallet'),
+        },
         // Artist option - only shown for users with artist role and linked artist
         ...(isArtist && linkedArtist
           ? [
@@ -176,6 +181,11 @@ export function UserMenuDropdown({ onOpenChange }: UserMenuDropdownProps) {
     // Profile section (no header) - Profile link is in the header user info area
     {
       items: [
+        {
+          label: t('nav.wallet'),
+          icon: Wallet,
+          onClick: () => handleNavigate('/wallet'),
+        },
         // Artist option - only shown for users with artist role and linked artist
         ...(isArtist && linkedArtist
           ? [

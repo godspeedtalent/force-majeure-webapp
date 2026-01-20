@@ -118,13 +118,26 @@ export interface MockOrderGenerationResult {
  */
 export interface MockOrderDeletionResult {
   success: boolean;
+  /** Legacy: Orders deleted from production orders table (backward compatibility) */
   deletedOrders: number;
+  /** Legacy: Tickets deleted from production tickets table (backward compatibility) */
   deletedTickets: number;
+  /** Legacy: Order items deleted from production order_items table (backward compatibility) */
   deletedOrderItems: number;
+  /** Guests deleted from guests table */
   deletedGuests: number;
+  /** RSVPs deleted from test_event_rsvps table */
   deletedRsvps: number;
+  /** Interests deleted from test_event_interests table */
   deletedInterests: number;
+  /** Test profiles deleted from test_profiles table */
   deletedTestProfiles: number;
+  /** Test orders deleted from test_orders table */
+  deletedTestOrders: number;
+  /** Test order items deleted from test_order_items table */
+  deletedTestOrderItems: number;
+  /** Test tickets deleted from test_tickets table */
+  deletedTestTickets: number;
   error?: string;
 }
 

@@ -76,7 +76,7 @@ export const EventDetailsContent = ({
     callTimeLineup,
   } = useEventDetailsData(event);
 
-  const { attendeePreview, totalGoingCount } = useAttendeeList(event.id);
+  const { attendeePreview, totalGoingCount } = useAttendeeList(event.id, event.status);
   const {
     isShareModalOpen,
     handleOpenShareModal,
@@ -87,14 +87,14 @@ export const EventDetailsContent = ({
     eventTitle: displayTitle,
   });
   
-  // Event interest hook
+  // Event interest hook (includes test interests for test events)
   const {
     interestCount,
     isInterested,
     toggleInterest,
     isLoading: isInterestLoading,
     hasTickets,
-  } = useEventInterest(event.id, displayTitle);
+  } = useEventInterest(event.id, displayTitle, event.status);
   
   const [selectedArtist, setSelectedArtist] =
     useState<FmArtistDetailsModalProps['artist']>(null);
@@ -439,6 +439,7 @@ export const EventDetailsContent = ({
                 <FmRsvpButton
                   eventId={event.id}
                   eventTitle={displayTitle}
+                  eventStatus={event.status}
                   isPastEvent={isPastEvent}
                 />
               ) : (
@@ -457,6 +458,7 @@ export const EventDetailsContent = ({
         open={isAttendeeModalOpen}
         onOpenChange={setIsAttendeeModalOpen}
         eventId={event.id}
+        eventStatus={event.status}
       />
 
       <FmArtistDetailsModal

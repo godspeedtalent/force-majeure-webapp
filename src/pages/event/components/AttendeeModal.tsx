@@ -16,6 +16,7 @@ interface AttendeeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   eventId: string;
+  eventStatus?: string;
 }
 
 interface AttendeeAvatarProps {
@@ -172,6 +173,7 @@ export function AttendeeModal({
   open,
   onOpenChange,
   eventId,
+  eventStatus,
 }: AttendeeModalProps) {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
@@ -187,7 +189,7 @@ export function AttendeeModal({
     interestedCount,
     totalGoingCount,
     isLoading,
-  } = useAttendeeList(eventId);
+  } = useAttendeeList(eventId, eventStatus);
 
   const handleAttendeeClick = (attendee: Attendee) => {
     // Don't navigate for guests/private users

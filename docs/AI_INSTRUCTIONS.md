@@ -8,7 +8,7 @@ This document defines TypeScript standards that apply across all AI assistants (
 
 ## TypeScript Strict Mode
 
-**All packages use TypeScript strict mode with these settings:**
+**This project uses TypeScript strict mode with these settings:**
 
 ```json
 {
@@ -82,12 +82,13 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner'; // web only
 
-// 3. Shared package imports
-import { supabase, useEvents, Event } from '@force-majeure/shared';
-import { logger } from '@force-majeure/shared';
+// 3. Internal imports (with @/ alias)
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/shared/services/logger';
+import type { Event } from '@/shared/types';
 
-// 4. Internal package imports (with @ alias)
-import { Button } from '@/components/ui/Button';
+// 4. Component imports
+import { Button } from '@/components/common/ui/Button';
 import { Layout } from '@/components/layout/Layout';
 
 // 5. Relative imports (same directory)
@@ -101,7 +102,7 @@ import type { EventCardProps } from './types';
 
 **Use the right convention for the context:**
 
-### Database Fields (Shared Package)
+### Database Fields
 
 ```typescript
 // ✅ Use null for database fields (Supabase/PostgreSQL convention)
@@ -112,7 +113,7 @@ interface Event {
 }
 ```
 
-### React Props (Web/Mobile)
+### React Props
 
 ```typescript
 // ✅ Use undefined for optional props (TypeScript/React convention)
@@ -163,40 +164,30 @@ logger.error('Error loading events', {
 
 ## Type Definitions
 
-### Centralized Types (Shared Package)
+### Centralized Types
 
-**All domain types live in `packages/shared/src/types/features/`:**
+**Domain types are organized by feature in `src/`:**
 
 ```
-packages/shared/src/types/features/
-├── events.ts        # Event, TicketTier, Venue, Artist
-├── orders.ts        # Order, OrderItem, Payment
-├── users.ts         # User, Profile, UserRole
-└── products.ts      # Product, ProductVariant
+src/
+├── shared/types/           # Shared type definitions
+├── features/events/types/  # Event, TicketTier types
+├── features/orders/types/  # Order, OrderItem types
+├── features/auth/types/    # User, Profile types
+└── integrations/supabase/types.ts  # Auto-generated DB types
 ```
 
-### Platform-Specific Types
+### Component Types
 
-**Web-specific types in `packages/web/src/`:**
+**Component props are defined alongside components:**
 
 ```typescript
-// packages/web/src/types/components.ts
-export interface FmButtonProps {
-  variant: 'default' | 'outline' | 'destructive';
+// src/components/common/ui/FmCommonButton.tsx
+export interface FmCommonButtonProps {
+  variant: 'default' | 'outline' | 'destructive' | 'gold';
   size: 'sm' | 'md' | 'lg';
   // ...
 }
-```
-
-**Mobile-specific types in `packages/mobile/src/`:**
-
-```typescript
-// packages/mobile/src/types/navigation.ts
-export type RootStackParamList = {
-  Home: undefined;
-  EventDetails: { eventId: string };
-  // ...
-};
 ```
 
 ---
@@ -283,15 +274,15 @@ async function fetchEvent(id: string): Promise<Event> {
 
 ---
 
-## React Query Patterns (Shared Package)
+## React Query Patterns
 
-**Query hooks in `packages/shared/src/api/queries/`:**
+**Query hooks are defined in feature directories or shared hooks:**
 
 ```typescript
-// packages/shared/src/api/queries/eventQueries.ts
+// src/shared/hooks/useEvents.ts or src/features/events/hooks/useEvents.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../supabase/client';
-import type { Event } from '../../types/features/events';
+import { supabase } from '@/integrations/supabase/client';
+import type { Event } from '@/shared/types';
 
 export const eventKeys = {
   all: ['events'] as const,
@@ -325,16 +316,16 @@ export function useEvents() {
 
 ```bash
 # Apply migrations
-pnpm supabase:db:reset
+npm run supabase:db:reset
 
-# Regenerate types (outputs to packages/shared/src/api/supabase/types.ts)
-pnpm supabase:gen-types
+# Regenerate types (outputs to src/integrations/supabase/types.ts)
+npm run supabase:gen-types
 ```
 
 **Use generated types:**
 
 ```typescript
-import type { Database } from '@force-majeure/shared/api/supabase/types';
+import type { Database } from '@/integrations/supabase/types';
 
 type Event = Database['public']['Tables']['events']['Row'];
 type EventInsert = Database['public']['Tables']['events']['Insert'];
@@ -381,14 +372,16 @@ const title = event.title.toUpperCase();
 const title = event.title?.toUpperCase() ?? 'Untitled';
 ```
 
-### ❌ Importing from Wrong Package
+### ❌ Importing from Wrong Location
 
 ```typescript
-// Wrong - web importing from mobile
-import { Screen } from '@force-majeure/mobile';
+// Wrong - importing from non-existent paths
+import { Event } from '@/types/Event';
+import { supabase } from 'supabase';
 
-// Correct - use shared for cross-platform code
-import { Event } from '@force-majeure/shared';
+// Correct - use established import paths
+import type { Event } from '@/shared/types';
+import { supabase } from '@/integrations/supabase/client';
 ```
 
 ### ❌ Using any
@@ -430,7 +423,7 @@ function MyComponent() {
 
 // Correct - use React Query hook
 function MyComponent() {
-  const { data } = useEvents(); // Hook defined in shared/api/queries/
+  const { data } = useEvents(); // Hook defined in shared/hooks/ or features/*/hooks/
 }
 ```
 
@@ -488,7 +481,7 @@ const { data: events, isLoading } = useQuery({
 
 ## Summary Checklist
 
-- [ ] All packages use strict TypeScript mode
+- [ ] Project uses strict TypeScript mode
 - [ ] No `any` types (use `unknown` if truly unknown)
 - [ ] Explicit return types for exported functions
 - [ ] Null/undefined handled explicitly with optional chaining (`?.`) and nullish coalescing (`??`)
@@ -497,11 +490,123 @@ const { data: events, isLoading } = useQuery({
 - [ ] Imports follow standard order (React → third-party → shared → internal → relative)
 - [ ] Database fields use `null`, React props use `undefined`
 - [ ] Structured logging with context objects
-- [ ] Centralized types in shared package
-- [ ] Platform boundaries respected (no cross-imports between web/mobile)
-- [ ] React Query hooks in shared package `api/queries/`
+- [ ] Types centralized in `src/shared/types/` or feature-specific type files
+- [ ] React Query hooks in `src/shared/hooks/` or `src/features/*/hooks/`
 - [ ] Errors handled explicitly with try-catch or error checking
 - [ ] Prefer async/await over promise chains
+
+---
+
+## Database Migration Best Practices
+
+**When creating Supabase migrations, follow these patterns to avoid deployment errors:**
+
+### Always Use DROP Before CREATE for Functions with Changed Signatures
+
+```sql
+-- ❌ Wrong - will fail if function exists with different return type
+CREATE OR REPLACE FUNCTION my_function(p_id UUID)
+RETURNS TABLE (col1 INTEGER, col2 INTEGER, col3 INTEGER)  -- New column added
+...
+
+-- ✅ Correct - drop first when changing signature
+DROP FUNCTION IF EXISTS my_function(UUID);
+
+CREATE FUNCTION my_function(p_id UUID)
+RETURNS TABLE (col1 INTEGER, col2 INTEGER, col3 INTEGER)
+...
+```
+
+**Why?** PostgreSQL's `CREATE OR REPLACE` cannot change:
+- Return type (including adding/removing columns in TABLE returns)
+- Parameter types or count
+- Function volatility (STABLE, VOLATILE, IMMUTABLE)
+
+### Use IF EXISTS / IF NOT EXISTS Defensively
+
+```sql
+-- Tables
+CREATE TABLE IF NOT EXISTS my_table (...);
+DROP TABLE IF EXISTS old_table;
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_my_index ON my_table(column);
+DROP INDEX IF EXISTS old_index;
+
+-- Columns
+ALTER TABLE my_table ADD COLUMN IF NOT EXISTS new_column TEXT;
+ALTER TABLE my_table DROP COLUMN IF EXISTS old_column;
+
+-- Constraints
+ALTER TABLE my_table DROP CONSTRAINT IF EXISTS old_constraint;
+-- Note: ADD CONSTRAINT doesn't have IF NOT EXISTS, wrap in DO block:
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'my_constraint'
+  ) THEN
+    ALTER TABLE my_table ADD CONSTRAINT my_constraint CHECK (...);
+  END IF;
+END $$;
+
+-- Functions (when signature is NOT changing)
+CREATE OR REPLACE FUNCTION my_function(...) ...;
+
+-- Functions (when signature IS changing)
+DROP FUNCTION IF EXISTS my_function(param_types);
+CREATE FUNCTION my_function(...) ...;
+
+-- Policies
+DROP POLICY IF EXISTS "Old policy name" ON my_table;
+CREATE POLICY "New policy name" ON my_table ...;
+
+-- Triggers
+DROP TRIGGER IF EXISTS old_trigger ON my_table;
+CREATE TRIGGER new_trigger ...;
+```
+
+### Migration Naming Convention
+
+```
+YYYYMMDDHHMMSS_descriptive_name.sql
+
+Examples:
+20260120000000_add_test_profiles_table.sql
+20260120100000_fix_rls_policies_for_orders.sql
+20260120200000_add_stripe_webhook_function.sql
+```
+
+### RLS and Grants Checklist
+
+When creating new tables, **ALWAYS** include:
+
+```sql
+-- 1. Create the table
+CREATE TABLE IF NOT EXISTS my_table (...);
+
+-- 2. Enable RLS
+ALTER TABLE my_table ENABLE ROW LEVEL SECURITY;
+
+-- 3. Create appropriate policies
+CREATE POLICY "policy_name" ON my_table FOR ALL TO authenticated
+  USING (...) WITH CHECK (...);
+
+-- 4. Grant permissions
+GRANT SELECT, INSERT, UPDATE, DELETE ON my_table TO authenticated;
+-- And/or for anonymous access:
+GRANT SELECT ON my_table TO anon;
+```
+
+### Common Migration Pitfalls
+
+| Issue | Solution |
+|-------|----------|
+| `cannot change return type of existing function` | Use `DROP FUNCTION IF EXISTS` before `CREATE FUNCTION` |
+| `relation already exists` | Use `CREATE TABLE IF NOT EXISTS` |
+| `column already exists` | Use `ADD COLUMN IF NOT EXISTS` |
+| `policy already exists` | Use `DROP POLICY IF EXISTS` before `CREATE POLICY` |
+| `constraint already exists` | Wrap in `DO $$ BEGIN ... END $$` with existence check |
+| RLS blocking all access | Ensure both RLS policies AND grants are in place |
 
 ---
 

@@ -383,7 +383,40 @@
     "orderPlaced": "Order placed",
     "at": "at",
     "event": "Event",
-    "ticket": "Ticket"
+    "ticket": "Ticket",
+    "viewTickets": "View Tickets"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "subtitle": "Your tickets and upcoming shows",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "noUpcoming": "No upcoming shows",
+    "noUpcomingDescription": "Browse events to find your next show",
+    "noPast": "No past shows",
+    "noPastDescription": "Your past events will appear here",
+    "browseEvents": "Browse Events",
+    "scanAtEntry": "Show this QR code at venue entry",
+    "downloadPdf": "Download PDF",
+    "downloadAll": "Download All Tickets",
+    "ticketStatus": {
+      "valid": "Valid",
+      "used": "Used",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "ticketFor": "Ticket for",
+    "viewTicket": "View Ticket",
+    "backToWallet": "Back to wallet",
+    "ticketNotFound": "Ticket not found",
+    "previousTicket": "Previous ticket",
+    "nextTicket": "Next ticket",
+    "ticketCount": "Ticket {{current}} of {{total}}",
+    "orderTickets": "Order Tickets",
+    "orderTicketsSubtitle": "Tickets from your order",
+    "ticketsFromOrder": "Tickets from Order #{{orderId}}"
   },
   "ticketScanning": {
     "title": "Scan Tickets",
@@ -624,6 +657,41 @@
       "activity": "Activity",
       "engagement": "Engagement",
       "demographics": "Demographics"
+    }
+  },
+  "templateDesigner": {
+    "title": "Template Designer",
+    "description": "Customize email and PDF templates",
+    "exportSuccess": "Configuration exported",
+    "importSuccess": "Configuration imported",
+    "importError": "Invalid configuration file",
+    "resetSuccess": "Reset to defaults",
+    "sections": {
+      "colors": "Colors",
+      "typography": "Typography",
+      "spacing": "Spacing",
+      "content": "Content",
+      "visibility": "Visibility",
+      "pageSettings": "Page Settings"
+    },
+    "templates": {
+      "orderReceipt": "Order Receipt",
+      "artistRegistration": "Artist Registration",
+      "ticketPdf": "Ticket PDF"
+    },
+    "labels": {
+      "template": "Template",
+      "pageFormat": "Page Format",
+      "orientation": "Orientation",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "qrSize": "QR Code Size (mm)",
+      "primary": "Primary (Accent)",
+      "secondary": "Secondary (Background)",
+      "text": "Text",
+      "mutedText": "Muted Text",
+      "border": "Border",
+      "success": "Success"
     }
   }
 }

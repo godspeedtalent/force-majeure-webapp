@@ -1,7 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
+import { getEventDataRepository } from '@/shared/repositories';
+import type { ProfileData } from '@/shared/repositories';
 
 export interface Attendee {
   id: string;
@@ -11,14 +14,6 @@ export interface Attendee {
   avatarUrl?: string | null;
   isFriend: boolean;
   type: 'ticket_holder' | 'rsvp' | 'interested' | 'guest';
-}
-
-interface ProfileData {
-  id: string;
-  display_name: string | null;
-  full_name: string | null;
-  avatar_url: string | null;
-  guest_list_visible: boolean | null;
 }
 
 interface GuestData {
@@ -87,179 +82,52 @@ function guestToAttendee(guest: GuestData): Attendee {
  * useAttendeeList - Fetches real attendee data for an event
  *
  * Returns ticket holders, RSVPs, and interested users with friend indicators.
+ * Uses the repository pattern to automatically query the correct tables
+ * (production or test) based on event status.
+ *
+ * @param eventId - Event ID
+ * @param eventStatus - Event status (e.g., 'test', 'published', 'draft')
  */
-export function useAttendeeList(eventId: string) {
+export function useAttendeeList(eventId: string, eventStatus?: string) {
   const { user } = useAuth();
 
-  // Fetch ticket holders (completed orders)
+  // Get the appropriate repository based on event status
+  // This is the SINGLE decision point - all queries go through the same interface
+  const repository = useMemo(
+    () => getEventDataRepository(eventStatus),
+    [eventStatus]
+  );
+
+  // Fetch ticket holders (from orders)
   const { data: ticketHolders = [], isLoading: loadingTickets } = useQuery({
-    queryKey: ['event-attendees-tickets', eventId],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select(`
-            user_id,
-            profiles!orders_user_id_fkey (
-              id,
-              display_name,
-              full_name,
-              avatar_url,
-              guest_list_visible
-            )
-          `)
-          .eq('event_id', eventId)
-          .eq('status', 'completed')
-          .not('user_id', 'is', null);
-
-        if (error) throw error;
-
-        // Deduplicate by user_id (a user might have multiple orders)
-        const seen = new Set<string>();
-        return (data || [])
-          .filter(order => {
-            if (!order.user_id || seen.has(order.user_id)) return false;
-            seen.add(order.user_id);
-            return true;
-          })
-          .map(order => ({
-            userId: order.user_id as string,
-            profile: order.profiles as unknown as ProfileData | null,
-          }));
-      } catch (error) {
-        logger.error('Failed to fetch ticket holders', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useAttendeeList.ticketHolders',
-          event_id: eventId,
-        });
-        return [];
-      }
-    },
+    queryKey: ['event-attendees-tickets', eventId, eventStatus],
+    queryFn: () => repository.getTicketHolders(eventId),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   // Fetch RSVPs (for free events)
   const { data: rsvpHolders = [], isLoading: loadingRsvps } = useQuery({
-    queryKey: ['event-attendees-rsvp', eventId],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('event_rsvps')
-          .select(`
-            user_id,
-            profiles!event_rsvps_user_id_fkey (
-              id,
-              display_name,
-              full_name,
-              avatar_url,
-              guest_list_visible
-            )
-          `)
-          .eq('event_id', eventId)
-          .eq('status', 'confirmed');
-
-        if (error) throw error;
-
-        return (data || []).map((rsvp) => ({
-          userId: rsvp.user_id,
-          profile: rsvp.profiles as unknown as ProfileData | null,
-        }));
-      } catch (error) {
-        // Table might not exist yet - silently fail
-        logger.debug('Failed to fetch RSVPs (table may not exist)', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useAttendeeList.rsvpHolders',
-          event_id: eventId,
-        });
-        return [];
-      }
-    },
+    queryKey: ['event-attendees-rsvp', eventId, eventStatus],
+    queryFn: () => repository.getRsvpHolders(eventId),
     staleTime: 1000 * 60 * 5,
   });
 
   // Fetch interested users
   const { data: interestedHolders = [], isLoading: loadingInterested } = useQuery({
-    queryKey: ['event-attendees-interested', eventId],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('user_event_interests')
-          .select(`
-            user_id,
-            profiles!user_event_interests_user_id_fkey (
-              id,
-              display_name,
-              full_name,
-              avatar_url,
-              guest_list_visible
-            )
-          `)
-          .eq('event_id', eventId);
-
-        if (error) throw error;
-
-        return (data || []).map((interest) => ({
-          userId: interest.user_id,
-          profile: interest.profiles as unknown as ProfileData | null,
-        }));
-      } catch (error) {
-        logger.error('Failed to fetch interested users', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useAttendeeList.interestedHolders',
-          event_id: eventId,
-        });
-        return [];
-      }
-    },
+    queryKey: ['event-attendees-interested', eventId, eventStatus],
+    queryFn: () => repository.getInterestedUsers(eventId),
     staleTime: 1000 * 60 * 5,
   });
 
-  // Fetch guest ticket holders (completed orders with guest_id)
+  // Fetch guest ticket holders (anonymous checkouts)
   const { data: guestHolders = [], isLoading: loadingGuests } = useQuery({
-    queryKey: ['event-attendees-guests', eventId],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('orders')
-          .select(`
-            guest_id,
-            guests!orders_guest_id_fkey (
-              id,
-              full_name,
-              email
-            )
-          `)
-          .eq('event_id', eventId)
-          .eq('status', 'completed')
-          .not('guest_id', 'is', null);
-
-        if (error) throw error;
-
-        // Deduplicate by guest_id (a guest might have multiple orders)
-        const seen = new Set<string>();
-        return (data || [])
-          .filter(order => {
-            if (!order.guest_id || seen.has(order.guest_id)) return false;
-            seen.add(order.guest_id);
-            return true;
-          })
-          .map(order => ({
-            guest: order.guests as unknown as GuestData | null,
-          }))
-          .filter(holder => holder.guest !== null);
-      } catch (error) {
-        logger.error('Failed to fetch guest ticket holders', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useAttendeeList.guestHolders',
-          event_id: eventId,
-        });
-        return [];
-      }
-    },
+    queryKey: ['event-attendees-guests', eventId, eventStatus],
+    queryFn: () => repository.getGuestTicketHolders(eventId),
     staleTime: 1000 * 60 * 5,
   });
 
   // Fetch user's friends (rave family connections)
+  // This always queries production tables - friends are real users only
   const { data: friendIds = [] } = useQuery({
     queryKey: ['user-friends', user?.id],
     queryFn: async () => {
@@ -288,6 +156,12 @@ export function useAttendeeList(eventId: string) {
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
+
+  // ============================================================================
+  // AGGREGATE ATTENDEES
+  // This logic is IDENTICAL for test and production - the repository handles
+  // the data source differences
+  // ============================================================================
 
   // Combine ticket holders and RSVPs into "going" attendees
   const goingAttendees: Attendee[] = [];

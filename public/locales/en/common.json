@@ -28,7 +28,9 @@
     "adminOnly": "Admin only",
     "followOnInstagram": "Follow us on Instagram",
     "accountSettings": "Account Settings",
-    "artistProfile": "Artist Profile"
+    "artistProfile": "Artist Profile",
+    "wallet": "My Wallet",
+    "orders": "My Orders"
   },
   "buttons": {
     "save": "Save",
@@ -1539,6 +1541,35 @@
     "updateFailed": "Failed to update staff role",
     "removeFailed": "Failed to remove staff member"
   },
+  "orgStaff": {
+    "title": "Organization Staff",
+    "listDescription": "Users assigned to this organization",
+    "addStaff": "Add Staff Member",
+    "addStaffDescription": "Assign a user to help manage this organization",
+    "searchUser": "Search for a user...",
+    "role": "Role",
+    "roleStaff": "Staff",
+    "roleAdmin": "Admin",
+    "staffDescription": "Can view organization and scan tickets at events",
+    "adminDescription": "Can manage organization settings and other staff members",
+    "addToOrganization": "Add to Organization",
+    "noStaff": "No staff assigned",
+    "noStaffHint": "Add users to help manage this organization",
+    "addedOn": "Added {{date}}",
+    "clickToChangeRole": "Click to change role",
+    "remove": "Remove",
+    "removeTitle": "Remove Staff",
+    "removeConfirm": "Remove this staff member from the organization?",
+    "unknownUser": "Unknown User",
+    "unknown": "Unknown",
+    "staffAdded": "Staff member added to organization",
+    "roleUpdated": "Staff role updated",
+    "removed": "Staff member removed",
+    "alreadyAdded": "User is already a staff member",
+    "addFailed": "Failed to add staff member",
+    "updateFailed": "Failed to update staff role",
+    "removeFailed": "Failed to remove staff member"
+  },
   "partners": {
     "title": "Partner Organizations",
     "listDescription": "Organizations collaborating on this event (sponsors, co-promoters, etc.)",
@@ -1573,7 +1604,13 @@
     "partnerHidden": "Partner hidden from event page",
     "partnerVisible": "Partner visible on event page",
     "visibilityFailed": "Failed to update partner visibility",
-    "hiddenBadge": "Hidden"
+    "hiddenBadge": "Hidden",
+    "importancePrimary": "Primary Sponsor",
+    "importanceFeatured": "Featured",
+    "increaseImportance": "Increase prominence",
+    "decreaseImportance": "Decrease prominence",
+    "importanceUpdated": "Partner prominence updated",
+    "importanceFailed": "Failed to update partner prominence"
   },
   "eventOverview": {
     "title": "Event Overview",
@@ -1622,6 +1659,8 @@
     "testModeDisabled": "Test mode disabled",
     "hasOrdersWarning": "This event has {{count}} order(s) and cannot be converted to a test event.",
     "hasBeenPublishedWarning": "This event has been published and cannot be converted to a test event.",
+    "canExitTestModeDescription": "No mock data exists. You can safely exit test mode and return to draft status.",
+    "purgeMockDataToExitTestMode": "This event has {{count}} mock order(s). Purge the test data below to exit test mode.",
     "mockDataTools": "Mock Data Tools",
     "mockDataToolsDescription": "Generate mock orders, tickets, and guests for testing checkout flows and reports.",
     "showSettings": "Settings",
@@ -1671,7 +1710,22 @@
     "randomizeOrderTimesDescription": "Distribute orders randomly within the date range for realistic sales-over-time data",
     "ticketGroupCount": "Ticket Groups to Generate",
     "ticketGroupCountDescription": "Number of new ticket groups to create (each with at least one tier). Set to 0 to skip.",
-    "existingGroups": "Existing groups"
+    "existingGroups": "Existing groups",
+    "tabs": {
+      "currentState": "Current State",
+      "importMore": "Import More"
+    },
+    "summary": {
+      "title": "Mock Data Summary",
+      "orders": "Orders",
+      "tickets": "Tickets",
+      "ticketGroups": "Ticket Groups",
+      "rsvps": "RSVPs",
+      "interests": "Interests",
+      "noMockData": "No mock data has been generated yet.",
+      "generatedAt": "Last generated",
+      "users": "Test Users"
+    }
   },
   "mockProgress": {
     "overallProgress": "Overall Progress",
@@ -2498,7 +2552,10 @@
       "title": "Payment Successful!",
       "description": "Your tickets have been purchased successfully",
       "emailNotice": "You'll receive a confirmation email with your tickets shortly.",
-      "viewTickets": "View My Tickets"
+      "viewTickets": "View My Tickets",
+      "sendingEmail": "Sending ticket confirmation...",
+      "emailSent": "Confirmation email sent!",
+      "emailFailed": "Email delivery delayed, check your wallet for tickets"
     },
     "cancelled": {
       "title": "Checkout Cancelled",
@@ -3159,7 +3216,8 @@
     "pending": "Pending",
     "completed": "Completed",
     "cancelled": "Cancelled",
-    "refunded": "Refunded"
+    "refunded": "Refunded",
+    "paid": "Paid"
   },
   "orderManagement": {
     "title": "Order Management",

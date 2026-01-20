@@ -62,6 +62,54 @@ export const EventPartners = ({
     return null;
   }
 
+  // Helper to get grid span class based on importance
+  const getGridSpanClass = (importance: number) => {
+    switch (importance) {
+      case 3:
+        return 'col-span-2 sm:col-span-3';
+      case 2:
+        return 'col-span-2';
+      default:
+        return 'col-span-1';
+    }
+  };
+
+  // Helper to get image size based on importance
+  const getImageSize = (importance: number) => {
+    switch (importance) {
+      case 3:
+        return 'w-20 h-20';
+      case 2:
+        return 'w-16 h-16';
+      default:
+        return 'w-12 h-12';
+    }
+  };
+
+  // Helper to get icon size based on importance
+  const getIconSize = (importance: number) => {
+    switch (importance) {
+      case 3:
+        return 'h-10 w-10';
+      case 2:
+        return 'h-8 w-8';
+      default:
+        return 'h-6 w-6';
+    }
+  };
+
+  // Helper to get text size based on importance
+  const getTextSize = (importance: number) => {
+    switch (importance) {
+      case 3:
+        return 'text-base font-medium';
+      case 2:
+        return 'text-sm';
+      default:
+        return 'text-xs';
+    }
+  };
+
   return (
     <>
       <FmCommonCollapsibleSection
@@ -70,40 +118,55 @@ export const EventPartners = ({
         className={cn('lg:col-span-2', className)}
       >
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'>
-          {partners.map(partner => (
-            <button
-              key={partner.id}
-              type='button'
-              onClick={() => handleOrganizationClick(partner.organization)}
-              className={cn(
-                'flex flex-col items-center gap-2 p-3',
-                'border border-white/10 bg-white/5',
-                'hover:bg-white/10 hover:border-fm-gold/30',
-                'transition-all duration-200 cursor-pointer',
-                'group'
-              )}
-            >
-              {/* Profile picture */}
-              <div className='w-12 h-12 flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors'>
-                {partner.organization.profile_picture ? (
-                  <img
-                    src={partner.organization.profile_picture}
-                    alt={partner.organization.name}
-                    className='w-full h-full object-cover'
-                  />
-                ) : (
-                  <div className='w-full h-full flex items-center justify-center'>
-                    <Building2 className='h-6 w-6 text-white/30' />
-                  </div>
+          {partners.map(partner => {
+            const importance = partner.importance ?? 1;
+            return (
+              <button
+                key={partner.id}
+                type='button'
+                onClick={() => handleOrganizationClick(partner.organization)}
+                className={cn(
+                  'flex flex-col items-center gap-2 p-3',
+                  'border border-white/10 bg-white/5',
+                  'hover:bg-white/10 hover:border-fm-gold/30',
+                  'transition-all duration-200 cursor-pointer',
+                  'group',
+                  getGridSpanClass(importance),
+                  importance > 1 && 'border-fm-gold/20 bg-fm-gold/5'
                 )}
-              </div>
+              >
+                {/* Profile picture */}
+                <div
+                  className={cn(
+                    'flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors',
+                    getImageSize(importance)
+                  )}
+                >
+                  {partner.organization.profile_picture ? (
+                    <img
+                      src={partner.organization.profile_picture}
+                      alt={partner.organization.name}
+                      className='w-full h-full object-cover'
+                    />
+                  ) : (
+                    <div className='w-full h-full flex items-center justify-center'>
+                      <Building2 className={cn('text-white/30', getIconSize(importance))} />
+                    </div>
+                  )}
+                </div>
 
-              {/* Organization name */}
-              <span className='text-xs text-white/80 text-center line-clamp-2 group-hover:text-fm-gold transition-colors'>
-                {partner.organization.name}
-              </span>
-            </button>
-          ))}
+                {/* Organization name */}
+                <span
+                  className={cn(
+                    'text-white/80 text-center line-clamp-2 group-hover:text-fm-gold transition-colors',
+                    getTextSize(importance)
+                  )}
+                >
+                  {partner.organization.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </FmCommonCollapsibleSection>
 

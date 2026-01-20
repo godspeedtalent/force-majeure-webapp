@@ -256,8 +256,6 @@ export default function EntityDetails() {
 
 ## Code Standards
 
-> **📖 Master Reference**: See `docs/AI_INSTRUCTIONS.md` for shared TypeScript standards across all AI assistants.
-
 ### TypeScript
 
 **Strictness Level:**
@@ -608,13 +606,6 @@ npm run lint          # Lint all files
 # After creating/modifying migrations, types are auto-generated
 # The types file at src/integrations/supabase/types.ts is read-only
 ```
-
-## Contact & Resources
-
-- GitHub: [repository URL]
-- Supabase Dashboard: [project URL]
-- Figma: [design URL] (if applicable)
-- Stripe Dashboard: [stripe URL]
 
 ## Notes for Claude
 

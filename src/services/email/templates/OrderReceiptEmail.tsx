@@ -1,5 +1,7 @@
 import { OrderReceiptEmailData } from '@/types/email';
 import { formatTimeDisplay } from '@/shared';
+import type { EmailTemplateConfig } from '@/features/template-designer/types';
+import { DEFAULT_ORDER_RECEIPT_CONFIG } from '@/features/template-designer/config/defaults';
 
 /**
  * OrderReceiptEmail - HTML email template for order receipts
@@ -12,27 +14,56 @@ import { formatTimeDisplay } from '@/shared';
  * - Purchaser details
  * - Order breakdown matching checkout page layout
  * - PDF ticket attachment support (stubbed)
+ * - Configurable colors, typography, spacing, and content via config parameter
  */
 
 interface OrderReceiptEmailProps {
   data: OrderReceiptEmailData;
+  config?: EmailTemplateConfig;
 }
 
 export const generateOrderReceiptEmailHTML = (
-  data: OrderReceiptEmailData
+  data: OrderReceiptEmailData,
+  config?: EmailTemplateConfig
 ): string => {
   const { orderId, orderDate, event, purchaser, orderSummary } = data;
 
-  // Color palette
+  // Use provided config or default
+  const cfg = config || DEFAULT_ORDER_RECEIPT_CONFIG;
+
+  // Color palette from config
   const colors = {
-    gold: '#DAA520',
+    gold: cfg.colors.primary,
     black: '#000000',
     white: '#FFFFFF',
-    lightGray: '#F5F5F5',
-    darkGray: '#333333',
-    borderGray: '#E0E0E0',
-    mutedText: '#6B7280',
+    lightGray: cfg.colors.secondary,
+    darkGray: cfg.colors.text,
+    borderGray: cfg.colors.border,
+    mutedText: cfg.colors.mutedText,
+    success: cfg.colors.success,
   };
+
+  // Typography from config
+  const fontSize = {
+    header: cfg.typography.headerSize,
+    title: cfg.typography.titleSize,
+    body: cfg.typography.bodySize,
+    label: cfg.typography.labelSize,
+    footer: cfg.typography.footerSize,
+  };
+
+  // Spacing from config
+  const spacing = {
+    margin: cfg.spacing.margin,
+    padding: cfg.spacing.padding,
+    sectionGap: cfg.spacing.sectionGap,
+  };
+
+  // Content from config
+  const content = cfg.content;
+
+  // Toggles from config
+  const toggles = cfg.toggles;
 
   // Format date for display
   const formattedDate = new Date(orderDate).toLocaleDateString('en-US', {
@@ -71,37 +102,39 @@ export const generateOrderReceiptEmailHTML = (
 
           <!-- Header -->
           <tr>
-            <td style="background-color: ${colors.black}; padding: 30px; text-align: center;">
-              <h1 style="margin: 0; color: ${colors.gold}; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">
-                FORCE MAJEURE
+            <td style="background-color: ${colors.black}; padding: ${spacing.padding}px; text-align: center;">
+              <h1 style="margin: 0; color: ${colors.gold}; font-size: ${fontSize.header}px; font-weight: 700; letter-spacing: 0.5px;">
+                ${content.headerTitle}
               </h1>
-              <p style="margin: 10px 0 0 0; color: ${colors.white}; font-size: 14px;">
-                Order Confirmation
+              <p style="margin: 10px 0 0 0; color: ${colors.white}; font-size: ${fontSize.body}px;">
+                ${content.headerSubtitle}
               </p>
             </td>
           </tr>
 
           <!-- Success Message -->
+          ${toggles.showSuccessIcon ? `
           <tr>
-            <td style="padding: 40px 40px 20px 40px; text-align: center;">
-              <div style="width: 60px; height: 60px; margin: 0 auto 20px auto; border-radius: 50%; background-color: #10B981; display: flex; align-items: center; justify-content: center;">
+            <td style="padding: ${spacing.margin}px ${spacing.margin}px ${spacing.sectionGap}px ${spacing.margin}px; text-align: center;">
+              <div style="width: 60px; height: 60px; margin: 0 auto 20px auto; border-radius: 50%; background-color: ${colors.success}; display: flex; align-items: center; justify-content: center;">
                 <span style="color: ${colors.white}; font-size: 32px; line-height: 1;">✓</span>
               </div>
-              <h2 style="margin: 0 0 10px 0; color: ${colors.darkGray}; font-size: 24px; font-weight: 600;">
-                Thank You for Your Purchase!
+              <h2 style="margin: 0 0 10px 0; color: ${colors.darkGray}; font-size: ${fontSize.title}px; font-weight: 600;">
+                ${content.successMessage}
               </h2>
-              <p style="margin: 0; color: ${colors.mutedText}; font-size: 14px;">
-                Your tickets have been confirmed. We've sent them to your email.
+              <p style="margin: 0; color: ${colors.mutedText}; font-size: ${fontSize.body}px;">
+                ${content.successSubtext}
               </p>
             </td>
           </tr>
+          ` : ''}
 
           <!-- Event Hero Image -->
           ${
-            event.imageUrl
+            toggles.showHeroImage && event.imageUrl
               ? `
           <tr>
-            <td style="padding: 0 40px;">
+            <td style="padding: 0 ${spacing.margin}px;">
               <img src="${event.imageUrl}" alt="${event.title}" style="width: 100%; height: auto; border-radius: 8px; display: block;" />
             </td>
           </tr>
@@ -170,19 +203,20 @@ export const generateOrderReceiptEmailHTML = (
           </tr>
 
           <!-- Purchaser Information -->
+          ${toggles.showPurchaserInfo ? `
           <tr>
-            <td style="padding: 0 40px 30px 40px;">
+            <td style="padding: 0 ${spacing.margin}px ${spacing.padding}px ${spacing.margin}px;">
               <h3 style="margin: 0 0 15px 0; color: ${colors.darkGray}; font-size: 16px; font-weight: 600;">
                 Purchaser Information
               </h3>
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: ${colors.lightGray}; border-radius: 6px; padding: 15px;">
                 <tr>
-                  <td style="padding-bottom: 8px; font-size: 14px; color: ${colors.darkGray};">
+                  <td style="padding-bottom: 8px; font-size: ${fontSize.body}px; color: ${colors.darkGray};">
                     <strong>Name:</strong> ${purchaser.fullName}
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-bottom: 8px; font-size: 14px; color: ${colors.darkGray};">
+                  <td style="padding-bottom: 8px; font-size: ${fontSize.body}px; color: ${colors.darkGray};">
                     <strong>Email:</strong> ${purchaser.email}
                   </td>
                 </tr>
@@ -190,7 +224,7 @@ export const generateOrderReceiptEmailHTML = (
                   purchaser.phone
                     ? `
                 <tr>
-                  <td style="font-size: 14px; color: ${colors.darkGray};">
+                  <td style="font-size: ${fontSize.body}px; color: ${colors.darkGray};">
                     <strong>Phone:</strong> ${purchaser.phone}
                   </td>
                 </tr>
@@ -200,6 +234,7 @@ export const generateOrderReceiptEmailHTML = (
               </table>
             </td>
           </tr>
+          ` : ''}
 
           <!-- Order Summary -->
           <tr>
@@ -331,44 +366,47 @@ export const generateOrderReceiptEmailHTML = (
           </tr>
 
           <!-- CTA Buttons -->
+          ${toggles.showCtaButtons ? `
           <tr>
-            <td style="padding: 0 40px 40px 40px;">
+            <td style="padding: 0 ${spacing.margin}px ${spacing.margin}px ${spacing.margin}px;">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td style="text-align: center; padding-bottom: 15px;">
-                    <a href="https://forcemajeure.com/profile" style="display: inline-block; background-color: ${colors.gold}; color: ${colors.black}; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 14px; font-weight: 600;">
-                      View My Tickets
+                    <a href="https://forcemajeure.com/wallet" style="display: inline-block; background-color: ${colors.gold}; color: ${colors.black}; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: ${fontSize.body}px; font-weight: 600;">
+                      ${content.ctaPrimaryText}
                     </a>
                   </td>
                 </tr>
                 <tr>
                   <td style="text-align: center;">
-                    <a href="https://forcemajeure.com/" style="display: inline-block; background-color: transparent; color: ${colors.darkGray}; text-decoration: none; padding: 12px 32px; border: 2px solid ${colors.borderGray}; border-radius: 6px; font-size: 14px; font-weight: 500;">
-                      Browse More Events
+                    <a href="https://forcemajeure.com/events" style="display: inline-block; background-color: transparent; color: ${colors.darkGray}; text-decoration: none; padding: 12px 32px; border: 2px solid ${colors.borderGray}; border-radius: 6px; font-size: ${fontSize.body}px; font-weight: 500;">
+                      ${content.ctaSecondaryText}
                     </a>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
+          ` : ''}
 
           <!-- Footer -->
+          ${toggles.showFooter ? `
           <tr>
-            <td style="background-color: ${colors.lightGray}; padding: 30px 40px; border-top: 1px solid ${colors.borderGray};">
+            <td style="background-color: ${colors.lightGray}; padding: ${spacing.padding}px ${spacing.margin}px; border-top: 1px solid ${colors.borderGray};">
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td style="text-align: center; padding-bottom: 15px;">
-                    <p style="margin: 0; font-size: 12px; color: ${colors.mutedText};">
-                      Questions? Contact us at <a href="mailto:support@forcemajeure.com" style="color: ${colors.gold}; text-decoration: none;">support@forcemajeure.com</a>
+                    <p style="margin: 0; font-size: ${fontSize.footer}px; color: ${colors.mutedText};">
+                      ${content.footerContact}
                     </p>
                   </td>
                 </tr>
                 <tr>
                   <td style="text-align: center;">
-                    <p style="margin: 0; font-size: 11px; color: ${colors.mutedText};">
-                      © ${new Date().getFullYear()} Force Majeure. All rights reserved.
+                    <p style="margin: 0; font-size: ${fontSize.footer}px; color: ${colors.mutedText};">
+                      © ${new Date().getFullYear()} ${content.footerCopyright}
                     </p>
-                    <p style="margin: 10px 0 0 0; font-size: 11px; color: ${colors.mutedText};">
+                    <p style="margin: 10px 0 0 0; font-size: ${fontSize.footer}px; color: ${colors.mutedText};">
                       This email was sent to ${purchaser.email} regarding your ticket purchase.
                     </p>
                   </td>
@@ -376,6 +414,7 @@ export const generateOrderReceiptEmailHTML = (
               </table>
             </td>
           </tr>
+          ` : ''}
 
         </table>
         <!-- End Main Container -->
@@ -393,8 +432,8 @@ export const generateOrderReceiptEmailHTML = (
 /**
  * React component version for preview/testing purposes
  */
-export const OrderReceiptEmail = ({ data }: OrderReceiptEmailProps) => {
-  const html = generateOrderReceiptEmailHTML(data);
+export const OrderReceiptEmail = ({ data, config }: OrderReceiptEmailProps) => {
+  const html = generateOrderReceiptEmailHTML(data, config);
 
   return (
     <div

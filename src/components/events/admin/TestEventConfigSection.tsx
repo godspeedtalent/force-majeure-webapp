@@ -13,6 +13,12 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronRight,
+  Database,
+  Plus,
+  Ticket,
+  UserCheck,
+  Heart,
+  ShoppingCart,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase, logger } from '@/shared';
@@ -25,6 +31,12 @@ import { FmCommonSlider } from '@/components/common/forms/FmCommonSlider';
 import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormCheckbox';
 import { FmGenerationProgress } from '@/components/common/feedback/FmGenerationProgress';
 import { Label } from '@/components/common/shadcn/label';
+import {
+  FmCommonTabs,
+  FmCommonTabsList,
+  FmCommonTabsTrigger,
+  FmCommonTabsContent,
+} from '@/components/common/navigation/FmCommonTabs';
 import { EventStatus } from '@/features/events/types';
 import { mockOrderService } from '@/services/mockOrders/MockOrderService';
 import {
@@ -100,6 +112,7 @@ export const TestEventConfigSection = ({
   const [isImportingMockData, setIsImportingMockData] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<GenerationProgress | null>(null);
+  const [activeTab, setActiveTab] = useState<'current' | 'import'>(orderCount > 0 ? 'current' : 'import');
 
   // Load persisted progress from localStorage on mount
   useEffect(() => {
@@ -249,6 +262,89 @@ export const TestEventConfigSection = ({
     enabled: eventStatus === 'test' || isTestEvent,
   });
 
+  // Fetch test order count from test_orders table
+  // This determines whether to show the "current state" tab with purge button
+  const { data: testOrderCount = 0 } = useQuery({
+    queryKey: ['test-order-count', eventId],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count, error } = await (supabase as any)
+        .from('test_orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId);
+
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: eventStatus === 'test' || isTestEvent,
+  });
+
+  // Fetch mock data summary for current state tab
+  // Queries from test_* tables (dedicated test data tables)
+  const { data: mockDataSummary } = useQuery({
+    queryKey: ['mock-data-summary', eventId],
+    queryFn: async () => {
+      // Get test ticket count from test_tickets table
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count: ticketCount, error: ticketError } = await (supabase as any)
+        .from('test_tickets')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId);
+
+      if (ticketError) throw ticketError;
+
+      // Get ticket groups count (these are shared, not test-specific)
+      const { count: groupCount, error: groupError } = await supabase
+        .from('ticket_groups')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId);
+
+      if (groupError) throw groupError;
+
+      // Get test RSVPs count from test_event_rsvps table
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count: rsvpCount, error: rsvpError } = await (supabase as any)
+        .from('test_event_rsvps')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId);
+
+      if (rsvpError) throw rsvpError;
+
+      // Get test interests count from test_event_interests table
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { count: interestCount, error: interestError } = await (supabase as any)
+        .from('test_event_interests')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_id', eventId);
+
+      if (interestError) throw interestError;
+
+      // Get unique test profile count from test_orders
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: uniqueProfiles, error: profileError } = await (supabase as any)
+        .from('test_orders')
+        .select('test_profile_id')
+        .eq('event_id', eventId);
+
+      if (profileError) throw profileError;
+
+      const uniqueProfileCount = new Set(
+        (uniqueProfiles || [])
+          .map((o: { test_profile_id: string | null }) => o.test_profile_id)
+          .filter(Boolean)
+      ).size;
+
+      return {
+        tickets: ticketCount || 0,
+        ticketGroups: groupCount || 0,
+        rsvps: rsvpCount || 0,
+        interests: interestCount || 0,
+        users: uniqueProfileCount,
+      };
+    },
+    enabled: (eventStatus === 'test' || isTestEvent) && testOrderCount > 0,
+  });
+
   // Calculate the earliest order date based on days prior to event
   const earliestOrderDate = useMemo(() => {
     if (!eventData?.start_time) return null;
@@ -264,11 +360,18 @@ export const TestEventConfigSection = ({
     }
   }, [totalOrders, testUsers]);
 
-  // Event has "gone live" if it's published or has real (non-test) orders
+  // Event has "gone live" if it's published
   const hasGoneLive = eventStatus === 'published';
 
-  // Only allow toggling test mode for draft events that haven't gone live
-  const canToggleTestMode = eventStatus === 'draft' && !hasGoneLive;
+  // Check if event has mock data that would need to be purged before exiting test mode
+  // Uses testOrderCount from test_orders table (not the orderCount prop which may be stale)
+  const hasMockData = testOrderCount > 0;
+
+  // Allow toggling test mode:
+  // 1. From draft to test: always allowed (if not published)
+  // 2. From test to draft: only allowed if no mock data exists
+  const canToggleTestMode =
+    (eventStatus === 'draft' && !hasGoneLive) || (eventStatus === 'test' && !hasMockData);
 
   const handleToggleTestMode = async (enabled: boolean) => {
     setIsUpdating(true);
@@ -390,6 +493,8 @@ export const TestEventConfigSection = ({
       queryClient.invalidateQueries({ queryKey: ['ticket-groups', eventId] });
       queryClient.invalidateQueries({ queryKey: ['orders', eventId] });
       queryClient.invalidateQueries({ queryKey: ['order-count', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
     } catch (error) {
       logger.error('Error generating mock data:', {
@@ -413,10 +518,13 @@ export const TestEventConfigSection = ({
       const result = await mockOrderService.deleteMockOrdersByEvent(eventId);
 
       if (result.success) {
+        // Show counts from test tables (primary) with fallback to legacy counts
+        const deletedOrders = result.deletedTestOrders || result.deletedOrders;
+        const deletedTickets = result.deletedTestTickets || result.deletedTickets;
         toast.success(t('eventAdmin.mockDataPurged'), {
           description: t('eventAdmin.mockDataPurgedStats', {
-            orders: result.deletedOrders,
-            tickets: result.deletedTickets,
+            orders: deletedOrders,
+            tickets: deletedTickets,
           }),
         });
         clearPersistedProgress();
@@ -429,6 +537,8 @@ export const TestEventConfigSection = ({
       queryClient.invalidateQueries({ queryKey: ['ticket-groups', eventId] });
       queryClient.invalidateQueries({ queryKey: ['orders', eventId] });
       queryClient.invalidateQueries({ queryKey: ['order-count', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
     } catch (error) {
       logger.error('Error purging mock data:', {
@@ -468,7 +578,9 @@ export const TestEventConfigSection = ({
             <p className='text-xs text-muted-foreground mt-1'>
               {hasGoneLive
                 ? t('eventAdmin.testModeDisabledReason')
-                : t('eventAdmin.enableTestModeDescription')}
+                : eventStatus === 'test' && !hasMockData
+                  ? t('eventAdmin.canExitTestModeDescription')
+                  : t('eventAdmin.enableTestModeDescription')}
             </p>
           </div>
           <FmCommonToggle
@@ -493,6 +605,16 @@ export const TestEventConfigSection = ({
           </div>
         )}
 
+        {/* Warning for test events with mock data - must purge before exiting test mode */}
+        {eventStatus === 'test' && hasMockData && (
+          <div className='flex items-start gap-3 p-3 bg-fm-purple/10 border border-fm-purple/20'>
+            <FlaskConical className='h-5 w-5 text-fm-purple flex-shrink-0 mt-0.5' />
+            <p className='text-sm text-fm-purple/80'>
+              {t('eventAdmin.purgeMockDataToExitTestMode', { count: orderCount })}
+            </p>
+          </div>
+        )}
+
         {/* Mock Data Import Tool - only show when test mode is enabled */}
         {isCurrentlyTestEvent && (
           <div className='p-4 bg-fm-purple/5 border border-fm-purple/20 space-y-4'>
@@ -503,294 +625,675 @@ export const TestEventConfigSection = ({
               </p>
             </div>
 
-            {/* Organized Sections */}
-            <div className='space-y-3 pt-2 border-t border-fm-purple/20'>
-              {/* === ORDERS & USERS SECTION === */}
-              <ConfigSection title={t('eventAdmin.sections.ordersAndUsers')} icon={Users}>
-                <FmCommonTextField
-                  label={t('eventAdmin.totalOrders')}
-                  type='number'
-                  value={totalOrders.toString()}
-                  onChange={(e) =>
-                    setTotalOrders(Math.max(1, Math.min(500, parseInt(e.target.value) || 1)))
-                  }
-                  min={1}
-                  max={500}
-                />
+            {/* Tabbed Interface - show tabs when there's existing mock data */}
+            {testOrderCount > 0 ? (
+              <FmCommonTabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as 'current' | 'import')}
+                className='space-y-4'
+              >
+                <FmCommonTabsList className='border border-fm-purple/30'>
+                  <FmCommonTabsTrigger value='current' className='gap-2'>
+                    <Database className='h-4 w-4' />
+                    {t('eventAdmin.tabs.currentState')}
+                  </FmCommonTabsTrigger>
+                  <FmCommonTabsTrigger value='import' className='gap-2'>
+                    <Plus className='h-4 w-4' />
+                    {t('eventAdmin.tabs.importMore')}
+                  </FmCommonTabsTrigger>
+                </FmCommonTabsList>
 
-                <FmCommonTextField
-                  label={t('eventAdmin.testUsers')}
-                  type='number'
-                  value={testUsers.toString()}
-                  onChange={(e) => {
-                    const val = Math.max(
-                      totalOrders,
-                      Math.min(500, parseInt(e.target.value) || totalOrders)
-                    );
-                    setTestUsers(val);
-                  }}
-                  min={totalOrders}
-                  max={500}
-                  description={t('eventAdmin.testUsersDescription')}
-                />
+                {/* === CURRENT STATE TAB === */}
+                <FmCommonTabsContent value='current' className='space-y-4'>
+                  {/* Mock Data Summary */}
+                  <div className='space-y-3'>
+                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>
+                      {t('eventAdmin.summary.title')}
+                    </h5>
+                    <div className='grid grid-cols-3 gap-3'>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <ShoppingCart className='h-4 w-4' />
+                          <span className='text-xs uppercase'>{t('eventAdmin.summary.orders')}</span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {testOrderCount}
+                        </span>
+                      </div>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <Ticket className='h-4 w-4' />
+                          <span className='text-xs uppercase'>{t('eventAdmin.summary.tickets')}</span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {mockDataSummary?.tickets ?? 0}
+                        </span>
+                      </div>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <Users className='h-4 w-4' />
+                          <span className='text-xs uppercase'>{t('eventAdmin.summary.users')}</span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {mockDataSummary?.users ?? 0}
+                        </span>
+                      </div>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <Layers className='h-4 w-4' />
+                          <span className='text-xs uppercase'>
+                            {t('eventAdmin.summary.ticketGroups')}
+                          </span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {mockDataSummary?.ticketGroups ?? existingGroups?.length ?? 0}
+                        </span>
+                      </div>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <UserCheck className='h-4 w-4' />
+                          <span className='text-xs uppercase'>{t('eventAdmin.summary.rsvps')}</span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {mockDataSummary?.rsvps ?? 0}
+                        </span>
+                      </div>
+                      <div className='p-3 bg-black/30 border border-white/10'>
+                        <div className='flex items-center gap-2 text-muted-foreground mb-1'>
+                          <Heart className='h-4 w-4' />
+                          <span className='text-xs uppercase'>{t('eventAdmin.summary.interests')}</span>
+                        </div>
+                        <span className='text-2xl font-medium text-fm-gold'>
+                          {mockDataSummary?.interests ?? 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-                <FmCommonSlider
-                  label={t('eventAdmin.registeredUserRatio')}
-                  value={registeredUserRatio}
-                  onValueChange={setRegisteredUserRatio}
-                  min={0}
-                  max={100}
-                  step={5}
-                  valueSuffix='%'
-                />
+                  {/* Generation Progress Display - show in current state tab */}
+                  {generationProgress && !isImportingMockData && (
+                    <div className='pt-4 border-t border-fm-purple/20'>
+                      <FmGenerationProgress progress={generationProgress} />
+                    </div>
+                  )}
 
-                {/* Order Status Distribution - moved here */}
-                <div className='space-y-2 pt-3 border-t border-white/10'>
-                  <Label className='text-xs text-muted-foreground uppercase'>
-                    {t('eventAdmin.orderStatusDistribution')}
-                  </Label>
-                  <div className='space-y-2'>
-                    <FmCommonSlider
-                      label={t('eventAdmin.paidOrders')}
-                      labelClassName='!text-green-400'
-                      value={paidRatio}
-                      onValueChange={(value) => {
-                        setPaidRatio(value);
-                        if (value + refundedRatio > 100) {
-                          setRefundedRatio(Math.max(0, 100 - value));
+                  {/* Purge Button */}
+                  <div className='pt-4 border-t border-fm-purple/20'>
+                    <FmCommonButton
+                      variant='destructive-outline'
+                      icon={Trash2}
+                      onClick={handlePurgeMockData}
+                      loading={isPurging}
+                    >
+                      {isPurging ? t('eventAdmin.purgingMockData') : t('eventAdmin.purgeMockData')}
+                    </FmCommonButton>
+                  </div>
+                </FmCommonTabsContent>
+
+                {/* === IMPORT MORE TAB === */}
+                <FmCommonTabsContent value='import' className='space-y-4'>
+                  {/* Organized Sections */}
+                  <div className='space-y-3'>
+                    {/* === ORDERS & USERS SECTION === */}
+                    <ConfigSection title={t('eventAdmin.sections.ordersAndUsers')} icon={Users}>
+                      <FmCommonTextField
+                        label={t('eventAdmin.totalOrders')}
+                        type='number'
+                        value={totalOrders.toString()}
+                        onChange={(e) =>
+                          setTotalOrders(Math.max(1, Math.min(500, parseInt(e.target.value) || 1)))
                         }
-                      }}
-                      min={0}
-                      max={100}
-                      step={5}
-                      valueSuffix='%'
-                      rangeClassName='!bg-green-500/60'
-                    />
-                    <FmCommonSlider
-                      label={t('eventAdmin.refundedOrders')}
-                      labelClassName='!text-yellow-400'
-                      value={refundedRatio}
-                      onValueChange={(value) => {
-                        const maxRefund = 100 - paidRatio;
-                        setRefundedRatio(Math.min(value, maxRefund));
-                      }}
-                      min={0}
-                      max={100 - paidRatio}
-                      step={5}
-                      valueSuffix='%'
-                      rangeClassName='!bg-yellow-500/60'
-                    />
-                    <FmCommonSlider
-                      label={t('eventAdmin.cancelledOrders')}
-                      labelClassName='!text-red-400'
-                      value={cancelledRatio}
-                      onValueChange={() => {}}
-                      min={0}
-                      max={100}
-                      step={5}
-                      valueSuffix='%'
-                      rangeClassName='!bg-red-500/60'
-                      disabled
-                    />
+                        min={1}
+                        max={500}
+                      />
+
+                      <FmCommonTextField
+                        label={t('eventAdmin.testUsers')}
+                        type='number'
+                        value={testUsers.toString()}
+                        onChange={(e) => {
+                          const val = Math.max(
+                            totalOrders,
+                            Math.min(500, parseInt(e.target.value) || totalOrders)
+                          );
+                          setTestUsers(val);
+                        }}
+                        min={totalOrders}
+                        max={500}
+                        description={t('eventAdmin.testUsersDescription')}
+                      />
+
+                      <FmCommonSlider
+                        label={t('eventAdmin.registeredUserRatio')}
+                        value={registeredUserRatio}
+                        onValueChange={setRegisteredUserRatio}
+                        min={0}
+                        max={100}
+                        step={5}
+                        valueSuffix='%'
+                      />
+
+                      {/* Order Status Distribution - moved here */}
+                      <div className='space-y-2 pt-3 border-t border-white/10'>
+                        <Label className='text-xs text-muted-foreground uppercase'>
+                          {t('eventAdmin.orderStatusDistribution')}
+                        </Label>
+                        <div className='space-y-2'>
+                          <FmCommonSlider
+                            label={t('eventAdmin.paidOrders')}
+                            labelClassName='!text-green-400'
+                            value={paidRatio}
+                            onValueChange={(value) => {
+                              setPaidRatio(value);
+                              if (value + refundedRatio > 100) {
+                                setRefundedRatio(Math.max(0, 100 - value));
+                              }
+                            }}
+                            min={0}
+                            max={100}
+                            step={5}
+                            valueSuffix='%'
+                            rangeClassName='!bg-green-500/60'
+                          />
+                          <FmCommonSlider
+                            label={t('eventAdmin.refundedOrders')}
+                            labelClassName='!text-yellow-400'
+                            value={refundedRatio}
+                            onValueChange={(value) => {
+                              const maxRefund = 100 - paidRatio;
+                              setRefundedRatio(Math.min(value, maxRefund));
+                            }}
+                            min={0}
+                            max={100 - paidRatio}
+                            step={5}
+                            valueSuffix='%'
+                            rangeClassName='!bg-yellow-500/60'
+                          />
+                          <FmCommonSlider
+                            label={t('eventAdmin.cancelledOrders')}
+                            labelClassName='!text-red-400'
+                            value={cancelledRatio}
+                            onValueChange={() => {}}
+                            min={0}
+                            max={100}
+                            step={5}
+                            valueSuffix='%'
+                            rangeClassName='!bg-red-500/60'
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </ConfigSection>
+
+                    {/* === DATE RANGE SECTION === */}
+                    <ConfigSection title={t('eventAdmin.sections.dateRange')} icon={Calendar}>
+                      <FmCommonSlider
+                        label={t('eventAdmin.dateRangeDays')}
+                        value={dateRangeDays}
+                        onValueChange={setDateRangeDays}
+                        min={1}
+                        max={90}
+                        step={1}
+                        formatValue={(v) => `${v} ${t('eventAdmin.days')}`}
+                      />
+
+                      {/* Display the earliest order date */}
+                      {earliestOrderDate && (
+                        <div className='text-xs text-muted-foreground'>
+                          {t('eventAdmin.earliestOrderDate')}:{' '}
+                          <span className='text-foreground'>
+                            {earliestOrderDate.toLocaleDateString(undefined, {
+                              weekday: 'short',
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className='space-y-1'>
+                        <FmCommonFormCheckbox
+                          id='randomize-order-times'
+                          label={t('eventAdmin.randomizeOrderTimes')}
+                          checked={randomizeOrderTimes}
+                          onCheckedChange={setRandomizeOrderTimes}
+                        />
+                        <p className='text-xs text-muted-foreground ml-8'>
+                          {t('eventAdmin.randomizeOrderTimesDescription')}
+                        </p>
+                      </div>
+                    </ConfigSection>
+
+                    {/* === TICKET GROUPS SECTION === */}
+                    <ConfigSection title={t('eventAdmin.sections.ticketGroups')} icon={Layers}>
+                      <FmCommonTextField
+                        label={t('eventAdmin.ticketGroupCount')}
+                        type='number'
+                        value={ticketGroupCount.toString()}
+                        onChange={(e) =>
+                          setTicketGroupCount(Math.max(0, Math.min(10, parseInt(e.target.value) || 0)))
+                        }
+                        min={0}
+                        max={10}
+                        description={t('eventAdmin.ticketGroupCountDescription')}
+                      />
+
+                      {existingGroups && existingGroups.length > 0 && (
+                        <div className='text-xs text-muted-foreground'>
+                          <span className='font-medium'>{t('eventAdmin.existingGroups')}:</span>{' '}
+                          {existingGroups.map((g) => g.name).join(', ')}
+                        </div>
+                      )}
+
+                      {ticketTiers && ticketTiers.length > 0 && (
+                        <div className='text-xs text-muted-foreground'>
+                          <span className='font-medium'>{t('eventAdmin.availableTiers')}:</span>{' '}
+                          {ticketTiers.map((tier) => tier.name).join(', ')}
+                        </div>
+                      )}
+                    </ConfigSection>
+
+                    {/* === TICKET PROTECTION SECTION === */}
+                    <ConfigSection
+                      title={t('eventAdmin.sections.ticketProtection')}
+                      icon={ShieldCheck}
+                      defaultOpen={false}
+                    >
+                      <div className='space-y-1'>
+                        <FmCommonFormCheckbox
+                          id='ticket-protection-toggle'
+                          label={t('eventAdmin.includeTicketProtection')}
+                          checked={includeTicketProtection}
+                          onCheckedChange={setIncludeTicketProtection}
+                        />
+                        <p className='text-xs text-muted-foreground ml-8'>
+                          {t('eventAdmin.includeTicketProtectionDescription')}
+                        </p>
+                      </div>
+
+                      {includeTicketProtection && (
+                        <div className='space-y-3 pl-6 border-l border-fm-purple/20'>
+                          <FmCommonTextField
+                            label={t('eventAdmin.ticketProtectionPrice')}
+                            type='number'
+                            value={ticketProtectionPrice}
+                            onChange={(e) => setTicketProtectionPrice(e.target.value)}
+                            prepend='$'
+                            min={0}
+                            step={0.01}
+                            description={t('eventAdmin.ticketProtectionPriceDescription')}
+                          />
+                          <FmCommonSlider
+                            label={t('eventAdmin.ticketProtectionRatio')}
+                            value={ticketProtectionRatio}
+                            onValueChange={setTicketProtectionRatio}
+                            min={0}
+                            max={100}
+                            step={5}
+                            valueSuffix='%'
+                          />
+                        </div>
+                      )}
+                    </ConfigSection>
+
+                    {/* === FEE OVERRIDES SECTION === */}
+                    <ConfigSection
+                      title={t('eventAdmin.sections.feeOverrides')}
+                      icon={DollarSign}
+                      defaultOpen={false}
+                    >
+                      <p className='text-xs text-muted-foreground'>
+                        {t('eventAdmin.feeOverridesDescription')}
+                      </p>
+                      <div className='grid grid-cols-3 gap-3'>
+                        <FmCommonTextField
+                          label={t('eventAdmin.salesTaxOverride')}
+                          type='number'
+                          value={salesTaxOverride}
+                          onChange={(e) => setSalesTaxOverride(e.target.value)}
+                          placeholder={getFeePlaceholder('sales_tax')}
+                          prepend='%'
+                          min={0}
+                          step={0.1}
+                        />
+                        <FmCommonTextField
+                          label={t('eventAdmin.processingFeeOverride')}
+                          type='number'
+                          value={processingFeeOverride}
+                          onChange={(e) => setProcessingFeeOverride(e.target.value)}
+                          placeholder={getFeePlaceholder('processing_fee')}
+                          prepend='%'
+                          min={0}
+                          step={0.1}
+                        />
+                        <FmCommonTextField
+                          label={t('eventAdmin.platformFeeOverride')}
+                          type='number'
+                          value={platformFeeOverride}
+                          onChange={(e) => setPlatformFeeOverride(e.target.value)}
+                          placeholder={getFeePlaceholder('platform_fee')}
+                          prepend='%'
+                          min={0}
+                          step={0.1}
+                        />
+                      </div>
+                    </ConfigSection>
                   </div>
-                </div>
-              </ConfigSection>
 
-              {/* === DATE RANGE SECTION === */}
-              <ConfigSection title={t('eventAdmin.sections.dateRange')} icon={Calendar}>
-                <FmCommonSlider
-                  label={t('eventAdmin.dateRangeDays')}
-                  value={dateRangeDays}
-                  onValueChange={setDateRangeDays}
-                  min={1}
-                  max={90}
-                  step={1}
-                  formatValue={(v) => `${v} ${t('eventAdmin.days')}`}
-                />
-
-                {/* Display the earliest order date */}
-                {earliestOrderDate && (
-                  <div className='text-xs text-muted-foreground'>
-                    {t('eventAdmin.earliestOrderDate')}:{' '}
-                    <span className='text-foreground'>
-                      {earliestOrderDate.toLocaleDateString(undefined, {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </span>
+                  {/* Generate Button */}
+                  <div className='pt-4 border-t border-fm-purple/20'>
+                    <FmCommonButton
+                      variant='default'
+                      icon={Dices}
+                      onClick={handleGenerateMockData}
+                      loading={isImportingMockData}
+                      disabled={!ticketTiers?.length || isImportingMockData}
+                    >
+                      {isImportingMockData
+                        ? t('eventAdmin.generatingMockData')
+                        : t('eventAdmin.generateMockData')}
+                    </FmCommonButton>
                   </div>
-                )}
 
-                <div className='space-y-1'>
-                  <FmCommonFormCheckbox
-                    id='randomize-order-times'
-                    label={t('eventAdmin.randomizeOrderTimes')}
-                    checked={randomizeOrderTimes}
-                    onCheckedChange={setRandomizeOrderTimes}
-                  />
-                  <p className='text-xs text-muted-foreground ml-8'>
-                    {t('eventAdmin.randomizeOrderTimesDescription')}
-                  </p>
-                </div>
-              </ConfigSection>
+                  {/* Generation Progress Display */}
+                  {isImportingMockData && (
+                    <div className='pt-4 border-t border-fm-purple/20'>
+                      <FmGenerationProgress progress={generationProgress} />
+                    </div>
+                  )}
 
-              {/* === TICKET GROUPS SECTION === */}
-              <ConfigSection title={t('eventAdmin.sections.ticketGroups')} icon={Layers}>
-                <FmCommonTextField
-                  label={t('eventAdmin.ticketGroupCount')}
-                  type='number'
-                  value={ticketGroupCount.toString()}
-                  onChange={(e) =>
-                    setTicketGroupCount(Math.max(0, Math.min(10, parseInt(e.target.value) || 0)))
-                  }
-                  min={0}
-                  max={10}
-                  description={t('eventAdmin.ticketGroupCountDescription')}
-                />
-
-                {existingGroups && existingGroups.length > 0 && (
-                  <div className='text-xs text-muted-foreground'>
-                    <span className='font-medium'>{t('eventAdmin.existingGroups')}:</span>{' '}
-                    {existingGroups.map((g) => g.name).join(', ')}
-                  </div>
-                )}
-
-                {ticketTiers && ticketTiers.length > 0 && (
-                  <div className='text-xs text-muted-foreground'>
-                    <span className='font-medium'>{t('eventAdmin.availableTiers')}:</span>{' '}
-                    {ticketTiers.map((tier) => tier.name).join(', ')}
-                  </div>
-                )}
-              </ConfigSection>
-
-              {/* === TICKET PROTECTION SECTION === */}
-              <ConfigSection
-                title={t('eventAdmin.sections.ticketProtection')}
-                icon={ShieldCheck}
-                defaultOpen={false}
-              >
-                <div className='space-y-1'>
-                  <FmCommonFormCheckbox
-                    id='ticket-protection-toggle'
-                    label={t('eventAdmin.includeTicketProtection')}
-                    checked={includeTicketProtection}
-                    onCheckedChange={setIncludeTicketProtection}
-                  />
-                  <p className='text-xs text-muted-foreground ml-8'>
-                    {t('eventAdmin.includeTicketProtectionDescription')}
-                  </p>
-                </div>
-
-                {includeTicketProtection && (
-                  <div className='space-y-3 pl-6 border-l border-fm-purple/20'>
+                  {/* No ticket tiers warning */}
+                  {(!ticketTiers || ticketTiers.length === 0) && (
+                    <div className='flex items-start gap-2 text-xs text-yellow-400'>
+                      <AlertTriangle className='h-4 w-4 flex-shrink-0' />
+                      <span>{t('eventAdmin.noTicketTiersWarning')}</span>
+                    </div>
+                  )}
+                </FmCommonTabsContent>
+              </FmCommonTabs>
+            ) : (
+              /* No existing mock data - show import panel directly */
+              <>
+                {/* Organized Sections */}
+                <div className='space-y-3 pt-2 border-t border-fm-purple/20'>
+                  {/* === ORDERS & USERS SECTION === */}
+                  <ConfigSection title={t('eventAdmin.sections.ordersAndUsers')} icon={Users}>
                     <FmCommonTextField
-                      label={t('eventAdmin.ticketProtectionPrice')}
+                      label={t('eventAdmin.totalOrders')}
                       type='number'
-                      value={ticketProtectionPrice}
-                      onChange={(e) => setTicketProtectionPrice(e.target.value)}
-                      prepend='$'
-                      min={0}
-                      step={0.01}
-                      description={t('eventAdmin.ticketProtectionPriceDescription')}
+                      value={totalOrders.toString()}
+                      onChange={(e) =>
+                        setTotalOrders(Math.max(1, Math.min(500, parseInt(e.target.value) || 1)))
+                      }
+                      min={1}
+                      max={500}
                     />
+
+                    <FmCommonTextField
+                      label={t('eventAdmin.testUsers')}
+                      type='number'
+                      value={testUsers.toString()}
+                      onChange={(e) => {
+                        const val = Math.max(
+                          totalOrders,
+                          Math.min(500, parseInt(e.target.value) || totalOrders)
+                        );
+                        setTestUsers(val);
+                      }}
+                      min={totalOrders}
+                      max={500}
+                      description={t('eventAdmin.testUsersDescription')}
+                    />
+
                     <FmCommonSlider
-                      label={t('eventAdmin.ticketProtectionRatio')}
-                      value={ticketProtectionRatio}
-                      onValueChange={setTicketProtectionRatio}
+                      label={t('eventAdmin.registeredUserRatio')}
+                      value={registeredUserRatio}
+                      onValueChange={setRegisteredUserRatio}
                       min={0}
                       max={100}
                       step={5}
                       valueSuffix='%'
                     />
+
+                    {/* Order Status Distribution - moved here */}
+                    <div className='space-y-2 pt-3 border-t border-white/10'>
+                      <Label className='text-xs text-muted-foreground uppercase'>
+                        {t('eventAdmin.orderStatusDistribution')}
+                      </Label>
+                      <div className='space-y-2'>
+                        <FmCommonSlider
+                          label={t('eventAdmin.paidOrders')}
+                          labelClassName='!text-green-400'
+                          value={paidRatio}
+                          onValueChange={(value) => {
+                            setPaidRatio(value);
+                            if (value + refundedRatio > 100) {
+                              setRefundedRatio(Math.max(0, 100 - value));
+                            }
+                          }}
+                          min={0}
+                          max={100}
+                          step={5}
+                          valueSuffix='%'
+                          rangeClassName='!bg-green-500/60'
+                        />
+                        <FmCommonSlider
+                          label={t('eventAdmin.refundedOrders')}
+                          labelClassName='!text-yellow-400'
+                          value={refundedRatio}
+                          onValueChange={(value) => {
+                            const maxRefund = 100 - paidRatio;
+                            setRefundedRatio(Math.min(value, maxRefund));
+                          }}
+                          min={0}
+                          max={100 - paidRatio}
+                          step={5}
+                          valueSuffix='%'
+                          rangeClassName='!bg-yellow-500/60'
+                        />
+                        <FmCommonSlider
+                          label={t('eventAdmin.cancelledOrders')}
+                          labelClassName='!text-red-400'
+                          value={cancelledRatio}
+                          onValueChange={() => {}}
+                          min={0}
+                          max={100}
+                          step={5}
+                          valueSuffix='%'
+                          rangeClassName='!bg-red-500/60'
+                          disabled
+                        />
+                      </div>
+                    </div>
+                  </ConfigSection>
+
+                  {/* === DATE RANGE SECTION === */}
+                  <ConfigSection title={t('eventAdmin.sections.dateRange')} icon={Calendar}>
+                    <FmCommonSlider
+                      label={t('eventAdmin.dateRangeDays')}
+                      value={dateRangeDays}
+                      onValueChange={setDateRangeDays}
+                      min={1}
+                      max={90}
+                      step={1}
+                      formatValue={(v) => `${v} ${t('eventAdmin.days')}`}
+                    />
+
+                    {/* Display the earliest order date */}
+                    {earliestOrderDate && (
+                      <div className='text-xs text-muted-foreground'>
+                        {t('eventAdmin.earliestOrderDate')}:{' '}
+                        <span className='text-foreground'>
+                          {earliestOrderDate.toLocaleDateString(undefined, {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className='space-y-1'>
+                      <FmCommonFormCheckbox
+                        id='randomize-order-times'
+                        label={t('eventAdmin.randomizeOrderTimes')}
+                        checked={randomizeOrderTimes}
+                        onCheckedChange={setRandomizeOrderTimes}
+                      />
+                      <p className='text-xs text-muted-foreground ml-8'>
+                        {t('eventAdmin.randomizeOrderTimesDescription')}
+                      </p>
+                    </div>
+                  </ConfigSection>
+
+                  {/* === TICKET GROUPS SECTION === */}
+                  <ConfigSection title={t('eventAdmin.sections.ticketGroups')} icon={Layers}>
+                    <FmCommonTextField
+                      label={t('eventAdmin.ticketGroupCount')}
+                      type='number'
+                      value={ticketGroupCount.toString()}
+                      onChange={(e) =>
+                        setTicketGroupCount(Math.max(0, Math.min(10, parseInt(e.target.value) || 0)))
+                      }
+                      min={0}
+                      max={10}
+                      description={t('eventAdmin.ticketGroupCountDescription')}
+                    />
+
+                    {existingGroups && existingGroups.length > 0 && (
+                      <div className='text-xs text-muted-foreground'>
+                        <span className='font-medium'>{t('eventAdmin.existingGroups')}:</span>{' '}
+                        {existingGroups.map((g) => g.name).join(', ')}
+                      </div>
+                    )}
+
+                    {ticketTiers && ticketTiers.length > 0 && (
+                      <div className='text-xs text-muted-foreground'>
+                        <span className='font-medium'>{t('eventAdmin.availableTiers')}:</span>{' '}
+                        {ticketTiers.map((tier) => tier.name).join(', ')}
+                      </div>
+                    )}
+                  </ConfigSection>
+
+                  {/* === TICKET PROTECTION SECTION === */}
+                  <ConfigSection
+                    title={t('eventAdmin.sections.ticketProtection')}
+                    icon={ShieldCheck}
+                    defaultOpen={false}
+                  >
+                    <div className='space-y-1'>
+                      <FmCommonFormCheckbox
+                        id='ticket-protection-toggle'
+                        label={t('eventAdmin.includeTicketProtection')}
+                        checked={includeTicketProtection}
+                        onCheckedChange={setIncludeTicketProtection}
+                      />
+                      <p className='text-xs text-muted-foreground ml-8'>
+                        {t('eventAdmin.includeTicketProtectionDescription')}
+                      </p>
+                    </div>
+
+                    {includeTicketProtection && (
+                      <div className='space-y-3 pl-6 border-l border-fm-purple/20'>
+                        <FmCommonTextField
+                          label={t('eventAdmin.ticketProtectionPrice')}
+                          type='number'
+                          value={ticketProtectionPrice}
+                          onChange={(e) => setTicketProtectionPrice(e.target.value)}
+                          prepend='$'
+                          min={0}
+                          step={0.01}
+                          description={t('eventAdmin.ticketProtectionPriceDescription')}
+                        />
+                        <FmCommonSlider
+                          label={t('eventAdmin.ticketProtectionRatio')}
+                          value={ticketProtectionRatio}
+                          onValueChange={setTicketProtectionRatio}
+                          min={0}
+                          max={100}
+                          step={5}
+                          valueSuffix='%'
+                        />
+                      </div>
+                    )}
+                  </ConfigSection>
+
+                  {/* === FEE OVERRIDES SECTION === */}
+                  <ConfigSection
+                    title={t('eventAdmin.sections.feeOverrides')}
+                    icon={DollarSign}
+                    defaultOpen={false}
+                  >
+                    <p className='text-xs text-muted-foreground'>
+                      {t('eventAdmin.feeOverridesDescription')}
+                    </p>
+                    <div className='grid grid-cols-3 gap-3'>
+                      <FmCommonTextField
+                        label={t('eventAdmin.salesTaxOverride')}
+                        type='number'
+                        value={salesTaxOverride}
+                        onChange={(e) => setSalesTaxOverride(e.target.value)}
+                        placeholder={getFeePlaceholder('sales_tax')}
+                        prepend='%'
+                        min={0}
+                        step={0.1}
+                      />
+                      <FmCommonTextField
+                        label={t('eventAdmin.processingFeeOverride')}
+                        type='number'
+                        value={processingFeeOverride}
+                        onChange={(e) => setProcessingFeeOverride(e.target.value)}
+                        placeholder={getFeePlaceholder('processing_fee')}
+                        prepend='%'
+                        min={0}
+                        step={0.1}
+                      />
+                      <FmCommonTextField
+                        label={t('eventAdmin.platformFeeOverride')}
+                        type='number'
+                        value={platformFeeOverride}
+                        onChange={(e) => setPlatformFeeOverride(e.target.value)}
+                        placeholder={getFeePlaceholder('platform_fee')}
+                        prepend='%'
+                        min={0}
+                        step={0.1}
+                      />
+                    </div>
+                  </ConfigSection>
+                </div>
+
+                {/* Action Buttons */}
+                <div className='flex gap-3 pt-2'>
+                  <FmCommonButton
+                    variant='default'
+                    icon={Dices}
+                    onClick={handleGenerateMockData}
+                    loading={isImportingMockData}
+                    disabled={!ticketTiers?.length || isImportingMockData}
+                  >
+                    {isImportingMockData
+                      ? t('eventAdmin.generatingMockData')
+                      : t('eventAdmin.generateMockData')}
+                  </FmCommonButton>
+                </div>
+
+                {/* Generation Progress Display */}
+                {(isImportingMockData || generationProgress) && (
+                  <div className='pt-4 border-t border-fm-purple/20'>
+                    <FmGenerationProgress progress={generationProgress} />
                   </div>
                 )}
-              </ConfigSection>
 
-              {/* === FEE OVERRIDES SECTION === */}
-              <ConfigSection
-                title={t('eventAdmin.sections.feeOverrides')}
-                icon={DollarSign}
-                defaultOpen={false}
-              >
-                <p className='text-xs text-muted-foreground'>
-                  {t('eventAdmin.feeOverridesDescription')}
-                </p>
-                <div className='grid grid-cols-3 gap-3'>
-                  <FmCommonTextField
-                    label={t('eventAdmin.salesTaxOverride')}
-                    type='number'
-                    value={salesTaxOverride}
-                    onChange={(e) => setSalesTaxOverride(e.target.value)}
-                    placeholder={getFeePlaceholder('sales_tax')}
-                    prepend='%'
-                    min={0}
-                    step={0.1}
-                  />
-                  <FmCommonTextField
-                    label={t('eventAdmin.processingFeeOverride')}
-                    type='number'
-                    value={processingFeeOverride}
-                    onChange={(e) => setProcessingFeeOverride(e.target.value)}
-                    placeholder={getFeePlaceholder('processing_fee')}
-                    prepend='%'
-                    min={0}
-                    step={0.1}
-                  />
-                  <FmCommonTextField
-                    label={t('eventAdmin.platformFeeOverride')}
-                    type='number'
-                    value={platformFeeOverride}
-                    onChange={(e) => setPlatformFeeOverride(e.target.value)}
-                    placeholder={getFeePlaceholder('platform_fee')}
-                    prepend='%'
-                    min={0}
-                    step={0.1}
-                  />
-                </div>
-              </ConfigSection>
-            </div>
-
-            {/* Action Buttons */}
-            <div className='flex gap-3 pt-2'>
-              <FmCommonButton
-                variant='default'
-                icon={Dices}
-                onClick={handleGenerateMockData}
-                loading={isImportingMockData}
-                disabled={!ticketTiers?.length || isImportingMockData}
-              >
-                {isImportingMockData
-                  ? t('eventAdmin.generatingMockData')
-                  : t('eventAdmin.generateMockData')}
-              </FmCommonButton>
-
-              {orderCount > 0 && !isImportingMockData && (
-                <FmCommonButton
-                  variant='destructive-outline'
-                  icon={Trash2}
-                  onClick={handlePurgeMockData}
-                  loading={isPurging}
-                >
-                  {isPurging ? t('eventAdmin.purgingMockData') : t('eventAdmin.purgeMockData')}
-                </FmCommonButton>
-              )}
-            </div>
-
-            {/* Generation Progress Display */}
-            {(isImportingMockData || generationProgress) && (
-              <div className='pt-4 border-t border-fm-purple/20'>
-                <FmGenerationProgress progress={generationProgress} />
-              </div>
-            )}
-
-            {/* No ticket tiers warning */}
-            {(!ticketTiers || ticketTiers.length === 0) && (
-              <div className='flex items-start gap-2 text-xs text-yellow-400'>
-                <AlertTriangle className='h-4 w-4 flex-shrink-0' />
-                <span>{t('eventAdmin.noTicketTiersWarning')}</span>
-              </div>
+                {/* No ticket tiers warning */}
+                {(!ticketTiers || ticketTiers.length === 0) && (
+                  <div className='flex items-start gap-2 text-xs text-yellow-400'>
+                    <AlertTriangle className='h-4 w-4 flex-shrink-0' />
+                    <span>{t('eventAdmin.noTicketTiersWarning')}</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

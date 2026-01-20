@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Mail, AlertCircle } from 'lucide-react';
 import {
   FmCommonCard,
   FmCommonCardContent,
@@ -12,6 +12,9 @@ import { Button } from '@/components/common/shadcn/button';
 import { Layout } from '@/components/layout/Layout';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { useAnalytics } from '@/features/analytics';
+import { orderService } from '@/features/orders/services/orderService';
+import { ticketEmailService } from '@/features/wallet/services/ticketEmailService';
+import { logger } from '@/shared';
 
 export default function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
@@ -19,6 +22,9 @@ export default function CheckoutSuccess() {
   const sessionId = searchParams.get('session_id');
   const { trackCheckoutComplete } = useAnalytics();
   const tracked = useRef(false);
+  const emailSent = useRef(false);
+  const [emailStatus, setEmailStatus] = useState<'pending' | 'sent' | 'failed'>('pending');
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -34,6 +40,58 @@ export default function CheckoutSuccess() {
       trackCheckoutComplete('unknown', sessionId, 0);
     }
   }, [sessionId, navigate, trackCheckoutComplete]);
+
+  // Send ticket email with PDF attachment
+  useEffect(() => {
+    if (!sessionId || emailSent.current) return;
+
+    const sendTicketEmail = async () => {
+      emailSent.current = true;
+
+      try {
+        // Fetch order by checkout session ID
+        const order = await orderService.getOrderByCheckoutSessionId(sessionId);
+
+        if (!order) {
+          logger.warn('Order not found for session, email not sent', {
+            sessionId,
+            source: 'CheckoutSuccess',
+          });
+          setEmailStatus('failed');
+          return;
+        }
+
+        setOrderId(order.id);
+
+        // Send ticket email with PDF attachment
+        const result = await ticketEmailService.sendTicketEmail(order.id);
+
+        if (result.success) {
+          setEmailStatus('sent');
+          logger.info('Ticket email sent successfully', {
+            orderId: order.id,
+            source: 'CheckoutSuccess',
+          });
+        } else {
+          setEmailStatus('failed');
+          logger.warn('Failed to send ticket email', {
+            orderId: order.id,
+            error: result.error,
+            source: 'CheckoutSuccess',
+          });
+        }
+      } catch (error) {
+        setEmailStatus('failed');
+        logger.error('Error sending ticket email', {
+          sessionId,
+          error: error instanceof Error ? error.message : 'Unknown',
+          source: 'CheckoutSuccess',
+        });
+      }
+    };
+
+    sendTicketEmail();
+  }, [sessionId]);
 
   if (!sessionId) {
     return (
@@ -61,13 +119,48 @@ export default function CheckoutSuccess() {
             </FmCommonCardDescription>
           </FmCommonCardHeader>
           <FmCommonCardContent className='space-y-4'>
+            {/* Email status indicator */}
+            <div className='flex items-center justify-center gap-2 text-sm'>
+              {emailStatus === 'pending' && (
+                <>
+                  <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <span className='text-muted-foreground'>
+                    <FmI18nCommon i18nKey='checkoutResult.success.sendingEmail' />
+                  </span>
+                </>
+              )}
+              {emailStatus === 'sent' && (
+                <>
+                  <Mail className='h-4 w-4 text-success' />
+                  <span className='text-success'>
+                    <FmI18nCommon i18nKey='checkoutResult.success.emailSent' />
+                  </span>
+                </>
+              )}
+              {emailStatus === 'failed' && (
+                <>
+                  <AlertCircle className='h-4 w-4 text-muted-foreground' />
+                  <span className='text-muted-foreground'>
+                    <FmI18nCommon i18nKey='checkoutResult.success.emailFailed' />
+                  </span>
+                </>
+              )}
+            </div>
+
             <FmI18nCommon
               i18nKey='checkoutResult.success.emailNotice'
               as='p'
               className='text-sm text-muted-foreground text-center'
             />
             <div className='space-y-2'>
-              <Button onClick={() => navigate('/profile')} className='w-full'>
+              <Button
+                onClick={() =>
+                  orderId
+                    ? navigate(`/orders/${orderId}/tickets`)
+                    : navigate('/wallet')
+                }
+                className='w-full'
+              >
                 <FmI18nCommon i18nKey='checkoutResult.success.viewTickets' />
               </Button>
               <Button

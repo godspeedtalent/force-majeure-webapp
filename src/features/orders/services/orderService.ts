@@ -479,6 +479,31 @@ export const orderService = {
   },
 
   /**
+   * Fetch order by Stripe checkout session ID
+   */
+  async getOrderByCheckoutSessionId(sessionId: string): Promise<Order | null> {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('stripe_checkout_session_id', sessionId)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      logger.error('Error fetching order by session', {
+        error: error.message,
+        source: 'orderService',
+        sessionId,
+      });
+      throw error;
+    }
+
+    return data as unknown as Order;
+  },
+
+  /**
    * Check if user has an order for an event
    */
   async userHasOrderForEvent(userId: string, eventId: string): Promise<boolean> {
@@ -501,4 +526,8 @@ export const orderService = {
 
     return (count ?? 0) > 0;
   },
+
+  // NOTE: getTestOrdersByEventId has been removed.
+  // Test orders are now handled by the repository pattern.
+  // Use getEventDataRepository(eventStatus).getOrdersByEventId(eventId) instead.
 };

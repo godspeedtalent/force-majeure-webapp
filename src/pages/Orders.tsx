@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import {
   FmCommonCard,
   FmCommonCardContent,
@@ -11,13 +12,15 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useOrders } from '@/features/events/hooks/useOrders';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
+import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
-import { Receipt, Calendar } from 'lucide-react';
+import { Receipt, Calendar, Ticket } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/currency';
 
 export default function Orders() {
   const { t } = useTranslation('pages');
+  const navigate = useNavigate();
   const { data: orders, isLoading } = useOrders();
 
   const getStatusColor = (status: string) => {
@@ -133,9 +136,21 @@ export default function Orders() {
                     </div>
                   </div>
 
-                  <div className='text-xs text-muted-foreground pt-2'>
-                    {t('orders.orderPlaced')}{' '}
-                    {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
+                  <div className='flex items-center justify-between pt-2'>
+                    <span className='text-xs text-muted-foreground'>
+                      {t('orders.orderPlaced')}{' '}
+                      {format(new Date(order.created_at), 'MMM d, yyyy h:mm a')}
+                    </span>
+                    {order.status === 'completed' && (
+                      <FmCommonButton
+                        variant='gold'
+                        size='sm'
+                        onClick={() => navigate(`/orders/${order.id}/tickets`)}
+                      >
+                        <Ticket className='h-4 w-4 mr-2' />
+                        {t('orders.viewTickets')}
+                      </FmCommonButton>
+                    )}
                   </div>
                 </FmCommonCardContent>
               </FmCommonCard>

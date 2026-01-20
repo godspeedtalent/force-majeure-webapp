@@ -94,10 +94,10 @@ interface PreparedOrderData {
 }
 
 /**
- * Internal type for order item insertion
+ * Internal type for test order item insertion
  */
-interface OrderItemInsert {
-  order_id: string;
+interface TestOrderItemInsert {
+  test_order_id: string;
   item_type: 'ticket' | 'product';
   ticket_tier_id?: string;
   product_id?: string;
@@ -209,9 +209,8 @@ export class MockOrderService extends TestDataService {
         result.errors.push(...batchResult.errors);
       }
 
-      // Generate RSVPs if event has RSVP enabled and config says to
-      const hasRsvpEnabled = event.rsvp_capacity !== null;
-      if (config.generateRsvps && hasRsvpEnabled && testUsers.length > 0) {
+      // Generate RSVPs if config says to (for test data, we generate regardless of event RSVP capacity)
+      if (config.generateRsvps && testUsers.length > 0) {
         const rsvpResult = await this.generateMockRsvps(
           config.eventId,
           testUsers,
@@ -413,17 +412,16 @@ export class MockOrderService extends TestDataService {
 
         let profileErrors = 0;
 
-        // Create profiles with progress updates
+        // Create profiles with progress updates using test_profiles table
         for (let i = 0; i < registeredOrderCount; i++) {
           const email = this.generateTestEmail();
           const displayName = this.generateFakeName();
-          const testUserId = crypto.randomUUID();
 
-          const { data: profile, error } = await supabase
-            .from('profiles')
+          // Use test_profiles table instead of profiles (no FK to auth.users)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: profile, error } = await (supabase as any)
+            .from('test_profiles')
             .insert({
-              id: testUserId,
-              user_id: testUserId,
               email,
               display_name: displayName,
             })
@@ -489,7 +487,17 @@ export class MockOrderService extends TestDataService {
         updateStep('orders', { current: processed });
 
         if (batchResult.errors.length > 0) {
-          addLog('warning', `Batch ${Math.floor(i / MOCK_ORDER_CONSTANTS.BATCH_SIZE) + 1}: ${batchResult.errors.length} error(s)`);
+          // Log first few unique errors for debugging
+          const uniqueErrors = [...new Set(batchResult.errors)].slice(0, 3);
+          addLog('warning', `Batch ${Math.floor(i / MOCK_ORDER_CONSTANTS.BATCH_SIZE) + 1}: ${batchResult.errors.length} error(s)`, {
+            sampleErrors: uniqueErrors,
+          });
+          logger.warn('Batch order creation errors', {
+            batchNumber: Math.floor(i / MOCK_ORDER_CONSTANTS.BATCH_SIZE) + 1,
+            errorCount: batchResult.errors.length,
+            uniqueErrors,
+            source: 'MockOrderService.generateMockOrdersWithProgress',
+          });
         }
       }
 
@@ -500,9 +508,8 @@ export class MockOrderService extends TestDataService {
         guests: result.guestsCreated,
       });
 
-      // Phase: Creating RSVPs
-      const hasRsvpEnabled = event.rsvp_capacity !== null;
-      if (config.generateRsvps && hasRsvpEnabled && testUsers.length > 0) {
+      // Phase: Creating RSVPs (for test data, we generate regardless of event RSVP capacity)
+      if (config.generateRsvps && testUsers.length > 0) {
         progress.phase = 'creating_rsvps';
         const expectedRsvps = Math.round(testUsers.length * ((config.rsvpRatio ?? 60) / 100));
         updateStep('rsvps', { status: 'in_progress', total: expectedRsvps, current: 0 });
@@ -634,24 +641,37 @@ export class MockOrderService extends TestDataService {
         deleted_order_items: 0,
         deleted_orders: 0,
         deleted_guests: 0,
+        deleted_rsvps: 0,
+        deleted_interests: 0,
+        deleted_test_profiles: 0,
+        deleted_test_tickets: 0,
+        deleted_test_order_items: 0,
+        deleted_test_orders: 0,
       };
 
       logger.info('Mock orders deleted', {
         eventId,
-        deleted_orders: deletionResult.deleted_orders,
-        deleted_tickets: deletionResult.deleted_tickets,
+        deleted_test_orders: deletionResult.deleted_test_orders,
+        deleted_test_tickets: deletionResult.deleted_test_tickets,
+        deleted_legacy_orders: deletionResult.deleted_orders,
+        deleted_legacy_tickets: deletionResult.deleted_tickets,
         source: 'MockOrderService.deleteMockOrdersByEvent',
       });
 
       return {
         success: true,
+        // Legacy production table deletions (backward compatibility)
         deletedOrders: deletionResult.deleted_orders ?? 0,
         deletedTickets: deletionResult.deleted_tickets ?? 0,
         deletedOrderItems: deletionResult.deleted_order_items ?? 0,
         deletedGuests: deletionResult.deleted_guests ?? 0,
+        // Test table deletions
         deletedRsvps: deletionResult.deleted_rsvps ?? 0,
         deletedInterests: deletionResult.deleted_interests ?? 0,
         deletedTestProfiles: deletionResult.deleted_test_profiles ?? 0,
+        deletedTestOrders: deletionResult.deleted_test_orders ?? 0,
+        deletedTestOrderItems: deletionResult.deleted_test_order_items ?? 0,
+        deletedTestTickets: deletionResult.deleted_test_tickets ?? 0,
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -671,6 +691,9 @@ export class MockOrderService extends TestDataService {
         deletedRsvps: 0,
         deletedInterests: 0,
         deletedTestProfiles: 0,
+        deletedTestOrders: 0,
+        deletedTestOrderItems: 0,
+        deletedTestTickets: 0,
         error: errorMessage,
       };
     }
@@ -701,21 +724,22 @@ export class MockOrderService extends TestDataService {
       return [];
     }
 
-    // Get mock order counts for each event
+    // Get mock order counts for each event from test_orders table
     const eventIds = events.map(e => e.id);
 
     if (eventIds.length === 0) {
       return [];
     }
 
-    const { data: orderCounts } = await supabase
-      .from('orders')
+    // Query test_orders table (dedicated test data table)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: orderCounts } = await (supabase as any)
+      .from('test_orders')
       .select('event_id')
-      .in('event_id', eventIds)
-      .eq('test_data', true);
+      .in('event_id', eventIds);
 
     const countMap = new Map<string, number>();
-    (orderCounts || []).forEach(o => {
+    (orderCounts || []).forEach((o: { event_id: string }) => {
       countMap.set(o.event_id, (countMap.get(o.event_id) || 0) + 1);
     });
 
@@ -751,12 +775,12 @@ export class MockOrderService extends TestDataService {
       return null;
     }
 
-    // Get mock order count
-    const { count } = await supabase
-      .from('orders')
+    // Get mock order count from test_orders table
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { count } = await (supabase as any)
+      .from('test_orders')
       .select('*', { count: 'exact', head: true })
-      .eq('event_id', eventId)
-      .eq('test_data', true);
+      .eq('event_id', eventId);
 
     return {
       id: event.id,
@@ -892,7 +916,7 @@ export class MockOrderService extends TestDataService {
       try {
         let guestId: string | null = null;
 
-        // Create guest if needed
+        // Create guest if needed (for non-registered users)
         if (!orderData.isRegisteredUser) {
           const { data: guest, error: guestError } = await supabase
             .from('guests')
@@ -911,12 +935,14 @@ export class MockOrderService extends TestDataService {
           result.guestsCreated++;
         }
 
-        // Create order with fee breakdown
-        const { data: order, error: orderError } = await supabase
-          .from('orders')
+        // Create test order in test_orders table (not production orders)
+        // Uses test_profile_id instead of user_id to avoid auth.users FK constraint
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: order, error: orderError } = await (supabase as any)
+          .from('test_orders')
           .insert({
             event_id: config.eventId,
-            user_id: orderData.userId,
+            test_profile_id: orderData.userId, // This is actually a test_profile.id
             guest_id: guestId,
             customer_email: orderData.userEmail,
             status: orderData.status,
@@ -926,7 +952,6 @@ export class MockOrderService extends TestDataService {
             fee_breakdown: orderData.feeBreakdown,
             currency: 'usd',
             created_at: orderData.orderDate,
-            test_data: true,
           })
           .select('id')
           .single();
@@ -939,9 +964,9 @@ export class MockOrderService extends TestDataService {
         result.ordersCreated++;
         result.orderIds.push(order.id);
 
-        // Create order items (fees are tracked at order level via fee_breakdown)
-        const orderItems: OrderItemInsert[] = [{
-          order_id: order.id,
+        // Create test order items in test_order_items table
+        const orderItems: TestOrderItemInsert[] = [{
+          test_order_id: order.id,
           item_type: 'ticket',
           ticket_tier_id: orderData.tierId,
           quantity: orderData.ticketQuantity,
@@ -951,7 +976,7 @@ export class MockOrderService extends TestDataService {
 
         if (orderData.hasProtection) {
           orderItems.push({
-            order_id: order.id,
+            test_order_id: order.id,
             item_type: 'product',
             product_id: MOCK_ORDER_CONSTANTS.TICKET_PROTECTION_PRODUCT_ID,
             quantity: orderData.ticketQuantity,
@@ -960,8 +985,9 @@ export class MockOrderService extends TestDataService {
           });
         }
 
-        const { data: createdItems, error: itemsError } = await supabase
-          .from('order_items')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: createdItems, error: itemsError } = await (supabase as any)
+          .from('test_order_items')
           .insert(orderItems)
           .select('id');
 
@@ -970,25 +996,25 @@ export class MockOrderService extends TestDataService {
           continue;
         }
 
-        // Create tickets - one per quantity
+        // Create test tickets in test_tickets table - one per quantity
         const ticketOrderItem = createdItems[0];
         const ticketStatus = orderData.status === 'paid' ? 'valid' : orderData.status;
 
         const tickets = Array.from({ length: orderData.ticketQuantity }, (_, idx) => ({
-          order_id: order.id,
-          order_item_id: ticketOrderItem.id,
+          test_order_id: order.id,
+          test_order_item_id: ticketOrderItem.id,
           ticket_tier_id: orderData.tierId,
           event_id: config.eventId,
           attendee_name: orderData.guestName || null,
           attendee_email: orderData.userEmail,
-          qr_code_data: `MOCK-${order.id}-${idx}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          qr_code_data: `TEST-${order.id}-${idx}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           status: ticketStatus,
           has_protection: orderData.hasProtection,
-          test_data: true,
         }));
 
-        const { data: createdTickets, error: ticketsError } = await supabase
-          .from('tickets')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: createdTickets, error: ticketsError } = await (supabase as any)
+          .from('test_tickets')
           .insert(tickets)
           .select('id');
 
@@ -1008,7 +1034,7 @@ export class MockOrderService extends TestDataService {
 
   /**
    * Create test profiles for mock orders
-   * These profiles are marked with test_data: true and can be cleaned up
+   * Uses dedicated test_profiles table that doesn't require auth.users
    */
   private async createTestProfiles(
     count: number
@@ -1019,16 +1045,12 @@ export class MockOrderService extends TestDataService {
       const email = this.generateTestEmail();
       const displayName = this.generateFakeName();
 
-      // Generate a UUID for the test user (simulating a user_id)
-      const testUserId = crypto.randomUUID();
-
-      // Create a test profile directly (not linked to auth.users for test data)
-      // Note: Test profiles are identified by their @test.forcemajeure.local email domain
-      const { data: profile, error } = await supabase
-        .from('profiles')
+      // Create a test profile in the dedicated test_profiles table
+      // This table has no FK constraint to auth.users
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: profile, error } = await (supabase as any)
+        .from('test_profiles')
         .insert({
-          id: testUserId,
-          user_id: testUserId, // For test profiles, same as id (no auth.users record)
           email,
           display_name: displayName,
         })
@@ -1046,7 +1068,7 @@ export class MockOrderService extends TestDataService {
       if (profile) {
         testProfiles.push({
           id: profile.id,
-          user_id: profile.id, // For test profiles, id and user_id are the same
+          user_id: profile.id, // For test profiles, id serves as user_id
           email: profile.email || email,
         });
       }
@@ -1069,6 +1091,7 @@ export class MockOrderService extends TestDataService {
 
   /**
    * Generate mock RSVPs for test users
+   * Uses test_event_rsvps table which links to test_profiles
    */
   private async generateMockRsvps(
     eventId: string,
@@ -1084,12 +1107,14 @@ export class MockOrderService extends TestDataService {
 
       const rsvps = usersToRsvp.map(user => ({
         event_id: eventId,
-        user_id: user.user_id,
+        test_profile_id: user.id,
         status: 'confirmed' as const,
       }));
 
-      const { data, error } = await supabase
-        .from('event_rsvps')
+      // Use test_event_rsvps table instead of event_rsvps
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from('test_event_rsvps')
         .insert(rsvps)
         .select('id');
 
@@ -1117,6 +1142,7 @@ export class MockOrderService extends TestDataService {
 
   /**
    * Generate mock interest records for test users
+   * Uses test_event_interests table which links to test_profiles
    */
   private async generateMockInterests(
     eventId: string,
@@ -1132,12 +1158,13 @@ export class MockOrderService extends TestDataService {
 
       const interests = usersToInterest.map(user => ({
         event_id: eventId,
-        user_id: user.user_id,
+        test_profile_id: user.id,
       }));
 
-      // Using type assertion because user_event_interests may not be in generated types yet
+      // Use test_event_interests table instead of user_event_interests
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
-        .from('user_event_interests')
+        .from('test_event_interests')
         .insert(interests)
         .select('id');
 

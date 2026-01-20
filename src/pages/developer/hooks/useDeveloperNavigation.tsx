@@ -14,6 +14,7 @@ import {
   FlaskConical,
   Code,
   FileSpreadsheet,
+  Palette,
   // Admin icons
   Shield,
   Sliders,
@@ -108,6 +109,12 @@ export function useDeveloperNavigation({
         label: t('developerIndex.orderCsvImport'),
         icon: FileSpreadsheet,
         description: t('developerIndex.orderCsvImportDescription'),
+      },
+      {
+        id: 'dev_template_designer',
+        label: t('developerIndex.templateDesigner', 'Template Designer'),
+        icon: Palette,
+        description: t('developerIndex.templateDesignerDescription', 'Customize email and PDF templates'),
       },
     ];
 

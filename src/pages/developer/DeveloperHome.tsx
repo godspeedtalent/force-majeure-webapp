@@ -57,6 +57,7 @@ import { UserMetricsDashboard } from './dashboards/userMetrics';
 
 // Developer Tools components
 import { OrderCsvImportContent } from './orderImport';
+import { TemplateDesignerContent } from '@/features/template-designer';
 
 // Types
 import { DeveloperTab, VALID_TABS, EXTERNAL_ROUTES } from './types';
@@ -178,6 +179,12 @@ export default function DeveloperHome() {
         {activeTab === 'dev_docs' && (
           <PageErrorBoundary section="Documentation Viewer">
             <DocumentationViewerTab />
+          </PageErrorBoundary>
+        )}
+
+        {activeTab === 'dev_template_designer' && (
+          <PageErrorBoundary section="Template Designer">
+            <TemplateDesignerContent />
           </PageErrorBoundary>
         )}
 

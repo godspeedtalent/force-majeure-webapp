@@ -16,6 +16,8 @@ export interface EventPartner {
   id: string;
   organization_id: string;
   display_order: number;
+  is_hidden: boolean;
+  importance: number;
   organization: Organization;
 }
 
@@ -95,6 +97,8 @@ export function useEventPartners(eventId: string | undefined) {
           id,
           organization_id,
           display_order,
+          is_hidden,
+          importance,
           organization:organizations (
             id,
             name,
@@ -105,6 +109,8 @@ export function useEventPartners(eventId: string | undefined) {
           )
         `)
         .eq('event_id', eventId)
+        .eq('is_hidden', false)
+        .order('importance', { ascending: false })
         .order('display_order');
 
       if (error) {
@@ -120,6 +126,8 @@ export function useEventPartners(eventId: string | undefined) {
         id: item.id,
         organization_id: item.organization_id,
         display_order: item.display_order,
+        is_hidden: item.is_hidden,
+        importance: item.importance ?? 1,
         organization: item.organization,
       }));
     },

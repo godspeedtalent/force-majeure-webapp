@@ -28,7 +28,9 @@
     "adminOnly": "仅限管理员",
     "followOnInstagram": "在Instagram上关注我们",
     "accountSettings": "账户设置",
-    "artistProfile": "艺术家资料"
+    "artistProfile": "艺术家资料",
+    "wallet": "我的钱包",
+    "orders": "我的订单"
   },
   "buttons": {
     "save": "保存",
@@ -1538,6 +1540,35 @@
     "updateFailed": "更新工作人员角色失败",
     "removeFailed": "移除工作人员失败"
   },
+  "orgStaff": {
+    "title": "组织工作人员",
+    "listDescription": "已分配给本组织的用户",
+    "addStaff": "添加工作人员",
+    "addStaffDescription": "分配用户来协助管理本组织",
+    "searchUser": "搜索用户...",
+    "role": "角色",
+    "roleStaff": "工作人员",
+    "roleAdmin": "管理员",
+    "staffDescription": "可以查看组织和在活动中扫描门票",
+    "adminDescription": "可以管理组织设置和其他工作人员",
+    "addToOrganization": "添加到组织",
+    "noStaff": "暂无工作人员",
+    "noStaffHint": "添加用户来协助管理本组织",
+    "addedOn": "添加于 {{date}}",
+    "clickToChangeRole": "点击更改角色",
+    "remove": "移除",
+    "removeTitle": "移除工作人员",
+    "removeConfirm": "从组织中移除此工作人员？",
+    "unknownUser": "未知用户",
+    "unknown": "未知",
+    "staffAdded": "工作人员已添加到组织",
+    "roleUpdated": "工作人员角色已更新",
+    "removed": "工作人员已移除",
+    "alreadyAdded": "用户已是工作人员",
+    "addFailed": "添加工作人员失败",
+    "updateFailed": "更新工作人员角色失败",
+    "removeFailed": "移除工作人员失败"
+  },
   "partners": {
     "title": "合作组织",
     "listDescription": "参与本活动的组织（赞助商、联合推广商等）",
@@ -1572,7 +1603,13 @@
     "partnerHidden": "合作伙伴已从活动页面隐藏",
     "partnerVisible": "合作伙伴在活动页面可见",
     "visibilityFailed": "更新合作伙伴可见性失败",
-    "hiddenBadge": "已隐藏"
+    "hiddenBadge": "已隐藏",
+    "importancePrimary": "主要赞助商",
+    "importanceFeatured": "精选",
+    "increaseImportance": "提高显著度",
+    "decreaseImportance": "降低显著度",
+    "importanceUpdated": "合作伙伴显著度已更新",
+    "importanceFailed": "更新合作伙伴显著度失败"
   },
   "eventOverview": {
     "title": "活动概览",
@@ -1621,6 +1658,8 @@
     "testModeDisabled": "测试模式已禁用",
     "hasOrdersWarning": "此活动有 {{count}} 个订单，无法转换为测试活动。",
     "hasBeenPublishedWarning": "此活动已发布，无法转换为测试活动。",
+    "canExitTestModeDescription": "没有模拟数据。您可以安全退出测试模式并返回草稿状态。",
+    "purgeMockDataToExitTestMode": "此活动有 {{count}} 个模拟订单。请清除下方的测试数据以退出测试模式。",
     "mockDataTools": "模拟数据工具",
     "mockDataToolsDescription": "生成模拟订单、票券和访客，用于测试购票流程和报告。",
     "showSettings": "设置",
@@ -1670,7 +1709,22 @@
     "randomizeOrderTimesDescription": "在日期范围内随机分布订单，以获得真实的销售趋势数据",
     "ticketGroupCount": "要生成的票券组数量",
     "ticketGroupCountDescription": "要创建的新票券组数量（每组至少一个等级）。设为0跳过。",
-    "existingGroups": "现有组"
+    "existingGroups": "现有组",
+    "tabs": {
+      "currentState": "当前状态",
+      "importMore": "导入更多"
+    },
+    "summary": {
+      "title": "测试数据摘要",
+      "orders": "订单",
+      "tickets": "票券",
+      "ticketGroups": "票券组",
+      "rsvps": "预约",
+      "interests": "关注",
+      "noMockData": "尚未生成测试数据。",
+      "generatedAt": "上次生成时间",
+      "users": "测试用户"
+    }
   },
   "mockProgress": {
     "overallProgress": "总体进度",
@@ -2497,7 +2551,10 @@
       "title": "支付成功！",
       "description": "您的门票已成功购买",
       "emailNotice": "您将很快收到包含门票的确认邮件。",
-      "viewTickets": "查看我的门票"
+      "viewTickets": "查看我的门票",
+      "sendingEmail": "正在发送确认邮件...",
+      "emailSent": "确认邮件已发送！",
+      "emailFailed": "邮件发送延迟，请在钱包中查看门票"
     },
     "cancelled": {
       "title": "结账已取消",
@@ -3149,7 +3206,8 @@
     "pending": "待处理",
     "completed": "已完成",
     "cancelled": "已取消",
-    "refunded": "已退款"
+    "refunded": "已退款",
+    "paid": "已支付"
   },
   "orderManagement": {
     "title": "订单管理",

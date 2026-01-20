@@ -62,6 +62,11 @@ const CheckoutFlowTests = lazy(() => import('./pages/testing/CheckoutFlowTests')
 const SonicGauntlet = lazy(() => import('./pages/SonicGauntlet'));
 const ClaimTicketPage = lazy(() => import('./pages/claim-ticket/ClaimTicketPage'));
 
+// Lazy load wallet pages
+const Wallet = lazy(() => import('./pages/wallet/Wallet'));
+const TicketView = lazy(() => import('./pages/wallet/TicketView'));
+const OrderTickets = lazy(() => import('./pages/orders/OrderTickets'));
+
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import { DemoProtectedRoute } from '@/components/routing/DemoProtectedRoute';
 import { ProtectedRoute } from '@/components/routing/ProtectedRoute';
@@ -509,6 +514,38 @@ const AppRoutes = () => {
       )}
 
       <Route path='/orders' element={<Orders />} />
+      <Route
+        path='/orders/:orderId/tickets'
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <OrderTickets />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Wallet Routes */}
+      <Route
+        path='/wallet'
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <Wallet />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/wallet/tickets/:ticketId'
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <TicketView />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
       {/* Checkout Routes */}
       <Route path='/checkout/success' element={<CheckoutSuccess />} />

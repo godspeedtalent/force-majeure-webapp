@@ -5,7 +5,7 @@ import { eventInterestService } from '../services/eventInterestService';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger, supabase } from '@/shared';
 
-export function useEventInterest(eventId: string, eventTitle?: string) {
+export function useEventInterest(eventId: string, eventTitle?: string, eventStatus?: string) {
   const { t } = useTranslation('toasts');
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -39,10 +39,10 @@ export function useEventInterest(eventId: string, eventTitle?: string) {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Query: Get interest count
+  // Query: Get interest count (includes test interests for test events)
   const { data: interestCount = 0 } = useQuery({
-    queryKey: ['event-interest-count', eventId],
-    queryFn: () => eventInterestService.getInterestCount(eventId),
+    queryKey: ['event-interest-count', eventId, eventStatus],
+    queryFn: () => eventInterestService.getInterestCount(eventId, eventStatus),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 

@@ -24,6 +24,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
 import { supabase } from '@/integrations/supabase/client';
@@ -349,18 +350,7 @@ export default function OrganizationManagement() {
   );
 
   const renderStaffTab = () => (
-    <div className='space-y-6'>
-      <FmFormSection
-        title={t('organizationManagement.staff')}
-        description={t('organizationManagement.staffDescription')}
-        icon={Users}
-      >
-        <div className='py-8 text-center text-muted-foreground'>
-          <Users className='h-12 w-12 mx-auto mb-4 opacity-50' />
-          <p>{t('organizationManagement.staffComingSoon')}</p>
-        </div>
-      </FmFormSection>
-    </div>
+    <OrganizationStaffManagement organizationId={id!} />
   );
 
   const renderEventsTab = () => (

@@ -15,6 +15,7 @@ export interface EventPartner {
   organization_id: string;
   display_order: number;
   is_hidden: boolean;
+  importance: number;
   created_at: string;
   organization?: Organization;
 }
@@ -61,6 +62,7 @@ export const useEventPartners = (eventId: string | undefined) => {
           organization_id,
           display_order,
           is_hidden,
+          importance,
           created_at,
           organization:organizations (
             id,
@@ -72,6 +74,7 @@ export const useEventPartners = (eventId: string | undefined) => {
           )
         `)
         .eq('event_id', eventId)
+        .order('importance', { ascending: false })
         .order('display_order', { ascending: true });
 
       if (error) {
@@ -202,6 +205,30 @@ export const useEventPartners = (eventId: string | undefined) => {
     },
   });
 
+  // Update importance of a partner (1-3, controls grid span)
+  const updatePartnerImportance = useMutation({
+    mutationFn: async ({ partnerId, importance }: { partnerId: string; importance: number }) => {
+      // Clamp importance to valid range
+      const clampedImportance = Math.max(1, Math.min(3, importance));
+
+      const { error } = await eventPartnersTable()
+        .update({ importance: clampedImportance })
+        .eq('id', partnerId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: eventPartnerKeys.byEvent(eventId || '') });
+      toast.success(t('partners.importanceUpdated'));
+    },
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: t('partners.importanceFailed'),
+        context: 'useEventPartners.updatePartnerImportance',
+      });
+    },
+  });
+
   // Helper to check if an org is already a partner
   const isPartner = (orgId: string): boolean => {
     return partners.some(p => p.organization_id === orgId);
@@ -220,12 +247,14 @@ export const useEventPartners = (eventId: string | undefined) => {
     removePartner: removePartner.mutate,
     reorderPartners: reorderPartners.mutate,
     togglePartnerVisibility: togglePartnerVisibility.mutate,
+    updatePartnerImportance: updatePartnerImportance.mutate,
 
     // Mutation states
     isAdding: addPartner.isPending,
     isRemoving: removePartner.isPending,
     isReordering: reorderPartners.isPending,
     isTogglingVisibility: togglePartnerVisibility.isPending,
+    isUpdatingImportance: updatePartnerImportance.isPending,
 
     // Helpers
     isPartner,

@@ -7,6 +7,7 @@ export type DeveloperTab =
   | 'dev_demo'
   | 'dev_docs'
   | 'dev_order_import'
+  | 'dev_template_designer'
   // Admin Controls
   | 'admin_settings'
   | 'admin_ticketing'
@@ -37,6 +38,7 @@ export const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
   'dev_docs',
   'dev_order_import',
+  'dev_template_designer',
   'admin_settings',
   'admin_ticketing',
   'dash_recordings',

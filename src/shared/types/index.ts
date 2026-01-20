@@ -10,3 +10,13 @@ export type {
   UpdateRatingInput,
   RatingDashboardStats,
 } from './recordingRatings';
+
+// Organization staff types
+export type {
+  OrganizationStaffRole,
+  OrganizationStaff,
+  OrganizationStaffWithDetails,
+  AddOrganizationStaffInput,
+  UpdateOrganizationStaffInput,
+} from './organizationStaff';
+export { ORG_STAFF_ROLES } from './organizationStaff';

@@ -383,7 +383,40 @@
     "orderPlaced": "下单时间",
     "at": "于",
     "event": "活动",
-    "ticket": "门票"
+    "ticket": "门票",
+    "viewTickets": "查看门票"
+  },
+  "wallet": {
+    "title": "我的钱包",
+    "subtitle": "您的门票和即将到来的演出",
+    "tabs": {
+      "upcoming": "即将到来",
+      "past": "已结束"
+    },
+    "noUpcoming": "没有即将到来的演出",
+    "noUpcomingDescription": "浏览活动找到您的下一场演出",
+    "noPast": "没有过去的演出",
+    "noPastDescription": "您过去的活动将显示在这里",
+    "browseEvents": "浏览活动",
+    "scanAtEntry": "在入口处出示此二维码",
+    "downloadPdf": "下载PDF",
+    "downloadAll": "下载所有门票",
+    "ticketStatus": {
+      "valid": "有效",
+      "used": "已使用",
+      "cancelled": "已取消",
+      "refunded": "已退款"
+    },
+    "ticketFor": "门票",
+    "viewTicket": "查看门票",
+    "backToWallet": "返回钱包",
+    "ticketNotFound": "门票未找到",
+    "previousTicket": "上一张门票",
+    "nextTicket": "下一张门票",
+    "ticketCount": "门票 {{current}}/{{total}}",
+    "orderTickets": "订单门票",
+    "orderTicketsSubtitle": "来自您订单的门票",
+    "ticketsFromOrder": "订单 #{{orderId}} 的门票"
   },
   "contact": {
     "title": "联系我们。",
@@ -624,6 +657,41 @@
       "activity": "活动",
       "engagement": "参与度",
       "demographics": "人口统计"
+    }
+  },
+  "templateDesigner": {
+    "title": "模板设计器",
+    "description": "自定义电子邮件和PDF模板",
+    "exportSuccess": "配置已导出",
+    "importSuccess": "配置已导入",
+    "importError": "无效的配置文件",
+    "resetSuccess": "已恢复默认设置",
+    "sections": {
+      "colors": "颜色",
+      "typography": "字体",
+      "spacing": "间距",
+      "content": "内容",
+      "visibility": "可见性",
+      "pageSettings": "页面设置"
+    },
+    "templates": {
+      "orderReceipt": "订单收据",
+      "artistRegistration": "艺术家注册",
+      "ticketPdf": "票据PDF"
+    },
+    "labels": {
+      "template": "模板",
+      "pageFormat": "页面格式",
+      "orientation": "方向",
+      "portrait": "纵向",
+      "landscape": "横向",
+      "qrSize": "二维码大小（毫米）",
+      "primary": "主色（强调色）",
+      "secondary": "次色（背景色）",
+      "text": "文字",
+      "mutedText": "次要文字",
+      "border": "边框",
+      "success": "成功"
     }
   }
 }
