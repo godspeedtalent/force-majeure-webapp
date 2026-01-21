@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Download, Copy, Check } from 'lucide-react';
 import QRCode from 'qrcode';
 import { toast } from 'sonner';
+import { logger } from '@/shared';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { getTrackingLinkUrl, getTrackingLinkDisplayPath } from '@/shared/utils/trackingLinkUtils';
 
 interface TrackingLinkQRModalProps {
   open: boolean;
@@ -25,7 +27,7 @@ export function TrackingLinkQRModal({
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const trackingUrl = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${linkCode}`;
+  const trackingUrl = getTrackingLinkUrl(linkCode);
 
   useEffect(() => {
     if (open && canvasRef.current) {
@@ -56,8 +58,11 @@ export function TrackingLinkQRModal({
         },
       });
       setQrDataUrl(dataUrl);
-    } catch (error) {
-      console.error('Failed to generate QR code:', error);
+    } catch (error: unknown) {
+      logger.error('Failed to generate QR code', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        context: 'TrackingLinkQRModal.generateQR',
+      });
     }
   };
 
@@ -118,7 +123,7 @@ export function TrackingLinkQRModal({
         <div className="w-full text-center">
           <p className="text-xs text-muted-foreground mb-1">{t('tracking.scanToVisit')}</p>
           <code className="text-xs bg-muted px-2 py-1 rounded break-all">
-            /t/{linkCode}
+            {getTrackingLinkDisplayPath(linkCode)}
           </code>
         </div>
 

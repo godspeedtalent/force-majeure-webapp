@@ -27,7 +27,10 @@ import {
   useStripePayment,
   StripeCardInput,
   SavedCardSelector,
+  MockPaymentToggle,
+  mockCheckoutService,
 } from '@/features/payments';
+import { ticketEmailService } from '@/features/wallet/services/ticketEmailService';
 
 export interface TicketSelectionSummary {
   tierId: string;
@@ -52,6 +55,7 @@ export interface TicketOrderSummary {
 }
 
 interface TicketCheckoutFormProps {
+  eventId: string;
   eventName: string;
   eventDate: string;
   summary: TicketOrderSummary;
@@ -61,6 +65,7 @@ interface TicketCheckoutFormProps {
 }
 
 export const TicketCheckoutForm = ({
+  eventId,
   eventName,
   eventDate,
   summary,
@@ -78,12 +83,14 @@ export const TicketCheckoutForm = ({
     savedCards,
     loading: stripeLoading,
     ready: stripeReady,
+    isMockMode,
   } = useStripePayment();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [selectedSavedCard, setSelectedSavedCard] = useState<string | null>(
     null
   );
   const [saveCardForLater, setSaveCardForLater] = useState(false);
+  const [useManualCardEntry, setUseManualCardEntry] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -127,6 +134,7 @@ export const TicketCheckoutForm = ({
   const validate = () => {
     const nextErrors: Record<string, string> = {};
 
+    // Always required: name and email (for ticket delivery)
     if (!formData.fullName.trim()) {
       nextErrors.fullName = t('checkout.validation.fullNameRequired');
     }
@@ -138,31 +146,35 @@ export const TicketCheckoutForm = ({
       nextErrors.email = t('checkout.validation.validEmailRequired');
     }
 
-    if (!formData.address.trim()) {
-      nextErrors.address = t('checkout.validation.addressRequired');
+    // Billing address and card only required for real payments
+    if (!isMockMode) {
+      if (!formData.address.trim()) {
+        nextErrors.address = t('checkout.validation.addressRequired');
+      }
+
+      if (!formData.city.trim()) {
+        nextErrors.city = t('checkout.validation.cityRequired');
+      }
+
+      if (!formData.state.trim()) {
+        nextErrors.state = t('checkout.validation.stateRequired');
+      }
+
+      if (
+        !formData.zipCode.trim() ||
+        !/^\d{5}(-\d{4})?$/.test(formData.zipCode)
+      ) {
+        nextErrors.zipCode = t('checkout.validation.validZipRequired');
+      }
+
+      // Card validation is handled by Stripe Elements
+      // Only validate if not using a saved card
+      if (!selectedSavedCard && !stripeReady) {
+        nextErrors.cardNumber = t('checkout.validation.paymentLoading');
+      }
     }
 
-    if (!formData.city.trim()) {
-      nextErrors.city = t('checkout.validation.cityRequired');
-    }
-
-    if (!formData.state.trim()) {
-      nextErrors.state = t('checkout.validation.stateRequired');
-    }
-
-    if (
-      !formData.zipCode.trim() ||
-      !/^\d{5}(-\d{4})?$/.test(formData.zipCode)
-    ) {
-      nextErrors.zipCode = t('checkout.validation.validZipRequired');
-    }
-
-    // Card validation is handled by Stripe Elements
-    // Only validate if not using a saved card
-    if (!selectedSavedCard && !stripeReady) {
-      nextErrors.cardNumber = t('checkout.validation.paymentLoading');
-    }
-
+    // Always required: agree to terms
     if (!formData.agreeToTerms) {
       nextErrors.agreeToTerms = t('checkout.validation.mustAcceptTerms');
     }
@@ -214,9 +226,89 @@ export const TicketCheckoutForm = ({
       );
 
       if (result.success) {
-        toast.success(t('checkout.toast.paymentSuccessful'), {
-          description: t('checkout.toast.ticketsPurchased'),
-        });
+        // If in mock mode, create the order and tickets in the database
+        if (isMockMode) {
+          try {
+            // Convert summary to format needed for mock checkout
+            const feesCents = Math.round(
+              summary.fees.reduce((sum, f) => sum + f.amount, 0) * 100
+            );
+            const feeBreakdown = summary.fees.reduce<Record<string, number>>(
+              (acc, fee) => {
+                acc[`${fee.name}_cents`] = Math.round(fee.amount * 100);
+                return acc;
+              },
+              {}
+            );
+
+            const mockOrderResult = await mockCheckoutService.createMockOrder({
+              eventId,
+              userId: user?.id || null,
+              customerEmail: formData.email,
+              customerName: formData.fullName,
+              tickets: summary.tickets.map(ticket => ({
+                tierId: ticket.tierId,
+                tierName: ticket.name,
+                quantity: ticket.quantity,
+                unitPriceCents: Math.round(ticket.price * 100),
+                subtotalCents: Math.round(ticket.subtotal * 100),
+              })),
+              subtotalCents: Math.round(summary.subtotal * 100),
+              feesCents,
+              totalCents: Math.round(totalWithProtection * 100),
+              feeBreakdown,
+            });
+
+            if (mockOrderResult.success && mockOrderResult.orderId) {
+              logger.info('Mock order created, sending email', {
+                orderId: mockOrderResult.orderId,
+                source: 'TicketCheckoutForm',
+              });
+
+              // Send ticket email
+              const emailResult = await ticketEmailService.sendTicketEmail(
+                mockOrderResult.orderId
+              );
+
+              if (emailResult.success) {
+                toast.success(t('checkout.toast.paymentSuccessful'), {
+                  description: t('checkout.toast.ticketEmailSent'),
+                });
+              } else {
+                // Order was created but email failed
+                toast.success(t('checkout.toast.paymentSuccessful'), {
+                  description: t('checkout.toast.ticketsPurchased'),
+                });
+                toast.warning(t('checkout.toast.emailFailed'), {
+                  description: t('checkout.toast.emailFailedDescription'),
+                });
+              }
+            } else {
+              // Mock order creation failed
+              logger.warn('Mock order creation failed', {
+                error: mockOrderResult.error,
+                source: 'TicketCheckoutForm',
+              });
+              toast.success(t('checkout.toast.paymentSuccessful'), {
+                description: t('checkout.toast.ticketsPurchased'),
+              });
+            }
+          } catch (mockError) {
+            // Log but don't fail - payment was still successful
+            logger.error('Error creating mock order', {
+              error: mockError instanceof Error ? mockError.message : 'Unknown',
+              source: 'TicketCheckoutForm',
+            });
+            toast.success(t('checkout.toast.paymentSuccessful'), {
+              description: t('checkout.toast.ticketsPurchased'),
+            });
+          }
+        } else {
+          // Real payment - show standard success
+          toast.success(t('checkout.toast.paymentSuccessful'), {
+            description: t('checkout.toast.ticketsPurchased'),
+          });
+        }
         onComplete();
       } else {
         throw new Error(result.error || t('checkout.toast.paymentFailed'));
@@ -240,6 +332,19 @@ export const TicketCheckoutForm = ({
 
   return (
     <div className='space-y-6'>
+      {/* Mock Payment Toggle for admin/dev testing */}
+      <MockPaymentToggle />
+
+      {/* Mock Mode Indicator Banner */}
+      {isMockMode && (
+        <div className='bg-fm-gold/20 border border-fm-gold/50 p-[10px] flex items-center gap-[10px]'>
+          <div className='w-2 h-2 rounded-full bg-fm-gold animate-pulse' />
+          <span className='text-xs font-medium uppercase tracking-wider text-fm-gold'>
+            {t('checkout.mockModeActive')}
+          </span>
+        </div>
+      )}
+
       <div className='flex items-start justify-between gap-4'>
         <FmCommonButton
           size='sm'
@@ -290,7 +395,7 @@ export const TicketCheckoutForm = ({
       )}
 
       <form onSubmit={handleSubmit} className='space-y-6'>
-        <FmCommonCard variant='default' className='space-y-6'>
+        <FmCommonCard variant='default' size='md' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <CreditCard className='h-4 w-4 text-fm-gold' />
@@ -347,8 +452,19 @@ export const TicketCheckoutForm = ({
               {/* New Card Input - only show if no saved card selected or user has no saved cards */}
               {(!selectedSavedCard || savedCards.length === 0) && (
                 <div className='md:col-span-2 space-y-4'>
-                  <Label>{t('checkout.cardInformation')}</Label>
-                  <StripeCardInput />
+                  <div className='flex items-center justify-between'>
+                    <Label>{t('checkout.cardInformation')}</Label>
+                    {/* Toggle between Link autofill and manual entry */}
+                    <FmTextLink
+                      onClick={() => setUseManualCardEntry(!useManualCardEntry)}
+                      className='text-xs text-muted-foreground hover:text-fm-gold'
+                    >
+                      {useManualCardEntry
+                        ? t('checkout.useAutofill')
+                        : t('checkout.enterCardManually')}
+                    </FmTextLink>
+                  </div>
+                  <StripeCardInput disableLink={useManualCardEntry} />
                   {errors.cardNumber && (
                     <p className='mt-1 text-xs text-destructive'>
                       {errors.cardNumber}
@@ -370,7 +486,7 @@ export const TicketCheckoutForm = ({
           </div>
         </FmCommonCard>
 
-        <FmCommonCard variant='default' className='space-y-6'>
+        <FmCommonCard variant='default' size='md' className='space-y-6'>
           <div className='space-y-4'>
             <h4 className='text-sm font-medium text-foreground flex items-center gap-2'>
               <MapPin className='h-4 w-4 text-fm-gold' />
@@ -458,7 +574,7 @@ export const TicketCheckoutForm = ({
           </div>
         </FmCommonCard>
 
-        <div className='flex items-start gap-3 p-4 bg-muted/30 rounded-md border border-border'>
+        <div className='flex items-start gap-3 p-[20px] bg-muted/30 rounded-none border border-border'>
           <Shield className='h-5 w-5 text-fm-gold flex-shrink-0 mt-0.5' />
           <div className='flex-1'>
             <div className='flex items-center justify-between mb-1'>
@@ -483,7 +599,7 @@ export const TicketCheckoutForm = ({
           </div>
         </div>
 
-        <FmCommonCard variant='default' className='space-y-4'>
+        <FmCommonCard variant='default' size='md' className='space-y-4'>
           <div className='flex items-center gap-2 text-sm font-medium text-foreground'>
             <CheckCircle2 className='h-4 w-4 text-fm-gold' />
             {t('checkout.orderSummary')}
@@ -586,6 +702,7 @@ export const TicketCheckoutForm = ({
                 >
                   {t('checkout.termsAndConditions')}
                 </FmTextLink>
+                <span className='text-destructive ml-0.5'>*</span>
               </label>
             </div>
             {errors.agreeToTerms && (
@@ -596,7 +713,7 @@ export const TicketCheckoutForm = ({
           <FmBigButton
             type='submit'
             isLoading={isProcessing}
-            disabled={isProcessing || !stripeReady}
+            disabled={isProcessing || !stripeReady || !formData.agreeToTerms}
           >
             {t('checkout.completePurchase')}
           </FmBigButton>

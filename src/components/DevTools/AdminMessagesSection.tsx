@@ -14,8 +14,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { cn, handleError } from '@/shared';
+import { supabase, cn, handleError } from '@/shared';
 import { Input } from '@/components/common/shadcn/input';
 import { Separator } from '@/components/common/shadcn/separator';
 import {

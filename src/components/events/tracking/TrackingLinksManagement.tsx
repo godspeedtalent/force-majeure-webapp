@@ -18,6 +18,7 @@ import { TrackingAnalytics } from './TrackingAnalytics';
 import { TrackingLinkQRModal } from './TrackingLinkQRModal';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { getTrackingLinkUrl, getTrackingLinkDisplayPath } from '@/shared/utils/trackingLinkUtils';
 
 interface TrackingLinksManagementProps {
   eventId: string;
@@ -35,7 +36,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   const [showQrModal, setShowQrModal] = useState(false);
 
   const copyToClipboard = (code: string) => {
-    const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
+    const url = getTrackingLinkUrl(code);
     navigator.clipboard.writeText(url);
     toast.success(tToast('tracking.linkCopied'));
   };
@@ -65,7 +66,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       render: (value: string) => (
         <div className="flex items-center gap-2">
           <code className="text-xs bg-muted px-2 py-1 rounded">
-            /t/{value}
+            {getTrackingLinkDisplayPath(value)}
           </code>
           <button
             className="p-1 hover:bg-muted rounded transition-colors"

@@ -61,22 +61,27 @@ export const EventHeaderActions = ({
     return t('eventActions.markAsInterested');
   };
 
-  // Get tooltip content for attending users
-  const getAttendingTooltip = () => {
-    if (!userIsAttending) return undefined;
-    // Show count of others (excluding the current user)
-    const othersCount = Math.max(0, interestCount - 1);
-    if (othersCount > 0) {
-      return t('eventActions.youreGoingWithOthers', { count: othersCount });
+  // Get tooltip content for interest button
+  const getInterestTooltip = () => {
+    if (userIsAttending) {
+      // Show count of others (excluding the current user)
+      const othersCount = Math.max(0, interestCount - 1);
+      if (othersCount > 0) {
+        return t('eventActions.youreGoingWithOthers', { count: othersCount });
+      }
+      return t('eventActions.youreGoing');
     }
-    return t('eventActions.youreGoing');
+    if (isInterested) {
+      return t('eventActions.removeInterest');
+    }
+    return t('eventActions.expressInterest');
   };
 
   return (
-    <div className='flex items-center gap-2 flex-shrink-0'>
+    <div className='flex items-center gap-2 flex-shrink-0 overflow-visible'>
       {/* Interest Button - shows "You're going!" for attendees (ticket holders or RSVP) */}
       <FmPortalTooltip
-        content={getAttendingTooltip()}
+        content={getInterestTooltip()}
         side='bottom'
       >
         <button

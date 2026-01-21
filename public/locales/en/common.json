@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "Loading..."
+  },
   "nav": {
     "home": "Home",
     "events": "Events",
@@ -190,14 +193,10 @@
     "saveError": "Could not save social settings",
     "enableGuestList": "Enable Guest List",
     "enableGuestListDescription": "Show guest list section on the event details page",
-    "minimumThresholds": "Minimum Guest Thresholds",
-    "minimumThresholdsDescription": "Set the minimum number of guests required before the guest list becomes visible for each type",
-    "minInterestedGuests": "Minimum Interested Guests",
-    "minInterestedDescription": "Guests who marked themselves as \"interested\" in the event",
-    "minPrivateGuests": "Minimum Private Guests",
-    "minPrivateDescription": "Guests on the private guest list (invite-only)",
-    "minPublicGuests": "Minimum Public Guests",
-    "minPublicDescription": "Guests who purchased public tickets",
+    "minimumThreshold": "Minimum Guest Threshold",
+    "minimumThresholdDescription": "Set the minimum number of guests required before the guest list becomes visible",
+    "minGuestThreshold": "Minimum Guests",
+    "minGuestThresholdDescription": "The guest list will only display when at least this many guests are on the list (interested, ticket holders, or private guests)",
     "displayViewCount": "Display View Count",
     "displayViewCountDescription": "Show page view count on the event details page",
     "noteLabel": "Note",
@@ -1467,13 +1466,19 @@
     "showPartnersDescription": "Display partner organizations on the event page",
     "showGuestList": "Show Guest List",
     "showGuestListDescription": "Display the guest list section on the event page",
+    "mobileSettings": "Mobile",
+    "mobileSettingsDescription": "Settings specific to mobile device display",
+    "mobileFullHeroHeight": "Display Full Hero Image Height",
+    "mobileFullHeroHeightDescription": "Show the hero image at full height on mobile without cropping",
     "dangerZone": "Danger Zone",
     "irreversibleActions": "Irreversible actions",
     "deleteEvent": "Delete Event",
     "deleteEventDescription": "Permanently delete this event and all associated data including ticket tiers and orders. This action cannot be undone.",
     "deleteEventConfirm": "Are you sure you want to delete \"{{title}}\"?\n\nThis action cannot be undone. All ticket tiers and orders associated with this event will also be deleted.",
     "lookingForUndercardEnabled": "Looking for undercard enabled",
-    "lookingForUndercardDisabled": "Looking for undercard disabled"
+    "lookingForUndercardDisabled": "Looking for undercard disabled",
+    "noHeadlinerEnabled": "No headliner mode enabled",
+    "noHeadlinerDisabled": "Headliner mode restored"
   },
   "promoCodes": {
     "title": "Promo Codes",
@@ -1688,7 +1693,9 @@
     },
     "publishEvent": "Publish Event",
     "publishEventDescription": "Make your event visible to the public",
-    "publishEventInfo": "Publishing will make this event visible on the homepage and in search results. Make sure all event details are complete before publishing."
+    "publishEventInfo": "Publishing will make this event visible on the homepage and in search results. Make sure all event details are complete before publishing.",
+    "noHeadliner": "No headliner",
+    "noHeadlinerDescription": "This event doesn't have a designated headliner"
   },
   "eventAdmin": {
     "testEventMode": "Test Event Mode",
@@ -2308,6 +2315,8 @@
     "people": "people"
   },
   "tracking": {
+    "title": "Tracking Links",
+    "description": "Create and manage tracking links for marketing campaigns",
     "createLink": "Create Tracking Link",
     "editLink": "Edit Tracking Link",
     "createLinkDescription": "Create a unique tracking link to measure campaign performance",
@@ -2919,16 +2928,41 @@
     "tierToggleFailed": "Failed to toggle tier: {{error}}",
     "rsvpSettings": "RSVP Settings",
     "rsvpSettingsDescription": "Configure RSVP availability for this event",
-    "rsvpsAvailable": "RSVPs Available",
-    "rsvpsAvailableDescription": "When enabled, users can RSVP to this event in addition to purchasing tickets",
+    "rsvpsEnabled": "RSVPs Enabled",
+    "rsvpsEnabledDescription": "When enabled, users can RSVP to this event",
+    "rsvpOnlyEvent": "RSVP Only Event",
+    "rsvpOnlyEventDescription": "When enabled, this event only accepts RSVPs with no paid ticket sales",
     "rsvpCapacity": "RSVP Capacity",
     "rsvpCapacityInfo": "Set an optional capacity limit for RSVPs",
     "rsvpCapacityHint": "Leave empty for unlimited RSVPs",
+    "rsvpButtonSubtitle": "Button Subtitle",
+    "rsvpButtonSubtitlePlaceholder": "e.g., Limited availability",
+    "rsvpButtonSubtitleHint": "Optional text displayed below the RSVP button",
+    "sendRsvpEmail": "Send RSVP Confirmation Email",
+    "sendRsvpEmailDescription": "When enabled, users will receive an email confirmation after submitting their RSVP",
     "currentRsvps": "Current RSVPs",
     "rsvpAtCapacity": "Event is at RSVP capacity",
     "unlimited": "Unlimited",
     "complimentaryTickets": "Complimentary Tickets",
-    "complimentaryTicketsDescription": "Issue free tickets to guests, VIPs, or staff"
+    "complimentaryTicketsDescription": "Issue free tickets to guests, VIPs, or staff",
+    "eventFeeSettings": "Event Fee Settings",
+    "eventFeeSettingsDescription": "Configure custom fees for this event or use site-wide defaults",
+    "useDefaultSiteFees": "Use Default Site Fees",
+    "useDefaultSiteFeesDescription": "When enabled, this event will use the global fee settings from the site configuration",
+    "flatFee": "Flat Fee",
+    "percentFee": "Percentage Fee",
+    "flatFeeHint": "Fixed amount added to each ticket",
+    "percentFeeHint": "Percentage of ticket price added as fee",
+    "inherited": "inherited",
+    "inheritedFees": "Inherited Fees",
+    "additionalFees": "Additional Fees",
+    "customFees": "Custom Fees",
+    "addFee": "Add Fee",
+    "feeLabel": "Fee Label",
+    "feeLabelPlaceholder": "e.g., Processing Fee, Sales Tax",
+    "feeType": "Fee Type",
+    "noAdditionalFees": "No additional fees. Click \"Add Fee\" to add fees on top of inherited ones.",
+    "noCustomFees": "No custom fees. Click \"Add Fee\" to add fee items."
   },
   "eventForm": {
     "validation": {
@@ -3316,6 +3350,7 @@
     "venueTBA": "Venue TBA"
   },
   "eventActions": {
+    "expressInterest": "Express interest!",
     "removeInterest": "Remove interest",
     "markAsInterested": "Mark as interested",
     "shareEvent": "Share event",
@@ -3542,7 +3577,9 @@
     "deleteGroup": "Delete group",
     "ticketTiers": "Ticket Tiers",
     "addTierToGroup": "Add Tier to {{groupName}}",
-    "ungroupedNote": "Tickets in this group will not appear grouped together in the checkout flow. They will be displayed as individual ticket tiers."
+    "ungroupedNote": "Tickets in this group will not appear grouped together in the checkout flow. They will be displayed as individual ticket tiers.",
+    "inheritEventFees": "Inherit Event Fees",
+    "inheritEventFeesDescription": "When enabled, this group uses the event's fee settings. Disable to set custom fees for this group."
   },
   "termsAndConditions": {
     "title": "Terms and Conditions",
@@ -3643,7 +3680,9 @@
     "availableCount": "{{count}} available",
     "nameLockedTooltip": "Name cannot be changed after tickets are sold",
     "priceLockedTooltip": "Price cannot be changed after tickets are sold",
-    "dragToReorder": "Drag to reorder"
+    "dragToReorder": "Drag to reorder",
+    "inheritGroupFees": "Inherit Group Fees",
+    "inheritGroupFeesDescription": "When enabled, this tier uses the group's fee settings. Disable to set custom fees for this tier."
   },
   "ticketTiersSection": {
     "addTicketTier": "Add Ticket Tier",

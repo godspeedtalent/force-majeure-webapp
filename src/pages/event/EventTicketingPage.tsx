@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowLeft, AlertCircle, MapPin, Clock, Moon } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmDateBox } from '@/components/common/display/FmDateBox';
+import { FmTextLink } from '@/components/common/display/FmTextLink';
+import { FmUndercardList } from '@/components/common/display/FmUndercardList';
+import { Badge } from '@/components/common/shadcn/badge';
+import { FmVenueDetailsModal } from '@/components/venue/FmVenueDetailsModal';
 import { EventCheckoutWizard } from '@/components/ticketing';
 import { FmQueueWaitingView } from '@/components/ticketing/queue/FmQueueWaitingView';
 import { useEventDetails } from './hooks/useEventDetails';
@@ -13,7 +17,6 @@ import { useTicketingGate, QueueEvent } from './hooks/useTicketingGate';
 import { useQueueConfiguration } from './hooks/useQueueConfiguration';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { useCheckoutTimerDuration } from '@/hooks/useAppSettings';
-import { formatTimeDisplay } from '@/shared';
 import { logger } from '@/shared';
 import { toast } from 'sonner';
 
@@ -27,6 +30,7 @@ export const EventTicketingPage = () => {
   // Fetch checkout timer duration (uses per-event config or global default)
   const { data: checkoutDuration } = useCheckoutTimerDuration(id);
   const [hasEntered, setHasEntered] = useState(false);
+  const [isVenueModalOpen, setIsVenueModalOpen] = useState(false);
 
   // Handle queue events (promotions, position changes)
   const handleQueueEvent = (queueEvent: QueueEvent) => {
@@ -137,15 +141,62 @@ export const EventTicketingPage = () => {
 
   const yearNumber = useMemo(() => eventDate?.getFullYear() ?? 0, [eventDate]);
 
-  const formattedTime = useMemo(
-    () => (event?.time ? formatTimeDisplay(event.time) : ''),
-    [event?.time]
+  // Compute displayTitle - prefer headliner name, fallback to event title
+  // If noHeadliner is true or headliner name is 'TBA', use the event title instead
+  const displayTitle = useMemo(() => {
+    if (event?.noHeadliner || event?.headliner?.name === 'TBA') {
+      return event?.title || 'Event';
+    }
+    return event?.headliner?.name || event?.title || 'Event';
+  }, [event?.headliner?.name, event?.title, event?.noHeadliner]);
+
+  // Display subtitle from event data, fallback to venue if no subtitle
+  const displaySubtitle = useMemo(
+    () => event?.subtitle || '',
+    [event?.subtitle]
   );
 
-  const displayTitle = useMemo(
-    () => event?.headliner?.name || 'Event',
-    [event?.headliner?.name]
-  );
+  // Format time as: 9pm - 2am or 9pm - Late for after hours
+  const formattedDateTime = useMemo(() => {
+    if (!event?.time) return '';
+
+    const startMatch = event.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!startMatch) return event.time;
+
+    const startHour = parseInt(startMatch[1], 10);
+    const startMeridiem = (startMatch[3] || 'PM').toUpperCase();
+
+    // If after hours, show "9pm - Late"
+    if (event.isAfterHours) {
+      return `${startHour}${startMeridiem.toLowerCase()} - Late`;
+    }
+
+    // If no end time, just show start time
+    if (!event.endTime) {
+      return `${startHour}${startMeridiem.toLowerCase()}`;
+    }
+
+    // Parse end time
+    const endMatch = event.endTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!endMatch) {
+      return `${startHour}${startMeridiem.toLowerCase()}`;
+    }
+
+    const endHour = parseInt(endMatch[1], 10);
+    const endMeridiem = (endMatch[3] || 'AM').toUpperCase();
+
+    // Only show first meridiem if different from second
+    const startMeridiemDisplay =
+      startMeridiem !== endMeridiem ? startMeridiem.toLowerCase() : '';
+    const endMeridiemDisplay = endMeridiem.toLowerCase();
+
+    return `${startHour}${startMeridiemDisplay} - ${endHour}${endMeridiemDisplay}`;
+  }, [event?.time, event?.endTime, event?.isAfterHours]);
+
+  // Handler for venue modal
+  const handleVenueSelect = () => {
+    setIsVenueModalOpen(true);
+  };
 
   const handleBack = () => {
     if (id) {
@@ -254,23 +305,49 @@ export const EventTicketingPage = () => {
             {t('ticketing.backToEvent')}
           </FmCommonButton>
 
-          {/* Event Header */}
+          {/* Event Header - Rich display matching event details page */}
           <div className='mb-8'>
-            <div className='flex items-start gap-[20px] mb-[20px]'>
+            <div className='flex flex-wrap items-center gap-4 lg:flex-nowrap'>
               <FmDateBox
                 weekday={weekdayLabel}
                 month={monthLabel}
                 day={dayNumber}
                 year={yearNumber}
-                size='md'
+                size='lg'
               />
-              <div className='flex-1'>
-                <h1 className='text-2xl font-canela text-foreground mb-2'>
-                  {displayTitle}
-                </h1>
-                <p className='text-sm text-muted-foreground'>
-                  {formattedTime} • {event.venue}
-                </p>
+              <div className='space-y-3 min-w-0 flex-1'>
+                <div className='space-y-0.5'>
+                  <h1 className='text-3xl lg:text-4xl font-canela font-medium text-foreground leading-tight'>
+                    {displayTitle}
+                  </h1>
+                  {displaySubtitle && (
+                    <p className='text-lg text-muted-foreground font-normal'>
+                      {displaySubtitle}
+                    </p>
+                  )}
+                </div>
+                <FmUndercardList
+                  artists={event.undercard}
+                  onArtistClick={() => {}}
+                />
+                <div className='flex flex-col gap-1.5 text-sm text-muted-foreground/90 tracking-wide'>
+                  <div className='flex items-center gap-2'>
+                    <MapPin className='h-4 w-4 text-fm-gold flex-shrink-0' />
+                    <FmTextLink onClick={handleVenueSelect}>
+                      {event.venue || t('ticketing.venueTba')}
+                    </FmTextLink>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Clock className='h-4 w-4 text-fm-gold flex-shrink-0' />
+                    <span>{formattedDateTime}</span>
+                  </div>
+                  {event.isAfterHours && (
+                    <Badge className='w-fit bg-fm-gold/20 text-fm-gold border-fm-gold/40 text-[10px] px-2 py-0.5 flex items-center gap-1.5'>
+                      <Moon className='h-3 w-3' />
+                      {t('ticketing.afterHoursEvent')}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -283,6 +360,33 @@ export const EventTicketingPage = () => {
           />
         </div>
       </div>
+
+      {/* Venue Details Modal */}
+      <FmVenueDetailsModal
+        venue={
+          event.venueDetails
+            ? {
+                id: event.venueDetails.id,
+                name: event.venue,
+                description: event.venueDetails.description ?? undefined,
+                address: event.venueDetails.address ?? undefined,
+                city: event.venueDetails.city ?? undefined,
+                state: event.venueDetails.state ?? undefined,
+                zipCode: event.venueDetails.zipCode ?? undefined,
+                image: event.venueDetails.image,
+                logo: event.venueDetails.logo,
+                website: event.venueDetails.website,
+                googleMapsUrl: event.venueDetails.googleMapsUrl,
+                instagram: event.venueDetails.instagram,
+                facebook: event.venueDetails.facebook,
+                youtube: event.venueDetails.youtube,
+                tiktok: event.venueDetails.tiktok,
+              }
+            : null
+        }
+        open={isVenueModalOpen}
+        onOpenChange={setIsVenueModalOpen}
+      />
     </Layout>
   );
 };

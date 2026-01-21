@@ -49,29 +49,30 @@ export function WalletTicketCard({
       className='group'
     >
       <FmCommonCardContent className='p-0'>
-        <div className='flex gap-[20px]'>
+        {/* Mobile: Stacked layout, Desktop: Horizontal layout */}
+        <div className='flex flex-col md:flex-row'>
           {/* Event Image */}
-          {showEventImage && ticket.event.hero_image_url && (
-            <div className='relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-none'>
+          {showEventImage && ticket.event.hero_image && (
+            <div className='relative w-full h-40 md:w-32 md:h-auto flex-shrink-0 overflow-hidden rounded-none'>
               <img
-                src={ticket.event.hero_image_url}
+                src={ticket.event.hero_image}
                 alt={ticket.event.title}
-                className='w-full h-full object-cover'
+                className='absolute inset-0 w-full h-full object-cover'
               />
-              {/* Gradient overlay */}
-              <div className='absolute inset-0 bg-gradient-to-r from-transparent to-black/60' />
+              {/* Gradient overlay - bottom on mobile, right on desktop */}
+              <div className='absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-transparent to-black/60' />
             </div>
           )}
 
           {/* Ticket Details */}
-          <div className='flex-1 py-[10px] pr-[10px] min-w-0'>
+          <div className='flex-1 p-[20px] min-w-0'>
             {/* Event Title */}
-            <h3 className='font-canela text-lg text-white truncate group-hover:text-fm-gold transition-colors'>
+            <h3 className='font-canela text-xl text-white group-hover:text-fm-gold transition-colors'>
               {ticket.event.title}
             </h3>
 
             {/* Date & Time */}
-            <div className='flex items-center gap-[10px] text-sm text-muted-foreground mt-1'>
+            <div className='flex items-center gap-[10px] text-sm text-muted-foreground mt-[10px]'>
               <Calendar className='h-4 w-4 flex-shrink-0' />
               <span>
                 {eventDate} at {eventTime}
@@ -80,9 +81,9 @@ export function WalletTicketCard({
 
             {/* Venue */}
             {ticket.event.venue && (
-              <div className='flex items-center gap-[10px] text-sm text-muted-foreground mt-1'>
+              <div className='flex items-center gap-[10px] text-sm text-muted-foreground mt-[5px]'>
                 <MapPin className='h-4 w-4 flex-shrink-0' />
-                <span className='truncate'>{ticket.event.venue.name}</span>
+                <span>{ticket.event.venue.name}</span>
               </div>
             )}
 
@@ -107,14 +108,20 @@ export function WalletTicketCard({
 
             {/* Attendee Name (if specified) */}
             {ticket.attendee_name && (
-              <p className='text-xs text-muted-foreground mt-1'>
+              <p className='text-xs text-muted-foreground mt-[5px]'>
                 {ticket.attendee_name}
               </p>
             )}
+
+            {/* Tap to view hint - mobile only */}
+            <div className='flex items-center justify-center gap-[5px] mt-[20px] md:hidden text-sm text-muted-foreground'>
+              <span>{t('wallet.tapToView', 'Tap to view ticket')}</span>
+              <ChevronRight className='h-4 w-4' />
+            </div>
           </div>
 
-          {/* Chevron indicator */}
-          <div className='flex items-center pr-[10px]'>
+          {/* Desktop: Chevron indicator */}
+          <div className='hidden md:flex items-center pr-[20px]'>
             <ChevronRight className='h-5 w-5 text-muted-foreground group-hover:text-fm-gold transition-colors' />
           </div>
         </div>

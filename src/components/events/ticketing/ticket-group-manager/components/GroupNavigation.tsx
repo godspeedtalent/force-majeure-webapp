@@ -32,7 +32,7 @@ export function GroupNavigation({
             <button
               onClick={() => onViewChange('overview')}
               className={cn(
-                'w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
+                'w-full flex items-center gap-3 px-3 py-2 rounded-none text-sm transition-colors',
                 activeView === 'overview'
                   ? 'bg-fm-gold/20 text-fm-gold font-semibold'
                   : 'hover:bg-muted text-foreground'
@@ -55,7 +55,7 @@ export function GroupNavigation({
                     key={group.id}
                     onClick={() => onViewChange(group.id)}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
+                      'w-full flex items-center gap-3 px-3 py-2 rounded-none text-sm transition-colors',
                       activeView === group.id
                         ? 'bg-fm-gold/20 text-fm-gold font-semibold'
                         : 'hover:bg-muted text-foreground'

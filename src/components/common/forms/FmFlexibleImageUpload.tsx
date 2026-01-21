@@ -5,7 +5,8 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
 import { cn } from '@/shared';
 
@@ -62,11 +63,10 @@ export const FmFlexibleImageUpload = ({
   const [dragActive, setDragActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: userRole } = useUserRole();
+  const { hasAnyRole } = useUserPermissions();
 
   // Check if user is developer or admin for detailed error messages
-  const isDeveloper =
-    userRole === ('developer' as any) || userRole === ('admin' as any);
+  const isDeveloper = hasAnyRole(ROLES.DEVELOPER, ROLES.ADMIN);
 
   const isUploading = uploadState !== 'idle';
 

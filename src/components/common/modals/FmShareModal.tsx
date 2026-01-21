@@ -67,86 +67,89 @@ export const FmShareModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-4xl bg-background/37 backdrop-blur-xl'>
+      <DialogContent className='max-w-4xl bg-background/37 backdrop-blur-xl overflow-hidden'>
         <DialogHeader>
-          <DialogTitle className='font-canela text-2xl flex items-center gap-3'>
-            <Share2 className='h-5 w-5 text-fm-gold' />
+          <DialogTitle className='font-canela text-xl md:text-2xl flex items-center gap-3'>
+            <Share2 className='h-5 w-5 text-fm-gold flex-shrink-0' />
             <FmI18nCommon i18nKey='share.shareEvent' />
           </DialogTitle>
         </DialogHeader>
 
-        <div className='flex gap-6 mt-4'>
-          {/* Left Column: Event Image */}
+        {/* Mobile: vertical stack, Desktop: horizontal */}
+        <div className='flex flex-col md:flex-row gap-4 md:gap-6 mt-4 overflow-hidden'>
+          {/* Event Image - compact on mobile */}
           {eventImage && (
-            <div className='flex-shrink-0 w-64'>
+            <div className='flex-shrink-0 md:w-48 lg:w-64 overflow-hidden'>
               <img
                 src={eventImage}
                 alt={title}
-                className='w-full h-full object-cover rounded-none'
+                className='w-full h-36 md:h-auto object-cover object-top rounded-none'
               />
             </div>
           )}
 
-          {/* Right Column: Content */}
-          <div className='flex-1 space-y-6'>
-            {/* Event Title with Stats */}
-            <div>
-              <p className='text-sm text-muted-foreground mb-2'>
-                <FmI18nCommon i18nKey='share.sharing' />:
+          {/* Content */}
+          <div className='flex-1 space-y-4 md:space-y-6 min-w-0 overflow-hidden'>
+            {/* Event Info Card */}
+            <div className='p-3 md:p-4 border border-white/10 bg-white/5'>
+              <p className='text-xs uppercase tracking-wider text-muted-foreground mb-1'>
+                <FmI18nCommon i18nKey='share.sharing' />
               </p>
-              <div className='flex items-start justify-between gap-4'>
-                <div className='flex-1'>
-                  <p className='font-canela text-lg text-foreground mb-3'>{title}</p>
-                  
-                  {/* Event Details */}
-                  <div className='space-y-2 text-sm'>
-                    {venueName && (
-                      <div className='flex items-center gap-2 text-muted-foreground'>
-                        <MapPin className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
-                        <span>{venueName}</span>
-                      </div>
-                    )}
-                    {dateTime && (
-                      <div className='flex items-center gap-2 text-muted-foreground'>
-                        <Calendar className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
-                        <span>{dateTime}</span>
-                      </div>
-                    )}
-                    {undercardArtists.length > 0 && (
-                      <div className='flex items-start gap-2 text-muted-foreground'>
-                        <Music className='h-3.5 w-3.5 flex-shrink-0 mt-0.5 text-fm-gold' />
-                        <span>{undercardArtists.join(', ')}</span>
-                      </div>
-                    )}
+              <p className='font-canela text-lg md:text-xl text-foreground mb-2'>{title}</p>
+
+              {/* Event Details - stacked on mobile */}
+              <div className='space-y-1.5 text-sm'>
+                {venueName && (
+                  <div className='flex items-center gap-2 text-muted-foreground'>
+                    <MapPin className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
+                    <span className='truncate'>{venueName}</span>
                   </div>
+                )}
+                {dateTime && (
+                  <div className='flex items-center gap-2 text-muted-foreground'>
+                    <Calendar className='h-3.5 w-3.5 flex-shrink-0 text-fm-gold' />
+                    <span className='truncate'>{dateTime}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Artists - separate line if present */}
+              {undercardArtists.length > 0 && (
+                <div className='flex items-start gap-2 text-sm text-muted-foreground mt-2 pt-2 border-t border-white/10'>
+                  <Music className='h-3.5 w-3.5 flex-shrink-0 mt-0.5 text-fm-gold' />
+                  <span className='line-clamp-2'>{undercardArtists.join(' • ')}</span>
                 </div>
-                <div className='flex flex-col gap-2 text-sm text-muted-foreground'>
+              )}
+
+              {/* Stats row */}
+              {(shareCount > 0 || viewCount > 0) && (
+                <div className='flex flex-wrap gap-x-4 gap-y-1 mt-2 pt-2 border-t border-white/10 text-xs text-muted-foreground'>
                   {shareCount > 0 && (
-                    <div className='flex items-center gap-2'>
-                      <Share2 className='h-4 w-4' />
+                    <div className='flex items-center gap-1.5'>
+                      <Share2 className='h-3.5 w-3.5 flex-shrink-0' />
                       <span>{t('share.shareCount', { count: shareCount })}</span>
                     </div>
                   )}
                   {viewCount > 0 && (
-                    <div className='flex items-center gap-2'>
-                      <Eye className='h-4 w-4' />
+                    <div className='flex items-center gap-1.5'>
+                      <Eye className='h-3.5 w-3.5 flex-shrink-0' />
                       <span>{t('share.viewCount', { count: viewCount })}</span>
                     </div>
                   )}
                 </div>
-              </div>
+              )}
             </div>
 
             {/* URL Display and Copy */}
-            <div className='max-w-[40vw]'>
+            <div className='overflow-hidden'>
               <FmI18nCommon
                 i18nKey='share.eventUrl'
                 as='label'
-                className='text-xs uppercase text-muted-foreground mb-2 block'
+                className='text-xs uppercase tracking-wider text-muted-foreground mb-2 block'
               />
               <div
                 className={cn(
-                  'relative flex items-center gap-3 p-4 border-2 border-t-2 border-l-2 border-r-2 border-b-[3px] rounded-none transition-all duration-300 cursor-pointer group overflow-hidden',
+                  'relative flex items-center gap-2 p-3 border-2 border-b-[3px] rounded-none transition-all duration-300 cursor-pointer group',
                   'bg-background/40 hover:bg-white/5',
                   'border-white/20 hover:border-fm-gold border-b-fm-gold',
                   'hover:shadow-[0_4px_16px_rgba(223,186,125,0.2)]',
@@ -154,8 +157,8 @@ export const FmShareModal = ({
                 )}
                 onClick={handleCopyUrl}
               >
-                <div className='flex-1 min-w-0 overflow-hidden'>
-                  <p className='text-sm text-foreground group-hover:text-fm-gold truncate font-mono transition-colors duration-200'>
+                <div className='flex-1 min-w-0'>
+                  <p className='text-xs text-foreground group-hover:text-fm-gold truncate font-mono transition-colors duration-200'>
                     {url}
                   </p>
                 </div>
@@ -175,7 +178,7 @@ export const FmShareModal = ({
             </div>
 
             {/* Action Buttons */}
-            <div className='flex justify-end gap-3 pt-4'>
+            <div className='flex justify-end gap-3 pt-2'>
               <FmCommonButton
                 variant='secondary'
                 onClick={() => onOpenChange(false)}

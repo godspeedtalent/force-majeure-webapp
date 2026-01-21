@@ -89,7 +89,7 @@ export const TicketTiersSection = ({
         minItems={1}
         maxItems={5}
         renderRow={(tier, index) => (
-          <div className='space-y-3 p-4 rounded-md bg-white/5 border border-white/10'>
+          <div className='space-y-3 p-4 rounded-none bg-white/5 border border-white/10'>
             <div className='grid grid-cols-3 gap-3'>
               <div className='space-y-1'>
                 <Label className='text-white/70 text-xs'>{t('ticketTiersSection.name')}</Label>

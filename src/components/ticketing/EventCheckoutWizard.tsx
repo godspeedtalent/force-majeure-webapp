@@ -150,7 +150,7 @@ export const EventCheckoutWizard = ({
 
   const confirmation = (
     <div className='space-y-6'>
-      <div className='flex items-center gap-3 rounded-xl bg-fm-gold/10 border border-fm-gold/40 px-4 py-3'>
+      <div className='flex items-center gap-3 rounded-none bg-fm-gold/10 border border-fm-gold/40 px-4 py-3'>
         <CheckCircle2 className='h-6 w-6 text-fm-gold' />
         <div>
           <h3 className='text-lg font-canela text-foreground'>
@@ -162,7 +162,7 @@ export const EventCheckoutWizard = ({
         </div>
       </div>
 
-      <FmCommonCard variant='default' className='space-y-4'>
+      <FmCommonCard variant='default' className='space-y-4 p-[20px]'>
         <div className='space-y-2'>
           <h4 className='text-sm font-medium text-foreground'>{t('checkout.orderSummary')}</h4>
           <p className='text-xs text-muted-foreground'>
@@ -237,6 +237,7 @@ export const EventCheckoutWizard = ({
     if (step === 'checkout') {
       return (
         <TicketCheckoutForm
+          eventId={event.id}
           eventName={displayTitle}
           eventDate={eventDateLabel}
           summary={orderSummary}

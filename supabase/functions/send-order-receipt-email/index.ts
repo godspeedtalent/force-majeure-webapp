@@ -75,7 +75,7 @@ Deno.serve(async req => {
         fees_cents,
         currency,
         created_at,
-        profiles!orders_user_id_fkey (
+        profiles!orders_user_id_profiles_fkey (
           email,
           full_name
         ),

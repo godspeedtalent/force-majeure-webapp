@@ -89,7 +89,7 @@ export default function ArtistDetails() {
           </div>
 
           {/* Artist Spotlight */}
-          <div className='max-w-4xl mx-auto px-4 -mt-[60px] pb-6 md:pb-8'>
+          <div className='max-w-4xl mx-auto px-4 pb-6 md:pb-8'>
             <FmArtistSpotlight artist={artistData} showRecordings />
 
             {/* Events Section */}

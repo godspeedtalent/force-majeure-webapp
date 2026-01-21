@@ -37,7 +37,7 @@ interface OrderWithDetails {
     id: string;
     title: string;
     start_time: string;
-    hero_image_url: string | null;
+    hero_image: string | null;
     venue: {
       name: string;
       address_line_1: string | null;
@@ -171,7 +171,7 @@ export const ticketEmailService = {
         subtotal_cents,
         fees_cents,
         currency,
-        profile:profiles!orders_user_id_fkey(
+        profile:profiles!orders_user_id_profiles_fkey(
           email,
           full_name,
           display_name
@@ -184,7 +184,7 @@ export const ticketEmailService = {
           id,
           title,
           start_time,
-          hero_image_url,
+          hero_image,
           venue:venues(
             name,
             address_line_1,
@@ -283,7 +283,7 @@ export const ticketEmailService = {
             .filter(Boolean)
             .join(', '),
         },
-        imageUrl: order.event.hero_image_url || undefined,
+        imageUrl: order.event.hero_image || undefined,
       },
       purchaser: {
         fullName: purchaserName,

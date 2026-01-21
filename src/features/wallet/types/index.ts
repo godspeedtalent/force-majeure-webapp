@@ -29,7 +29,7 @@ export interface TicketEvent {
   title: string;
   start_time: string;
   end_time: string | null;
-  hero_image_url: string | null;
+  hero_image: string | null;
   venue: TicketVenue | null;
 }
 
@@ -161,6 +161,98 @@ export function groupTicketsByEvent(tickets: TicketWithDetails[]): TicketsByEven
       });
     }
     grouped.get(eventId)!.tickets.push(ticket);
+  }
+
+  return Array.from(grouped.values());
+}
+
+// ============================================
+// RSVP Types
+// ============================================
+
+/**
+ * RSVP status - matches database constraint
+ */
+export type RsvpStatus = 'confirmed' | 'cancelled' | 'waitlisted';
+
+/**
+ * Event information for RSVP display (extends ticket event)
+ */
+export interface RsvpEvent extends TicketEvent {
+  is_free_event: boolean;
+  rsvp_capacity: number | null;
+}
+
+/**
+ * RSVP with all related details for display
+ */
+export interface RsvpWithDetails {
+  id: string;
+  event_id: string;
+  user_id: string;
+  status: RsvpStatus;
+  created_at: string;
+  updated_at: string;
+  event: RsvpEvent;
+}
+
+/**
+ * RSVPs grouped by event for wallet display
+ */
+export interface RsvpsByEvent {
+  event: RsvpEvent;
+  rsvps: RsvpWithDetails[];
+  rsvpDate: string;
+}
+
+/**
+ * Check if an RSVP is for an upcoming event
+ */
+export function isUpcomingRsvp(rsvp: RsvpWithDetails): boolean {
+  const eventStart = new Date(rsvp.event.start_time);
+  const now = new Date();
+  return eventStart > now && rsvp.status === 'confirmed';
+}
+
+/**
+ * Check if an RSVP is for a past event
+ */
+export function isPastRsvp(rsvp: RsvpWithDetails): boolean {
+  const eventStart = new Date(rsvp.event.start_time);
+  const now = new Date();
+  return eventStart <= now || rsvp.status === 'cancelled';
+}
+
+/**
+ * Sort RSVPs by event date
+ */
+export function sortRsvpsByEventDate(
+  rsvps: RsvpWithDetails[],
+  ascending = true
+): RsvpWithDetails[] {
+  return [...rsvps].sort((a, b) => {
+    const dateA = new Date(a.event.start_time).getTime();
+    const dateB = new Date(b.event.start_time).getTime();
+    return ascending ? dateA - dateB : dateB - dateA;
+  });
+}
+
+/**
+ * Group RSVPs by event
+ */
+export function groupRsvpsByEvent(rsvps: RsvpWithDetails[]): RsvpsByEvent[] {
+  const grouped = new Map<string, RsvpsByEvent>();
+
+  for (const rsvp of rsvps) {
+    const eventId = rsvp.event.id;
+    if (!grouped.has(eventId)) {
+      grouped.set(eventId, {
+        event: rsvp.event,
+        rsvps: [],
+        rsvpDate: rsvp.created_at,
+      });
+    }
+    grouped.get(eventId)!.rsvps.push(rsvp);
   }
 
   return Array.from(grouped.values());

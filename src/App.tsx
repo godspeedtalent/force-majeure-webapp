@@ -61,6 +61,7 @@ const CheckoutFlowTests = lazy(() => import('./pages/testing/CheckoutFlowTests')
 // Lazy load special pages
 const SonicGauntlet = lazy(() => import('./pages/SonicGauntlet'));
 const ClaimTicketPage = lazy(() => import('./pages/claim-ticket/ClaimTicketPage'));
+const TrackingLinkRedirect = lazy(() => import('./pages/tracking/TrackingLinkRedirect'));
 
 // Lazy load wallet pages
 const Wallet = lazy(() => import('./pages/wallet/Wallet'));
@@ -137,6 +138,16 @@ const AppRoutes = () => {
       <Route path='/scavenger' element={<Scavenger />} />
       <Route path='/proxy-token' element={<ProxyToken />} />
       <Route path='/contact' element={<Contact />} />
+
+      {/* Tracking Link Redirect - Public route for short tracking URLs */}
+      <Route
+        path='/t/:code'
+        element={
+          <Suspense fallback={<LazyLoadFallback />}>
+            <TrackingLinkRedirect />
+          </Suspense>
+        }
+      />
 
       {/* Artist Registration Routes - Always accessible */}
       <Route path='/artists/signup' element={<ArtistSignup />} />

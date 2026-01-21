@@ -9,8 +9,7 @@ import { FmI18nPages } from '@/components/common/i18n';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonEmailField, isValidEmail } from '@/components/common/forms/FmCommonEmailField';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/shared';
+import { supabase, logger } from '@/shared';
 
 export default function Contact() {
   const { t } = useTranslation('pages');

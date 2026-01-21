@@ -7,9 +7,8 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, logger } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
-import { logger } from '@/shared/services/logger';
 import { toast } from 'sonner';
 import type {
   MediaGallery,

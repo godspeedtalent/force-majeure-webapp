@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Users, Save, BarChart3 } from 'lucide-react';
+import { Users, BarChart3 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
-import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { Label } from '@/components/common/shadcn/label';
 import { toast } from 'sonner';
 import { handleError } from '@/shared/services/errorHandler';
@@ -19,9 +19,11 @@ interface GuestListSettings {
   id?: string;
   event_id: string;
   is_enabled: boolean;
-  min_interested_guests: number;
-  min_private_guests: number;
-  min_public_guests: number;
+  min_guest_threshold: number;
+  // Legacy fields kept for backward compatibility
+  min_interested_guests?: number;
+  min_private_guests?: number;
+  min_public_guests?: number;
 }
 
 export function GuestListSettings({ eventId }: GuestListSettingsProps) {
@@ -31,12 +33,19 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const [isEnabled, setIsEnabled] = useState(false);
-  const [minInterested, setMinInterested] = useState(0);
-  const [minPrivate, setMinPrivate] = useState(0);
-  const [minPublic, setMinPublic] = useState(0);
+  const [minGuestThreshold, setMinGuestThreshold] = useState(0);
   const [showViewCount, setShowViewCount] = useState(true);
   const [minInterestThreshold, setMinInterestThreshold] = useState(0);
   const [minShareThreshold, setMinShareThreshold] = useState(0);
+
+  // Track initial values for dirty state detection
+  const initialValuesRef = useRef<{
+    isEnabled: boolean;
+    minGuestThreshold: number;
+    showViewCount: boolean;
+    minInterestThreshold: number;
+    minShareThreshold: number;
+  } | null>(null);
 
   // Fetch existing settings
   const { data: settings, isLoading } = useQuery({
@@ -73,21 +82,85 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
   // Populate form when settings load
   useEffect(() => {
     if (settings) {
-      setIsEnabled(settings.is_enabled);
-      setMinInterested(settings.min_interested_guests);
-      setMinPrivate(settings.min_private_guests);
-      setMinPublic(settings.min_public_guests);
+      const initialEnabled = settings.is_enabled;
+      const initialThreshold = settings.min_guest_threshold ??
+        Math.max(
+          settings.min_interested_guests ?? 0,
+          settings.min_private_guests ?? 0,
+          settings.min_public_guests ?? 0
+        );
+
+      setIsEnabled(initialEnabled);
+      setMinGuestThreshold(initialThreshold);
+
+      // Store initial values (partial - event values stored separately)
+      if (!initialValuesRef.current) {
+        initialValuesRef.current = {
+          isEnabled: initialEnabled,
+          minGuestThreshold: initialThreshold,
+          showViewCount: true,
+          minInterestThreshold: 0,
+          minShareThreshold: 0,
+        };
+      } else {
+        initialValuesRef.current.isEnabled = initialEnabled;
+        initialValuesRef.current.minGuestThreshold = initialThreshold;
+      }
     }
   }, [settings]);
 
   // Populate view count and display threshold settings when event loads
   useEffect(() => {
     if (event) {
-      setShowViewCount((event as any).show_view_count ?? true);
-      setMinInterestThreshold((event as any).min_interest_count_display ?? 0);
-      setMinShareThreshold((event as any).min_share_count_display ?? 0);
+      const initialShowViewCount = (event as any).show_view_count ?? true;
+      const initialMinInterest = (event as any).min_interest_count_display ?? 0;
+      const initialMinShare = (event as any).min_share_count_display ?? 0;
+
+      setShowViewCount(initialShowViewCount);
+      setMinInterestThreshold(initialMinInterest);
+      setMinShareThreshold(initialMinShare);
+
+      // Store initial values
+      if (!initialValuesRef.current) {
+        initialValuesRef.current = {
+          isEnabled: false,
+          minGuestThreshold: 0,
+          showViewCount: initialShowViewCount,
+          minInterestThreshold: initialMinInterest,
+          minShareThreshold: initialMinShare,
+        };
+      } else {
+        initialValuesRef.current.showViewCount = initialShowViewCount;
+        initialValuesRef.current.minInterestThreshold = initialMinInterest;
+        initialValuesRef.current.minShareThreshold = initialMinShare;
+      }
     }
   }, [event]);
+
+  // Calculate if form has unsaved changes
+  const isDirty = useMemo(() => {
+    if (!initialValuesRef.current) return false;
+    const initial = initialValuesRef.current;
+    return (
+      isEnabled !== initial.isEnabled ||
+      minGuestThreshold !== initial.minGuestThreshold ||
+      showViewCount !== initial.showViewCount ||
+      minInterestThreshold !== initial.minInterestThreshold ||
+      minShareThreshold !== initial.minShareThreshold
+    );
+  }, [isEnabled, minGuestThreshold, showViewCount, minInterestThreshold, minShareThreshold]);
+
+  // Reset form to initial values
+  const resetForm = useCallback(() => {
+    if (initialValuesRef.current) {
+      const initial = initialValuesRef.current;
+      setIsEnabled(initial.isEnabled);
+      setMinGuestThreshold(initial.minGuestThreshold);
+      setShowViewCount(initial.showViewCount);
+      setMinInterestThreshold(initial.minInterestThreshold);
+      setMinShareThreshold(initial.minShareThreshold);
+    }
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -95,9 +168,11 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
       const settingsData = {
         event_id: eventId,
         is_enabled: isEnabled,
-        min_interested_guests: minInterested,
-        min_private_guests: minPrivate,
-        min_public_guests: minPublic,
+        min_guest_threshold: minGuestThreshold,
+        // Set legacy fields to same value for backward compatibility
+        min_interested_guests: minGuestThreshold,
+        min_private_guests: minGuestThreshold,
+        min_public_guests: minGuestThreshold,
       };
 
       // Save guest list settings
@@ -130,6 +205,15 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
 
       if (eventError) throw eventError;
 
+      // Update initial values to current values after successful save
+      initialValuesRef.current = {
+        isEnabled,
+        minGuestThreshold,
+        showViewCount,
+        minInterestThreshold,
+        minShareThreshold,
+      };
+
       toast.success(tToast('guestList.saved'));
       queryClient.invalidateQueries({ queryKey: ['guest-list-settings', eventId] });
       queryClient.invalidateQueries({ queryKey: ['event-social-settings', eventId] });
@@ -160,18 +244,6 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
       icon={Users}
     >
       <div className="space-y-6">
-        {/* Save Button */}
-        <div className="flex justify-end">
-          <FmCommonButton
-            onClick={handleSave}
-            loading={isSaving}
-            icon={Save}
-            variant="gold"
-          >
-            {t('guestList.saveSettings')}
-          </FmCommonButton>
-        </div>
-
         {/* Enable/Disable Guest List */}
         <div className="flex items-center justify-between p-4 border border-border rounded-none bg-muted/20">
           <div className="space-y-1">
@@ -191,49 +263,24 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
           />
         </div>
 
-        {/* Minimum Thresholds */}
+        {/* Minimum Threshold */}
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-semibold mb-2">{t('guestList.minimumThresholds')}</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('guestList.minimumThreshold')}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('guestList.minimumThresholdsDescription')}
+              {t('guestList.minimumThresholdDescription')}
             </p>
           </div>
 
-          {/* Interested Guests */}
           <FmCommonTextField
-            id="min-interested"
-            label={t('guestList.minInterestedGuests')}
+            id="min-guest-threshold"
+            label={t('guestList.minGuestThreshold')}
             type="number"
             min={0}
-            value={minInterested.toString()}
-            onChange={(e) => setMinInterested(Math.max(0, parseInt(e.target.value) || 0))}
+            value={minGuestThreshold.toString()}
+            onChange={(e) => setMinGuestThreshold(Math.max(0, parseInt(e.target.value) || 0))}
             placeholder="0"
-            description={t('guestList.minInterestedDescription')}
-          />
-
-          {/* Private Guests */}
-          <FmCommonTextField
-            id="min-private"
-            label={t('guestList.minPrivateGuests')}
-            type="number"
-            min={0}
-            value={minPrivate.toString()}
-            onChange={(e) => setMinPrivate(Math.max(0, parseInt(e.target.value) || 0))}
-            placeholder="0"
-            description={t('guestList.minPrivateDescription')}
-          />
-
-          {/* Public Guests */}
-          <FmCommonTextField
-            id="min-public"
-            label={t('guestList.minPublicGuests')}
-            type="number"
-            min={0}
-            value={minPublic.toString()}
-            onChange={(e) => setMinPublic(Math.max(0, parseInt(e.target.value) || 0))}
-            placeholder="0"
-            description={t('guestList.minPublicDescription')}
+            description={t('guestList.minGuestThresholdDescription')}
           />
         </div>
 
@@ -294,6 +341,15 @@ export function GuestListSettings({ eventId }: GuestListSettingsProps) {
           </div>
         )}
       </div>
+
+      {/* Floating Save Button */}
+      <FmStickyFormFooter
+        isDirty={isDirty}
+        isSaving={isSaving}
+        onSave={handleSave}
+        onUndo={resetForm}
+        hasSidebar
+      />
     </FmFormSection>
   );
 }

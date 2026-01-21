@@ -329,7 +329,7 @@ export const FmDynamicStickyHeader = ({
   }
 
   return (
-    <div className={cn('relative w-full min-w-0 overflow-hidden', className)}>
+    <div className={cn('relative w-full min-w-0', className)}>
       <div
         ref={mainRef}
         className={cn(
@@ -361,7 +361,7 @@ export const FmDynamicStickyHeader = ({
           <div
             ref={stickyInnerRef}
             className={cn(
-              'transition-none will-change-[opacity,transform] w-full min-w-0 overflow-hidden',
+              'transition-none will-change-[opacity,transform] w-full min-w-0',
               stickyClassName
             )}
             style={{

@@ -267,92 +267,98 @@ export const EventQueueConfigForm = ({ eventId, onFormStateChange }: EventQueueC
             label={t('queue.enableQueueSystem')}
             checked={enableQueue}
             onCheckedChange={setEnableQueue}
+            hideLabel
           />
         </div>
 
-        {/* Max Concurrent Users */}
-        <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
-          <div className='flex items-center gap-2'>
-            <Users className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>{t('queue.maxConcurrentUsers')}</span>
-            <TooltipProvider>
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Info className='h-4 w-4 text-muted-foreground cursor-help' />
-                </TooltipTrigger>
-                <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
-                  <p className='text-sm text-white'>
-                    {t('queue.maxConcurrentUsersTooltip')}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <FmCommonTextField
-            type='number'
-            value={maxConcurrentUsers}
-            onChange={e => setMaxConcurrentUsers(e.target.value)}
-            placeholder={DEFAULT_QUEUE_CONFIG.max_concurrent_users.toString()}
-            min={1}
-            max={1000}
-          />
-        </div>
+        {/* Queue Parameters - Only shown when queue is enabled */}
+        {enableQueue && (
+          <>
+            {/* Max Concurrent Users */}
+            <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
+              <div className='flex items-center gap-2'>
+                <Users className='h-4 w-4 text-muted-foreground' />
+                <span className='font-medium'>{t('queue.maxConcurrentUsers')}</span>
+                <TooltipProvider>
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <Info className='h-4 w-4 text-muted-foreground cursor-help' />
+                    </TooltipTrigger>
+                    <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
+                      <p className='text-sm text-white'>
+                        {t('queue.maxConcurrentUsersTooltip')}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <FmCommonTextField
+                type='number'
+                value={maxConcurrentUsers}
+                onChange={e => setMaxConcurrentUsers(e.target.value)}
+                placeholder={DEFAULT_QUEUE_CONFIG.max_concurrent_users.toString()}
+                min={1}
+                max={1000}
+              />
+            </div>
 
-        {/* Checkout Timeout */}
-        <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
-          <div className='flex items-center gap-2'>
-            <Clock className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>{t('queue.checkoutTimer')}</span>
-            <TooltipProvider>
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Info className='h-4 w-4 text-muted-foreground cursor-help' />
-                </TooltipTrigger>
-                <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
-                  <p className='text-sm text-white'>
-                    {t('queue.checkoutTimerTooltip', { minutes: globalDefaultMinutes || 10 })}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <FmCommonTextField
-            type='number'
-            value={checkoutTimeoutMinutes}
-            onChange={e => setCheckoutTimeoutMinutes(e.target.value)}
-            placeholder={t('queue.globalDefaultPlaceholder', { minutes: globalDefaultMinutes || 10 })}
-            min={1}
-            max={60}
-          />
-        </div>
+            {/* Checkout Timeout */}
+            <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
+              <div className='flex items-center gap-2'>
+                <Clock className='h-4 w-4 text-muted-foreground' />
+                <span className='font-medium'>{t('queue.checkoutTimer')}</span>
+                <TooltipProvider>
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <Info className='h-4 w-4 text-muted-foreground cursor-help' />
+                    </TooltipTrigger>
+                    <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
+                      <p className='text-sm text-white'>
+                        {t('queue.checkoutTimerTooltip', { minutes: globalDefaultMinutes || 10 })}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <FmCommonTextField
+                type='number'
+                value={checkoutTimeoutMinutes}
+                onChange={e => setCheckoutTimeoutMinutes(e.target.value)}
+                placeholder={t('queue.globalDefaultPlaceholder', { minutes: globalDefaultMinutes || 10 })}
+                min={1}
+                max={60}
+              />
+            </div>
 
-        {/* Session Timeout */}
-        <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
-          <div className='flex items-center gap-2'>
-            <Timer className='h-4 w-4 text-muted-foreground' />
-            <span className='font-medium'>{t('queue.sessionTimeout')}</span>
-            <TooltipProvider>
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <Info className='h-4 w-4 text-muted-foreground cursor-help' />
-                </TooltipTrigger>
-                <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
-                  <p className='text-sm text-white'>
-                    {t('queue.sessionTimeoutTooltip')}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <FmCommonTextField
-            type='number'
-            value={sessionTimeoutMinutes}
-            onChange={e => setSessionTimeoutMinutes(e.target.value)}
-            placeholder={DEFAULT_QUEUE_CONFIG.session_timeout_minutes.toString()}
-            min={1}
-            max={120}
-          />
-        </div>
+            {/* Session Timeout */}
+            <div className='p-4 bg-muted/20 rounded-none border border-border space-y-3'>
+              <div className='flex items-center gap-2'>
+                <Timer className='h-4 w-4 text-muted-foreground' />
+                <span className='font-medium'>{t('queue.sessionTimeout')}</span>
+                <TooltipProvider>
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <Info className='h-4 w-4 text-muted-foreground cursor-help' />
+                    </TooltipTrigger>
+                    <TooltipContent side='right' className='max-w-xs bg-black/95 border-white/20'>
+                      <p className='text-sm text-white'>
+                        {t('queue.sessionTimeoutTooltip')}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <FmCommonTextField
+                type='number'
+                value={sessionTimeoutMinutes}
+                onChange={e => setSessionTimeoutMinutes(e.target.value)}
+                placeholder={DEFAULT_QUEUE_CONFIG.session_timeout_minutes.toString()}
+                min={1}
+                max={120}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <FmCommonConfirmDialog

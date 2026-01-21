@@ -4,6 +4,7 @@ import { logger } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
 import { stripeService } from '../services/stripeService';
+import { useMockPaymentStore } from '@/shared/stores/mockPaymentStore';
 import type { SavedCard, PaymentResult } from '../types';
 
 /**
@@ -33,6 +34,7 @@ export const useStripePayment = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
+  const { isMockMode, simulatedDelay, simulateFailure } = useMockPaymentStore();
 
   /**
    * Get or create Stripe customer ID for current user
@@ -113,6 +115,33 @@ export const useStripePayment = () => {
       saveCard: boolean = false,
       savedCardId?: string
     ): Promise<PaymentResult> => {
+      // Handle mock payment mode for testing
+      if (isMockMode) {
+        setLoading(true);
+        logger.info('Processing mock payment', {
+          source: 'useStripePayment.processPayment',
+          amount,
+          simulateFailure,
+        });
+
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, simulatedDelay));
+
+        setLoading(false);
+
+        if (simulateFailure) {
+          return {
+            success: false,
+            error: 'Mock payment failure (simulated)',
+          };
+        }
+
+        return {
+          success: true,
+          paymentMethodId: `mock_pm_${Date.now()}`,
+        };
+      }
+
       if (!stripe || !elements) {
         throw new Error('Stripe not loaded');
       }
@@ -189,7 +218,7 @@ export const useStripePayment = () => {
         setLoading(false);
       }
     },
-    [stripe, elements, user, getOrCreateCustomer, loadSavedCards]
+    [stripe, elements, user, getOrCreateCustomer, loadSavedCards, isMockMode, simulatedDelay, simulateFailure]
   );
 
   /**
@@ -220,6 +249,7 @@ export const useStripePayment = () => {
     removeSavedCard,
     savedCards,
     loading,
-    ready: !!stripe && !!elements,
+    ready: isMockMode || (!!stripe && !!elements),
+    isMockMode,
   };
 };

@@ -26,8 +26,7 @@ import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
-import { supabase } from '@/integrations/supabase/client';
+import { handleError, supabase } from '@/shared';
 import {
   useOrganizationById,
   organizationKeys,

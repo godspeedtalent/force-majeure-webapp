@@ -12,8 +12,10 @@ import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/F
 import { cn } from '@/shared';
 
 interface FmCommonInfoCardProps {
-  /** Icon to display */
-  icon: LucideIcon;
+  /** Icon to display (Lucide icon component) */
+  icon?: LucideIcon;
+  /** Custom icon element (overrides icon prop when provided) - use for images/logos */
+  customIcon?: React.ReactNode;
   /** Label/title */
   label: string;
   /** Value/description */
@@ -51,6 +53,7 @@ const sizeConfig = {
 
 export const FmCommonInfoCard = ({
   icon: Icon,
+  customIcon,
   label,
   value,
   size = 'md',
@@ -84,7 +87,11 @@ export const FmCommonInfoCard = ({
             layout === 'vertical' && 'w-full'
           )}
         >
-          <Icon className={cn(config.icon, 'text-accent', iconClassName)} />
+          {customIcon ? (
+            customIcon
+          ) : Icon ? (
+            <Icon className={cn(config.icon, 'text-accent', iconClassName)} />
+          ) : null}
         </div>
         <div className='flex-1 min-w-0'>
           <p className={cn(config.label, 'text-muted-foreground font-medium')}>

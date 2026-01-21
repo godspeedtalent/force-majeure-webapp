@@ -15,10 +15,14 @@ interface FmRsvpButtonProps
   eventTitle?: string;
   /** Event status - used to include test RSVPs for test events */
   eventStatus?: string;
+  /** Visual variant - primary (gold) for RSVP-only events, secondary (white) when alongside Get Tickets */
+  variant?: 'primary' | 'secondary';
   /** Past event state - shows 'Past Event' text and disables button */
   isPastEvent?: boolean;
   /** Disable animations (respects prefers-reduced-motion) */
   disableAnimations?: boolean;
+  /** Optional subtitle/footnote displayed below the button */
+  subtitle?: string | null;
 }
 
 /**
@@ -41,9 +45,11 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
       eventTitle,
       eventStatus,
       className,
+      variant = 'secondary',
       isPastEvent = false,
       disableAnimations = false,
       disabled,
+      subtitle,
       ...props
     },
     ref
@@ -114,113 +120,144 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
       return null;
     };
 
-    // Determine color scheme based on state - gold only, no green/red
+    // Color configuration based on variant
+    const isPrimary = variant === 'primary';
+
+    // Determine color scheme based on state and variant
     const getColorClasses = () => {
       if (isPastEvent || (isFull && !hasRsvp)) {
         return 'border-border bg-background text-muted-foreground';
       }
       if (hasRsvp) {
-        // Confirmed state - frosted gold, disabled appearance
-        return 'border-fm-gold/40 bg-fm-gold/10 text-fm-gold/80';
+        // Confirmed state - frosted appearance, disabled
+        return isPrimary
+          ? 'border-fm-gold/30 bg-fm-gold/5 text-fm-gold/80'
+          : 'border-white/30 bg-white/5 text-foreground/80';
       }
-      // Default RSVP state
-      return 'border-fm-gold/50 bg-background text-fm-gold hover:border-fm-gold/70 hover:bg-fm-gold/5';
+      // Default RSVP state - primary (gold) or secondary (white) styling
+      return isPrimary
+        ? 'border-fm-gold/50 bg-background text-fm-gold hover:border-fm-gold/70 hover:bg-fm-gold/5'
+        : 'border-white/40 bg-background text-foreground hover:border-white/60 hover:bg-white/5';
     };
 
     return (
-      <button
-        ref={buttonRef}
-        type="button"
-        disabled={disabled || showLoading || isDisabledState}
-        onClick={handleClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={cn(
-          'group relative overflow-hidden',
-          'w-full px-8 py-3.5',
-          'font-canela text-base font-light tracking-[0.15em] uppercase',
-          'transition-all duration-300',
-          'focus:outline-none focus-visible:ring-4 focus-visible:ring-fm-gold/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          'disabled:cursor-default',
-          // Cursor
-          !disabled && !showLoading && !isDisabledState && 'cursor-pointer',
-          // Border width
-          'border-2',
-          // Color scheme
-          getColorClasses(),
-          // Hover transform - only if not confirmed
-          !disabled && !showLoading && !isDisabledState && 'hover:scale-[1.02]',
-          // Active state - only if not confirmed
-          !disabled && !showLoading && !isDisabledState && 'active:scale-[0.99]',
-          className
-        )}
-        style={{
-          boxShadow: isDisabledState
-            ? hasRsvp
-              ? '0 0 12px rgb(223 186 125 / 0.08), inset 0 0 8px rgb(223 186 125 / 0.03)'
-              : 'none'
-            : isHovered
-              ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
-              : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
-        }}
-        {...props}
-      >
-        {/* Animated border shimmer - only when not confirmed */}
-        {!isDisabledState && !disableAnimations && (
-          <div
-            className={cn(
-              'absolute inset-0 border-2 border-transparent',
-              'motion-safe:animate-[border-glow_3s_ease-in-out_infinite]',
-              'pointer-events-none opacity-0 group-hover:opacity-100',
-              'transition-opacity duration-300'
-            )}
-            style={{
-              background: 'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box',
-              WebkitMask:
-                'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            }}
-          />
-        )}
-
-        {/* Ripple effects */}
-        {ripples.map(ripple => (
-          <span
-            key={ripple.id}
-            className="absolute rounded-full pointer-events-none animate-ripple bg-fm-gold/30"
-            style={{
-              left: `${ripple.x}%`,
-              top: `${ripple.y}%`,
-              width: '20px',
-              height: '20px',
-              transform: 'translate(-50%, -50%)',
-            }}
-          />
-        ))}
-
-        {/* Button content */}
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          {showLoading ? (
-            <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-b-transparent border-fm-gold" />
-              <span>{t('buttons.processing')}</span>
-            </>
-          ) : (
-            <>
-              {getButtonIcon()}
-              <span
-                className={cn(
-                  'transition-all duration-200',
-                  isHovered && !disableAnimations && !isDisabledState && 'tracking-[0.18em]'
-                )}
-              >
-                {getButtonText()}
-              </span>
-            </>
+      <div className="w-full">
+        <button
+          ref={buttonRef}
+          type="button"
+          disabled={disabled || showLoading || isDisabledState}
+          onClick={handleClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={cn(
+            'group relative overflow-hidden',
+            'w-full px-8 py-3.5',
+            'font-canela text-base font-light tracking-[0.15em] uppercase',
+            'transition-all duration-300',
+            'focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            isPrimary ? 'focus-visible:ring-fm-gold/30' : 'focus-visible:ring-white/30',
+            'disabled:cursor-default',
+            // Cursor
+            !disabled && !showLoading && !isDisabledState && 'cursor-pointer',
+            // Border width
+            'border-2',
+            // Color scheme
+            getColorClasses(),
+            // Hover transform - only if not confirmed
+            !disabled && !showLoading && !isDisabledState && 'hover:scale-[1.02]',
+            // Active state - only if not confirmed
+            !disabled && !showLoading && !isDisabledState && 'active:scale-[0.99]',
+            className
           )}
-        </span>
-      </button>
+          style={{
+            boxShadow: isDisabledState
+              ? hasRsvp
+                ? isPrimary
+                  ? '0 0 10px rgb(223 186 125 / 0.08), inset 0 0 6px rgb(223 186 125 / 0.03)'
+                  : '0 0 10px rgb(255 255 255 / 0.05), inset 0 0 6px rgb(255 255 255 / 0.02)'
+                : 'none'
+              : isPrimary
+                ? isHovered
+                  ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
+                  : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)'
+                : isHovered
+                  ? '0 0 20px rgb(255 255 255 / 0.12), 0 0 10px rgb(255 255 255 / 0.06), inset 0 0 16px rgb(255 255 255 / 0.04)'
+                  : '0 0 12px rgb(255 255 255 / 0.06), inset 0 0 8px rgb(255 255 255 / 0.02)',
+          }}
+          {...props}
+        >
+          {/* Animated border shimmer - only when not confirmed */}
+          {!isDisabledState && !disableAnimations && (
+            <div
+              className={cn(
+                'absolute inset-0 border-2 border-transparent',
+                'motion-safe:animate-[border-glow_3s_ease-in-out_infinite]',
+                'pointer-events-none opacity-0 group-hover:opacity-100',
+                'transition-opacity duration-300'
+              )}
+              style={{
+                background: isPrimary
+                  ? 'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box'
+                  : 'linear-gradient(90deg, transparent, rgb(255 255 255 / 0.2), transparent) border-box',
+                WebkitMask:
+                  'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+            />
+          )}
+
+          {/* Ripple effects */}
+          {ripples.map(ripple => (
+            <span
+              key={ripple.id}
+              className={cn(
+                'absolute rounded-full pointer-events-none animate-ripple',
+                isPrimary ? 'bg-fm-gold/30' : 'bg-white/20'
+              )}
+              style={{
+                left: `${ripple.x}%`,
+                top: `${ripple.y}%`,
+                width: '20px',
+                height: '20px',
+                transform: 'translate(-50%, -50%)',
+              }}
+            />
+          ))}
+
+          {/* Button content */}
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {showLoading ? (
+              <>
+                <div className={cn(
+                  'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
+                  isPrimary ? 'border-fm-gold' : 'border-foreground'
+                )} />
+                <span>{t('buttons.processing')}</span>
+              </>
+            ) : (
+              <>
+                {getButtonIcon()}
+                <span
+                  className={cn(
+                    'transition-all duration-200',
+                    isHovered && !disableAnimations && !isDisabledState && 'tracking-[0.18em]'
+                  )}
+                >
+                  {getButtonText()}
+                </span>
+              </>
+            )}
+          </span>
+        </button>
+
+        {/* Subtitle/Footnote */}
+        {subtitle && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            {subtitle}
+          </p>
+        )}
+      </div>
     );
   }
 );

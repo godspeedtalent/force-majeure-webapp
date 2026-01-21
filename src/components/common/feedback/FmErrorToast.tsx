@@ -93,7 +93,7 @@ export const FmErrorToast = ({
         <div className='flex items-center gap-1'>
           <button
             onClick={() => setShowOverlay(true)}
-            className='flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors'
+            className='flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors'
             title={t('errors.viewDetails')}
           >
             <FileText className='h-4 w-4 text-muted-foreground' />
@@ -101,7 +101,7 @@ export const FmErrorToast = ({
           <button
             onClick={handleCopy}
             className={cn(
-              'flex-shrink-0 p-1.5 rounded hover:bg-white/10 transition-colors',
+              'flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors',
               copied && 'bg-white/10'
             )}
             title={t('errors.copyErrorDetails')}
@@ -138,7 +138,7 @@ export const showErrorToast = (props: FmErrorToastProps) => {
     () => (
       <div
         className={cn(
-          'bg-card border-2 border-fm-crimson rounded-lg shadow-lg p-4 max-w-md',
+          'bg-card border-2 border-fm-crimson rounded-none shadow-lg p-4 max-w-md',
           'animate-in slide-in-from-top-5 duration-300'
         )}
       >

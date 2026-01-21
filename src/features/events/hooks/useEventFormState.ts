@@ -36,6 +36,8 @@ export interface EventFormState {
   undercardArtists: UndercardArtist[];
   ticketTiers: TicketTier[];
   heroImage: string;
+  isRsvpEnabled: boolean;
+  rsvpCapacity: number | null;
 }
 
 export interface EventFormActions {
@@ -52,6 +54,8 @@ export interface EventFormActions {
   setUndercardArtists: (artists: UndercardArtist[]) => void;
   setTicketTiers: (tiers: TicketTier[]) => void;
   setHeroImage: (image: string) => void;
+  setIsRsvpEnabled: (enabled: boolean) => void;
+  setRsvpCapacity: (capacity: number | null) => void;
   resetForm: () => void;
 }
 
@@ -80,6 +84,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   );
   const [ticketTiers, setTicketTiers] = useState<TicketTier[]>(initialState?.ticketTiers || []);
   const [heroImage, setHeroImage] = useState<string>(initialState?.heroImage || '');
+  const [isRsvpEnabled, setIsRsvpEnabled] = useState<boolean>(initialState?.isRsvpEnabled || false);
+  const [rsvpCapacity, setRsvpCapacity] = useState<number | null>(initialState?.rsvpCapacity ?? null);
 
   // Fetch venue capacity when venue changes
   useEffect(() => {
@@ -136,6 +142,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setUndercardArtists([]);
     setTicketTiers([]);
     setHeroImage('');
+    setIsRsvpEnabled(false);
+    setRsvpCapacity(null);
   }, []);
 
   const state: EventFormState = {
@@ -152,6 +160,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     undercardArtists,
     ticketTiers,
     heroImage,
+    isRsvpEnabled,
+    rsvpCapacity,
   };
 
   const actions: EventFormActions = {
@@ -168,6 +178,8 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setUndercardArtists,
     setTicketTiers,
     setHeroImage,
+    setIsRsvpEnabled,
+    setRsvpCapacity,
     resetForm,
   };
 

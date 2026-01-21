@@ -31,7 +31,7 @@ import { useShoppingCart } from '@/shared';
 import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
 import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { useFmToolbarSafe } from '@/shared/contexts/FmToolbarContext';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared';
 
 // Import extracted components
 import { TopTabGroups, BottomTabGroups, ToolbarDrawer } from './components';
@@ -139,8 +139,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
 
     const fetchPendingRequestsCount = async () => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { count, error } = await (supabase as any)
+        const { count, error } = await supabase
           .from('user_requests')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'pending');

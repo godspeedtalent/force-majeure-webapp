@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Calendar, MapPin, Ticket, User } from 'lucide-react';
 import * as QRCode from 'qrcode';
-import { cn } from '@/shared';
+import { cn, logger } from '@/shared';
 import type { TicketWithDetails } from '../types';
 
 interface TicketQRDisplayProps {
@@ -55,9 +55,12 @@ export function TicketQRDisplay({
         });
         setQrDataUrl(dataUrl);
         setError(null);
-      } catch (err) {
+      } catch (err: unknown) {
         setError('Failed to generate QR code');
-        console.error('QR generation error:', err);
+        logger.error('QR generation error', {
+          error: err instanceof Error ? err.message : 'Unknown',
+          context: 'TicketQRDisplay.generateQR',
+        });
       }
     };
 

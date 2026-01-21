@@ -98,7 +98,7 @@ export const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
             <h3 className="font-semibold mb-3">{t('orderDetails.ticketDetails')}</h3>
             <div className="space-y-3">
               {order.items?.map((item) => (
-                <div key={item.id} className="flex justify-between items-start p-3 bg-muted rounded-lg">
+                <div key={item.id} className="flex justify-between items-start p-3 bg-muted rounded-none">
                   <div className="flex-1">
                     <p className="font-medium">{item.ticket_tier?.name}</p>
                     {item.ticket_tier?.description && (

@@ -255,3 +255,36 @@ export function createContactSubmissionLog(params: {
     },
   };
 }
+
+/**
+ * Helper to create an RSVP scan activity log
+ */
+export function createRsvpScanLog(params: {
+  rsvpId: string;
+  eventId: string;
+  eventName: string;
+  attendeeName?: string | null;
+  scannerId?: string;
+  scanResult: 'success' | 'already_scanned' | 'invalid' | 'cancelled' | 'not_found' | 'event_mismatch';
+}): Omit<LogActivityParams, 'ipAddress' | 'userAgent'> {
+  const isSuccess = params.scanResult === 'success';
+
+  return {
+    eventType: 'ticket_scanned', // Reuse ticket_scanned event type for RSVPs
+    category: 'ticket',
+    description: isSuccess
+      ? `RSVP scanned for ${params.eventName}${params.attendeeName ? ` (${params.attendeeName})` : ''}`
+      : `RSVP scan failed: ${params.scanResult} - ${params.eventName}`,
+    userId: params.scannerId,
+    targetResourceType: 'rsvp',
+    targetResourceId: params.rsvpId,
+    targetResourceName: params.eventName,
+    metadata: {
+      event_id: params.eventId,
+      event_name: params.eventName,
+      attendee_name: params.attendeeName,
+      scan_result: params.scanResult,
+      scanned_at: new Date().toISOString(),
+    },
+  };
+}

@@ -13,7 +13,7 @@ import type { AnalyticsConfig } from '../types';
 import { DEFAULT_ANALYTICS_CONFIG } from '../types';
 import { usePageTracking } from '../hooks/usePageTracking';
 import { usePerformanceTracking } from '../hooks/usePerformanceTracking';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared';
 
 export interface AnalyticsContextValue {
   service: AnalyticsService;

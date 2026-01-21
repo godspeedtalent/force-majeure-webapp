@@ -18,6 +18,7 @@ import { GroupDetailView } from './ticket-group-manager/components/GroupDetailVi
 export function TicketGroupManager({
   groups,
   onChange,
+  eventFees,
 }: TicketGroupManagerProps) {
   const {
     activeView,
@@ -71,6 +72,7 @@ export function TicketGroupManager({
             onDeleteTier={tierIndex =>
               deleteTier(currentGroupIndex, tierIndex)
             }
+            eventFees={eventFees}
           />
         ) : null}
       </div>

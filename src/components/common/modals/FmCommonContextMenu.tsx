@@ -67,7 +67,7 @@ export function FmCommonContextMenu<T = any>({
                     <ContextMenuSubTrigger
                       disabled={action.disabled}
                       className={cn(
-                        'group cursor-pointer rounded-md my-0.5 relative',
+                        'group cursor-pointer rounded-none my-0.5 relative',
                         getListItemClasses(idx),
                         'data-[state=open]:bg-fm-gold/15 data-[state=open]:text-white',
                         action.disabled &&
@@ -100,7 +100,7 @@ export function FmCommonContextMenu<T = any>({
                               }}
                               disabled={subAction.disabled}
                               className={cn(
-                                'group cursor-pointer rounded-md my-0.5 relative',
+                                'group cursor-pointer rounded-none my-0.5 relative',
                                 getListItemClasses(subIdx),
                                 subAction.variant === 'destructive' &&
                                   'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',
@@ -153,7 +153,7 @@ export function FmCommonContextMenu<T = any>({
                   }}
                   disabled={action.disabled}
                   className={cn(
-                    'group cursor-pointer rounded-md my-0.5 relative',
+                    'group cursor-pointer rounded-none my-0.5 relative',
                     getListItemClasses(idx),
                     action.variant === 'destructive' &&
                       'text-destructive hover:bg-destructive/15 hover:shadow-destructive/20 focus:bg-destructive/20 focus:shadow-destructive/20 hover:text-destructive',

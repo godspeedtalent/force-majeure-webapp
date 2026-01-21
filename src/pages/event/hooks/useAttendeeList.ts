@@ -38,6 +38,15 @@ function getInitials(name: string | null | undefined): string {
 }
 
 /**
+ * Extract first name from full name
+ */
+function getFirstName(fullName: string | null | undefined): string | null {
+  if (!fullName) return null;
+  const parts = fullName.trim().split(/\s+/);
+  return parts[0] || null;
+}
+
+/**
  * Get display category based on type and privacy
  */
 function getDisplayCategory(
@@ -79,13 +88,15 @@ function profileToAttendee(
     };
   }
 
-  const displayName = profile?.display_name || profile?.full_name || 'Anonymous';
+  // Use first name for display, falling back to display_name or full_name
+  const firstName = getFirstName(profile?.full_name);
+  const displayName = firstName || profile?.display_name || 'Anonymous';
 
   return {
     id: profile?.id || userId,
     userId,
     name: displayName,
-    avatar: getInitials(displayName),
+    avatar: getInitials(profile?.full_name || displayName),
     avatarUrl: profile?.avatar_url,
     isFriend: friendIds.includes(userId),
     type,
@@ -256,11 +267,17 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
   // Guest count for display
   const guestCount = sortedAttendees.filter(a => a.displayCategory === 'guest').length;
 
-  // Preview for the card (first 5 public attendees, prioritize friends)
+  // Preview for the card (first 5 attendees, showing public and private)
+  // Prioritize public attendees, then add private ones
   const publicGoingAttendees = goingAttendees.filter(a => !a.isPrivate);
-  const attendeePreview = publicGoingAttendees
-    .slice(0, 5)
-    .map(a => ({ name: a.name, avatar: a.avatar }));
+  const privateGoingAttendees = goingAttendees.filter(a => a.isPrivate);
+  const previewAttendees = [...publicGoingAttendees, ...privateGoingAttendees].slice(0, 5);
+  const attendeePreview = previewAttendees.map(a => ({
+    name: a.name,
+    avatar: a.avatar,
+    avatarUrl: a.avatarUrl,
+    isPrivate: a.isPrivate,
+  }));
 
   return {
     // For backward compatibility with existing EventGuestList component

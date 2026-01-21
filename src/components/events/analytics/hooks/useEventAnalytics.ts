@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared';
 import { startOfDay, endOfDay, parseISO } from 'date-fns';
 
 interface AnalyticsDateRange {

@@ -23,7 +23,7 @@ const TICKET_SELECT_QUERY = `
     title,
     start_time,
     end_time,
-    hero_image_url,
+    hero_image,
     venue:venues(
       id,
       name,
@@ -75,13 +75,13 @@ export const ticketService = {
   async getUpcomingTickets(userId: string): Promise<TicketWithDetails[]> {
     const now = new Date().toISOString();
 
+    // Note: PostgREST doesn't support ordering by embedded resource fields,
+    // so we fetch without order and sort in JavaScript
     const { data, error } = await supabase
       .from('tickets')
       .select(TICKET_SELECT_QUERY)
       .eq('status', 'valid')
-      .eq('test_data', false)
-      .gte('event.start_time', now)
-      .order('event.start_time', { ascending: true });
+      .eq('test_data', false);
 
     if (error) {
       logger.error('Error fetching upcoming tickets', {
@@ -92,10 +92,22 @@ export const ticketService = {
       throw error;
     }
 
-    // Filter to only tickets belonging to this user
+    // Filter to only tickets belonging to this user and with future events
     const filteredData = (data || []).filter(
-      ticket => ticket.order && ticket.order.user_id === userId
+      ticket =>
+        ticket.order &&
+        ticket.order.user_id === userId &&
+        ticket.event &&
+        ticket.event.start_time &&
+        new Date(ticket.event.start_time) >= new Date(now)
     );
+
+    // Sort by event start time ascending (soonest first)
+    filteredData.sort((a, b) => {
+      const timeA = a.event?.start_time ? new Date(a.event.start_time).getTime() : 0;
+      const timeB = b.event?.start_time ? new Date(b.event.start_time).getTime() : 0;
+      return timeA - timeB;
+    });
 
     return filteredData as unknown as TicketWithDetails[];
   },
@@ -104,14 +116,14 @@ export const ticketService = {
    * Fetch past tickets for a user (events in the past or used tickets)
    */
   async getPastTickets(userId: string): Promise<TicketWithDetails[]> {
-    const now = new Date().toISOString();
+    const now = new Date();
 
+    // Note: PostgREST doesn't support ordering by embedded resource fields,
+    // so we fetch without order and sort in JavaScript
     const { data, error } = await supabase
       .from('tickets')
       .select(TICKET_SELECT_QUERY)
-      .eq('test_data', false)
-      .or(`status.eq.used,event.start_time.lt.${now}`)
-      .order('event.start_time', { ascending: false });
+      .eq('test_data', false);
 
     if (error) {
       logger.error('Error fetching past tickets', {
@@ -122,10 +134,26 @@ export const ticketService = {
       throw error;
     }
 
-    // Filter to only tickets belonging to this user
-    const filteredData = (data || []).filter(
-      ticket => ticket.order && ticket.order.user_id === userId
-    );
+    // Filter to only tickets belonging to this user that are past/used
+    const filteredData = (data || []).filter(ticket => {
+      if (!ticket.order || ticket.order.user_id !== userId) return false;
+
+      // Include if ticket is used OR event has already started
+      const isUsed = ticket.status === 'used';
+      const isPast =
+        ticket.event &&
+        ticket.event.start_time &&
+        new Date(ticket.event.start_time) < now;
+
+      return isUsed || isPast;
+    });
+
+    // Sort by event start time descending (most recent first)
+    filteredData.sort((a, b) => {
+      const timeA = a.event?.start_time ? new Date(a.event.start_time).getTime() : 0;
+      const timeB = b.event?.start_time ? new Date(b.event.start_time).getTime() : 0;
+      return timeB - timeA;
+    });
 
     return filteredData as unknown as TicketWithDetails[];
   },

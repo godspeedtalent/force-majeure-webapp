@@ -1,8 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
+import { logger } from '@/shared';
 
 const CRITICAL_THRESHOLD = 120; // 2 minutes
 const DANGER_THRESHOLD = 10; // 10 seconds
@@ -24,30 +25,56 @@ export const CheckoutCountdown = ({
 
   const [secondsRemaining, setSecondsRemaining] = useState(initialDuration);
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
+  // Use refs to track cleanup state and interval/timeout IDs
+  const isMountedRef = useRef(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleExpiration = () => {
-      toast.error(t('checkout.ticketsReturned'), {
-        description: t('checkout.reselectTickets'),
-        className: 'bg-[hsl(348,60%,20%)]/90 border-[hsl(348,60%,30%)]',
+  // Stable callback refs
+  const onExpireRef = useRef(onExpire);
+  onExpireRef.current = onExpire;
+
+  const handleExpiration = useCallback(() => {
+    toast.error(t('checkout.ticketsReturned'), {
+      description: t('checkout.reselectTickets'),
+      className: 'bg-[hsl(348,60%,20%)]/90 border-[hsl(348,60%,30%)]',
+    });
+
+    try {
+      onExpireRef.current();
+    } catch (error: unknown) {
+      logger.error('Error in checkout expiration callback', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        context: 'CheckoutCountdown.handleExpiration',
       });
+    }
 
-      onExpire();
+    timeoutRef.current = setTimeout(() => {
+      if (!isMountedRef.current) return;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        window.location.reload();
+      }
+    }, 2000);
+  }, [t, redirectUrl]);
 
-      timeoutId = setTimeout(() => {
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-        } else {
-          window.location.reload();
-        }
-      }, 2000);
-    };
+  useEffect(() => {
+    isMountedRef.current = true;
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
+      if (!isMountedRef.current) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        return;
+      }
+
       setSecondsRemaining(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          // Clear interval before handling expiration
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
           handleExpiration();
           return 0;
         }
@@ -56,12 +83,19 @@ export const CheckoutCountdown = ({
     }, 1000);
 
     return () => {
-      clearInterval(interval);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      isMountedRef.current = false;
+      // Always clear interval unconditionally
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      // Always clear timeout unconditionally
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
-  }, [onExpire, redirectUrl]);
+  }, [handleExpiration]);
 
   const getTextColor = () => {
     if (secondsRemaining <= DANGER_THRESHOLD) {

@@ -26,7 +26,7 @@ export const ImageAnchorDemo = () => {
         {anchors.map(({ anchor, label }) => (
           <div key={anchor} className='space-y-2'>
             <h3 className='text-lg font-medium text-center'>{label}</h3>
-            <div className='h-48 w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-muted flex items-center justify-center'>
+            <div className='h-48 w-full border-2 border-dashed border-gray-300 rounded-none overflow-hidden bg-muted flex items-center justify-center'>
               <p className='text-sm text-muted-foreground'>
                 Placeholder for {label}
               </p>

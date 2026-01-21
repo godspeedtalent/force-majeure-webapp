@@ -66,6 +66,7 @@ export * from './types/deletionRequests';
 // ============================================================================
 export * from './stores/cartStore';
 export * from './stores/rolesStore';
+export * from './stores/mockPaymentStore';
 
 // ============================================================================
 // Auth

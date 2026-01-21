@@ -219,7 +219,7 @@ export const FmResourceDetailsModal = ({
               </h2>
             </div>
           </div>
-          <div className='mt-4 overflow-hidden rounded-xl border border-white/15 bg-white/5 shadow-inner relative'>
+          <div className='mt-4 overflow-hidden rounded-none border border-white/15 bg-white/5 shadow-inner relative'>
             {imageUrl ? (
               <>
                 {isImageLoading && (

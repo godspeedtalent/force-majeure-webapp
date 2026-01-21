@@ -20,6 +20,7 @@ interface TicketTierWithOrders {
   is_active: boolean;
   fee_flat_cents: number;
   fee_pct_bps: number;
+  inherit_group_fees: boolean;
   group_id: string | null;
   has_orders: boolean;
 }
@@ -28,6 +29,7 @@ interface TicketGroupWithTiers extends Omit<TicketGroup, 'tiers'> {
   tiers: TicketTierWithOrders[];
   fee_flat_cents: number;
   fee_pct_bps: number;
+  inherit_event_fees: boolean;
   is_active: boolean;
   group_order: number;
 }
@@ -90,6 +92,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         is_active: tier.is_active,
         fee_flat_cents: tier.fee_flat_cents,
         fee_pct_bps: tier.fee_pct_bps,
+        inherit_group_fees: tier.inherit_group_fees ?? true,
         group_id: tier.group_id,
         has_orders: tier.order_items?.[0]?.count > 0 || tier.sold_inventory > 0,
       }));
@@ -104,6 +107,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
         is_active: group.is_active,
         fee_flat_cents: group.fee_flat_cents,
         fee_pct_bps: group.fee_pct_bps,
+        inherit_event_fees: group.inherit_event_fees ?? true,
         tiers: tiersWithOrders.filter(t => t.group_id === group.id),
       }));
 
@@ -119,6 +123,7 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           is_active: true,
           fee_flat_cents: 0,
           fee_pct_bps: 0,
+          inherit_event_fees: true,
           tiers: ungroupedTiers,
         });
       }
@@ -148,8 +153,9 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           color: group.color,
           group_order: groups.indexOf(group),
           is_active: true,
-          fee_flat_cents: 0,
-          fee_pct_bps: 0,
+          fee_flat_cents: group.fee_flat_cents ?? 0,
+          fee_pct_bps: group.fee_pct_bps ?? 0,
+          inherit_event_fees: group.inherit_event_fees ?? true,
         };
 
         if (group.id && !group.id.startsWith('temp-')) {
@@ -189,8 +195,9 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
             available_inventory: tier.total_tickets,
             reserved_inventory: 0,
             sold_inventory: 0,
-            fee_flat_cents: 0,
-            fee_pct_bps: 0,
+            fee_flat_cents: tier.fee_flat_cents ?? 0,
+            fee_pct_bps: tier.fee_pct_bps ?? 0,
+            inherit_group_fees: tier.inherit_group_fees ?? true,
           };
 
           if (tier.id && !tier.id.startsWith('temp-')) {

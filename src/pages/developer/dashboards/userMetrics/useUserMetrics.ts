@@ -5,8 +5,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase, logger } from '@/shared';
 import type {
   UserMetricsOverview,
   UserGrowthDataPoint,

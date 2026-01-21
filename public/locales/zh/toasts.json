@@ -116,6 +116,7 @@
     "hideFailedDescription": "无法隐藏活动",
     "updateSettingFailed": "更新设置失败",
     "updateUndercardSettingFailedDescription": "无法保存寻找开场艺人设置",
+    "updateNoHeadlinerSettingFailedDescription": "无法保存无主打艺术家设置",
     "artistUpdateFailed": "更新艺术家失败",
     "artistUpdateFailedDescription": "无法保存艺术家更改",
     "rsvpSettingsUpdated": "预约设置已更新",
@@ -126,7 +127,17 @@
     "rsvpFailed": "预约失败，请重试。",
     "updateStatusFailed": "更新活动状态失败",
     "mockDataImportFailed": "导入模拟数据失败",
-    "mockDataPurgeFailed": "清除测试数据失败"
+    "mockDataPurgeFailed": "清除测试数据失败",
+    "feeSettingsUpdated": "费用设置已更新",
+    "feeSettingsUpdateFailed": "更新费用设置失败"
+  },
+  "fees": {
+    "feeItemAdded": "费用添加成功",
+    "feeItemAddFailed": "添加费用失败",
+    "feeItemUpdated": "费用更新成功",
+    "feeItemUpdateFailed": "更新费用失败",
+    "feeItemDeleted": "费用已删除",
+    "feeItemDeleteFailed": "删除费用失败"
   },
   "validation": {
     "stageNameRequired": "请输入您的艺名",

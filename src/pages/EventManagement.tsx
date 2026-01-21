@@ -21,6 +21,7 @@ import {
   UserCog,
   Handshake,
   UserCheck,
+  Smartphone,
 } from 'lucide-react';
 import { supabase } from '@/shared';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
@@ -75,7 +76,16 @@ export default function EventManagement() {
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [showPartners, setShowPartners] = useState<boolean>(true);
   const [showGuestList, setShowGuestList] = useState<boolean>(true);
+  const [mobileFullHeroHeight, setMobileFullHeroHeight] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Track original UX display values for dirty checking
+  const [originalUxValues, setOriginalUxValues] = useState<{
+    displaySubtitle: boolean;
+    showPartners: boolean;
+    showGuestList: boolean;
+    mobileFullHeroHeight: boolean;
+  } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Form state for sticky footer
@@ -147,13 +157,26 @@ export default function EventManagement() {
   const undercardArtists = eventArtistsData?.map(item => item.artist_id) || [];
 
   // Sync UX Display state from event data
-  // Note: show_partners and show_guest_list are new columns added via migration
+  // Note: show_partners, show_guest_list, mobile_full_hero_height are columns added via migration
   useEffect(() => {
     if (event) {
-      setDisplaySubtitle(event.display_subtitle ?? true);
-      // Type assertion needed until Supabase types are regenerated after migration
-      setShowPartners((event as { show_partners?: boolean }).show_partners ?? true);
-      setShowGuestList((event as { show_guest_list?: boolean }).show_guest_list ?? true);
+      const subtitle = event.display_subtitle ?? true;
+      const partners = (event as { show_partners?: boolean }).show_partners ?? true;
+      const guestList = (event as { show_guest_list?: boolean }).show_guest_list ?? true;
+      const fullHeroHeight = (event as { mobile_full_hero_height?: boolean }).mobile_full_hero_height ?? false;
+
+      setDisplaySubtitle(subtitle);
+      setShowPartners(partners);
+      setShowGuestList(guestList);
+      setMobileFullHeroHeight(fullHeroHeight);
+
+      // Store original values for dirty checking
+      setOriginalUxValues({
+        displaySubtitle: subtitle,
+        showPartners: partners,
+        showGuestList: guestList,
+        mobileFullHeroHeight: fullHeroHeight,
+      });
     }
   }, [event]);
 
@@ -166,6 +189,9 @@ export default function EventManagement() {
     },
     enabled: !!id,
   });
+
+  // Check if event is RSVP-only (no paid tickets)
+  const isRsvpOnlyEvent = (event as { is_rsvp_only_event?: boolean })?.is_rsvp_only_event ?? false;
 
   // Navigation groups configuration
   const navigationGroups: FmCommonSideNavGroup<EventTab>[] = [
@@ -222,12 +248,13 @@ export default function EventManagement() {
           icon: Ticket,
           description: t('eventNav.ticketTiersDescription'),
         },
-        {
-          id: 'orders',
+        // Hide orders tab for RSVP-only events
+        ...(!isRsvpOnlyEvent ? [{
+          id: 'orders' as EventTab,
           label: t('eventNav.orders'),
           icon: ShoppingBag,
           description: t('eventNav.ordersDescription'),
-        },
+        }] : []),
         {
           id: 'rsvps',
           label: t('eventNav.rsvps'),
@@ -318,7 +345,8 @@ export default function EventManagement() {
     { id: 'social', label: t('eventNav.social'), icon: Share2 },
     { id: 'ux_display', label: t('eventNav.uxDisplay'), icon: Palette },
     { id: 'tiers', label: t('eventNav.ticketTiers'), icon: Ticket },
-    { id: 'orders', label: t('eventNav.orders'), icon: ShoppingBag },
+    // Hide orders tab for RSVP-only events
+    ...(!isRsvpOnlyEvent ? [{ id: 'orders' as EventTab, label: t('eventNav.orders'), icon: ShoppingBag }] : []),
     { id: 'rsvps', label: t('eventNav.rsvps'), icon: UserCheck },
     { id: 'ticket-status', label: t('eventNav.ticketStatus'), icon: BarChart3 },
     { id: 'tracking', label: t('eventNav.trackingLinks'), icon: Link2 },
@@ -376,6 +404,7 @@ export default function EventManagement() {
           display_subtitle: displaySubtitle,
           show_partners: showPartners,
           show_guest_list: showGuestList,
+          mobile_full_hero_height: mobileFullHeroHeight,
         })
         .eq('id', id!);
 
@@ -394,6 +423,24 @@ export default function EventManagement() {
       setIsSaving(false);
     }
   };
+
+  // Compute if UX display settings are dirty
+  const isUxDisplayDirty = originalUxValues !== null && (
+    displaySubtitle !== originalUxValues.displaySubtitle ||
+    showPartners !== originalUxValues.showPartners ||
+    showGuestList !== originalUxValues.showGuestList ||
+    mobileFullHeroHeight !== originalUxValues.mobileFullHeroHeight
+  );
+
+  // Undo UX display changes
+  const handleUndoUxDisplay = useCallback(() => {
+    if (originalUxValues) {
+      setDisplaySubtitle(originalUxValues.displaySubtitle);
+      setShowPartners(originalUxValues.showPartners);
+      setShowGuestList(originalUxValues.showGuestList);
+      setMobileFullHeroHeight(originalUxValues.mobileFullHeroHeight);
+    }
+  }, [originalUxValues]);
 
   const handlePublishEvent = async () => {
     if (!id) return;
@@ -490,7 +537,10 @@ export default function EventManagement() {
           <PageErrorBoundary section='Overview'>
             <EventOverviewForm
               eventId={id}
-              event={event}
+              event={{
+                ...event,
+                no_headliner: event.no_headliner ?? undefined,
+              }}
               orderCount={orderCount}
               onMakeInvisible={handleMakeInvisible}
               onPublish={handlePublishEvent}
@@ -527,6 +577,33 @@ export default function EventManagement() {
                   setOrder: item.set_order,
                 })) || []}
                 lookingForUndercard={event.looking_for_undercard ?? false}
+                noHeadliner={event.no_headliner ?? false}
+                onNoHeadlinerChange={async (checked) => {
+                  try {
+                    if (!id) throw new Error('Event ID is required');
+
+                    const { error } = await supabase
+                      .from('events')
+                      .update({
+                        no_headliner: checked,
+                        // Clear headliner when enabling no_headliner
+                        ...(checked ? { headliner_id: null } : {})
+                      })
+                      .eq('id', id);
+
+                    if (error) throw error;
+
+                    toast.success(checked ? t('eventManagement.noHeadlinerEnabled') : t('eventManagement.noHeadlinerDisabled'));
+                    queryClient.invalidateQueries({ queryKey: ['event', id] });
+                  } catch (error) {
+                    await handleError(error, {
+                      title: tToast('events.updateSettingFailed'),
+                      description: tToast('events.updateNoHeadlinerSettingFailedDescription'),
+                      endpoint: 'EventManagement/artists',
+                      method: 'UPDATE',
+                    });
+                  }
+                }}
                 footerAction={
                   (event.status === 'draft' || event.status === 'invisible') ? (
                     <PublishEventButton
@@ -777,6 +854,32 @@ export default function EventManagement() {
                 </div>
               </FmFormSection>
 
+              {/* Mobile Settings */}
+              <FmFormSection
+                title={t('eventManagement.mobileSettings')}
+                description={t('eventManagement.mobileSettingsDescription')}
+                icon={Smartphone}
+              >
+                <div className='flex items-center gap-3 p-4 rounded-none border border-border bg-card'>
+                  <Smartphone className='h-5 w-5 text-fm-gold' />
+                  <div className='flex-1'>
+                    <Label htmlFor='mobile-full-hero-height' className='cursor-pointer font-medium'>
+                      {t('eventManagement.mobileFullHeroHeight')}
+                    </Label>
+                    <p className='text-xs text-muted-foreground mt-1'>
+                      {t('eventManagement.mobileFullHeroHeightDescription')}
+                    </p>
+                  </div>
+                  <FmCommonToggle
+                    id='mobile-full-hero-height'
+                    label={t('eventManagement.mobileFullHeroHeight')}
+                    checked={mobileFullHeroHeight}
+                    onCheckedChange={checked => setMobileFullHeroHeight(checked)}
+                    hideLabel
+                  />
+                </div>
+              </FmFormSection>
+
             </div>
           </PageErrorBoundary>
         </FmContentContainer>
@@ -872,7 +975,7 @@ export default function EventManagement() {
           isDirty={
             activeTab === 'overview' ? overviewFormState.isDirty :
             activeTab === 'admin' ? queueConfigFormState.isDirty :
-            false
+            isUxDisplayDirty
           }
           isSaving={
             activeTab === 'overview' ? overviewFormState.isSaving :
@@ -887,7 +990,7 @@ export default function EventManagement() {
           onUndo={
             activeTab === 'overview' ? overviewFormState.onUndo :
             activeTab === 'admin' ? queueConfigFormState.onUndo :
-            undefined
+            handleUndoUxDisplay
           }
           hasSidebar
         />

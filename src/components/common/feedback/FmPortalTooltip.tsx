@@ -20,6 +20,8 @@ interface FmPortalTooltipProps {
   sideOffset?: number;
   delayDuration?: number;
   className?: string;
+  /** Custom arrow className for styling the tooltip arrow */
+  arrowClassName?: string;
   asChild?: boolean;
 }
 
@@ -30,6 +32,7 @@ export const FmPortalTooltip = ({
   sideOffset = 5,
   delayDuration = 300,
   className,
+  arrowClassName,
   asChild = true,
 }: FmPortalTooltipProps) => {
   return (
@@ -54,7 +57,7 @@ export const FmPortalTooltip = ({
             )}
           >
             {content}
-            <TooltipPrimitive.Arrow className='fill-black/95' />
+            <TooltipPrimitive.Arrow className={cn('fill-black/95', arrowClassName)} />
           </TooltipPrimitive.Content>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>
