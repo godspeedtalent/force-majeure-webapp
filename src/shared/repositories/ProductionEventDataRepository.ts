@@ -7,6 +7,7 @@ import type {
   GuestAttendeeData,
   ProfileData,
   GuestData,
+  ConsolidatedAttendeesResult,
 } from './types';
 
 /**
@@ -291,6 +292,61 @@ export class ProductionEventDataRepository implements IEventDataRepository {
         event_id: eventId,
       });
       return [];
+    }
+  }
+
+  async getAllAttendees(eventId: string): Promise<ConsolidatedAttendeesResult> {
+    try {
+      // Use the consolidated RPC that fetches all attendees in one call
+      type RpcFn = (
+        fn: string,
+        params: { p_event_id: string }
+      ) => Promise<{
+        data: ConsolidatedAttendeesResult | null;
+        error: { message: string } | null;
+      }>;
+
+      const { data, error } = await (supabase.rpc as unknown as RpcFn)(
+        'get_event_attendees',
+        { p_event_id: eventId }
+      );
+
+      if (error) throw error;
+
+      // Return the result or empty structure
+      return data ?? {
+        ticket_holders: [],
+        rsvp_holders: [],
+        interested_users: [],
+        guest_holders: [],
+      };
+    } catch (error) {
+      logger.error('Failed to fetch all attendees', {
+        error: error instanceof Error ? error.message : 'Unknown',
+        source: 'ProductionEventDataRepository.getAllAttendees',
+        event_id: eventId,
+      });
+
+      // Fall back to individual queries if RPC fails
+      logger.info('Falling back to individual attendee queries', {
+        source: 'ProductionEventDataRepository.getAllAttendees',
+        event_id: eventId,
+      });
+
+      const [ticketHolders, rsvpHolders, interestedUsers, guestHolders] =
+        await Promise.all([
+          this.getTicketHolders(eventId),
+          this.getRsvpHolders(eventId),
+          this.getInterestedUsers(eventId),
+          this.getGuestTicketHolders(eventId),
+        ]);
+
+      return {
+        ticket_holders: ticketHolders,
+        rsvp_holders: rsvpHolders,
+        interested_users: interestedUsers,
+        guest_holders: guestHolders,
+      };
     }
   }
 }

@@ -37,10 +37,12 @@ export const EventDetailsPage = () => {
     }
   }, [event?.id, trackEventView, recordView]);
 
-  // Check if user can view non-published events
+  // Check if user can view draft/test events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
   const eventStatus = event?.status ?? 'published';
-  const isPublished = eventStatus === 'published';
+  // Published and invisible events are publicly accessible
+  // Draft and test events require admin/developer access
+  const isPubliclyAccessible = eventStatus === 'published' || eventStatus === 'invisible';
 
   // Check if user can manage events
   const canManage = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) || hasPermission(PERMISSIONS.MANAGE_EVENTS);
@@ -103,8 +105,8 @@ export const EventDetailsPage = () => {
     );
   }
 
-  // Check access control: non-published events require privileged access
-  if (!isPublished && !canViewDraft) {
+  // Check access control: draft/test events require privileged access
+  if (!isPubliclyAccessible && !canViewDraft) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background relative overflow-hidden'>
         <TopographicBackground opacity={0.25} />

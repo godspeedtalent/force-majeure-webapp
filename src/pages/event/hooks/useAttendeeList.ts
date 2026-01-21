@@ -4,7 +4,7 @@ import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 import { getEventDataRepository } from '@/shared/repositories';
-import type { ProfileData } from '@/shared/repositories';
+import type { ProfileData, ConsolidatedAttendeesResult } from '@/shared/repositories';
 
 export interface Attendee {
   id: string;
@@ -142,33 +142,26 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
     [eventStatus]
   );
 
-  // Fetch ticket holders (from orders)
-  const { data: ticketHolders = [], isLoading: loadingTickets } = useQuery({
-    queryKey: ['event-attendees-tickets', eventId, eventStatus],
-    queryFn: () => repository.getTicketHolders(eventId),
+  // Fetch all attendees in a single consolidated query
+  // This replaces 4 separate queries with 1 call for better performance
+  const emptyResult: ConsolidatedAttendeesResult = {
+    ticket_holders: [],
+    rsvp_holders: [],
+    interested_users: [],
+    guest_holders: [],
+  };
+
+  const { data: attendeeData = emptyResult, isLoading: loadingAttendees } = useQuery({
+    queryKey: ['event-attendees-all', eventId, eventStatus],
+    queryFn: () => repository.getAllAttendees(eventId),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Fetch RSVPs (for free events)
-  const { data: rsvpHolders = [], isLoading: loadingRsvps } = useQuery({
-    queryKey: ['event-attendees-rsvp', eventId, eventStatus],
-    queryFn: () => repository.getRsvpHolders(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // Fetch interested users
-  const { data: interestedHolders = [], isLoading: loadingInterested } = useQuery({
-    queryKey: ['event-attendees-interested', eventId, eventStatus],
-    queryFn: () => repository.getInterestedUsers(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // Fetch guest ticket holders (anonymous checkouts)
-  const { data: guestHolders = [], isLoading: loadingGuests } = useQuery({
-    queryKey: ['event-attendees-guests', eventId, eventStatus],
-    queryFn: () => repository.getGuestTicketHolders(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
+  // Extract individual attendee lists from consolidated result
+  const ticketHolders = attendeeData.ticket_holders;
+  const rsvpHolders = attendeeData.rsvp_holders;
+  const interestedHolders = attendeeData.interested_users;
+  const guestHolders = attendeeData.guest_holders;
 
   // Fetch user's friends (rave family connections)
   // This always queries production tables - friends are real users only
@@ -299,6 +292,6 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
     interestedCount: interestedAttendees.length,
 
     // Loading state
-    isLoading: loadingTickets || loadingRsvps || loadingInterested || loadingGuests,
+    isLoading: loadingAttendees,
   };
 }
