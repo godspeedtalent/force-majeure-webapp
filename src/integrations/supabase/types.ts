@@ -1392,6 +1392,8 @@ export type Database = {
       dev_bookmarks: {
         Row: {
           created_at: string | null
+          icon: string | null
+          icon_color: string | null
           id: string
           label: string
           path: string
@@ -1400,6 +1402,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          icon?: string | null
+          icon_color?: string | null
           id?: string
           label: string
           path: string
@@ -1408,6 +1412,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          icon?: string | null
+          icon_color?: string | null
           id?: string
           label?: string
           path?: string
@@ -1473,6 +1479,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entity_fee_items: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          fee_type: string
+          fee_value: number
+          id: string
+          is_active: boolean
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          fee_type: string
+          fee_value: number
+          id?: string
+          is_active?: boolean
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          fee_type?: string
+          fee_value?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       environments: {
         Row: {
@@ -1761,6 +1806,7 @@ export type Database = {
           display_order: number | null
           event_id: string
           id: string
+          importance: number
           is_hidden: boolean
           organization_id: string
         }
@@ -1769,6 +1815,7 @@ export type Database = {
           display_order?: number | null
           event_id: string
           id?: string
+          importance?: number
           is_hidden?: boolean
           organization_id: string
         }
@@ -1777,6 +1824,7 @@ export type Database = {
           display_order?: number | null
           event_id?: string
           id?: string
+          importance?: number
           is_hidden?: boolean
           organization_id?: string
         }
@@ -1835,6 +1883,8 @@ export type Database = {
       }
       event_rsvps: {
         Row: {
+          checked_in_at: string | null
+          checked_in_by: string | null
           created_at: string
           event_id: string
           id: string
@@ -1843,6 +1893,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
           created_at?: string
           event_id: string
           id?: string
@@ -1851,6 +1903,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
           created_at?: string
           event_id?: string
           id?: string
@@ -1871,6 +1925,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1982,6 +2043,8 @@ export type Database = {
           description: string | null
           display_subtitle: boolean
           end_time: string | null
+          fee_flat_cents: number
+          fee_pct_bps: number
           gallery_id: string | null
           headliner_id: string | null
           hero_image: string | null
@@ -1990,13 +2053,17 @@ export type Database = {
           id: string
           is_after_hours: boolean
           is_free_event: boolean
+          is_rsvp_only_event: boolean | null
           is_tba: boolean | null
           looking_for_undercard: boolean
           min_interest_count_display: number
           min_share_count_display: number
+          mobile_full_hero_height: boolean
           no_headliner: boolean | null
           organization_id: string | null
+          rsvp_button_subtitle: string | null
           rsvp_capacity: number | null
+          send_rsvp_email: boolean
           share_count: number
           show_guest_list: boolean
           show_partners: boolean
@@ -2008,6 +2075,7 @@ export type Database = {
           test_data: boolean
           title: string
           updated_at: string | null
+          use_default_fees: boolean
           venue_id: string | null
           view_count: number
         }
@@ -2017,6 +2085,8 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          fee_flat_cents?: number
+          fee_pct_bps?: number
           gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
@@ -2025,13 +2095,17 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_free_event?: boolean
+          is_rsvp_only_event?: boolean | null
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          mobile_full_hero_height?: boolean
           no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_button_subtitle?: string | null
           rsvp_capacity?: number | null
+          send_rsvp_email?: boolean
           share_count?: number
           show_guest_list?: boolean
           show_partners?: boolean
@@ -2043,6 +2117,7 @@ export type Database = {
           test_data?: boolean
           title: string
           updated_at?: string | null
+          use_default_fees?: boolean
           venue_id?: string | null
           view_count?: number
         }
@@ -2052,6 +2127,8 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          fee_flat_cents?: number
+          fee_pct_bps?: number
           gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
@@ -2060,13 +2137,17 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_free_event?: boolean
+          is_rsvp_only_event?: boolean | null
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          mobile_full_hero_height?: boolean
           no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_button_subtitle?: string | null
           rsvp_capacity?: number | null
+          send_rsvp_email?: boolean
           share_count?: number
           show_guest_list?: boolean
           show_partners?: boolean
@@ -2078,6 +2159,7 @@ export type Database = {
           test_data?: boolean
           title?: string
           updated_at?: string | null
+          use_default_fees?: boolean
           venue_id?: string | null
           view_count?: number
         }
@@ -2349,6 +2431,7 @@ export type Database = {
           event_id: string
           id: string
           is_enabled: boolean
+          min_guest_threshold: number
           min_interested_guests: number
           min_private_guests: number
           min_public_guests: number
@@ -2359,6 +2442,7 @@ export type Database = {
           event_id: string
           id?: string
           is_enabled?: boolean
+          min_guest_threshold?: number
           min_interested_guests?: number
           min_private_guests?: number
           min_public_guests?: number
@@ -2369,6 +2453,7 @@ export type Database = {
           event_id?: string
           id?: string
           is_enabled?: boolean
+          min_guest_threshold?: number
           min_interested_guests?: number
           min_private_guests?: number
           min_public_guests?: number
@@ -2790,6 +2875,48 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_staff: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_staff_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_staff_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -3508,6 +3635,61 @@ export type Database = {
         }
         Relationships: []
       }
+      rsvp_scan_events: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          event_id: string
+          id: string
+          rsvp_id: string | null
+          scan_location: Json | null
+          scan_result: string
+          scanned_by: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          event_id: string
+          id?: string
+          rsvp_id?: string | null
+          scan_location?: Json | null
+          scan_result: string
+          scanned_by: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          event_id?: string
+          id?: string
+          rsvp_id?: string | null
+          scan_location?: Json | null
+          scan_result?: string
+          scanned_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rsvp_scan_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_scan_events_rsvp_id_fkey"
+            columns: ["rsvp_id"]
+            isOneToOne: false
+            referencedRelation: "event_rsvps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_scan_events_scanned_by_fkey"
+            columns: ["scanned_by"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scavenger_claims: {
         Row: {
           created_at: string | null
@@ -3641,6 +3823,325 @@ export type Database = {
           },
         ]
       }
+      test_event_interests: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          test_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          test_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          test_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_event_interests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_event_interests_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          test_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status?: string
+          test_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          test_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_event_rsvps_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_order_items: {
+        Row: {
+          created_at: string
+          fees_cents: number | null
+          id: string
+          item_type: string
+          product_id: string | null
+          quantity: number
+          subtotal_cents: number | null
+          test_order_id: string
+          ticket_tier_id: string | null
+          total_cents: number | null
+          unit_fee_cents: number
+          unit_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          fees_cents?: number | null
+          id?: string
+          item_type?: string
+          product_id?: string | null
+          quantity: number
+          subtotal_cents?: number | null
+          test_order_id: string
+          ticket_tier_id?: string | null
+          total_cents?: number | null
+          unit_fee_cents?: number
+          unit_price_cents: number
+        }
+        Update: {
+          created_at?: string
+          fees_cents?: number | null
+          id?: string
+          item_type?: string
+          product_id?: string | null
+          quantity?: number
+          subtotal_cents?: number | null
+          test_order_id?: string
+          ticket_tier_id?: string | null
+          total_cents?: number | null
+          unit_fee_cents?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_order_items_test_order_id_fkey"
+            columns: ["test_order_id"]
+            isOneToOne: false
+            referencedRelation: "test_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_order_items_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_orders: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_email: string | null
+          event_id: string
+          fee_breakdown: Json | null
+          fees_cents: number
+          guest_id: string | null
+          id: string
+          status: string
+          subtotal_cents: number
+          test_profile_id: string | null
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          event_id: string
+          fee_breakdown?: Json | null
+          fees_cents?: number
+          guest_id?: string | null
+          id?: string
+          status?: string
+          subtotal_cents: number
+          test_profile_id?: string | null
+          total_cents: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          event_id?: string
+          fee_breakdown?: Json | null
+          fees_cents?: number
+          guest_id?: string | null
+          id?: string
+          status?: string
+          subtotal_cents?: number
+          test_profile_id?: string | null
+          total_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_orders_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_orders_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string
+          guest_list_visible: boolean | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email: string
+          guest_list_visible?: boolean | null
+          id?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          guest_list_visible?: boolean | null
+          id?: string
+        }
+        Relationships: []
+      }
+      test_tickets: {
+        Row: {
+          attendee_email: string | null
+          attendee_name: string | null
+          checked_in_at: string | null
+          checked_in_by: string | null
+          created_at: string
+          event_id: string
+          has_protection: boolean
+          id: string
+          qr_code_data: string
+          status: string
+          test_order_id: string
+          test_order_item_id: string
+          ticket_tier_id: string
+          updated_at: string
+        }
+        Insert: {
+          attendee_email?: string | null
+          attendee_name?: string | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          event_id: string
+          has_protection?: boolean
+          id?: string
+          qr_code_data: string
+          status?: string
+          test_order_id: string
+          test_order_item_id: string
+          ticket_tier_id: string
+          updated_at?: string
+        }
+        Update: {
+          attendee_email?: string | null
+          attendee_name?: string | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          event_id?: string
+          has_protection?: boolean
+          id?: string
+          qr_code_data?: string
+          status?: string
+          test_order_id?: string
+          test_order_item_id?: string
+          ticket_tier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_test_order_id_fkey"
+            columns: ["test_order_id"]
+            isOneToOne: false
+            referencedRelation: "test_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_test_order_item_id_fkey"
+            columns: ["test_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "test_order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_groups: {
         Row: {
           color: string
@@ -3651,6 +4152,7 @@ export type Database = {
           fee_pct_bps: number
           group_order: number
           id: string
+          inherit_event_fees: boolean
           is_active: boolean
           name: string
           updated_at: string
@@ -3664,6 +4166,7 @@ export type Database = {
           fee_pct_bps?: number
           group_order: number
           id?: string
+          inherit_event_fees?: boolean
           is_active?: boolean
           name: string
           updated_at?: string
@@ -3677,6 +4180,7 @@ export type Database = {
           fee_pct_bps?: number
           group_order?: number
           id?: string
+          inherit_event_fees?: boolean
           is_active?: boolean
           name?: string
           updated_at?: string
@@ -3851,6 +4355,7 @@ export type Database = {
           group_id: string | null
           hide_until_previous_sold_out: boolean
           id: string
+          inherit_group_fees: boolean
           is_active: boolean
           name: string
           price_cents: number
@@ -3870,6 +4375,7 @@ export type Database = {
           group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
+          inherit_group_fees?: boolean
           is_active?: boolean
           name: string
           price_cents: number
@@ -3889,6 +4395,7 @@ export type Database = {
           group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
+          inherit_group_fees?: boolean
           is_active?: boolean
           name?: string
           price_cents?: number
@@ -3924,6 +4431,8 @@ export type Database = {
           fee_value: number
           id: string
           is_active: boolean
+          label: string | null
+          sort_order: number
           updated_at: string
         }
         Insert: {
@@ -3934,6 +4443,8 @@ export type Database = {
           fee_value: number
           id?: string
           is_active?: boolean
+          label?: string | null
+          sort_order?: number
           updated_at?: string
         }
         Update: {
@@ -3944,6 +4455,8 @@ export type Database = {
           fee_value?: number
           id?: string
           is_active?: boolean
+          label?: string | null
+          sort_order?: number
           updated_at?: string
         }
         Relationships: [
@@ -4622,14 +5135,24 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: {
           deleted_guests: number
+          deleted_interests: number
           deleted_order_items: number
           deleted_orders: number
+          deleted_rsvps: number
+          deleted_test_order_items: number
+          deleted_test_orders: number
+          deleted_test_profiles: number
+          deleted_test_tickets: number
           deleted_tickets: number
         }[]
       }
       end_analytics_session: {
         Args: { p_session_id: string }
         Returns: undefined
+      }
+      generate_rsvp_signature: {
+        Args: { p_event_id: string; p_rsvp_id: string }
+        Returns: string
       }
       get_activity_log_archive_status: {
         Args: never
@@ -4774,6 +5297,10 @@ export type Database = {
           zip_code: string
         }[]
       }
+      get_organization_role: {
+        Args: { p_organization_id: string; p_user_id: string }
+        Returns: string
+      }
       get_profile_addresses: {
         Args: { p_profile_id: string }
         Returns: {
@@ -4810,6 +5337,22 @@ export type Database = {
           line_2: string
           state: string
           zip_code: string
+        }[]
+      }
+      get_rsvp_with_details: {
+        Args: { p_rsvp_id: string }
+        Returns: {
+          attendee_email: string
+          attendee_name: string
+          checked_in_at: string
+          checked_in_by: string
+          event_id: string
+          event_start_time: string
+          event_title: string
+          id: string
+          status: string
+          user_id: string
+          venue_name: string
         }[]
       }
       get_table_list: {
@@ -4908,6 +5451,14 @@ export type Database = {
       }
       is_event_staff: {
         Args: { p_event_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_organization_admin: {
+        Args: { p_organization_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_organization_staff: {
+        Args: { p_organization_id: string; p_user_id: string }
         Returns: boolean
       }
       is_pg_trgm_available: { Args: never; Returns: boolean }
@@ -5136,6 +5687,10 @@ export type Database = {
         }
         Returns: string
       }
+      verify_rsvp_signature: {
+        Args: { p_event_id: string; p_rsvp_id: string; p_signature: string }
+        Returns: boolean
+      }
     }
     Enums: {
       activity_category:
@@ -5159,6 +5714,7 @@ export type Database = {
         | "ticket_scanned"
         | "ticket_refunded"
         | "ticket_cancelled"
+        | "rsvp_scanned"
       address_type: "billing" | "shipping" | "headquarters" | "other"
       analytics_page_source:
         | "direct"
@@ -5353,6 +5909,7 @@ export const Constants = {
         "ticket_scanned",
         "ticket_refunded",
         "ticket_cancelled",
+        "rsvp_scanned",
       ],
       address_type: ["billing", "shipping", "headquarters", "other"],
       analytics_page_source: [
