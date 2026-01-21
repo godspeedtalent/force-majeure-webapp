@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import { waitFor } from '@/test/utils/testUtils';
 import { useAsyncOperation } from './useAsyncOperation';
 
 describe('useAsyncOperation', () => {
