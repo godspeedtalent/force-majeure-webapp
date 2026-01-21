@@ -75,6 +75,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_logs_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       activity_logs_archive: {
@@ -200,6 +207,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "addresses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1934,6 +1948,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "event_rsvps_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       event_staff: {
@@ -2372,10 +2393,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "group_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "group_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2414,6 +2449,13 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groups_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
           {
@@ -2524,6 +2566,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2875,6 +2924,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3459,10 +3515,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rave_family_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "rave_family_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rave_family_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -4336,6 +4406,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ticket_scans_scanned_by_fkey"
+            columns: ["scanned_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ticket_scans_ticket_id_fkey"
             columns: ["ticket_id"]
             isOneToOne: false
@@ -4731,6 +4808,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "undercard_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "undercard_requests_suggested_recording_id_fkey"
             columns: ["suggested_recording_id"]
             isOneToOne: false
@@ -5053,6 +5137,41 @@ export type Database = {
           },
         ]
       }
+      public_guest_list_profiles: {
+        Row: {
+          avatar_url: string | null
+          display_name: string | null
+          first_name: string | null
+          guest_list_visible: boolean | null
+          id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          display_name?: string | null
+          first_name?: never
+          guest_list_visible?: boolean | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          display_name?: string | null
+          first_name?: never
+          guest_list_visible?: boolean | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users_complete: {
         Row: {
           auth_created_at: string | null
@@ -5240,8 +5359,27 @@ export type Database = {
           tier_name: string
         }[]
       }
+      get_event_attendee_summary: {
+        Args: { event_id_param: string }
+        Returns: {
+          guest_count: number
+          interest_count: number
+          private_attendee_count: number
+          public_attendee_count: number
+          rsvp_count: number
+          ticket_holder_count: number
+        }[]
+      }
+      get_event_guest_count: {
+        Args: { event_id_param: string }
+        Returns: number
+      }
+      get_event_guest_order_count: {
+        Args: { event_id_param: string }
+        Returns: number
+      }
       get_event_interest_count: {
-        Args: { p_event_id: string }
+        Args: { event_id_param: string }
         Returns: number
       }
       get_event_inventory_stats: {
