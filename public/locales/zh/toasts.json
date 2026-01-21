@@ -178,7 +178,9 @@
     "updated": "组织更新成功",
     "deleted": "组织删除成功",
     "updateFailed": "更新组织失败",
-    "deleteFailed": "删除组织失败"
+    "deleteFailed": "删除组织失败",
+    "eventUnlinked": "活动已从组织中取消关联",
+    "eventUnlinkFailed": "取消关联活动失败"
   },
   "artists": {
     "updated": "艺术家更新成功",

@@ -410,11 +410,6 @@ SELECT 'merch_store', false, e.id, 'Enables merchandise store'
 FROM environments e WHERE e.name = 'all'
 ON CONFLICT (flag_name, environment_id) DO NOTHING;
 
-INSERT INTO feature_flags (flag_name, is_enabled, environment_id, description)
-SELECT 'global_search', true, e.id, 'Enables global search functionality'
-FROM environments e WHERE e.name = 'all'
-ON CONFLICT (flag_name, environment_id) DO NOTHING;
-
 -- ============================================================================
 -- ROLES & PERMISSIONS: Default System Roles
 -- ============================================================================

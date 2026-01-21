@@ -631,6 +631,17 @@
       "duration": "时长",
       "sourceLabel": "来源",
       "direct": "直接访问"
+    },
+    "sessionsChart": {
+      "title": "页面浏览量趋势",
+      "noData": "此期间无数据。",
+      "sessions": "会话",
+      "users": "用户",
+      "pageViews": "页面浏览",
+      "totalViews": "总浏览量",
+      "totalSessions": "总会话数",
+      "uniqueUsers": "独立用户",
+      "avgPagesPerSession": "平均页面/会话"
     }
   },
   "errors": {

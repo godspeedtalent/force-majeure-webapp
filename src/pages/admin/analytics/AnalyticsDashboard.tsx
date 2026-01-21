@@ -18,6 +18,7 @@ import { FunnelVisualization } from './components/FunnelVisualization';
 import { PerformanceMetrics } from './components/PerformanceMetrics';
 import { TopPagesTable } from './components/TopPagesTable';
 import { SessionsTable } from './components/SessionsTable';
+import { SessionsChart } from './components/SessionsChart';
 
 // Shared date range type used across all analytics components
 export type AnalyticsDateRange = '1h' | '24h' | '7d' | '30d' | '90d' | '12mo';
@@ -157,7 +158,12 @@ export default function AnalyticsDashboard() {
                 <PerformanceMetrics data={performanceData || []} />
               </FmCommonTabsContent>
 
-              <FmCommonTabsContent value="sessions" className="mt-6">
+              <FmCommonTabsContent value="sessions" className="mt-6 space-y-6">
+                <SessionsChart
+                  data={dailyPageViews || []}
+                  isLoading={loadingPageViews}
+                  selectedRange={selectedRange}
+                />
                 <SessionsTable
                   data={sessionsData?.data || []}
                   isLoading={loadingSessions}

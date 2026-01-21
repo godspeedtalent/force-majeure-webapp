@@ -28,8 +28,6 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { useShoppingCart } from '@/shared';
-import { useFeatureFlagHelpers } from '@/shared/hooks/useFeatureFlags';
-import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { useFmToolbarSafe } from '@/shared/contexts/FmToolbarContext';
 import { supabase } from '@/shared';
 
@@ -109,7 +107,6 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const { user, profile } = useAuth();
   const { hasAnyRole } = useUserPermissions();
   const { getTotalItems } = useShoppingCart();
-  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const navigate = useNavigate();
 
   const startYRef = useRef<number>(0);
@@ -193,7 +190,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         icon: Building2,
         content: <OrgDashboardTabContent onNavigate={handleNavigate} />,
         title: t('toolbar.orgDashboard'),
-        visible: Boolean(hasOrganizationAccess) && isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS),
+        visible: Boolean(hasOrganizationAccess),
         group: 'organization',
         groupOrder: 2,
         alignment: 'top',
@@ -205,7 +202,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         icon: Scan,
         content: <ScanTicketsTabContent onNavigate={handleNavigate} />,
         title: t('toolbar.scanTickets'),
-        visible: Boolean(hasOrganizationAccess) && isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS),
+        visible: Boolean(hasOrganizationAccess),
         group: 'organization',
         groupOrder: 2,
         alignment: 'top',
@@ -318,7 +315,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         badge: pendingRequestsCount,
       },
     ],
-    [isDeveloperOrAdmin, isAdmin, canAccessStaffTools, user, profile, hasOrganizationAccess, navigate, t, isFeatureEnabled, pendingRequestsCount, hasCartItems]
+    [isDeveloperOrAdmin, isAdmin, canAccessStaffTools, user, profile, hasOrganizationAccess, navigate, t, pendingRequestsCount, hasCartItems]
   );
 
   const visibleTabs = useMemo(() => {

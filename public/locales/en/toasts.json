@@ -179,7 +179,9 @@
     "updated": "Organization updated successfully",
     "deleted": "Organization deleted successfully",
     "updateFailed": "Failed to update organization",
-    "deleteFailed": "Failed to delete organization"
+    "deleteFailed": "Failed to delete organization",
+    "eventUnlinked": "Event unlinked from organization",
+    "eventUnlinkFailed": "Failed to unlink event"
   },
   "artists": {
     "updated": "Artist updated successfully",

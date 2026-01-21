@@ -24,6 +24,7 @@ import {
   ContextMenuAction,
 } from '@/components/common/modals/FmCommonContextMenu';
 import { useFuzzySearch, cn, useUserPermissions, ROLES } from '@/shared';
+import { useUserStaffedEvents } from '@/shared/hooks/useUserStaffedEvents';
 
 interface Organization {
   id: string;
@@ -100,6 +101,10 @@ export function GlobalResourceSearch({
   const { hasAnyRole } = useUserPermissions();
   const isAdminOrDev = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
 
+  // Get events where the user is staff (for showing invisible events)
+  const { data: staffedEventIds = new Set<string>() } = useUserStaffedEvents();
+  const hasStaffedEvents = staffedEventIds.size > 0;
+
   // Use the fuzzy search hook for typo-tolerant searching
   const { results: fuzzyResults, isLoading: isSearching } = useFuzzySearch({
     query: searchQuery,
@@ -109,6 +114,7 @@ export function GlobalResourceSearch({
     minQueryLength: 2,
     upcomingEventsOnly: false, // Show all published events (past and upcoming)
     includeTestEvents: isAdminOrDev, // Include test events for admin/dev users
+    includeInvisibleEvents: hasStaffedEvents || isAdminOrDev, // Include invisible events for staff
     enabled: isOpen && searchQuery.trim().length >= 2,
   });
 
@@ -139,9 +145,23 @@ export function GlobalResourceSearch({
         name: r.item.name,
         image_url: r.item.image_url,
       })),
-      // Filter draft and test events for non-admin/dev users
+      // Filter events based on user permissions:
+      // - Admins/devs see all events (published, draft, test, invisible)
+      // - Event staff see invisible events for their assigned events
+      // - Regular users only see published events
       events: fuzzyResults.events
-        .filter(r => isAdminOrDev || r.item.status === 'published')
+        .filter(r => {
+          const status = r.item.status;
+          // Admin/dev sees everything
+          if (isAdminOrDev) return true;
+          // Published events visible to all
+          if (status === 'published') return true;
+          // Invisible events visible to staff of that event
+          if (status === 'invisible' && staffedEventIds.has(r.item.id)) return true;
+          // Draft events visible to staff of that event
+          if (status === 'draft' && staffedEventIds.has(r.item.id)) return true;
+          return false;
+        })
         .map(r => ({
           id: r.item.id,
           title: r.item.title,
@@ -159,7 +179,7 @@ export function GlobalResourceSearch({
         artist_name: r.item.artist_name ?? undefined,
       })),
     }),
-    [fuzzyResults, isAdminOrDev]
+    [fuzzyResults, isAdminOrDev, staffedEventIds]
   );
 
   // Focus input when opened

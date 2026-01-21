@@ -27,6 +27,7 @@ import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { OrganizationSocialTab } from './components/manage/OrganizationSocialTab';
+import { OrganizationEventsTab } from './components/manage/OrganizationEventsTab';
 import { toast } from 'sonner';
 import { handleError, supabase } from '@/shared';
 import {
@@ -435,18 +436,10 @@ export default function OrganizationManagement() {
   );
 
   const renderEventsTab = () => (
-    <div className='space-y-6'>
-      <FmFormSection
-        title={t('organizationManagement.events')}
-        description={t('organizationManagement.eventsDescription')}
-        icon={Calendar}
-      >
-        <div className='py-8 text-center text-muted-foreground'>
-          <Calendar className='h-12 w-12 mx-auto mb-4 opacity-50' />
-          <p>{t('organizationManagement.eventsComingSoon')}</p>
-        </div>
-      </FmFormSection>
-    </div>
+    <OrganizationEventsTab
+      organizationId={id!}
+      organizationName={organization?.name}
+    />
   );
 
   const renderAdminTab = () => (

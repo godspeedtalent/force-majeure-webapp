@@ -146,6 +146,33 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Manage',
   },
 
+  // Organizations
+  '/organizations/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      if (!isUuid(params.id)) return 'Organization';
+
+      try {
+        const { data, error } = await supabase
+          .from('organizations')
+          .select('name')
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          return 'Organization';
+        }
+        return data.name || 'Organization';
+      } catch {
+        return 'Organization';
+      }
+    },
+  },
+  '/organizations/:id/manage': {
+    label: 'Manage',
+  },
+
   // Artists
   '/artists': {
     label: 'Artists',

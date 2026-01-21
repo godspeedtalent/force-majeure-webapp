@@ -84,7 +84,7 @@ describe('useFeatureFlags', () => {
       single: vi.fn().mockResolvedValue({ data: { id: 'all-env' }, error: null }),
       in: vi.fn().mockResolvedValue({
         data: [
-          { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+          { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
           { flag_name: 'scavenger_hunt', is_enabled: false, environment: { name: 'development' } },
         ],
         error: null,
@@ -99,7 +99,7 @@ describe('useFeatureFlags', () => {
       expect(result.current.data).toBeDefined();
     });
 
-    expect(result.current.data?.global_search).toBe(true);
+    expect(result.current.data?.merch_store).toBe(true);
     expect(result.current.data?.scavenger_hunt).toBe(false);
   });
 
@@ -131,7 +131,7 @@ describe('useFeatureFlags', () => {
   it('should apply environment overrides in development', async () => {
     vi.mocked(isDevelopment).mockReturnValue(true);
     vi.mocked(getEnvironmentOverride).mockImplementation((flagKey: string) => {
-      if (flagKey === 'global_search') return true;
+      if (flagKey === 'merch_store') return true;
       return null;
     });
 
@@ -146,7 +146,7 @@ describe('useFeatureFlags', () => {
       single: vi.fn().mockResolvedValue({ data: null, error: null }),
       in: vi.fn().mockResolvedValue({
         data: [
-          { flag_name: 'global_search', is_enabled: false, environment: { name: 'development' } },
+          { flag_name: 'merch_store', is_enabled: false, environment: { name: 'development' } },
         ],
         error: null,
       }),
@@ -161,7 +161,7 @@ describe('useFeatureFlags', () => {
     });
 
     // Override should set to true even though DB says false
-    expect(result.current.data?.global_search).toBe(true);
+    expect(result.current.data?.merch_store).toBe(true);
   });
 });
 
@@ -185,7 +185,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
           ],
           error: null,
         }),
@@ -199,7 +199,7 @@ describe('useFeatureFlagHelpers', () => {
         expect(result.current.flags).toBeDefined();
       });
 
-      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.GLOBAL_SEARCH)).toBe(true);
+      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE)).toBe(true);
     });
 
     it('should return false when flag is disabled', async () => {
@@ -214,7 +214,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: false, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: false, environment: { name: 'development' } },
           ],
           error: null,
         }),
@@ -228,7 +228,7 @@ describe('useFeatureFlagHelpers', () => {
         expect(result.current.flags).toBeDefined();
       });
 
-      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.GLOBAL_SEARCH)).toBe(false);
+      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE)).toBe(false);
     });
 
     it('should return false when flags not loaded', () => {
@@ -237,7 +237,7 @@ describe('useFeatureFlagHelpers', () => {
       const { result } = renderHook(() => useFeatureFlagHelpers(), { wrapper: createWrapper() });
 
       // Before loading
-      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.GLOBAL_SEARCH)).toBe(false);
+      expect(result.current.isFeatureEnabled(FEATURE_FLAGS.MERCH_STORE)).toBe(false);
     });
   });
 
@@ -254,7 +254,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
             { flag_name: 'scavenger_hunt', is_enabled: false, environment: { name: 'development' } },
           ],
           error: null,
@@ -271,7 +271,7 @@ describe('useFeatureFlagHelpers', () => {
 
       expect(
         result.current.isAnyFeatureEnabled(
-          FEATURE_FLAGS.GLOBAL_SEARCH,
+          FEATURE_FLAGS.MERCH_STORE,
           FEATURE_FLAGS.SCAVENGER_HUNT
         )
       ).toBe(true);
@@ -289,7 +289,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: false, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: false, environment: { name: 'development' } },
             { flag_name: 'scavenger_hunt', is_enabled: false, environment: { name: 'development' } },
           ],
           error: null,
@@ -306,7 +306,7 @@ describe('useFeatureFlagHelpers', () => {
 
       expect(
         result.current.isAnyFeatureEnabled(
-          FEATURE_FLAGS.GLOBAL_SEARCH,
+          FEATURE_FLAGS.MERCH_STORE,
           FEATURE_FLAGS.SCAVENGER_HUNT
         )
       ).toBe(false);
@@ -326,7 +326,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
             { flag_name: 'scavenger_hunt', is_enabled: true, environment: { name: 'development' } },
           ],
           error: null,
@@ -343,7 +343,7 @@ describe('useFeatureFlagHelpers', () => {
 
       expect(
         result.current.areAllFeaturesEnabled(
-          FEATURE_FLAGS.GLOBAL_SEARCH,
+          FEATURE_FLAGS.MERCH_STORE,
           FEATURE_FLAGS.SCAVENGER_HUNT
         )
       ).toBe(true);
@@ -361,7 +361,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
             { flag_name: 'scavenger_hunt', is_enabled: false, environment: { name: 'development' } },
           ],
           error: null,
@@ -378,7 +378,7 @@ describe('useFeatureFlagHelpers', () => {
 
       expect(
         result.current.areAllFeaturesEnabled(
-          FEATURE_FLAGS.GLOBAL_SEARCH,
+          FEATURE_FLAGS.MERCH_STORE,
           FEATURE_FLAGS.SCAVENGER_HUNT
         )
       ).toBe(false);
@@ -398,7 +398,7 @@ describe('useFeatureFlagHelpers', () => {
         single: vi.fn().mockResolvedValue({ data: null, error: null }),
         in: vi.fn().mockResolvedValue({
           data: [
-            { flag_name: 'global_search', is_enabled: true, environment: { name: 'development' } },
+            { flag_name: 'merch_store', is_enabled: true, environment: { name: 'development' } },
             { flag_name: 'scavenger_hunt', is_enabled: false, environment: { name: 'development' } },
           ],
           error: null,
@@ -414,7 +414,7 @@ describe('useFeatureFlagHelpers', () => {
       });
 
       const enabledFeatures = result.current.getEnabledFeatures();
-      expect(enabledFeatures).toContain(FEATURE_FLAGS.GLOBAL_SEARCH);
+      expect(enabledFeatures).toContain(FEATURE_FLAGS.MERCH_STORE);
       expect(enabledFeatures).not.toContain(FEATURE_FLAGS.SCAVENGER_HUNT);
     });
 

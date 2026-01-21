@@ -631,6 +631,17 @@
       "duration": "Duration",
       "sourceLabel": "Source",
       "direct": "Direct"
+    },
+    "sessionsChart": {
+      "title": "Page views over time",
+      "noData": "No data available for this period.",
+      "sessions": "Sessions",
+      "users": "Users",
+      "pageViews": "page views",
+      "totalViews": "Total views",
+      "totalSessions": "Total sessions",
+      "uniqueUsers": "Unique users",
+      "avgPagesPerSession": "Avg pages/session"
     }
   },
   "errors": {

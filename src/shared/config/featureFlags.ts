@@ -17,14 +17,8 @@ export const FEATURE_FLAGS = {
   // Store features
   MERCH_STORE: 'merch_store',
 
-  // Search features
-  GLOBAL_SEARCH: 'global_search',
-
   // Competition features
   SONIC_GAUNTLET: 'sonic_gauntlet',
-
-  // Organization features
-  ORGANIZATION_TOOLS: 'organization_tools',
 
   // Dashboard features
   RECORDING_RATINGS: 'recording_ratings',
@@ -66,17 +60,9 @@ export const FEATURE_FLAG_METADATA: Record<
     displayName: 'Merch Store',
     description: 'Enables merchandise store',
   },
-  [FEATURE_FLAGS.GLOBAL_SEARCH]: {
-    displayName: 'Global Search',
-    description: 'Enables global search functionality',
-  },
   [FEATURE_FLAGS.SONIC_GAUNTLET]: {
     displayName: 'Sonic Gauntlet',
     description: 'Enables the Sonic Gauntlet DJ competition landing page',
-  },
-  [FEATURE_FLAGS.ORGANIZATION_TOOLS]: {
-    displayName: 'Organization Tools',
-    description: 'Enables organization management tools and routes',
   },
   [FEATURE_FLAGS.RECORDING_RATINGS]: {
     displayName: 'Recording Ratings',

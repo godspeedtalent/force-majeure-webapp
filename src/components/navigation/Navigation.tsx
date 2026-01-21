@@ -175,17 +175,15 @@ export const Navigation = () => {
 
           {/* Mobile menu - search and user dropdown */}
           <div className='md:hidden flex items-center gap-2'>
-            <FeatureGuard feature={FEATURE_FLAGS.GLOBAL_SEARCH}>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                onClick={openSearch}
-                aria-label={t('buttons.search')}
-              >
-                <Search className='h-5 w-5' />
-              </Button>
-            </FeatureGuard>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
+              onClick={openSearch}
+              aria-label={t('buttons.search')}
+            >
+              <Search className='h-5 w-5' />
+            </Button>
             {user ? (
               <UserMenuDropdown onOpenChange={setIsMobileMenuOpen} />
             ) : (

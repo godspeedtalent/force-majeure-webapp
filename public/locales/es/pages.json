@@ -631,6 +631,17 @@
       "duration": "Duración",
       "sourceLabel": "Fuente",
       "direct": "Directo"
+    },
+    "sessionsChart": {
+      "title": "Vistas de página a lo largo del tiempo",
+      "noData": "No hay datos disponibles para este período.",
+      "sessions": "Sesiones",
+      "users": "Usuarios",
+      "pageViews": "vistas de página",
+      "totalViews": "Vistas totales",
+      "totalSessions": "Sesiones totales",
+      "uniqueUsers": "Usuarios únicos",
+      "avgPagesPerSession": "Páginas/sesión promedio"
     }
   },
   "errors": {

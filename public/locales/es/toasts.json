@@ -178,7 +178,9 @@
     "updated": "Organización actualizada exitosamente",
     "deleted": "Organización eliminada exitosamente",
     "updateFailed": "Error al actualizar la organización",
-    "deleteFailed": "Error al eliminar la organización"
+    "deleteFailed": "Error al eliminar la organización",
+    "eventUnlinked": "Evento desvinculado de la organización",
+    "eventUnlinkFailed": "Error al desvincular el evento"
   },
   "artists": {
     "updated": "Artista actualizado exitosamente",

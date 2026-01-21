@@ -14,6 +14,7 @@ DROP POLICY IF EXISTS "Guests are readable for guest list display" ON guests;
 -- Keep the "Anyone can create guests" policy for checkout flow
 
 -- Create a policy for authenticated users to read guests from their own orders
+DROP POLICY IF EXISTS "Users can read guests from their orders" ON guests;
 CREATE POLICY "Users can read guests from their orders"
   ON guests FOR SELECT
   TO authenticated

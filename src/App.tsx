@@ -572,13 +572,9 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Organization Routes - gated by feature flag */}
-      {isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS) && (
-        <>
-          <Route path='/organization/tools' element={<OrganizationTools />} />
-          <Route path='/organization/scanning' element={<TicketScanning />} />
-        </>
-      )}
+      {/* Organization Routes */}
+      <Route path='/organization/tools' element={<OrganizationTools />} />
+      <Route path='/organization/scanning' element={<TicketScanning />} />
 
       {/* Artist Routes - signup and register are defined above */}
       <Route path='/artists' element={<Navigate to='/' replace />} />

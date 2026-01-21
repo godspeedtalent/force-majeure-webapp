@@ -9,6 +9,7 @@ DROP POLICY IF EXISTS "Analytics sessions are publicly readable" ON analytics_se
 DROP POLICY IF EXISTS "Public can view analytics sessions" ON analytics_sessions;
 
 -- Create admin/developer-only SELECT policy
+DROP POLICY IF EXISTS "Only admins and developers can view analytics sessions" ON analytics_sessions;
 CREATE POLICY "Only admins and developers can view analytics sessions"
   ON analytics_sessions FOR SELECT
   TO authenticated
@@ -22,12 +23,14 @@ CREATE POLICY "Only admins and developers can view analytics sessions"
 DROP POLICY IF EXISTS "Anyone can insert analytics sessions" ON analytics_sessions;
 DROP POLICY IF EXISTS "Users can insert analytics sessions" ON analytics_sessions;
 
+DROP POLICY IF EXISTS "Authenticated users can insert their own analytics sessions" ON analytics_sessions;
 CREATE POLICY "Authenticated users can insert their own analytics sessions"
   ON analytics_sessions FOR INSERT
   TO authenticated
   WITH CHECK (user_id IS NULL OR user_id = auth.uid());
 
 -- Allow anonymous users to insert sessions (for tracking before login)
+DROP POLICY IF EXISTS "Anonymous users can insert analytics sessions" ON analytics_sessions;
 CREATE POLICY "Anonymous users can insert analytics sessions"
   ON analytics_sessions FOR INSERT
   TO anon
@@ -37,6 +40,7 @@ CREATE POLICY "Anonymous users can insert analytics sessions"
 DROP POLICY IF EXISTS "Anyone can update analytics sessions" ON analytics_sessions;
 DROP POLICY IF EXISTS "Users can update analytics sessions" ON analytics_sessions;
 
+DROP POLICY IF EXISTS "Only admins can update analytics sessions" ON analytics_sessions;
 CREATE POLICY "Only admins can update analytics sessions"
   ON analytics_sessions FOR UPDATE
   TO authenticated
@@ -46,6 +50,7 @@ CREATE POLICY "Only admins can update analytics sessions"
     is_dev_admin(auth.uid())
   );
 
+DROP POLICY IF EXISTS "Only admins can delete analytics sessions" ON analytics_sessions;
 CREATE POLICY "Only admins can delete analytics sessions"
   ON analytics_sessions FOR DELETE
   TO authenticated
@@ -67,6 +72,7 @@ COMMENT ON TABLE analytics_sessions IS
 DROP POLICY IF EXISTS "Anyone can view analytics page views" ON analytics_page_views;
 DROP POLICY IF EXISTS "Public can view analytics page views" ON analytics_page_views;
 
+DROP POLICY IF EXISTS "Only admins and developers can view analytics page views" ON analytics_page_views;
 CREATE POLICY "Only admins and developers can view analytics page views"
   ON analytics_page_views FOR SELECT
   TO authenticated
@@ -80,6 +86,7 @@ CREATE POLICY "Only admins and developers can view analytics page views"
 DROP POLICY IF EXISTS "Anyone can view analytics performance" ON analytics_performance;
 DROP POLICY IF EXISTS "Public can view analytics performance" ON analytics_performance;
 
+DROP POLICY IF EXISTS "Only admins and developers can view analytics performance" ON analytics_performance;
 CREATE POLICY "Only admins and developers can view analytics performance"
   ON analytics_performance FOR SELECT
   TO authenticated
@@ -93,6 +100,7 @@ CREATE POLICY "Only admins and developers can view analytics performance"
 DROP POLICY IF EXISTS "Anyone can view analytics funnel events" ON analytics_funnel_events;
 DROP POLICY IF EXISTS "Public can view analytics funnel events" ON analytics_funnel_events;
 
+DROP POLICY IF EXISTS "Only admins and developers can view analytics funnel events" ON analytics_funnel_events;
 CREATE POLICY "Only admins and developers can view analytics funnel events"
   ON analytics_funnel_events FOR SELECT
   TO authenticated

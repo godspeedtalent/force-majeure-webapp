@@ -9,6 +9,7 @@ DROP POLICY IF EXISTS "Published events are publicly viewable" ON events;
 
 -- Create new policy that allows public access to both published and invisible events
 -- Note: Draft and test events remain restricted to privileged users only
+DROP POLICY IF EXISTS "Published and invisible events are publicly viewable" ON events;
 CREATE POLICY "Published and invisible events are publicly viewable"
   ON events FOR SELECT
   TO anon, authenticated
