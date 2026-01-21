@@ -1,8 +1,11 @@
 import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, waitFor as rtlWaitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { expect } from 'vitest';
+
+// Re-export waitFor with explicit type to fix TypeScript module resolution issues
+export const waitFor = rtlWaitFor;
 
 /**
  * Create a new QueryClient for testing with sensible defaults
@@ -124,7 +127,6 @@ export function renderWithProviders(
  * Useful when testing components with async data fetching
  */
 export async function waitForLoadingToFinish() {
-  const { waitFor } = await import('@testing-library/react');
   return waitFor(() => {
     const loadingIndicators = document.querySelectorAll('[data-loading="true"]');
     expect(loadingIndicators).toHaveLength(0);
