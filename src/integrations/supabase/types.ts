@@ -5370,6 +5370,10 @@ export type Database = {
           ticket_holder_count: number
         }[]
       }
+      get_event_guest_count: {
+        Args: { event_id_param: string }
+        Returns: number
+      }
       get_event_guest_order_count: {
         Args: { event_id_param: string }
         Returns: number
