@@ -112,6 +112,11 @@
     "eventFull": "活动已满",
     "backToHome": "返回首页"
   },
+  "actions": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除"
+  },
   "compTickets": {
     "title": "赠票",
     "issueNew": "发放新赠票",
@@ -1839,6 +1844,8 @@
     "viewOrganizationDescription": "查看组织详情页面",
     "overview": "概览",
     "overviewDescription": "基本组织信息",
+    "social": "社交媒体",
+    "socialDescription": "网站和社交媒体链接",
     "gallery": "相册",
     "galleryDescription": "管理组织照片和媒体",
     "management": "管理",
@@ -1858,6 +1865,7 @@
     "enterOrganizationName": "输入组织名称",
     "organizationLogo": "组织标志",
     "organizationNameDescription": "此组织显示的公开名称",
+    "socialMediaDescription": "添加您组织的网站和社交媒体链接，让粉丝可以找到并关注您。",
     "gallery": "组织相册",
     "galleryDescription": "管理此组织的照片和媒体。",
     "galleryComingSoon": "相册管理即将推出。",
@@ -3129,6 +3137,7 @@
     "noContent": "暂无内容",
     "author": "作者",
     "toSave": "保存",
+    "tapCheckmarkToSave": "点击勾号保存更改",
     "types": {
       "todo": "待办",
       "info": "信息",

@@ -6,6 +6,7 @@ import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoa
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
+import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import {
   Dialog,
   DialogContent,
@@ -61,6 +62,17 @@ export const FmOrganizationDetailsModal = ({
   // Use full data if available, fallback to passed prop
   const displayData = fullOrganization || organization;
   const profilePicture = displayData?.profile_picture;
+
+  // Check if organization has any social links (only from full data)
+  const hasSocialLinks = fullOrganization && (
+    fullOrganization.website ||
+    fullOrganization.social_email ||
+    fullOrganization.instagram_handle ||
+    fullOrganization.facebook_url ||
+    fullOrganization.youtube_url ||
+    fullOrganization.tiktok_handle ||
+    fullOrganization.twitter_handle
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -133,6 +145,26 @@ export const FmOrganizationDetailsModal = ({
                   </p>
                 </div>
               </div>
+
+              {/* Social Links */}
+              {hasSocialLinks && fullOrganization && (
+                <>
+                  <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-fm-gold/40 to-transparent mt-6' />
+                  <div className='mt-4'>
+                    <FmSocialLinks
+                      email={fullOrganization.social_email}
+                      website={fullOrganization.website}
+                      instagram={fullOrganization.instagram_handle}
+                      facebook={fullOrganization.facebook_url}
+                      youtube={fullOrganization.youtube_url}
+                      tiktok={fullOrganization.tiktok_handle}
+                      twitter={fullOrganization.twitter_handle}
+                      size='md'
+                      gap='sm'
+                    />
+                  </div>
+                </>
+              )}
 
               {/* Divider */}
               <div className='w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-6 mb-4' />

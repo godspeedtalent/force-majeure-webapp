@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Wallet as WalletIcon, Ticket, Calendar, UserCheck } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { PageErrorBoundary } from '@/components/common/feedback/PageErrorBoundary';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/common/shadcn/tabs';
@@ -71,10 +72,11 @@ export default function Wallet() {
         </div>
 
         {/* Tabs */}
-        <Tabs
-          value={activeTab}
-          onValueChange={value => setActiveTab(value as 'upcoming' | 'past')}
-        >
+        <PageErrorBoundary section="Wallet">
+          <Tabs
+            value={activeTab}
+            onValueChange={value => setActiveTab(value as 'upcoming' | 'past')}
+          >
           <TabsList className='grid w-full grid-cols-2 mb-6'>
             <TabsTrigger value='upcoming' className='flex items-center gap-2'>
               <Calendar className='h-4 w-4' />
@@ -210,6 +212,7 @@ export default function Wallet() {
             )}
           </TabsContent>
         </Tabs>
+        </PageErrorBoundary>
       </div>
     </Layout>
   );

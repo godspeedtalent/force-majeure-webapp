@@ -181,12 +181,25 @@ export function FmDataGrid<T extends Record<string, any>>({
   });
 
   // Render mobile view on small screens (after all hooks)
+  // Combine actions and contextMenuActions for mobile view
+  const mobileActions = useMemo(() => {
+    // If no explicit actions, use contextMenuActions as actions for mobile
+    if (actions.length === 0 && contextMenuActions.length > 0) {
+      return contextMenuActions;
+    }
+    // If both exist, combine them (actions first, then context menu actions)
+    if (actions.length > 0 && contextMenuActions.length > 0) {
+      return [...actions, ...contextMenuActions];
+    }
+    return actions;
+  }, [actions, contextMenuActions]);
+
   if (isMobile) {
     return (
       <FmMobileDataGrid
         data={data}
         columns={columns}
-        actions={actions}
+        actions={mobileActions}
         loading={loading}
         className={className}
         onUpdate={onUpdate}

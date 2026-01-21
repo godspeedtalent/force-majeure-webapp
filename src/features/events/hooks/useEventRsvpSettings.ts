@@ -117,28 +117,36 @@ export function useEventRsvpSettings(eventId: string) {
     },
   });
 
+  // Guard against rapid clicks - only allow mutations if none pending
+  const isPending = updateSettingsMutation.isPending;
+
   // Toggle RSVP enabled state
   const toggleRsvpEnabled = () => {
+    if (isPending) return;
     updateSettingsMutation.mutate({ isRsvpEnabled: !settings.isRsvpEnabled });
   };
 
   // Toggle RSVP-only event state
   const toggleRsvpOnlyEvent = () => {
+    if (isPending) return;
     updateSettingsMutation.mutate({ isRsvpOnlyEvent: !settings.isRsvpOnlyEvent });
   };
 
   // Update RSVP capacity
   const updateRsvpCapacity = (capacity: number | null) => {
+    if (isPending) return;
     updateSettingsMutation.mutate({ rsvpCapacity: capacity });
   };
 
   // Update RSVP button subtitle
   const updateRsvpButtonSubtitle = (subtitle: string | null) => {
+    if (isPending) return;
     updateSettingsMutation.mutate({ rsvpButtonSubtitle: subtitle });
   };
 
   // Toggle RSVP email notification
   const toggleSendRsvpEmail = () => {
+    if (isPending) return;
     updateSettingsMutation.mutate({ sendRsvpEmail: !settings.sendRsvpEmail });
   };
 

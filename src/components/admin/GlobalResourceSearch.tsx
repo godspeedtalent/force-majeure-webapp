@@ -387,7 +387,7 @@ export function GlobalResourceSearch({
 
   return (
     <div
-      className='fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4 bg-black/80 backdrop-blur-lg'
+      className='fixed inset-0 z-[200] flex items-start justify-center pt-[5vh] sm:pt-[15vh] px-2 sm:px-4 bg-black/80 backdrop-blur-lg'
       onClick={handleOverlayClick}
     >
       <div className='w-full max-w-2xl'>
@@ -396,15 +396,15 @@ export function GlobalResourceSearch({
           {/* Close Button */}
           <button
             onClick={onClose}
-            className='absolute top-4 right-4 p-2 rounded-none hover:bg-muted transition-colors z-10'
+            className='absolute top-2 right-2 sm:top-4 sm:right-4 p-1.5 sm:p-2 rounded-none hover:bg-muted transition-colors z-10'
             aria-label={t('globalSearch.closeSearch')}
           >
-            <X className='h-5 w-5 text-muted-foreground' />
+            <X className='h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground' />
           </button>
 
           {/* Search Input */}
-          <div className='relative p-6 border-b border-border'>
-            <Search className='absolute left-9 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground' />
+          <div className='relative p-3 sm:p-6 border-b border-border'>
+            <Search className='absolute left-5 sm:left-9 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground' />
             <Input
               ref={inputRef}
               type='text'
@@ -412,12 +412,12 @@ export function GlobalResourceSearch({
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className={cn(
-                'text-lg border-0 focus-visible:ring-0 shadow-none bg-transparent pl-9 pr-4',
+                'text-base sm:text-lg border-0 focus-visible:ring-0 shadow-none bg-transparent pl-7 sm:pl-9 pr-8 sm:pr-4',
                 searchQuery && 'border-b-2 border-b-gold-500'
               )}
             />
             {isSearching && (
-              <div className='absolute right-4 top-1/2 -translate-y-1/2'>
+              <div className='absolute right-2 sm:right-4 top-1/2 -translate-y-1/2'>
                 <FmCommonLoadingSpinner size='sm' />
               </div>
             )}
@@ -425,9 +425,9 @@ export function GlobalResourceSearch({
 
           {/* Results */}
           {searchQuery.trim().length >= 2 && (
-            <div className='max-h-[60vh] overflow-y-auto p-2'>
+            <div className='max-h-[70vh] sm:max-h-[60vh] overflow-y-auto p-1 sm:p-2'>
               {isSearching ? (
-                <div className='py-8 text-center text-muted-foreground'>
+                <div className='py-4 sm:py-8 text-center text-muted-foreground text-sm'>
                   {t('globalSearch.searching')}
                 </div>
               ) : hasResults ? (
@@ -435,7 +435,7 @@ export function GlobalResourceSearch({
                   {/* Organizations */}
                   {results.organizations.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         {t('globalSearch.sections.organizations')}
                       </div>
                       {results.organizations.map(org => (
@@ -446,7 +446,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleNavigate('organization', org.id)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {org.logo_url ? (
@@ -473,7 +473,7 @@ export function GlobalResourceSearch({
                   {/* Users - Admin/Dev only */}
                   {results.users.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10 flex items-center gap-1.5'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10 flex items-center gap-1.5'>
                         {t('globalSearch.sections.users')}
                         <Key className='h-3 w-3 text-fm-gold' />
                       </div>
@@ -485,7 +485,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleNavigate('user', user.id)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {user.avatar_url ? (
@@ -521,7 +521,7 @@ export function GlobalResourceSearch({
                   {/* Artists */}
                   {results.artists.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         {t('globalSearch.sections.artists')}
                       </div>
                       {results.artists.map(artist => (
@@ -532,7 +532,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleNavigate('artist', artist.id)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {artist.image_url ? (
@@ -559,7 +559,7 @@ export function GlobalResourceSearch({
                   {/* Venues */}
                   {results.venues.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         {t('globalSearch.sections.venues')}
                       </div>
                       {results.venues.map(venue => (
@@ -570,7 +570,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleNavigate('venue', venue.id)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {venue.image_url ? (
@@ -597,7 +597,7 @@ export function GlobalResourceSearch({
                   {/* Events */}
                   {results.events.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         {t('globalSearch.sections.events')}
                       </div>
                       {results.events.map(event => (
@@ -608,7 +608,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleNavigate('event', event.id)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {event.hero_image ? (
@@ -651,7 +651,7 @@ export function GlobalResourceSearch({
                   {/* Recordings */}
                   {results.recordings.length > 0 && (
                     <div>
-                      <div className='px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
+                      <div className='px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-white/10'>
                         {t('globalSearch.sections.recordings')}
                         <span className='ml-2 text-[10px] font-normal normal-case opacity-70'>
                           {t('globalSearch.opensInNewTab')}
@@ -665,7 +665,7 @@ export function GlobalResourceSearch({
                         >
                           <button
                             onClick={() => handleOpenRecording(recording.url)}
-                            className='w-full flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors text-left group'
+                            className='w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 hover:bg-muted/50 transition-colors text-left group'
                           >
                             <div className='flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden'>
                               {recording.cover_art ? (
@@ -695,7 +695,7 @@ export function GlobalResourceSearch({
                   )}
                 </div>
               ) : (
-                <div className='py-8 text-center text-muted-foreground'>
+                <div className='py-4 sm:py-8 text-center text-muted-foreground text-sm'>
                   {t('globalSearch.noResults', { query: searchQuery })}
                 </div>
               )}

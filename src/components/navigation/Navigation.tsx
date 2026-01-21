@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   ArrowLeft,
   Instagram,
+  Search,
   ShoppingCart,
   User,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { SOCIAL_LINKS } from '@/shared';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
+import { useGlobalSearch } from '@/contexts/GlobalSearchContext';
 
 export const Navigation = () => {
   const { user } = useAuth();
@@ -34,6 +36,7 @@ export const Navigation = () => {
   const { backButton } = useNavigation();
   const isMobile = useIsMobile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { openSearch } = useGlobalSearch();
 
   const handleBackClick = () => {
     if (backButton.onClick) {
@@ -170,8 +173,19 @@ export const Navigation = () => {
             )}
           </div>
 
-          {/* Mobile menu - user dropdown only */}
-          <div className='md:hidden flex items-center'>
+          {/* Mobile menu - search and user dropdown */}
+          <div className='md:hidden flex items-center gap-2'>
+            <FeatureGuard feature={FEATURE_FLAGS.GLOBAL_SEARCH}>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
+                onClick={openSearch}
+                aria-label={t('buttons.search')}
+              >
+                <Search className='h-5 w-5' />
+              </Button>
+            </FeatureGuard>
             {user ? (
               <UserMenuDropdown onOpenChange={setIsMobileMenuOpen} />
             ) : (

@@ -112,6 +112,11 @@
     "eventFull": "Event Full",
     "backToHome": "Back to Home"
   },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
   "compTickets": {
     "title": "Complimentary Tickets",
     "issueNew": "Issue New Comp Ticket",
@@ -1840,6 +1845,8 @@
     "viewOrganizationDescription": "View organization details page",
     "overview": "Overview",
     "overviewDescription": "Basic organization information",
+    "social": "Social Media",
+    "socialDescription": "Website and social media links",
     "gallery": "Gallery",
     "galleryDescription": "Manage organization photos and media",
     "management": "Management",
@@ -1859,6 +1866,7 @@
     "enterOrganizationName": "Enter organization name",
     "organizationLogo": "Organization Logo",
     "organizationNameDescription": "The public name displayed for this organization",
+    "socialMediaDescription": "Add your organization's website and social media links so fans can find and follow you.",
     "gallery": "Organization Gallery",
     "galleryDescription": "Manage photos and media for this organization.",
     "galleryComingSoon": "Gallery management coming soon.",
@@ -3139,6 +3147,7 @@
     "noContent": "No content yet",
     "author": "Author",
     "toSave": "to save",
+    "tapCheckmarkToSave": "Tap checkmark to save changes",
     "types": {
       "todo": "TODO",
       "info": "INFO",

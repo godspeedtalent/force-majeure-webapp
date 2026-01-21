@@ -112,6 +112,11 @@
     "eventFull": "Evento Lleno",
     "backToHome": "Volver al Inicio"
   },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
+  },
   "compTickets": {
     "title": "Entradas de Cortesía",
     "issueNew": "Emitir Nueva Entrada de Cortesía",
@@ -1839,6 +1844,8 @@
     "viewOrganizationDescription": "Ver página de detalles de la organización",
     "overview": "Resumen",
     "overviewDescription": "Información básica de la organización",
+    "social": "Redes Sociales",
+    "socialDescription": "Sitio web y enlaces de redes sociales",
     "gallery": "Galería",
     "galleryDescription": "Administrar fotos y medios de la organización",
     "management": "Gestión",
@@ -1858,6 +1865,7 @@
     "enterOrganizationName": "Ingresa el nombre de la organización",
     "organizationLogo": "Logo de la Organización",
     "organizationNameDescription": "El nombre público mostrado para esta organización",
+    "socialMediaDescription": "Agrega el sitio web y los enlaces de redes sociales de tu organización para que los fans puedan encontrarte y seguirte.",
     "gallery": "Galería de la Organización",
     "galleryDescription": "Administrar fotos y medios para esta organización.",
     "galleryComingSoon": "Gestión de galería próximamente.",
@@ -3129,6 +3137,7 @@
     "noContent": "Sin contenido aún",
     "author": "Autor",
     "toSave": "para guardar",
+    "tapCheckmarkToSave": "Toca el check para guardar cambios",
     "types": {
       "todo": "PENDIENTE",
       "info": "INFO",

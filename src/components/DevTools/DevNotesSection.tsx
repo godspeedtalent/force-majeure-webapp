@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, ArrowUpDown, Filter, X } from 'lucide-react';
+import { Plus, Search, ArrowUpDown, Filter, X, Check, Trash2 } from 'lucide-react';
 import type { JSONContent } from '@tiptap/react';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { CreateDevNoteModal } from './CreateDevNoteModal';
@@ -440,23 +440,23 @@ export const DevNotesSection = () => {
             onClick={e => e.stopPropagation()}
           >
             {/* Header with Type and Status Dropdowns */}
-            <div className='flex items-center justify-between p-[20px] border-b border-border bg-card/50'>
-              <div className='flex items-center gap-4'>
+            <div className='flex items-center justify-between p-[10px] md:p-[20px] border-b border-border bg-card/50'>
+              <div className='flex items-center gap-2 md:gap-4'>
                 {/* Type Icon */}
                 <div
                   className={cn(
-                    'w-12 h-12 rounded-none border border-border flex items-center justify-center',
+                    'w-10 h-10 md:w-12 md:h-12 rounded-none border border-border flex items-center justify-center flex-shrink-0',
                     NOTE_TYPE_CONFIG[editedType].color
                   )}
                 >
                   {React.createElement(
                     NOTE_TYPE_CONFIG[editedType].icon,
-                    { className: 'h-6 w-6' }
+                    { className: 'h-5 w-5 md:h-6 md:w-6' }
                   )}
                 </div>
 
                 {/* Type and Status Dropdowns */}
-                <div className='flex flex-col gap-1'>
+                <div className='flex flex-col gap-0.5 md:gap-1'>
                   {canEditNote(expandedNote) ? (
                     <Select
                       value={editedType}
@@ -519,8 +519,8 @@ export const DevNotesSection = () => {
                   )}
                 </div>
 
-                {/* Priority Dropdown */}
-                <div className='flex items-center gap-2 ml-4 pl-4 border-l border-border'>
+                {/* Priority Dropdown - hidden on mobile, shown in content area instead */}
+                <div className='hidden md:flex items-center gap-2 ml-4 pl-4 border-l border-border'>
                   <span className='text-xs text-muted-foreground'>{t('devNotes.priority')}:</span>
                   {canEditNote(expandedNote) ? (
                     <Select
@@ -553,17 +553,76 @@ export const DevNotesSection = () => {
                 </div>
               </div>
 
-              {/* Close button */}
-              <button
-                onClick={handleCancelChanges}
-                className='p-2 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors'
-              >
-                <X className='h-5 w-5' />
-              </button>
+              {/* Mobile action buttons + Close button */}
+              <div className='flex items-center gap-1'>
+                {/* Mobile-only save/delete buttons */}
+                {canEditNote(expandedNote) && (
+                  <div className='flex items-center gap-1 md:hidden'>
+                    <button
+                      onClick={() => {
+                        handleDeleteNote(expandedNote.id);
+                        setExpandedNote(null);
+                      }}
+                      className='p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors'
+                      aria-label={t('actions.delete')}
+                    >
+                      <Trash2 className='h-5 w-5' />
+                    </button>
+                    <button
+                      onClick={handleSaveChanges}
+                      disabled={!hasUnsavedChanges}
+                      className={cn(
+                        'p-2 transition-colors',
+                        hasUnsavedChanges
+                          ? 'text-fm-gold hover:text-fm-gold hover:bg-fm-gold/10'
+                          : 'text-muted-foreground cursor-not-allowed'
+                      )}
+                      aria-label={t('actions.save')}
+                    >
+                      <Check className='h-5 w-5' />
+                    </button>
+                  </div>
+                )}
+                <button
+                  onClick={handleCancelChanges}
+                  className='p-2 text-muted-foreground hover:text-white hover:bg-white/10 transition-colors'
+                >
+                  <X className='h-5 w-5' />
+                </button>
+              </div>
             </div>
 
             {/* Title and Content - Editable (takes remaining space) */}
-            <div className='flex-1 p-[20px] transition-colors overflow-auto space-y-4'>
+            <div className='flex-1 p-[10px] md:p-[20px] transition-colors overflow-auto space-y-4'>
+              {/* Mobile Priority Selector */}
+              {canEditNote(expandedNote) && (
+                <div className='flex md:hidden items-center gap-2 pb-2 border-b border-border'>
+                  <span className='text-xs text-muted-foreground'>{t('devNotes.priority')}:</span>
+                  <Select
+                    value={editedPriority.toString()}
+                    onValueChange={(value) => handlePriorityChange(parseInt(value, 10))}
+                  >
+                    <SelectTrigger className={cn(
+                      'h-6 text-xs border-0 bg-transparent hover:bg-muted px-2 py-0 w-auto font-medium',
+                      PRIORITY_CONFIG[editedPriority]?.color
+                    )}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className='bg-card border-border rounded-none z-[70]'>
+                      {Object.entries(PRIORITY_CONFIG).map(([value, config]) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                          className={cn('text-xs', config.color)}
+                        >
+                          {config.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               {/* Title Field */}
               {canEditNote(expandedNote) ? (
                 <FmCommonTextField
@@ -608,10 +667,10 @@ export const DevNotesSection = () => {
             </div>
 
             {/* Footer with Author, Date, and Actions */}
-            <div className='p-[20px] border-t border-border bg-card/50'>
-              <div className='flex items-center justify-between'>
+            <div className='p-[10px] md:p-[20px] border-t border-border bg-card/50'>
+              <div className='flex flex-col md:flex-row md:items-center justify-between gap-2'>
                 {/* Author and Date */}
-                <div className='flex items-center gap-4 text-sm'>
+                <div className='flex items-center gap-2 md:gap-4 text-xs md:text-sm'>
                   <div>
                     <span className='text-muted-foreground'>{t('devNotes.author')}: </span>
                     <span className='text-fm-gold font-medium'>
@@ -623,9 +682,9 @@ export const DevNotesSection = () => {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons - Desktop only */}
                 {canEditNote(expandedNote) && (
-                  <div className='flex items-center gap-2'>
+                  <div className='hidden md:flex items-center gap-2'>
                     {/* Keyboard shortcut hint */}
                     <div className='text-[10px] text-muted-foreground mr-2'>
                       <kbd className='px-1 py-0.5 bg-white/10 rounded text-[9px]'>Ctrl</kbd>
@@ -666,6 +725,13 @@ export const DevNotesSection = () => {
                     >
                       {t('actions.save')}
                     </FmCommonButton>
+                  </div>
+                )}
+
+                {/* Mobile hint */}
+                {canEditNote(expandedNote) && hasUnsavedChanges && (
+                  <div className='md:hidden text-[10px] text-fm-gold'>
+                    {t('devNotes.tapCheckmarkToSave')}
                   </div>
                 )}
               </div>

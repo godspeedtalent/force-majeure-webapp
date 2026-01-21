@@ -37,6 +37,9 @@ function parseUserAgent(userAgent: string): DeviceInfo {
   return { browser, os, device_type, is_mobile: isMobile };
 }
 
+// App domain for redirects - defaults to production domain
+const APP_DOMAIN = Deno.env.get('APP_DOMAIN') || 'https://forcemajeure.vip';
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -69,7 +72,7 @@ Deno.serve(async (req) => {
     if (linkError || !link) {
       console.error('Link not found:', linkError);
       // Redirect to homepage on invalid code
-      return Response.redirect(`${supabaseUrl.replace('https://orgxcrnnecblhuxjfruy.supabase.co', 'https://forcemajeure.app')}`, 302);
+      return Response.redirect(APP_DOMAIN, 302);
     }
 
     // Validate link is active
@@ -123,8 +126,8 @@ Deno.serve(async (req) => {
       .eq('id', link.id);
 
     // Build destination URL with UTM parameters
-    const baseUrl = link.custom_destination_url || 
-      `https://forcemajeure.app/event/${link.event_id}`;
+    const baseUrl = link.custom_destination_url ||
+      `${APP_DOMAIN}/event/${link.event_id}`;
     
     const destinationUrl = new URL(baseUrl);
     destinationUrl.searchParams.set('utm_source', link.utm_source);

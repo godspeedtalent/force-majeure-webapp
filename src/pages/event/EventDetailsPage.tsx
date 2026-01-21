@@ -8,6 +8,7 @@ import { PageTransition } from '@/components/primitives/PageTransition';
 import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { PageErrorBoundary } from '@/components/common/feedback/PageErrorBoundary';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { SEOHead } from '@/components/common/seo/SEOHead';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -158,10 +159,12 @@ export const EventDetailsPage = () => {
           }
           leftColumn={<EventHero event={event} />}
           rightColumn={
-            <EventDetailsContent
-              event={event}
-              displayTitle={displayTitle}
-            />
+            <PageErrorBoundary section="Event Details">
+              <EventDetailsContent
+                event={event}
+                displayTitle={displayTitle}
+              />
+            </PageErrorBoundary>
           }
           mobileFullHeroHeight={event.mobileFullHeroHeight}
         />

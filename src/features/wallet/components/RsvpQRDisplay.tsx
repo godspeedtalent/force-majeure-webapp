@@ -63,14 +63,18 @@ export function RsvpQRDisplay({
       setIsLoading(true);
       try {
         // Fetch the signature from the database function
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: signature, error: signatureError } = await (supabase as any).rpc(
-          'generate_rsvp_signature',
-          {
-            p_rsvp_id: rsvp.id,
-            p_event_id: rsvp.event_id,
-          }
-        );
+        // Note: generate_rsvp_signature is a custom RPC function defined in our migration
+        // Type cast needed until Supabase types are regenerated to include this function
+        type RpcFn = (
+          fn: string,
+          params: { p_rsvp_id: string; p_event_id: string }
+        ) => Promise<{ data: string | null; error: { message: string } | null }>;
+        const { data: signature, error: signatureError } = await (
+          supabase.rpc as unknown as RpcFn
+        )('generate_rsvp_signature', {
+          p_rsvp_id: rsvp.id,
+          p_event_id: rsvp.event_id,
+        });
 
         if (signatureError) {
           throw new Error(`Failed to generate signature: ${signatureError.message}`);
