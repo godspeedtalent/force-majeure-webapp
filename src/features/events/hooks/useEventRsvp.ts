@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { rsvpService, RsvpStats } from '../services/rsvpService';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger, supabase } from '@/shared';
+import { logger, supabase, handleError } from '@/shared';
 import { EmailService } from '@/services/email/EmailService';
 
 export interface RsvpEventData {
@@ -212,16 +212,12 @@ export function useEventRsvp(
       }
 
       const message = error instanceof Error ? error.message : 'Unknown error';
-      if (message.includes('capacity')) {
-        toast.error(t('events.rsvpAtCapacity'));
-      } else {
-        toast.error(t('events.rsvpFailed'));
-      }
+      const isCapacityError = message.includes('capacity');
 
-      logger.error('Failed to toggle RSVP', {
-        error: message,
-        source: 'useEventRsvp.toggleRsvp',
-        event_id: eventId,
+      handleError(error, {
+        title: isCapacityError ? t('events.rsvpAtCapacity') : t('events.rsvpFailed'),
+        context: 'useEventRsvp.toggleRsvp',
+        showToast: true,
       });
     },
     onSettled: () => {

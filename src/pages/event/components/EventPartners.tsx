@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Building2 } from 'lucide-react';
 
@@ -8,7 +8,20 @@ import {
   type FmOrganizationDetailsModalProps,
 } from '@/components/organization/FmOrganizationDetailsModal';
 import { useEventPartners } from '@/shared/api/queries/organizationQueries';
-import { cn } from '@/shared';
+import {
+  cn,
+  getPartnerImageSize,
+  getPartnerIconSize,
+  getPartnerTextSize,
+  getPartnerMaxPerRow,
+  PARTNER_IMPORTANCE,
+} from '@/shared';
+
+type Partner = ReturnType<typeof useEventPartners>['data'] extends
+  | (infer T)[]
+  | undefined
+  ? T
+  : never;
 
 interface EventPartnersProps {
   eventId: string;
@@ -57,57 +70,51 @@ export const EventPartners = ({
     [onManageOrganization]
   );
 
+  // Group partners by importance level
+  const partnersByImportance = useMemo(() => {
+    const grouped = new Map<number, Partner[]>();
+    partners.forEach(partner => {
+      const importance = partner.importance ?? PARTNER_IMPORTANCE.LOW;
+      if (!grouped.has(importance)) {
+        grouped.set(importance, []);
+      }
+      grouped.get(importance)!.push(partner);
+    });
+    // Sort by importance descending (3, 2, 1)
+    return Array.from(grouped.entries()).sort(([a], [b]) => b - a);
+  }, [partners]);
+
   // Don't render if no partners
   if (partners.length === 0) {
     return null;
   }
 
-  // Helper to get grid span class based on importance
-  const getGridSpanClass = (importance: number) => {
-    switch (importance) {
-      case 3:
-        return 'col-span-2 sm:col-span-3';
-      case 2:
-        return 'col-span-2';
-      default:
-        return 'col-span-1';
-    }
-  };
+  // Split partners into rows ensuring each row is filled
+  const getRows = (items: Partner[], importance: number) => {
+    const maxPerRow = getPartnerMaxPerRow(importance);
+    const rows: Partner[][] = [];
 
-  // Helper to get image size based on importance
-  const getImageSize = (importance: number) => {
-    switch (importance) {
-      case 3:
-        return 'w-20 h-20';
-      case 2:
-        return 'w-16 h-16';
-      default:
-        return 'w-12 h-12';
-    }
-  };
+    // Calculate optimal distribution to fill rows evenly
+    const itemCount = items.length;
+    if (itemCount <= maxPerRow) {
+      // All items fit in one row
+      rows.push(items);
+    } else {
+      // Distribute evenly across rows
+      const numRows = Math.ceil(itemCount / maxPerRow);
+      const basePerRow = Math.floor(itemCount / numRows);
+      const remainder = itemCount % numRows;
 
-  // Helper to get icon size based on importance
-  const getIconSize = (importance: number) => {
-    switch (importance) {
-      case 3:
-        return 'h-10 w-10';
-      case 2:
-        return 'h-8 w-8';
-      default:
-        return 'h-6 w-6';
+      let index = 0;
+      for (let row = 0; row < numRows; row++) {
+        // Distribute remainder items to earlier rows
+        const rowSize = basePerRow + (row < remainder ? 1 : 0);
+        rows.push(items.slice(index, index + rowSize));
+        index += rowSize;
+      }
     }
-  };
 
-  // Helper to get text size based on importance
-  const getTextSize = (importance: number) => {
-    switch (importance) {
-      case 3:
-        return 'text-base font-medium';
-      case 2:
-        return 'text-sm';
-      default:
-        return 'text-xs';
-    }
+    return rows;
   };
 
   return (
@@ -117,54 +124,68 @@ export const EventPartners = ({
         defaultExpanded={true}
         className={cn('lg:col-span-2', className)}
       >
-        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3'>
-          {partners.map(partner => {
-            const importance = partner.importance ?? 1;
-            return (
-              <button
-                key={partner.id}
-                type='button'
-                onClick={() => handleOrganizationClick(partner.organization)}
-                className={cn(
-                  'flex flex-col items-center gap-2 p-3',
-                  'border border-white/10 bg-white/5',
-                  'hover:bg-white/10 hover:border-fm-gold/30',
-                  'transition-all duration-200 cursor-pointer',
-                  'group',
-                  getGridSpanClass(importance),
-                  importance > 1 && 'border-fm-gold/20 bg-fm-gold/5'
-                )}
-              >
-                {/* Profile picture */}
-                <div
-                  className={cn(
-                    'flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors',
-                    getImageSize(importance)
-                  )}
-                >
-                  {partner.organization.profile_picture ? (
-                    <img
-                      src={partner.organization.profile_picture}
-                      alt={partner.organization.name}
-                      className='w-full h-full object-cover'
-                    />
-                  ) : (
-                    <div className='w-full h-full flex items-center justify-center'>
-                      <Building2 className={cn('text-white/30', getIconSize(importance))} />
-                    </div>
-                  )}
-                </div>
+        <div className='flex flex-col gap-3'>
+          {partnersByImportance.map(([importance, importancePartners]) => {
+            const rows = getRows(importancePartners, importance);
 
-                {/* Organization name */}
-                <span
-                  className={cn(
-                    'text-white/80 text-center line-clamp-2 group-hover:text-fm-gold transition-colors',
-                    getTextSize(importance)
-                  )}
-                >
-                  {partner.organization.name}
-                </span>
-              </button>
+            return (
+              <div key={importance} className='flex flex-col gap-3'>
+                {rows.map((rowPartners, rowIndex) => (
+                  <div
+                    key={`${importance}-${rowIndex}`}
+                    className='grid gap-3'
+                    style={{
+                      gridTemplateColumns: `repeat(${rowPartners.length}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {rowPartners.map(partner => (
+                      <button
+                        key={partner.id}
+                        type='button'
+                        onClick={() => handleOrganizationClick(partner.organization)}
+                        className={cn(
+                          'flex flex-col items-center gap-2 p-3',
+                          'border border-white/10 bg-white/5',
+                          'hover:bg-white/10 hover:border-fm-gold/30',
+                          'transition-all duration-200 cursor-pointer',
+                          'group',
+                          importance > PARTNER_IMPORTANCE.LOW && 'border-fm-gold/20 bg-fm-gold/5'
+                        )}
+                      >
+                        {/* Profile picture */}
+                        <div
+                          className={cn(
+                            'flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors',
+                            getPartnerImageSize(importance)
+                          )}
+                        >
+                          {partner.organization.profile_picture ? (
+                            <img
+                              src={partner.organization.profile_picture}
+                              alt={partner.organization.name}
+                              className='w-full h-full object-cover'
+                            />
+                          ) : (
+                            <div className='w-full h-full flex items-center justify-center'>
+                              <Building2 className={cn('text-white/30', getPartnerIconSize(importance))} />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Organization name */}
+                        <span
+                          className={cn(
+                            'text-white/80 text-center line-clamp-2 group-hover:text-fm-gold transition-colors',
+                            getPartnerTextSize(importance)
+                          )}
+                        >
+                          {partner.organization.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
             );
           })}
         </div>

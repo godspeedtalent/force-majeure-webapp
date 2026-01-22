@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
-import { imageUploadService } from '@/shared';
+import { imageUploadService, cn } from '@/shared';
 import { toast } from 'sonner';
-import { useUserRole } from '@/shared/hooks/useUserRole';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { showErrorToast } from '@/components/common/feedback/FmErrorToast';
-import { cn } from '@/shared';
 
 interface FmImageUploadProps {
   eventId?: string;
@@ -46,11 +45,10 @@ export const FmImageUpload = ({
   const [imageUrl, setImageUrl] = useState(currentImageUrl);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: userRole } = useUserRole();
+  const { isActuallyDeveloperOrAdmin } = useUserPermissions();
 
   // Check if user is developer or admin for detailed error messages
-  const isDeveloper =
-    userRole === ('developer' as any) || userRole === ('admin' as any);
+  const isDeveloper = isActuallyDeveloperOrAdmin();
 
   const handleFile = async (file: File) => {
     if (!file) return;

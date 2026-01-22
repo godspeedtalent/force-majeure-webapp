@@ -11,7 +11,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase, logger } from '@/shared';
+import { supabase, logger, handleError } from '@/shared';
 import { getImageUrl, compressImage } from '@/shared/utils/imageUtils';
 import { toast } from 'sonner';
 import type { ResolvedMediaItem, MediaGallery, MediaItem } from '@/features/media/types';
@@ -349,11 +349,11 @@ export function useVenueGallery({
         toast.success(t('venueGallery.mediaUploaded', 'Media uploaded'));
         queryClient.invalidateQueries({ queryKey: ['venue-gallery-items', selectedGalleryId] });
       } catch (error) {
-        logger.error('Failed to upload file', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useVenueGallery',
+        handleError(error, {
+          title: t('venueGallery.uploadFailed', 'Failed to upload file'),
+          context: 'useVenueGallery.uploadFiles',
+          showToast: true,
         });
-        toast.error(t('venueGallery.uploadFailed', 'Failed to upload file'));
       } finally {
         setUploading(false);
         setUploadingCount(0);

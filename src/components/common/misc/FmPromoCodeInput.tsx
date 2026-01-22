@@ -33,8 +33,8 @@ export const FmPromoCodeInput = ({
   const handleQuery = async (code: string) => {
     try {
       const { data, error } = await supabase
-        .from('promo_codes' as any)
-        .select('*')
+        .from('promo_codes')
+        .select('id, code, discount_type, discount_value')
         .eq('code', code)
         .eq('is_active', true)
         .maybeSingle();
@@ -42,7 +42,12 @@ export const FmPromoCodeInput = ({
       if (error) throw error;
 
       if (data) {
-        const promoCode = data as unknown as PromoCode;
+        const promoCode: PromoCode = {
+          id: data.id,
+          code: data.code,
+          discount_type: data.discount_type as 'percentage' | 'flat',
+          discount_value: data.discount_value,
+        };
         setValidationState('valid');
         setAppliedPromo(promoCode);
         setErrorMessage('');

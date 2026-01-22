@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/shared';
+import { supabase, handleError } from '@/shared';
 import { toast } from 'sonner';
 import type { TicketGroup } from '../ticket-group-manager/types';
 import { NO_GROUP_ID, NO_GROUP_COLOR } from '../ticket-group-manager/constants';
@@ -224,7 +224,11 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
       toast.success(t('ticketing.tiersSaved'));
     },
     onError: (error: Error) => {
-      toast.error(t('ticketing.tiersSaveFailed', { error: error.message }));
+      handleError(error, {
+        title: t('ticketing.tiersSaveFailed', { error: error.message }),
+        context: 'useEventTicketTiers.saveGroups',
+        showToast: true,
+      });
     },
   });
 
@@ -238,7 +242,11 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           toast.success(t('ticketing.tierDeleted'));
         },
         onError: (error: Error) => {
-          toast.error(t('ticketing.tierDeleteFailed', { error: error.message }));
+          handleError(error, {
+            title: t('ticketing.tierDeleteFailed', { error: error.message }),
+            context: 'useEventTicketTiers.deleteTier',
+            showToast: true,
+          });
         },
       }
     );
@@ -252,7 +260,11 @@ export const useEventTicketTiers = (eventId: string | undefined) => {
           queryClient.invalidateQueries({ queryKey: ticketGroupKeys.byEvent(eventId!) });
         },
         onError: (error: Error) => {
-          toast.error(t('ticketing.tierToggleFailed', { error: error.message }));
+          handleError(error, {
+            title: t('ticketing.tierToggleFailed', { error: error.message }),
+            context: 'useEventTicketTiers.toggleTierActive',
+            showToast: true,
+          });
         },
       }
     );

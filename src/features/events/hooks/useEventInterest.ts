@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { eventInterestService } from '../services/eventInterestService';
 import { rsvpService } from '../services/rsvpService';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { logger, supabase } from '@/shared';
+import { logger, supabase, handleError } from '@/shared';
 
 export function useEventInterest(eventId: string, eventTitle?: string, eventStatus?: string) {
   const { t } = useTranslation('toasts');
@@ -127,11 +127,10 @@ export function useEventInterest(eventId: string, eventTitle?: string, eventStat
         );
       }
 
-      toast.error(t('events.interestFailed'));
-      logger.error('Failed to mark event as interested', {
-        error: _error instanceof Error ? _error.message : 'Unknown',
-        source: 'useEventInterest.markInterested',
-        event_id: eventId,
+      handleError(_error, {
+        title: t('events.interestFailed'),
+        context: 'useEventInterest.markInterested',
+        showToast: true,
       });
     },
   });
@@ -194,11 +193,10 @@ export function useEventInterest(eventId: string, eventTitle?: string, eventStat
         );
       }
 
-      toast.error(t('events.removeInterestFailed'));
-      logger.error('Failed to remove interest in event', {
-        error: _error instanceof Error ? _error.message : 'Unknown',
-        source: 'useEventInterest.unmarkInterested',
-        event_id: eventId,
+      handleError(_error, {
+        title: t('events.removeInterestFailed'),
+        context: 'useEventInterest.unmarkInterested',
+        showToast: true,
       });
     },
   });

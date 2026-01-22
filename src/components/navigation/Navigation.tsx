@@ -137,6 +137,24 @@ export const Navigation = () => {
               </Tooltip>
             </TooltipProvider>
 
+            {/* Global Search Button */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={openSearch}
+                    className='text-foreground hover:text-fm-gold transition-colors duration-200'
+                    aria-label={t('buttons.search')}
+                  >
+                    <Search className='h-5 w-5' />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('buttons.search')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
             <FeatureGuard feature={FEATURE_FLAGS.MERCH_STORE}>
               <TooltipProvider>
                 <Tooltip>

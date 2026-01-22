@@ -73,7 +73,7 @@ export const FeatureToggleSection = () => {
         return;
       }
 
-      const { data: allEnvData, error: allEnvError } = await (supabase as any)
+      const { data: allEnvData, error: allEnvError } = await supabase
         .from('environments')
         .select('id')
         .eq('name', 'all')
@@ -89,7 +89,7 @@ export const FeatureToggleSection = () => {
         setAllEnvId(allEnvData.id);
       }
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('feature_flags')
         .select('flag_name, is_enabled, description, environment_id, group_name, is_archived')
         .in('environment_id', environmentIds)

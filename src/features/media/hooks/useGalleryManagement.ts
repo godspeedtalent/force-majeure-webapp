@@ -7,7 +7,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase, logger } from '@/shared';
+import { supabase, logger, handleError } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { toast } from 'sonner';
 import type {
@@ -159,11 +159,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['galleries-management'] });
         return data;
       } catch (error) {
-        logger.error('Failed to create gallery', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to create gallery',
+          context: 'useGalleryManagement.createGallery',
+          showToast: true,
         });
-        toast.error('Failed to create gallery');
         return null;
       }
     },
@@ -185,11 +185,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['galleries-management'] });
         return true;
       } catch (error) {
-        logger.error('Failed to update gallery', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to update gallery',
+          context: 'useGalleryManagement.updateGallery',
+          showToast: true,
         });
-        toast.error('Failed to update gallery');
         return false;
       }
     },
@@ -214,11 +214,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         }
         return true;
       } catch (error) {
-        logger.error('Failed to delete gallery', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to delete gallery',
+          context: 'useGalleryManagement.deleteGallery',
+          showToast: true,
         });
-        toast.error('Failed to delete gallery');
         return false;
       }
     },
@@ -268,11 +268,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return data;
       } catch (error) {
-        logger.error('Failed to create media item', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to add media',
+          context: 'useGalleryManagement.createMediaItem',
+          showToast: true,
         });
-        toast.error('Failed to add media');
         return null;
       }
     },
@@ -297,11 +297,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
       } catch (error) {
-        logger.error('Failed to update media item', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to update media',
+          context: 'useGalleryManagement.updateMediaItem',
+          showToast: true,
         });
-        toast.error('Failed to update media');
         return false;
       }
     },
@@ -326,11 +326,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
       } catch (error) {
-        logger.error('Failed to delete media item', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to delete media',
+          context: 'useGalleryManagement.deleteMediaItem',
+          showToast: true,
         });
-        toast.error('Failed to delete media');
         return false;
       }
     },
@@ -361,11 +361,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
       } catch (error) {
-        logger.error('Failed to reorder media items', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to reorder',
+          context: 'useGalleryManagement.reorderMediaItems',
+          showToast: true,
         });
-        toast.error('Failed to reorder');
         return false;
       }
     },
@@ -402,11 +402,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['artist-gallery-images'] });
         return true;
       } catch (error) {
-        logger.error('Failed to set cover item', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to set cover image',
+          context: 'useGalleryManagement.setCoverItem',
+          showToast: true,
         });
-        toast.error('Failed to set cover image');
         return false;
       }
     },
@@ -428,11 +428,11 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
 
         return fileName;
       } catch (error) {
-        logger.error('Failed to upload file', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          source: 'useGalleryManagement',
+        handleError(error, {
+          title: 'Failed to upload file',
+          context: 'useGalleryManagement.uploadFile',
+          showToast: true,
         });
-        toast.error('Failed to upload file');
         return null;
       }
     },

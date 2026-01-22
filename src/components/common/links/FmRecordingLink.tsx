@@ -36,9 +36,9 @@ export function FmRecordingLink({
 }: FmRecordingLinkProps) {
   const handleClick = useCallback(() => {
     // Fire-and-forget: don't await to avoid delaying navigation
-    (supabase as any)
+    supabase
       .rpc('increment_recording_click', { recording_id: recordingId })
-      .then(({ error }: { error: Error | null }) => {
+      .then(({ error }) => {
         if (error) {
           logger.warn('Failed to track recording click', {
             recordingId,

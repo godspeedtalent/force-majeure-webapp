@@ -15,6 +15,21 @@ export type {
   Constants
 } from './api/supabase/types';
 
+// Supabase query helpers
+export {
+  createDynamicQuery,
+  applyFilter,
+  applyFilters,
+  castRow,
+  castRows,
+  isArray,
+  type TableName,
+  type TableRow,
+  type FilterOperator,
+  type QueryFilter,
+  type GenericRow,
+} from './api/supabase/queryHelpers';
+
 // API - Queries (React Query hooks)
 export * from './api/queries';
 
@@ -93,6 +108,8 @@ export {
 // ============================================================================
 // Constants
 // ============================================================================
+export * from './constants/locations';
+export * from './constants/partnerConstants';
 export * from './constants/scrollThresholds';
 export * from './constants/socialLinks';
 export * from './constants/ticketLinks';
@@ -292,6 +309,19 @@ export {
 export { useDateTimePicker } from './hooks/useDateTimePicker';
 export { useScrollPosition } from './hooks/useScrollPosition';
 export { useScrollSnap } from './hooks/useScrollSnap';
+export {
+  useFormHandler,
+  type UseFormHandlerOptions,
+  type UseFormHandlerReturn,
+} from './hooks/useFormHandler';
+export {
+  useProfileFormState,
+  DEFAULT_PROFILE_FORM_DATA,
+  type ProfileFormData,
+  type ProfileDbData,
+  type UseProfileFormStateOptions,
+  type UseProfileFormStateReturn,
+} from './hooks/useProfileFormState';
 export { useRecentSelections } from './hooks/useRecentSelections';
 export { useEventViews } from './hooks/useEventViews';
 export { useCreateEntityNavigation } from './hooks/useCreatedEntityReturn';

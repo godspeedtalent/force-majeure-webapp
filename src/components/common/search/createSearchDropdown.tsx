@@ -4,19 +4,22 @@ import {
   FmCommonSearchDropdown,
   SearchDropdownOption,
 } from './FmCommonSearchDropdown';
-import { supabase, logger } from '@/shared';
-import { useRecentSelections } from '@/shared';
+import {
+  logger,
+  useRecentSelections,
+  createDynamicQuery,
+  applyFilters as applyQueryFilters,
+  type GenericRow,
+  type QueryFilter,
+} from '@/shared';
 
 /**
  * Configuration for creating a search dropdown component
  */
-/** Filter configuration for additional query constraints */
-export interface SearchDropdownFilter {
-  column: string;
-  operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'is' | 'in' | 'not';
-  value: unknown;
-}
+/** Filter configuration for additional query constraints - re-exported for convenience */
+export type SearchDropdownFilter = QueryFilter;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface SearchDropdownConfig<T = any> {
   /** Supabase table name */
   tableName: string;
@@ -52,6 +55,7 @@ export interface SearchDropdownConfig<T = any> {
   entityTypeName?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface SearchDropdownProps<T = any> {
   value?: string | null;
   onChange: (value: string, item?: T) => void;
@@ -80,6 +84,7 @@ interface SearchDropdownProps<T = any> {
  * });
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
   const {
     tableName,
@@ -119,48 +124,10 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         ? useRecentSelections(recentsKey)
         : { recentItems: [], addRecentItem: () => {} };
 
-    // Helper to apply additional filters to a query
-    const applyFilters = (queryBuilder: any) => {
-      for (const filter of additionalFilters) {
-        switch (filter.operator) {
-          case 'eq':
-            queryBuilder = queryBuilder.eq(filter.column, filter.value);
-            break;
-          case 'neq':
-            queryBuilder = queryBuilder.neq(filter.column, filter.value);
-            break;
-          case 'gt':
-            queryBuilder = queryBuilder.gt(filter.column, filter.value);
-            break;
-          case 'gte':
-            queryBuilder = queryBuilder.gte(filter.column, filter.value);
-            break;
-          case 'lt':
-            queryBuilder = queryBuilder.lt(filter.column, filter.value);
-            break;
-          case 'lte':
-            queryBuilder = queryBuilder.lte(filter.column, filter.value);
-            break;
-          case 'is':
-            queryBuilder = queryBuilder.is(filter.column, filter.value);
-            break;
-          case 'in':
-            queryBuilder = queryBuilder.in(filter.column, filter.value as any[]);
-            break;
-          case 'not':
-            queryBuilder = queryBuilder.not(filter.column, 'is', filter.value);
-            break;
-        }
-      }
-      return queryBuilder;
-    };
-
     // Load selected item when value changes
     React.useEffect(() => {
       if (value) {
-        supabase
-          .from(tableName as any)
-          .select(selectFields)
+        createDynamicQuery(tableName, selectFields)
           .eq(valueField, value)
           .single()
           .then(({ data }) => {
@@ -181,7 +148,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     const handleSearch = async (
       query: string
     ): Promise<SearchDropdownOption[]> => {
-      let queryBuilder = supabase.from(tableName as any).select(selectFields);
+      let queryBuilder = createDynamicQuery(tableName, selectFields);
 
       // Apply search filter
       if (typeof searchField === 'function') {
@@ -191,7 +158,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
       }
 
       // Apply additional filters
-      queryBuilder = applyFilters(queryBuilder);
+      queryBuilder = applyQueryFilters(queryBuilder, additionalFilters);
 
       const { data, error } = await queryBuilder.limit(10);
 
@@ -214,11 +181,11 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
         resultCount: data.length,
       });
 
-      return data.map((item: any) => ({
-        id: formatValue ? formatValue(item as T) : item.id,
-        label: formatLabel(item as T),
-        icon: renderIcon(item as T),
-        data: item as T,
+      return (data as T[]).map((item) => ({
+        id: formatValue ? formatValue(item) : (item as GenericRow).id as string,
+        label: formatLabel(item),
+        icon: renderIcon(item),
+        data: item,
       }));
     };
 
@@ -228,9 +195,7 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
     > => {
       if (!useRecents || recentItems.length === 0) return [];
 
-      const { data, error } = await supabase
-        .from(tableName as any)
-        .select(selectFields)
+      const { data, error } = await createDynamicQuery(tableName, selectFields)
         .in(
           valueField,
           recentItems.map(item => item.id)
@@ -238,16 +203,16 @@ export function createSearchDropdown<T = any>(config: SearchDropdownConfig<T>) {
 
       if (error || !data) return [];
 
-      return data.map((item: any) => ({
-        id: formatValue ? formatValue(item as T) : item.id,
-        label: formatLabel(item as T),
-        icon: renderIcon(item as T),
-        data: item as T,
+      return (data as T[]).map((item) => ({
+        id: formatValue ? formatValue(item) : (item as GenericRow).id as string,
+        label: formatLabel(item),
+        icon: renderIcon(item),
+        data: item,
       }));
     };
 
     // Change handler
-    const handleChange = (newValue: string, label?: string, data?: any) => {
+    const handleChange = (newValue: string, label?: string, data?: unknown) => {
       onChange(newValue, data as T);
       if (useRecents && label) {
         addRecentItem(newValue, label);

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { handleError } from '@/shared';
 import { type Order } from '@/features/orders/services/orderService';
 import {
   useEventOrdersQuery,
@@ -40,7 +41,11 @@ export const useEventOrders = (eventId: string | undefined, eventStatus?: string
           toast.success(t('orders.cancelSuccess'));
         },
         onError: (error: Error) => {
-          toast.error(t('orders.cancelFailed', { error: error.message }));
+          handleError(error, {
+            title: t('orders.cancelFailed', { error: error.message }),
+            context: 'useEventOrders.cancelOrder',
+            showToast: true,
+          });
         },
       }
     );
@@ -54,7 +59,11 @@ export const useEventOrders = (eventId: string | undefined, eventStatus?: string
           toast.success(t('orders.refundSuccess'));
         },
         onError: (error: Error) => {
-          toast.error(t('orders.refundFailed', { error: error.message }));
+          handleError(error, {
+            title: t('orders.refundFailed', { error: error.message }),
+            context: 'useEventOrders.refundOrder',
+            showToast: true,
+          });
         },
       }
     );
