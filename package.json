@@ -18,13 +18,16 @@
     "audit:design-system": "npx tsx scripts/audit-design-system.ts",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
-    "supabase:status": "supabase status",
-    "supabase:db:reset": "supabase db reset",
-    "supabase:db:push": "supabase db push",
-    "supabase:functions:deploy": "supabase functions deploy",
+    "supabase:status": "supabase status --linked",
+    "supabase:db:reset": "supabase db reset --linked",
+    "supabase:db:push": "supabase db push --linked",
+    "supabase:functions:deploy": "supabase functions deploy --project-ref orgxcrnnecblhuxjfruy",
+    "supabase:functions:deploy:screening": "supabase functions deploy screening --project-ref orgxcrnnecblhuxjfruy",
     "supabase:migration:new": "supabase migration new",
     "supabase:studio": "supabase studio",
-    "push": "npm run build && npm run supabase:functions:deploy && npm run supabase:db:push"
+    "supabase:types:generate": "supabase gen types typescript --linked > src/integrations/supabase/types.ts",
+    "push": "npm run build && npm run supabase:functions:deploy && npm run supabase:db:push",
+    "build:full": "npm run supabase:db:push && npm run supabase:types:generate && npm run supabase:functions:deploy && npm run build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -130,5 +133,8 @@
     "typescript": "~5.8.3",
     "vite": "6.4.1",
     "vitest": "3.2.4"
+  },
+  "overrides": {
+    "tar": "^7.5.6"
   }
 }

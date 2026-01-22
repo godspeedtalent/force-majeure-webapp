@@ -732,6 +732,9 @@ export function FmDataGrid<T extends Record<string, any>>({
                     getFocusableCellProps={getFocusableCellProps}
                     columnWidths={columnWidths}
                     showRowNumbers={showRowNumbers}
+                    onColumnFilter={handleColumnFilter}
+                    getColumnFilter={filters.getColumnFilter}
+                    clearColumnFilter={filters.clearColumnFilter}
                   />
                 );
               })

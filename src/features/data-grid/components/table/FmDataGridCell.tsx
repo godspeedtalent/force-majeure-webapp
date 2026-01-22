@@ -24,10 +24,12 @@ import {
   TooltipTrigger,
 } from '@/components/common/shadcn/tooltip';
 import { format as formatDate } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Filter, FilterX, CheckSquare, Square } from 'lucide-react';
 import { cn, logger } from '@/shared';
 import { DataGridColumn } from '../FmDataGrid';
 import { isRelationField, getRelationConfig } from '../../utils/dataGridRelations';
+import { FmCommonContextMenu, ContextMenuAction } from '@/components/common/modals/FmCommonContextMenu';
+import type { FilterOperator, ColumnFilter } from '../../hooks/useDataGridFilters';
 
 /** Hook to detect if text is truncated (overflowing) */
 function useIsTruncated(ref: React.RefObject<HTMLElement>) {
@@ -69,6 +71,10 @@ export interface FmDataGridCellProps<T> {
   focusableProps?: any;
   frozenLeft?: number; // Left position if column is frozen
   columnWidths?: Record<string, number>; // Column widths for alignment
+  // Filter functions for boolean column context menu
+  onColumnFilter?: (columnKey: string, value: string, operator?: FilterOperator) => void;
+  getColumnFilter?: (columnKey: string) => ColumnFilter | null;
+  clearColumnFilter?: (columnKey: string) => void;
 }
 
 export function FmDataGridCell<T extends Record<string, any>>({
@@ -87,6 +93,9 @@ export function FmDataGridCell<T extends Record<string, any>>({
   focusableProps = {},
   frozenLeft,
   columnWidths = {},
+  onColumnFilter,
+  getColumnFilter,
+  clearColumnFilter,
 }: FmDataGridCellProps<T>) {
   const textRef = useRef<HTMLSpanElement>(null);
   const isTruncated = useIsTruncated(textRef);
@@ -316,19 +325,68 @@ export function FmDataGridCell<T extends Record<string, any>>({
         // Display mode
         <div className='flex items-center gap-2'>
           {column.type === 'boolean' ? (
-            <div className='flex items-center gap-2' data-no-select>
-              <Switch
-                checked={value === true}
-                onCheckedChange={checked => {
-                  if (column.editable && !column.readonly && onUpdate) {
-                    onSaveEdit(checked);
-                  }
-                }}
-                disabled={!column.editable || column.readonly || !onUpdate}
-                className='data-[state=checked]:bg-fm-gold'
-              />
-              <span className='text-sm'>{value ? 'Yes' : 'No'}</span>
-            </div>
+            (() => {
+              // Boolean column context menu for filtering
+              const currentFilter = getColumnFilter?.(column.key);
+              const hasFilter = currentFilter !== null && currentFilter !== undefined;
+
+              const booleanFilterActions: ContextMenuAction[] = onColumnFilter ? [
+                {
+                  label: 'Filter by checked',
+                  icon: <CheckSquare className='h-4 w-4' />,
+                  onClick: () => {
+                    onColumnFilter(column.key, 'true', 'equals');
+                  },
+                },
+                {
+                  label: 'Filter by unchecked',
+                  icon: <Square className='h-4 w-4' />,
+                  onClick: () => {
+                    onColumnFilter(column.key, 'false', 'equals');
+                  },
+                },
+                ...(hasFilter && clearColumnFilter ? [
+                  {
+                    separator: true,
+                    label: 'Clear filter',
+                    icon: <FilterX className='h-4 w-4' />,
+                    onClick: () => {
+                      clearColumnFilter(column.key);
+                    },
+                  } as ContextMenuAction,
+                ] : []),
+              ] : [];
+
+              const booleanContent = (
+                <div className='flex items-center gap-2' data-no-select>
+                  <Switch
+                    checked={value === true}
+                    onCheckedChange={checked => {
+                      if (column.editable && !column.readonly && onUpdate) {
+                        onSaveEdit(checked);
+                      }
+                    }}
+                    disabled={!column.editable || column.readonly || !onUpdate}
+                    className='data-[state=checked]:bg-fm-gold'
+                  />
+                  <span className='text-sm'>{value ? 'Yes' : 'No'}</span>
+                  {hasFilter && (
+                    <Filter className='h-3 w-3 text-fm-gold ml-1' />
+                  )}
+                </div>
+              );
+
+              // Only wrap with context menu if filter actions are available
+              return booleanFilterActions.length > 0 ? (
+                <FmCommonContextMenu
+                  actions={booleanFilterActions}
+                  data={row}
+                >
+                  {booleanContent}
+                </FmCommonContextMenu>
+              ) : booleanContent;
+            })()
+
           ) : column.render ? (
             <div
               className={cn(

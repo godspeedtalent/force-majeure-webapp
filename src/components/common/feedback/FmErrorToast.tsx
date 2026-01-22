@@ -1,10 +1,14 @@
-import { AlertCircle, Copy, Check, FileText } from 'lucide-react';
+import { AlertCircle, Copy, Check, FileText, FileEdit } from 'lucide-react';
 import { logger } from '@/shared';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared';
 import { FmErrorOverlay } from './FmErrorOverlay';
 import { useTranslation } from 'react-i18next';
+import { extractErrorContext, formatErrorContextForNote, generateErrorNoteTitle } from '@/shared/utils/errorContext';
+import { supabase, handleError, ROLES } from '@/shared';
+import { useAuth } from '@/features/auth/services/AuthContext';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 
 interface FmErrorToastProps {
   title: string;
@@ -14,13 +18,17 @@ interface FmErrorToastProps {
   context?: string;
   endpoint?: string;
   method?: string;
+  /** User role for determining which actions to show */
+  userRole?: string;
 }
 
 /**
  * FmErrorToast Component
  *
- * Enhanced error toast with developer-friendly features:
- * - Copy button for developers/admins (copies error details + stack trace)
+ * Enhanced error toast with role-based features:
+ * - Copy Stack Trace button for ADMIN/DEVELOPER roles
+ * - Create Staff Note button for FM_STAFF role
+ * - View Details overlay for ADMIN/DEVELOPER roles
  * - Generic message for regular users
  * - Dark crimson styling (border, text, icon)
  *
@@ -32,7 +40,8 @@ interface FmErrorToastProps {
  *   title: 'Upload Failed',
  *   description: 'Image failed to upload',
  *   error: myError,
- *   isDeveloper: true
+ *   isDeveloper: true,
+ *   userRole: 'admin'
  * });
  * ```
  */
@@ -44,17 +53,30 @@ export const FmErrorToast = ({
   context,
   endpoint,
   method,
+  userRole,
 }: FmErrorToastProps) => {
   const { t } = useTranslation('common');
+  const { user, profile } = useAuth();
+  const { isAdmin: checkIsAdmin, hasRole } = useUserPermissions();
   const [copied, setCopied] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
+  const [isCreatingNote, setIsCreatingNote] = useState(false);
 
-  const handleCopy = async () => {
+  // Determine which actions to show based on role
+  // Use prop if provided, otherwise check actual user roles
+  const isAdmin = userRole === 'admin' || (!userRole && checkIsAdmin());
+  const isDev = userRole === 'developer' || isAdmin || (!userRole && hasRole(ROLES.DEVELOPER));
+  const isFmStaff = userRole === 'fm_staff' || isDev || (!userRole && hasRole(ROLES.FM_STAFF));
+
+  const handleCopyStackTrace = async () => {
     const errorDetails = [
       `Title: ${title}`,
       description ? `Description: ${description}` : null,
       error ? `Error: ${error.message}` : null,
       error?.stack ? `\nStack Trace:\n${error.stack}` : null,
+      context ? `\nContext: ${context}` : null,
+      endpoint ? `Endpoint: ${endpoint}` : null,
+      method ? `Method: ${method}` : null,
     ]
       .filter(Boolean)
       .join('\n');
@@ -63,8 +85,60 @@ export const FmErrorToast = ({
       await navigator.clipboard.writeText(errorDetails);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      toast.success(t('errors.copiedToClipboard'));
     } catch (err) {
-      logger.error('Failed to copy to clipboard:', { context: err });
+      logger.error('Failed to copy to clipboard', { error: err });
+      toast.error(t('errors.copyFailed'));
+    }
+  };
+
+  const handleCreateStaffNote = async () => {
+    if (!user) {
+      toast.error(t('devTools.notes.mustBeLoggedIn'));
+      return;
+    }
+
+    setIsCreatingNote(true);
+
+    try {
+      // Extract comprehensive error context
+      const errorContext = extractErrorContext(error, {
+        context,
+        endpoint,
+        method,
+        additionalInfo: {
+          toastTitle: title,
+          toastDescription: description,
+        },
+      });
+
+      // Generate note title and formatted content
+      const noteTitle = generateErrorNoteTitle(errorContext);
+      const noteMessage = formatErrorContextForNote(errorContext);
+
+      // Create the staff note
+      const authorName = profile?.display_name || user.email || 'Unknown';
+      const { error: insertError } = await supabase.from('dev_notes').insert({
+        author_id: user.id,
+        author_name: authorName,
+        title: noteTitle,
+        message: noteMessage,
+        type: 'BUG',
+        status: 'TODO',
+        priority: 3, // Default to medium priority
+      });
+
+      if (insertError) throw insertError;
+
+      toast.success(t('devTools.notes.createSuccess'));
+    } catch (err: unknown) {
+      handleError(err, {
+        title: t('devTools.notes.createError'),
+        context: 'FmErrorToast.handleCreateStaffNote',
+        endpoint: 'dev_notes.insert',
+      });
+    } finally {
+      setIsCreatingNote(false);
     }
   };
 
@@ -89,8 +163,52 @@ export const FmErrorToast = ({
           </div>
         )}
       </div>
-      {isDeveloper && (
+      {(isDev || isFmStaff) && (
         <div className='flex items-center gap-1'>
+          {/* View Details - Admin/Developer only */}
+          {isDev && (
+            <button
+              onClick={() => setShowOverlay(true)}
+              className='flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors'
+              title={t('errors.viewDetails')}
+            >
+              <FileText className='h-4 w-4 text-muted-foreground' />
+            </button>
+          )}
+
+          {/* Copy Stack Trace - Admin/Developer only */}
+          {isDev && (
+            <button
+              onClick={handleCopyStackTrace}
+              className={cn(
+                'flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors',
+                copied && 'bg-white/10'
+              )}
+              title={t('errors.copyStackTrace')}
+              disabled={isCreatingNote}
+            >
+              {copied ? (
+                <Check className='h-4 w-4 text-fm-gold' />
+              ) : (
+                <Copy className='h-4 w-4 text-muted-foreground' />
+              )}
+            </button>
+          )}
+
+          {/* Create Staff Note - FM Staff, Developer, Admin */}
+          {isFmStaff && (
+            <button
+              onClick={handleCreateStaffNote}
+              className={cn(
+                'flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors',
+                isCreatingNote && 'opacity-50 cursor-not-allowed'
+              )}
+              title={t('errors.createStaffNote')}
+              disabled={isCreatingNote || copied}
+            >
+              <FileEdit className='h-4 w-4 text-muted-foreground' />
+            </button>
+          )}
           <button
             onClick={() => setShowOverlay(true)}
             className='flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors'
@@ -134,6 +252,10 @@ export const FmErrorToast = ({
  * Helper function to show error toast
  */
 export const showErrorToast = (props: FmErrorToastProps) => {
+  // Determine duration based on role - give staff/devs more time for actions
+  const hasActions = props.userRole === 'admin' || props.userRole === 'developer' || props.userRole === 'fm_staff';
+  const duration = hasActions ? 10000 : 4000; // 10 seconds for staff/devs, 4 seconds for users
+
   toast.custom(
     () => (
       <div
@@ -146,7 +268,7 @@ export const showErrorToast = (props: FmErrorToastProps) => {
       </div>
     ),
     {
-      duration: props.isDeveloper ? 8000 : 4000, // Longer duration for developers to copy
+      duration,
     }
   );
 };

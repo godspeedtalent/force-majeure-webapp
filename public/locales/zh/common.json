@@ -111,7 +111,10 @@
     "rsvpConfirmed": "已报名",
     "signInToRsvp": "登录以报名",
     "eventFull": "活动已满",
-    "backToHome": "返回首页"
+    "backToHome": "返回首页",
+    "showIgnored": "显示已忽略",
+    "showingIgnored": "正在显示已忽略",
+    "deletePermanently": "永久删除"
   },
   "actions": {
     "save": "保存",
@@ -308,7 +311,8 @@
     "spotify": "Spotify",
     "soundcloud": "SoundCloud",
     "submittedOn": "提交于",
-    "actions": "操作"
+    "actions": "操作",
+    "tags": "标签"
   },
   "entities": {
     "venue": "场地",
@@ -459,6 +463,9 @@
     "devNotes": "开发笔记",
     "staffNotes": "员工笔记",
     "staffNotesTitle": "员工笔记",
+    "staffHome": "FM员工主页",
+    "staffHomeTitle": "FM员工主页",
+    "goToStaffHome": "前往员工主页",
     "mockRole": "模拟角色",
     "mockRoleSimulator": "角色模拟器",
     "gallery": "图库",
@@ -481,9 +488,10 @@
     "hiddenTabs": "隐藏的标签",
     "groups": {
       "organization": "组织",
-      "staff": "员工工具",
+      "staff": "FM员工",
       "developerTools": "开发者工具",
       "devTools": "开发工具",
+      "developer": "开发者",
       "dataConfig": "数据与配置",
       "admin": "管理员"
     }
@@ -632,6 +640,9 @@
     "stackTrace": "堆栈跟踪",
     "copyStackTrace": "复制堆栈跟踪",
     "copied": "已复制！",
+    "copiedToClipboard": "已复制到剪贴板",
+    "copyFailed": "复制到剪贴板失败",
+    "createStaffNote": "创建工作人员笔记",
     "needHelp": "需要帮助？",
     "contactUsMessage": "我们已通知开发人员。如需即时帮助，请通过Instagram联系我们",
     "onInstagram": "。",
@@ -3996,8 +4007,11 @@
   },
   "devNavigation": {
     "core": "核心",
+    "developer": "开发者",
     "adminControls": "管理员控制",
     "developerHome": "开发者主页",
+    "fmStaff": "FM员工",
+    "staffHome": "FM员工主页",
     "dashboards": "仪表板",
     "analytics": "分析",
     "albumRatings": "专辑评分",
@@ -4469,5 +4483,13 @@
     "scanCancelled": "已取消",
     "unknownAttendee": "未知参与者",
     "unknownTier": "未知票种"
+  },
+  "tagMultiSelect": {
+    "searchAndAddTags": "搜索并添加标签",
+    "searchTags": "搜索标签",
+    "createNewTag": "+ 创建新标签",
+    "startTyping": "开始输入以搜索",
+    "noTagsFound": "未找到标签",
+    "maximumReached": "已达到最大值"
   }
 }

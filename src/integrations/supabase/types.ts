@@ -3852,6 +3852,294 @@ export type Database = {
           },
         ]
       }
+      screening_config: {
+        Row: {
+          confidence_tier_2_reviews: number
+          confidence_tier_3_reviews: number
+          confidence_tier_4_reviews: number
+          confidence_tier_5_plus_reviews: number
+          hot_score_half_life_days: number
+          hot_score_min_multiplier: number
+          id: number
+          min_approval_score: number
+          min_listen_time_seconds: number
+          min_reviews_for_approval: number
+          updated_at: string
+        }
+        Insert: {
+          confidence_tier_2_reviews?: number
+          confidence_tier_3_reviews?: number
+          confidence_tier_4_reviews?: number
+          confidence_tier_5_plus_reviews?: number
+          hot_score_half_life_days?: number
+          hot_score_min_multiplier?: number
+          id?: number
+          min_approval_score?: number
+          min_listen_time_seconds?: number
+          min_reviews_for_approval?: number
+          updated_at?: string
+        }
+        Update: {
+          confidence_tier_2_reviews?: number
+          confidence_tier_3_reviews?: number
+          confidence_tier_4_reviews?: number
+          confidence_tier_5_plus_reviews?: number
+          hot_score_half_life_days?: number
+          hot_score_min_multiplier?: number
+          id?: number
+          min_approval_score?: number
+          min_listen_time_seconds?: number
+          min_reviews_for_approval?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      screening_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          internal_notes: string | null
+          listen_duration_seconds: number
+          rating: number
+          reviewer_id: string
+          submission_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listen_duration_seconds: number
+          rating: number
+          reviewer_id: string
+          submission_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listen_duration_seconds?: number
+          rating?: number
+          reviewer_id?: string
+          submission_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screening_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      screening_submissions: {
+        Row: {
+          artist_id: string
+          context_type: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          event_id: string | null
+          has_genre_mismatch: boolean | null
+          id: string
+          recording_id: string
+          status: string
+          updated_at: string
+          venue_id: string | null
+        }
+        Insert: {
+          artist_id: string
+          context_type: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id?: string | null
+          has_genre_mismatch?: boolean | null
+          id?: string
+          recording_id: string
+          status?: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Update: {
+          artist_id?: string
+          context_type?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id?: string | null
+          has_genre_mismatch?: boolean | null
+          id?: string
+          recording_id?: string
+          status?: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screening_submissions_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_recording_id_fkey"
+            columns: ["recording_id"]
+            isOneToOne: false
+            referencedRelation: "artist_recordings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_scores: {
+        Row: {
+          calculated_at: string
+          confidence_adjusted_score: number | null
+          confidence_multiplier: number | null
+          hot_indexed_score: number | null
+          hot_score: number | null
+          indexed_score: number | null
+          raw_avg_score: number | null
+          review_count: number
+          submission_id: string
+          time_decay_multiplier: number | null
+        }
+        Insert: {
+          calculated_at?: string
+          confidence_adjusted_score?: number | null
+          confidence_multiplier?: number | null
+          hot_indexed_score?: number | null
+          hot_score?: number | null
+          indexed_score?: number | null
+          raw_avg_score?: number | null
+          review_count?: number
+          submission_id: string
+          time_decay_multiplier?: number | null
+        }
+        Update: {
+          calculated_at?: string
+          confidence_adjusted_score?: number | null
+          confidence_multiplier?: number | null
+          hot_indexed_score?: number | null
+          hot_score?: number | null
+          indexed_score?: number | null
+          raw_avg_score?: number | null
+          review_count?: number
+          submission_id?: string
+          time_decay_multiplier?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_scores_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_tags: {
+        Row: {
+          id: string
+          submission_id: string
+          tag_id: string
+          tagged_at: string
+          tagged_by: string | null
+        }
+        Insert: {
+          id?: string
+          submission_id: string
+          tag_id: string
+          tagged_at?: string
+          tagged_by?: string | null
+        }
+        Update: {
+          id?: string
+          submission_id?: string
+          tag_id?: string
+          tagged_at?: string
+          tagged_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_tags_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       table_metadata: {
         Row: {
           columns: Json
@@ -4859,6 +5147,49 @@ export type Database = {
           },
         ]
       }
+      user_ignored_submissions: {
+        Row: {
+          id: string
+          ignored_at: string
+          submission_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ignored_at?: string
+          submission_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ignored_at?: string
+          submission_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ignored_submissions_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ignored_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ignored_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_requests: {
         Row: {
           created_at: string
@@ -4945,6 +5276,42 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_required_genres: {
+        Row: {
+          created_at: string
+          genre_id: string
+          id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          genre_id: string
+          id?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          genre_id?: string
+          id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_required_genres_genre_id_fkey"
+            columns: ["genre_id"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_required_genres_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
             referencedColumns: ["id"]
           },
         ]
@@ -5218,7 +5585,15 @@ export type Database = {
         Args: { p_retention_days?: number }
         Returns: number
       }
+      calculate_submission_score: {
+        Args: { p_submission_id: string }
+        Returns: undefined
+      }
       can_access_order: { Args: { p_order_id: string }; Returns: boolean }
+      check_genre_mismatch: {
+        Args: { p_submission_id: string }
+        Returns: boolean
+      }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {

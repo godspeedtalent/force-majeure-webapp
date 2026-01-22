@@ -6,3 +6,5 @@ export { DeveloperDatabaseOverviewTab } from './DeveloperDatabaseOverviewTab';
 export { ActivityLogsTab } from './ActivityLogsTab';
 export { DemoToolsTab } from './DemoToolsTab';
 export { DocumentationViewerTab } from './DocumentationViewerTab';
+export { UserRoleMatrixTab } from './UserRoleMatrixTab';
+export { RoleDiagnosticsTab } from './RoleDiagnosticsTab';

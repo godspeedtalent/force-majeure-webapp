@@ -8,16 +8,16 @@ export type DeveloperTab =
   | 'dev_docs'
   | 'dev_order_import'
   | 'dev_template_designer'
+  | 'dev_role_diagnostics'
   // Admin Controls
   | 'admin_settings'
   | 'admin_ticketing'
+  | 'admin_role_matrix'
   // Dashboards
   | 'dash_recordings'
-  | 'dash_users'
   | 'dash_analytics'
   // Messages - Activity Logs
   | 'logs_all'
-  | 'logs_contact'
   // Database - Overview
   | 'db_overview'
   // Database - Tables
@@ -31,21 +31,20 @@ export type DeveloperTab =
   // Database - Storage
   | 'db_galleries'
   // Database - Messages
-  | 'db_registrations'
-  | 'db_user_requests';
+  | 'db_registrations';
 
 export const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
   'dev_docs',
   'dev_order_import',
   'dev_template_designer',
+  'dev_role_diagnostics',
   'admin_settings',
   'admin_ticketing',
+  'admin_role_matrix',
   'dash_recordings',
-  'dash_users',
   'dash_analytics',
   'logs_all',
-  'logs_contact',
   'db_overview',
   'db_artists',
   'db_events',
@@ -56,7 +55,6 @@ export const VALID_TABS: DeveloperTab[] = [
   'db_users',
   'db_galleries',
   'db_registrations',
-  'db_user_requests',
 ];
 
 // External navigation mapping (pages that still open as separate routes)

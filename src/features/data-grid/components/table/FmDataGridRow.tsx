@@ -64,6 +64,11 @@ export interface FmDataGridRowProps<T> {
 
   // Show row numbers
   showRowNumbers?: boolean;
+
+  // Filter functions for boolean column context menu
+  onColumnFilter?: (columnKey: string, value: string, operator?: any) => void;
+  getColumnFilter?: (columnKey: string) => any;
+  clearColumnFilter?: (columnKey: string) => void;
 }
 
 export function FmDataGridRow<T extends Record<string, any>>({
@@ -98,6 +103,9 @@ export function FmDataGridRow<T extends Record<string, any>>({
   getFocusableCellProps,
   columnWidths = {},
   showRowNumbers = false,
+  onColumnFilter,
+  getColumnFilter,
+  clearColumnFilter,
 }: FmDataGridRowProps<T>) {
   const navigate = useNavigate();
 
@@ -267,6 +275,9 @@ export function FmDataGridRow<T extends Record<string, any>>({
               }
               frozenLeft={column.frozen ? frozenColumnPositions[column.key] : undefined}
               columnWidths={columnWidths}
+              onColumnFilter={onColumnFilter}
+              getColumnFilter={getColumnFilter}
+              clearColumnFilter={clearColumnFilter}
             />
           );
         })}

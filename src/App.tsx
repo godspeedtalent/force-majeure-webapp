@@ -33,6 +33,10 @@ const DeveloperCreateVenuePage = lazy(() => import('./pages/developer/database/C
 const DeveloperCreateOrganizationPage = lazy(() => import('./pages/developer/database/CreateOrganization'));
 const ArtistSignupDemo = lazy(() => import('./pages/developer/ArtistSignupDemo'));
 
+// Lazy load staff pages
+const StaffHome = lazy(() => import('./pages/staff/StaffHome'));
+const ReviewInterface = lazy(() => import('./features/artist-screening/components/ReviewInterface').then(mod => ({ default: mod.ReviewInterface })));
+
 // Lazy load admin pages
 const Statistics = lazy(() => import('./pages/admin/Statistics'));
 // ActivityLogs moved to inline DeveloperHome - keeping redirect for backwards compatibility
@@ -104,7 +108,24 @@ import ArtistRegister from './pages/artists/ArtistRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Disable automatic retries for 403/401 errors
+      retry: (failureCount, error) => {
+        if (
+          error &&
+          typeof error === 'object' &&
+          'code' in error &&
+          (error.code === '403' || error.code === '401' || error.code === '42501')
+        ) {
+          return false; // Don't retry permission errors
+        }
+        return failureCount < 3;
+      },
+    },
+  },
+});
 
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
@@ -221,6 +242,28 @@ const AppRoutes = () => {
       <Route
         path='/developer/recording-analytics'
         element={<Navigate to='/developer?tab=dash_recordings' replace />}
+      />
+
+      {/* Staff Routes - Protected by org staff/admin roles */}
+      <Route
+        path='/staff'
+        element={
+          <ProtectedRoute role={ROLES.ORG_STAFF}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <StaffHome />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path='/staff/screening/review/:id'
+        element={
+          <ProtectedRoute role={ROLES.ORG_STAFF}>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <ReviewInterface />
+            </Suspense>
+          </ProtectedRoute>
+        }
       />
 
       {/* Redirect old demo index route to unified developer home tab */}

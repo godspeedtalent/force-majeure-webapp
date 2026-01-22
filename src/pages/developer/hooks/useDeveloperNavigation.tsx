@@ -19,6 +19,7 @@ import {
   Shield,
   Sliders,
   DollarSign,
+  UserCog,
   // Dashboard icons
   BarChart3,
   Star,
@@ -26,7 +27,6 @@ import {
   LineChart,
   // Messages icons
   Activity,
-  Mail,
   UserCircle,
   // Database icons
   Mic2,
@@ -38,7 +38,6 @@ import {
   Images,
   MessageSquare,
   UserPlus,
-  FileQuestion,
 } from 'lucide-react';
 import {
   FmCommonSideNavGroup,
@@ -54,7 +53,6 @@ interface UseDeveloperNavigationProps {
   isRecordingRatingsEnabled: boolean;
   counts: {
     pendingRegistrationsCount: number;
-    pendingUserRequestsCount: number;
     venuesCount: number;
     organizationsCount: number;
     usersCount: number;
@@ -79,7 +77,6 @@ export function useDeveloperNavigation({
 
   const {
     pendingRegistrationsCount,
-    pendingUserRequestsCount,
     venuesCount,
     organizationsCount,
     usersCount,
@@ -111,6 +108,12 @@ export function useDeveloperNavigation({
         description: t('developerIndex.orderCsvImportDescription'),
       },
       {
+        id: 'dev_role_diagnostics',
+        label: 'Role Diagnostics',
+        icon: Shield,
+        description: 'Debug role fetching and permission issues',
+      },
+      {
         id: 'dev_template_designer',
         label: t('developerIndex.templateDesigner', 'Template Designer'),
         icon: Palette,
@@ -132,6 +135,12 @@ export function useDeveloperNavigation({
         icon: DollarSign,
         description: 'Configure ticketing fees and checkout behavior',
       },
+      {
+        id: 'admin_role_matrix',
+        label: 'User Role Matrix',
+        icon: UserCog,
+        description: 'Manage user roles with quick checkbox toggles',
+      },
     ];
 
     // Dashboards group - conditionally include Recording Ratings based on feature flag
@@ -146,12 +155,6 @@ export function useDeveloperNavigation({
             },
           ]
         : []),
-      {
-        id: 'dash_users',
-        label: 'User Metrics',
-        icon: Users,
-        description: 'User engagement analytics',
-      },
       {
         id: 'dash_analytics',
         label: 'Site Analytics',
@@ -283,12 +286,6 @@ export function useDeveloperNavigation({
           description: t('activityLogsPage.allLogsDescription'),
         },
         {
-          id: 'logs_contact',
-          label: t('activityLogsPage.contactActivity'),
-          icon: Mail,
-          description: t('activityLogsPage.contactActivityDescription'),
-        },
-        {
           id: 'db_registrations',
           label: t('artistRegistrations.navLabel'),
           icon: UserPlus,
@@ -297,18 +294,6 @@ export function useDeveloperNavigation({
             pendingRegistrationsCount > 0 ? (
               <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
                 {pendingRegistrationsCount}
-              </span>
-            ) : undefined,
-        },
-        {
-          id: 'db_user_requests',
-          label: 'User Requests',
-          icon: FileQuestion,
-          description: 'Manage user requests',
-          badge:
-            pendingUserRequestsCount > 0 ? (
-              <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                {pendingUserRequestsCount}
               </span>
             ) : undefined,
         }
@@ -377,7 +362,6 @@ export function useDeveloperNavigation({
     isRecordingRatingsEnabled,
     t,
     pendingRegistrationsCount,
-    pendingUserRequestsCount,
     artistsCount,
     eventsCount,
     guestsCount,

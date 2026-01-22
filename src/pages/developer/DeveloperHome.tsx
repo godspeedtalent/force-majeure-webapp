@@ -30,7 +30,6 @@ import { UserManagement } from '../admin/UserManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { EventsManagement } from '../admin/EventsManagement';
 import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
-import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 
 // Database tabs
@@ -43,17 +42,17 @@ import {
   ActivityLogsTab,
   DemoToolsTab,
   DocumentationViewerTab,
+  UserRoleMatrixTab,
+  RoleDiagnosticsTab,
 } from './tabs';
 
-// Contact Submissions
-import { ContactSubmissionsTab } from '@/features/contact-submissions';
+// Data and navigation hooks
 import { useDatabaseCounts } from './hooks/useDeveloperDatabaseData';
 import { useDeveloperNavigation } from './hooks/useDeveloperNavigation';
 
 // Dashboard components
 import RecordingRatingsDashboard from './dashboards/RecordingRatingsDashboard';
 import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardContent';
-import { UserMetricsDashboard } from './dashboards/userMetrics';
 
 // Developer Tools components
 import { OrderCsvImportContent } from './orderImport';
@@ -162,6 +161,12 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
+        {activeTab === 'admin_role_matrix' && (
+          <PageErrorBoundary section="User Role Matrix">
+            <UserRoleMatrixTab />
+          </PageErrorBoundary>
+        )}
+
         {/* ======================== DEVELOPER TOOLS ======================== */}
         {activeTab === 'dev_order_import' && (
           <PageErrorBoundary section="Order CSV Import">
@@ -188,16 +193,16 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
+        {activeTab === 'dev_role_diagnostics' && (
+          <PageErrorBoundary section="Role Diagnostics">
+            <RoleDiagnosticsTab />
+          </PageErrorBoundary>
+        )}
+
         {/* ======================== DASHBOARDS ======================== */}
         {activeTab === 'dash_recordings' && (
           <PageErrorBoundary section="Recording Ratings">
             <RecordingRatingsDashboard />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'dash_users' && (
-          <PageErrorBoundary section="User Metrics">
-            <UserMetricsDashboard />
           </PageErrorBoundary>
         )}
 
@@ -211,13 +216,6 @@ export default function DeveloperHome() {
         {isActivityLogTab && (
           <PageErrorBoundary section="Activity Logs">
             <ActivityLogsTab activeTab={activeTab} />
-          </PageErrorBoundary>
-        )}
-
-        {/* ======================== CONTACT SUBMISSIONS ======================== */}
-        {activeTab === 'logs_contact' && (
-          <PageErrorBoundary section="Contact Submissions">
-            <ContactSubmissionsTab />
           </PageErrorBoundary>
         )}
 
@@ -280,12 +278,6 @@ export default function DeveloperHome() {
         {activeTab === 'db_registrations' && (
           <PageErrorBoundary section="Artist Registrations">
             <ArtistRegistrationsManagement />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'db_user_requests' && (
-          <PageErrorBoundary section="User Requests">
-            <UserRequestsAdmin />
           </PageErrorBoundary>
         )}
       </div>
