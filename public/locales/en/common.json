@@ -107,7 +107,10 @@
     "rsvpConfirmed": "RSVP'd",
     "signInToRsvp": "Sign in to RSVP",
     "eventFull": "Event Full",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "showIgnored": "Show Ignored",
+    "showingIgnored": "Showing Ignored",
+    "deletePermanently": "Delete Permanently"
   },
   "compTickets": {
     "title": "Complimentary Tickets",
@@ -303,7 +306,8 @@
     "spotify": "Spotify",
     "soundcloud": "SoundCloud",
     "submittedOn": "Submitted on",
-    "actions": "Actions"
+    "actions": "Actions",
+    "tags": "Tags"
   },
   "entities": {
     "venue": "Venue",
@@ -454,6 +458,9 @@
     "devNotes": "Dev Notes",
     "staffNotes": "Staff Notes",
     "staffNotesTitle": "Staff Notes",
+    "staffHome": "FM Staff Home",
+    "staffHomeTitle": "FM Staff Home",
+    "goToStaffHome": "Go to Staff Home",
     "mockRole": "Mock Role",
     "mockRoleSimulator": "Role Simulator",
     "gallery": "Gallery",
@@ -476,9 +483,10 @@
     "hiddenTabs": "Hidden tabs",
     "groups": {
       "organization": "Organization",
-      "staff": "Staff Tools",
+      "staff": "FM Staff",
       "developerTools": "Developer Tools",
       "devTools": "Dev Tools",
+      "developer": "Developer",
       "dataConfig": "Data & Config",
       "admin": "Admin"
     }
@@ -627,6 +635,9 @@
     "stackTrace": "Stack Trace",
     "copyStackTrace": "Copy Stack Trace",
     "copied": "Copied!",
+    "copiedToClipboard": "Copied to clipboard",
+    "copyFailed": "Failed to copy to clipboard",
+    "createStaffNote": "Create Staff Note",
     "needHelp": "Need help?",
     "contactUsMessage": "We've let our developers know. If you need immediate help, please contact us at",
     "onInstagram": "on Instagram.",
@@ -3946,8 +3957,11 @@
   },
   "devNavigation": {
     "core": "Core",
+    "developer": "Developer",
     "adminControls": "Admin Controls",
     "developerHome": "Developer Home",
+    "fmStaff": "FM Staff",
+    "staffHome": "FM Staff Home",
     "dashboards": "Dashboards",
     "analytics": "Analytics",
     "albumRatings": "Album Ratings",
@@ -4467,5 +4481,13 @@
     "scanCancelled": "Cancelled",
     "unknownAttendee": "Unknown Attendee",
     "unknownTier": "Unknown Tier"
+  },
+  "tagMultiSelect": {
+    "searchAndAddTags": "Search and add tags",
+    "searchTags": "Search tags",
+    "createNewTag": "+ Create New Tag",
+    "startTyping": "Start typing to search",
+    "noTagsFound": "No tags found",
+    "maximumReached": "Maximum reached"
   }
 }

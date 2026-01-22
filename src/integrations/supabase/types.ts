@@ -75,6 +75,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_logs_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       activity_logs_archive: {
@@ -200,6 +207,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "addresses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1392,6 +1406,8 @@ export type Database = {
       dev_bookmarks: {
         Row: {
           created_at: string | null
+          icon: string | null
+          icon_color: string | null
           id: string
           label: string
           path: string
@@ -1400,6 +1416,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          icon?: string | null
+          icon_color?: string | null
           id?: string
           label: string
           path: string
@@ -1408,6 +1426,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          icon?: string | null
+          icon_color?: string | null
           id?: string
           label?: string
           path?: string
@@ -1473,6 +1493,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entity_fee_items: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          fee_type: string
+          fee_value: number
+          id: string
+          is_active: boolean
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          fee_type: string
+          fee_value: number
+          id?: string
+          is_active?: boolean
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          fee_type?: string
+          fee_value?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       environments: {
         Row: {
@@ -1761,6 +1820,7 @@ export type Database = {
           display_order: number | null
           event_id: string
           id: string
+          importance: number
           is_hidden: boolean
           organization_id: string
         }
@@ -1769,6 +1829,7 @@ export type Database = {
           display_order?: number | null
           event_id: string
           id?: string
+          importance?: number
           is_hidden?: boolean
           organization_id: string
         }
@@ -1777,6 +1838,7 @@ export type Database = {
           display_order?: number | null
           event_id?: string
           id?: string
+          importance?: number
           is_hidden?: boolean
           organization_id?: string
         }
@@ -1835,6 +1897,8 @@ export type Database = {
       }
       event_rsvps: {
         Row: {
+          checked_in_at: string | null
+          checked_in_by: string | null
           created_at: string
           event_id: string
           id: string
@@ -1843,6 +1907,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
           created_at?: string
           event_id: string
           id?: string
@@ -1851,6 +1917,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
           created_at?: string
           event_id?: string
           id?: string
@@ -1871,6 +1939,20 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_rsvps_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1982,6 +2064,8 @@ export type Database = {
           description: string | null
           display_subtitle: boolean
           end_time: string | null
+          fee_flat_cents: number
+          fee_pct_bps: number
           gallery_id: string | null
           headliner_id: string | null
           hero_image: string | null
@@ -1990,13 +2074,17 @@ export type Database = {
           id: string
           is_after_hours: boolean
           is_free_event: boolean
+          is_rsvp_only_event: boolean | null
           is_tba: boolean | null
           looking_for_undercard: boolean
           min_interest_count_display: number
           min_share_count_display: number
+          mobile_full_hero_height: boolean
           no_headliner: boolean | null
           organization_id: string | null
+          rsvp_button_subtitle: string | null
           rsvp_capacity: number | null
+          send_rsvp_email: boolean
           share_count: number
           show_guest_list: boolean
           show_partners: boolean
@@ -2008,6 +2096,7 @@ export type Database = {
           test_data: boolean
           title: string
           updated_at: string | null
+          use_default_fees: boolean
           venue_id: string | null
           view_count: number
         }
@@ -2017,6 +2106,8 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          fee_flat_cents?: number
+          fee_pct_bps?: number
           gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
@@ -2025,13 +2116,17 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_free_event?: boolean
+          is_rsvp_only_event?: boolean | null
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          mobile_full_hero_height?: boolean
           no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_button_subtitle?: string | null
           rsvp_capacity?: number | null
+          send_rsvp_email?: boolean
           share_count?: number
           show_guest_list?: boolean
           show_partners?: boolean
@@ -2043,6 +2138,7 @@ export type Database = {
           test_data?: boolean
           title: string
           updated_at?: string | null
+          use_default_fees?: boolean
           venue_id?: string | null
           view_count?: number
         }
@@ -2052,6 +2148,8 @@ export type Database = {
           description?: string | null
           display_subtitle?: boolean
           end_time?: string | null
+          fee_flat_cents?: number
+          fee_pct_bps?: number
           gallery_id?: string | null
           headliner_id?: string | null
           hero_image?: string | null
@@ -2060,13 +2158,17 @@ export type Database = {
           id?: string
           is_after_hours?: boolean
           is_free_event?: boolean
+          is_rsvp_only_event?: boolean | null
           is_tba?: boolean | null
           looking_for_undercard?: boolean
           min_interest_count_display?: number
           min_share_count_display?: number
+          mobile_full_hero_height?: boolean
           no_headliner?: boolean | null
           organization_id?: string | null
+          rsvp_button_subtitle?: string | null
           rsvp_capacity?: number | null
+          send_rsvp_email?: boolean
           share_count?: number
           show_guest_list?: boolean
           show_partners?: boolean
@@ -2078,6 +2180,7 @@ export type Database = {
           test_data?: boolean
           title?: string
           updated_at?: string | null
+          use_default_fees?: boolean
           venue_id?: string | null
           view_count?: number
         }
@@ -2290,10 +2393,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "group_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "group_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2335,6 +2452,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "groups_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "groups_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
@@ -2349,6 +2473,7 @@ export type Database = {
           event_id: string
           id: string
           is_enabled: boolean
+          min_guest_threshold: number
           min_interested_guests: number
           min_private_guests: number
           min_public_guests: number
@@ -2359,6 +2484,7 @@ export type Database = {
           event_id: string
           id?: string
           is_enabled?: boolean
+          min_guest_threshold?: number
           min_interested_guests?: number
           min_private_guests?: number
           min_public_guests?: number
@@ -2369,6 +2495,7 @@ export type Database = {
           event_id?: string
           id?: string
           is_enabled?: boolean
+          min_guest_threshold?: number
           min_interested_guests?: number
           min_private_guests?: number
           min_public_guests?: number
@@ -2439,6 +2566,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "guests_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2790,6 +2924,55 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_staff: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id: string
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_staff_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_staff_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -3332,10 +3515,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rave_family_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "rave_family_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rave_family_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3508,6 +3705,61 @@ export type Database = {
         }
         Relationships: []
       }
+      rsvp_scan_events: {
+        Row: {
+          created_at: string
+          device_info: Json | null
+          event_id: string
+          id: string
+          rsvp_id: string | null
+          scan_location: Json | null
+          scan_result: string
+          scanned_by: string
+        }
+        Insert: {
+          created_at?: string
+          device_info?: Json | null
+          event_id: string
+          id?: string
+          rsvp_id?: string | null
+          scan_location?: Json | null
+          scan_result: string
+          scanned_by: string
+        }
+        Update: {
+          created_at?: string
+          device_info?: Json | null
+          event_id?: string
+          id?: string
+          rsvp_id?: string | null
+          scan_location?: Json | null
+          scan_result?: string
+          scanned_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rsvp_scan_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_scan_events_rsvp_id_fkey"
+            columns: ["rsvp_id"]
+            isOneToOne: false
+            referencedRelation: "event_rsvps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rsvp_scan_events_scanned_by_fkey"
+            columns: ["scanned_by"]
+            isOneToOne: false
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scavenger_claims: {
         Row: {
           created_at: string | null
@@ -3600,6 +3852,294 @@ export type Database = {
           },
         ]
       }
+      screening_config: {
+        Row: {
+          confidence_tier_2_reviews: number
+          confidence_tier_3_reviews: number
+          confidence_tier_4_reviews: number
+          confidence_tier_5_plus_reviews: number
+          hot_score_half_life_days: number
+          hot_score_min_multiplier: number
+          id: number
+          min_approval_score: number
+          min_listen_time_seconds: number
+          min_reviews_for_approval: number
+          updated_at: string
+        }
+        Insert: {
+          confidence_tier_2_reviews?: number
+          confidence_tier_3_reviews?: number
+          confidence_tier_4_reviews?: number
+          confidence_tier_5_plus_reviews?: number
+          hot_score_half_life_days?: number
+          hot_score_min_multiplier?: number
+          id?: number
+          min_approval_score?: number
+          min_listen_time_seconds?: number
+          min_reviews_for_approval?: number
+          updated_at?: string
+        }
+        Update: {
+          confidence_tier_2_reviews?: number
+          confidence_tier_3_reviews?: number
+          confidence_tier_4_reviews?: number
+          confidence_tier_5_plus_reviews?: number
+          hot_score_half_life_days?: number
+          hot_score_min_multiplier?: number
+          id?: number
+          min_approval_score?: number
+          min_listen_time_seconds?: number
+          min_reviews_for_approval?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      screening_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          internal_notes: string | null
+          listen_duration_seconds: number
+          rating: number
+          reviewer_id: string
+          submission_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listen_duration_seconds: number
+          rating: number
+          reviewer_id: string
+          submission_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listen_duration_seconds?: number
+          rating?: number
+          reviewer_id?: string
+          submission_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screening_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      screening_submissions: {
+        Row: {
+          artist_id: string
+          context_type: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_note: string | null
+          event_id: string | null
+          has_genre_mismatch: boolean | null
+          id: string
+          recording_id: string
+          status: string
+          updated_at: string
+          venue_id: string | null
+        }
+        Insert: {
+          artist_id: string
+          context_type: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id?: string | null
+          has_genre_mismatch?: boolean | null
+          id?: string
+          recording_id: string
+          status?: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Update: {
+          artist_id?: string
+          context_type?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_note?: string | null
+          event_id?: string | null
+          has_genre_mismatch?: boolean | null
+          id?: string
+          recording_id?: string
+          status?: string
+          updated_at?: string
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screening_submissions_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "artists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_recording_id_fkey"
+            columns: ["recording_id"]
+            isOneToOne: false
+            referencedRelation: "artist_recordings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screening_submissions_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_scores: {
+        Row: {
+          calculated_at: string
+          confidence_adjusted_score: number | null
+          confidence_multiplier: number | null
+          hot_indexed_score: number | null
+          hot_score: number | null
+          indexed_score: number | null
+          raw_avg_score: number | null
+          review_count: number
+          submission_id: string
+          time_decay_multiplier: number | null
+        }
+        Insert: {
+          calculated_at?: string
+          confidence_adjusted_score?: number | null
+          confidence_multiplier?: number | null
+          hot_indexed_score?: number | null
+          hot_score?: number | null
+          indexed_score?: number | null
+          raw_avg_score?: number | null
+          review_count?: number
+          submission_id: string
+          time_decay_multiplier?: number | null
+        }
+        Update: {
+          calculated_at?: string
+          confidence_adjusted_score?: number | null
+          confidence_multiplier?: number | null
+          hot_indexed_score?: number | null
+          hot_score?: number | null
+          indexed_score?: number | null
+          raw_avg_score?: number | null
+          review_count?: number
+          submission_id?: string
+          time_decay_multiplier?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_scores_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submission_tags: {
+        Row: {
+          id: string
+          submission_id: string
+          tag_id: string
+          tagged_at: string
+          tagged_by: string | null
+        }
+        Insert: {
+          id?: string
+          submission_id: string
+          tag_id: string
+          tagged_at?: string
+          tagged_by?: string | null
+        }
+        Update: {
+          id?: string
+          submission_id?: string
+          tag_id?: string
+          tagged_at?: string
+          tagged_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_tags_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submission_tags_tagged_by_fkey"
+            columns: ["tagged_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       table_metadata: {
         Row: {
           columns: Json
@@ -3641,6 +4181,376 @@ export type Database = {
           },
         ]
       }
+      tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          entity_type: string | null
+          id: string
+          name: string
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_event_interests: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          test_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          test_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          test_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_event_interests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_event_interests_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          status: string
+          test_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          status?: string
+          test_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          status?: string
+          test_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_event_rsvps_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_order_items: {
+        Row: {
+          created_at: string
+          fees_cents: number | null
+          id: string
+          item_type: string
+          product_id: string | null
+          quantity: number
+          subtotal_cents: number | null
+          test_order_id: string
+          ticket_tier_id: string | null
+          total_cents: number | null
+          unit_fee_cents: number
+          unit_price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          fees_cents?: number | null
+          id?: string
+          item_type?: string
+          product_id?: string | null
+          quantity: number
+          subtotal_cents?: number | null
+          test_order_id: string
+          ticket_tier_id?: string | null
+          total_cents?: number | null
+          unit_fee_cents?: number
+          unit_price_cents: number
+        }
+        Update: {
+          created_at?: string
+          fees_cents?: number | null
+          id?: string
+          item_type?: string
+          product_id?: string | null
+          quantity?: number
+          subtotal_cents?: number | null
+          test_order_id?: string
+          ticket_tier_id?: string | null
+          total_cents?: number | null
+          unit_fee_cents?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_order_items_test_order_id_fkey"
+            columns: ["test_order_id"]
+            isOneToOne: false
+            referencedRelation: "test_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_order_items_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_orders: {
+        Row: {
+          created_at: string
+          currency: string
+          customer_email: string | null
+          event_id: string
+          fee_breakdown: Json | null
+          fees_cents: number
+          guest_id: string | null
+          id: string
+          status: string
+          subtotal_cents: number
+          test_profile_id: string | null
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          event_id: string
+          fee_breakdown?: Json | null
+          fees_cents?: number
+          guest_id?: string | null
+          id?: string
+          status?: string
+          subtotal_cents: number
+          test_profile_id?: string | null
+          total_cents: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          event_id?: string
+          fee_breakdown?: Json | null
+          fees_cents?: number
+          guest_id?: string | null
+          id?: string
+          status?: string
+          subtotal_cents?: number
+          test_profile_id?: string | null
+          total_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_orders_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_orders_test_profile_id_fkey"
+            columns: ["test_profile_id"]
+            isOneToOne: false
+            referencedRelation: "test_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string
+          guest_list_visible: boolean | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email: string
+          guest_list_visible?: boolean | null
+          id?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          guest_list_visible?: boolean | null
+          id?: string
+        }
+        Relationships: []
+      }
+      test_tickets: {
+        Row: {
+          attendee_email: string | null
+          attendee_name: string | null
+          checked_in_at: string | null
+          checked_in_by: string | null
+          created_at: string
+          event_id: string
+          has_protection: boolean
+          id: string
+          qr_code_data: string
+          status: string
+          test_order_id: string
+          test_order_item_id: string
+          ticket_tier_id: string
+          updated_at: string
+        }
+        Insert: {
+          attendee_email?: string | null
+          attendee_name?: string | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          event_id: string
+          has_protection?: boolean
+          id?: string
+          qr_code_data: string
+          status?: string
+          test_order_id: string
+          test_order_item_id: string
+          ticket_tier_id: string
+          updated_at?: string
+        }
+        Update: {
+          attendee_email?: string | null
+          attendee_name?: string | null
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          created_at?: string
+          event_id?: string
+          has_protection?: boolean
+          id?: string
+          qr_code_data?: string
+          status?: string
+          test_order_id?: string
+          test_order_item_id?: string
+          ticket_tier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_test_order_id_fkey"
+            columns: ["test_order_id"]
+            isOneToOne: false
+            referencedRelation: "test_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_test_order_item_id_fkey"
+            columns: ["test_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "test_order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_tickets_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_groups: {
         Row: {
           color: string
@@ -3651,6 +4561,7 @@ export type Database = {
           fee_pct_bps: number
           group_order: number
           id: string
+          inherit_event_fees: boolean
           is_active: boolean
           name: string
           updated_at: string
@@ -3664,6 +4575,7 @@ export type Database = {
           fee_pct_bps?: number
           group_order: number
           id?: string
+          inherit_event_fees?: boolean
           is_active?: boolean
           name: string
           updated_at?: string
@@ -3677,6 +4589,7 @@ export type Database = {
           fee_pct_bps?: number
           group_order?: number
           id?: string
+          inherit_event_fees?: boolean
           is_active?: boolean
           name?: string
           updated_at?: string
@@ -3832,6 +4745,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ticket_scans_scanned_by_fkey"
+            columns: ["scanned_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ticket_scans_ticket_id_fkey"
             columns: ["ticket_id"]
             isOneToOne: false
@@ -3851,6 +4771,7 @@ export type Database = {
           group_id: string | null
           hide_until_previous_sold_out: boolean
           id: string
+          inherit_group_fees: boolean
           is_active: boolean
           name: string
           price_cents: number
@@ -3870,6 +4791,7 @@ export type Database = {
           group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
+          inherit_group_fees?: boolean
           is_active?: boolean
           name: string
           price_cents: number
@@ -3889,6 +4811,7 @@ export type Database = {
           group_id?: string | null
           hide_until_previous_sold_out?: boolean
           id?: string
+          inherit_group_fees?: boolean
           is_active?: boolean
           name?: string
           price_cents?: number
@@ -3924,6 +4847,8 @@ export type Database = {
           fee_value: number
           id: string
           is_active: boolean
+          label: string | null
+          sort_order: number
           updated_at: string
         }
         Insert: {
@@ -3934,6 +4859,8 @@ export type Database = {
           fee_value: number
           id?: string
           is_active?: boolean
+          label?: string | null
+          sort_order?: number
           updated_at?: string
         }
         Update: {
@@ -3944,6 +4871,8 @@ export type Database = {
           fee_value?: number
           id?: string
           is_active?: boolean
+          label?: string | null
+          sort_order?: number
           updated_at?: string
         }
         Relationships: [
@@ -4218,6 +5147,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "undercard_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "undercard_requests_suggested_recording_id_fkey"
             columns: ["suggested_recording_id"]
             isOneToOne: false
@@ -4258,6 +5194,49 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_ignored_submissions: {
+        Row: {
+          id: string
+          ignored_at: string
+          submission_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ignored_at?: string
+          submission_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ignored_at?: string
+          submission_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ignored_submissions_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "screening_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ignored_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ignored_submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -4348,6 +5327,42 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_required_genres: {
+        Row: {
+          created_at: string
+          genre_id: string
+          id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          genre_id: string
+          id?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          genre_id?: string
+          id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_required_genres_genre_id_fkey"
+            columns: ["genre_id"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_required_genres_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
             referencedColumns: ["id"]
           },
         ]
@@ -4540,6 +5555,41 @@ export type Database = {
           },
         ]
       }
+      public_guest_list_profiles: {
+        Row: {
+          avatar_url: string | null
+          display_name: string | null
+          first_name: string | null
+          guest_list_visible: boolean | null
+          id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          display_name?: string | null
+          first_name?: never
+          guest_list_visible?: boolean | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          display_name?: string | null
+          first_name?: never
+          guest_list_visible?: boolean | null
+          id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users_complete: {
         Row: {
           auth_created_at: string | null
@@ -4586,7 +5636,15 @@ export type Database = {
         Args: { p_retention_days?: number }
         Returns: number
       }
+      calculate_submission_score: {
+        Args: { p_submission_id: string }
+        Returns: undefined
+      }
       can_access_order: { Args: { p_order_id: string }; Returns: boolean }
+      check_genre_mismatch: {
+        Args: { p_submission_id: string }
+        Returns: boolean
+      }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {
@@ -4622,14 +5680,24 @@ export type Database = {
         Args: { p_event_id: string }
         Returns: {
           deleted_guests: number
+          deleted_interests: number
           deleted_order_items: number
           deleted_orders: number
+          deleted_rsvps: number
+          deleted_test_order_items: number
+          deleted_test_orders: number
+          deleted_test_profiles: number
+          deleted_test_tickets: number
           deleted_tickets: number
         }[]
       }
       end_analytics_session: {
         Args: { p_session_id: string }
         Returns: undefined
+      }
+      generate_rsvp_signature: {
+        Args: { p_event_id: string; p_rsvp_id: string }
+        Returns: string
       }
       get_activity_log_archive_status: {
         Args: never
@@ -4717,8 +5785,27 @@ export type Database = {
           tier_name: string
         }[]
       }
+      get_event_attendee_summary: {
+        Args: { event_id_param: string }
+        Returns: {
+          guest_count: number
+          interest_count: number
+          private_attendee_count: number
+          public_attendee_count: number
+          rsvp_count: number
+          ticket_holder_count: number
+        }[]
+      }
+      get_event_guest_count: {
+        Args: { event_id_param: string }
+        Returns: number
+      }
+      get_event_guest_order_count: {
+        Args: { event_id_param: string }
+        Returns: number
+      }
       get_event_interest_count: {
-        Args: { p_event_id: string }
+        Args: { event_id_param: string }
         Returns: number
       }
       get_event_inventory_stats: {
@@ -4774,6 +5861,10 @@ export type Database = {
           zip_code: string
         }[]
       }
+      get_organization_role: {
+        Args: { p_organization_id: string; p_user_id: string }
+        Returns: string
+      }
       get_profile_addresses: {
         Args: { p_profile_id: string }
         Returns: {
@@ -4811,6 +5902,67 @@ export type Database = {
           state: string
           zip_code: string
         }[]
+      }
+      get_reviewer_stats: {
+        Args: never
+        Returns: {
+          avg_artistic_score: number
+          avg_genre_fit_score: number
+          avg_overall_score: number
+          avg_review_time_minutes: number
+          avg_technical_score: number
+          reviewer_email: string
+          reviewer_id: string
+          reviewer_name: string
+          total_reviews: number
+        }[]
+      }
+      get_rsvp_with_details: {
+        Args: { p_rsvp_id: string }
+        Returns: {
+          attendee_email: string
+          attendee_name: string
+          checked_in_at: string
+          checked_in_by: string
+          event_id: string
+          event_start_time: string
+          event_title: string
+          id: string
+          status: string
+          user_id: string
+          venue_name: string
+        }[]
+      }
+      get_screening_stats: {
+        Args: { p_context?: string; p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      get_submission_rankings: {
+        Args: { p_context_type: string; p_limit?: number }
+        Returns: {
+          artist_id: string
+          artist_name: string
+          decided_at: string
+          genre: string
+          overall_score: number
+          review_count: number
+          soundcloud_url: string
+          spotify_url: string
+          submission_id: string
+        }[]
+      }
+      get_submissions_with_details: {
+        Args: {
+          p_context?: string
+          p_end_date?: string
+          p_exclude_ignored?: boolean
+          p_genre_mismatch?: boolean
+          p_min_reviews?: number
+          p_start_date?: string
+          p_status?: string
+          p_user_id?: string
+        }
+        Returns: Json
       }
       get_table_list: {
         Args: never
@@ -4908,6 +6060,14 @@ export type Database = {
       }
       is_event_staff: {
         Args: { p_event_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_organization_admin: {
+        Args: { p_organization_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_organization_staff: {
+        Args: { p_organization_id: string; p_user_id: string }
         Returns: boolean
       }
       is_pg_trgm_available: { Args: never; Returns: boolean }
@@ -5136,6 +6296,10 @@ export type Database = {
         }
         Returns: string
       }
+      verify_rsvp_signature: {
+        Args: { p_event_id: string; p_rsvp_id: string; p_signature: string }
+        Returns: boolean
+      }
     }
     Enums: {
       activity_category:
@@ -5159,6 +6323,7 @@ export type Database = {
         | "ticket_scanned"
         | "ticket_refunded"
         | "ticket_cancelled"
+        | "rsvp_scanned"
       address_type: "billing" | "shipping" | "headquarters" | "other"
       analytics_page_source:
         | "direct"
@@ -5353,6 +6518,7 @@ export const Constants = {
         "ticket_scanned",
         "ticket_refunded",
         "ticket_cancelled",
+        "rsvp_scanned",
       ],
       address_type: ["billing", "shipping", "headquarters", "other"],
       analytics_page_source: [

@@ -276,6 +276,7 @@ export async function handleError(
       description: finalDescription,
       error: errorObject,
       isDeveloper: isDev,
+      userRole,
       context,
       endpoint,
       method,

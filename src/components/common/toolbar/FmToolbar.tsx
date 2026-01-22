@@ -212,19 +212,34 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         alignment: 'top',
         groupLabel: t('toolbar.groups.organization'),
       },
-      // Dev Tools group - navigation and inspection tools
+      // Staff Tools group - accessible to FM_STAFF, DEVELOPER, and ADMIN
       {
         id: 'tools',
         label: t('toolbar.devNavigation'),
         icon: Compass,
-        content: <DevNavigationTabContent onNavigate={handleNavigate} isAdmin={isAdmin} />,
+        content: <DevNavigationTabContent onNavigate={handleNavigate} isAdmin={isAdmin} isDeveloperOrAdmin={isDeveloperOrAdmin} />,
         title: t('toolbar.devNavigation'),
-        visible: isDeveloperOrAdmin,
-        group: 'devTools',
-        groupOrder: 3,
+        visible: canAccessStaffTools,
+        group: 'staff',
+        groupOrder: 2.5, // Between organization (2) and developer (3)
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.devTools'),
+        groupLabel: t('toolbar.groups.staff'),
       },
+      {
+        id: 'notes',
+        label: t('toolbar.staffNotes'),
+        icon: ClipboardList,
+        content: <DevNotesTabContent />,
+        title: t('toolbar.staffNotesTitle'),
+        visible: canAccessStaffTools,
+        group: 'staff',
+        groupOrder: 2.5, // Between organization (2) and developer (3)
+        alignment: 'bottom',
+        groupLabel: t('toolbar.groups.staff'),
+        resizable: true,
+        maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
+      },
+      // Developer Tools group - inspection tools (admin/developer only)
       {
         id: 'page-info',
         label: t('toolbar.pageInfo'),
@@ -233,10 +248,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         footer: <PageInfoTabFooter />,
         title: t('toolbar.pageInfoTitle'),
         visible: isDeveloperOrAdmin,
-        group: 'devTools',
+        group: 'developer',
         groupOrder: 3,
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.devTools'),
+        groupLabel: t('toolbar.groups.developer'),
       },
       {
         id: 'mock-role',
@@ -245,12 +260,12 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         content: <MockRoleTabContent />,
         title: t('toolbar.mockRoleSimulator'),
         visible: isDeveloperOrAdmin,
-        group: 'devTools',
+        group: 'developer',
         groupOrder: 3,
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.devTools'),
+        groupLabel: t('toolbar.groups.developer'),
       },
-      // Data & Config group - data management and configuration tools
+      // Data & Config group - data management and configuration tools (admin/developer only)
       {
         id: 'database',
         label: t('toolbar.database'),
@@ -276,21 +291,6 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         groupOrder: 4,
         alignment: 'bottom',
         groupLabel: t('toolbar.groups.dataConfig'),
-      },
-      // Staff Tools group - accessible to FM_STAFF, DEVELOPER, and ADMIN
-      {
-        id: 'notes',
-        label: t('toolbar.staffNotes'),
-        icon: ClipboardList,
-        content: <DevNotesTabContent />,
-        title: t('toolbar.staffNotesTitle'),
-        visible: canAccessStaffTools,
-        group: 'staff',
-        groupOrder: 2.5, // Between organization (2) and devTools (3)
-        alignment: 'bottom',
-        groupLabel: t('toolbar.groups.staff'),
-        resizable: true,
-        maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
       {
         id: 'error-logs',

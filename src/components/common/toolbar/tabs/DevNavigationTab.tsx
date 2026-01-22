@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { Home, Database, Mail, Bookmark, BookmarkPlus, X, Loader2, Pencil, Check } from 'lucide-react';
+import { Home, Database, Mail, Bookmark, BookmarkPlus, X, Loader2, Pencil, Check, UserCog } from 'lucide-react';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
@@ -25,6 +25,7 @@ import { FmIconPicker, IconPickerValue, renderIcon } from '@/components/common/f
 interface DevNavigationTabContentProps {
   onNavigate: (path: string) => void;
   isAdmin: boolean;
+  isDeveloperOrAdmin?: boolean;
 }
 
 // Helper to generate label from path
@@ -38,7 +39,7 @@ function generateLabelFromPath(path: string): string {
     : 'Home';
 }
 
-export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNavigationTabContentProps) {
+export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin, isDeveloperOrAdmin = true }: DevNavigationTabContentProps) {
   const { t } = useTranslation('common');
   const location = useLocation();
   const { bookmarks, addBookmark, removeBookmark, updateBookmarkLabel, isBookmarked, isLoading, isAdding } = useDevBookmarks();
@@ -140,13 +141,14 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
     setRenameLabel('');
   };
 
-  const groups: ResponsiveGroup[] = useMemo(() => [
-    {
-      id: 'bookmarks',
-      title: t('devNavigation.bookmarks'),
-      icon: Bookmark,
-      count: bookmarks.length,
-      children: (
+  const groups: ResponsiveGroup[] = useMemo(() => {
+    const allGroups: ResponsiveGroup[] = [
+      {
+        id: 'bookmarks',
+        title: t('devNavigation.bookmarks'),
+        icon: Bookmark,
+        count: bookmarks.length,
+        children: (
         <div className='flex flex-col gap-2 w-full min-w-0'>
           {/* Create bookmark button / expanded form */}
           {!isCreateExpanded ? (
@@ -337,9 +339,50 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
         </div>
       ),
     },
-    {
-      id: 'core',
-      title: t('devNavigation.core'),
+  ];
+
+  // FM Staff group - only for staff/admin/developer roles
+  if (isDeveloperOrAdmin || true) { // Always show for now, will be restricted by parent component visibility
+    allGroups.push({
+      id: 'fm-staff',
+      title: t('devNavigation.fmStaff'),
+      icon: UserCog,
+      count: 1,
+      children: (
+        <div className='flex flex-col gap-2'>
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <div>
+                <FmCommonButton
+                  variant='default'
+                  icon={UserCog}
+                  iconPosition='left'
+                  onClick={() => onNavigate('/staff')}
+                  className='w-full justify-start'
+                >
+                  {t('devNavigation.staffHome')}
+                </FmCommonButton>
+              </div>
+            </ContextMenuTrigger>
+            <ContextMenuContent className='bg-card border-border rounded-none w-40'>
+              <ContextMenuItem
+                onClick={() => onNavigate('/staff')}
+                className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+              >
+                {t('devNavigation.goTo')}
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </div>
+      ),
+    });
+  }
+
+  // Developer group - only for admin/developer roles
+  if (isDeveloperOrAdmin) {
+    allGroups.push({
+      id: 'developer',
+      title: t('devNavigation.developer'),
       icon: Home,
       count: 1,
       children: (
@@ -369,8 +412,12 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
           </ContextMenu>
         </div>
       ),
-    },
-    {
+    });
+  }
+
+  // Supabase group - only for admin/developer roles
+  if (isDeveloperOrAdmin) {
+    allGroups.push({
       id: 'supabase',
       title: t('devNavigation.supabase'),
       icon: Database,
@@ -416,8 +463,11 @@ export function DevNavigationTabContent({ onNavigate, isAdmin: _isAdmin }: DevNa
           )}
         </div>
       ),
-    },
-  ], [t, onNavigate, bookmarks, currentPath, currentSearch, fullPath, currentPageBookmarked, isLoading, isAdding, isCreateExpanded, newBookmarkLabel, newBookmarkIcon, includeQuerystring, editingBookmarkId, renameLabel]);
+    });
+  }
+
+  return allGroups;
+}, [t, onNavigate, bookmarks, currentPath, currentSearch, fullPath, currentPageBookmarked, isLoading, isAdding, isCreateExpanded, newBookmarkLabel, newBookmarkIcon, includeQuerystring, editingBookmarkId, renameLabel, isDeveloperOrAdmin]);
 
   return (
     <div className='space-y-4'>

@@ -106,12 +106,7 @@ export function ActivityLogsTab({ activeTab }: ActivityLogsTabProps) {
 
   // Get title based on active tab
   const getTitle = () => {
-    switch (activeTab) {
-      case 'logs_contact':
-        return t('activityLogsPage.contactActivity');
-      default:
-        return t('activityLogsPage.title');
-    }
+    return t('activityLogsPage.title');
   };
 
   return (

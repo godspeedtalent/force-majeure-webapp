@@ -205,6 +205,14 @@ export { claimScavengerReward, type ClaimResult } from './utils/scavengerApi';
 // Style utils
 export * from './utils/styleUtils';
 
+// Error context utils
+export {
+  extractErrorContext,
+  formatErrorContextForNote,
+  generateErrorNoteTitle,
+  type ErrorContextInfo,
+} from './utils/errorContext';
+
 // Feature flag utils
 export * from './utils/featureFlagOverrides';
 export { formatFlagName, getFlagIcon, getFlagDescription } from './utils/featureFlagUtils';

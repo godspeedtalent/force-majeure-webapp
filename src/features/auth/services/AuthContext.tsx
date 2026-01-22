@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { supabase, sessionPersistence, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { debugAccessService } from '@/shared/services/debugAccessService';
+import { initializeSupabaseErrorInterceptor } from '@/integrations/supabase/errorInterceptor';
 import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
@@ -162,6 +163,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       setLoading(false);
     });
+
+    // Initialize global Supabase error interceptor (for unhandled errors)
+    initializeSupabaseErrorInterceptor();
 
     // THEN check for existing session
     supabase.auth

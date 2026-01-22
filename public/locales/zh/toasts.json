@@ -348,5 +348,10 @@
   "demo": {
     "mockDataGenerated": "模拟数据生成成功！",
     "generateDataFirst": "请先生成数据"
+  },
+  "submissions": {
+    "submissionDeleted": "提交已永久删除",
+    "submissionIgnored": "提交已从您的动态中隐藏",
+    "submissionRestored": "提交已恢复到您的动态"
   }
 }

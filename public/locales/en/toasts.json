@@ -349,5 +349,10 @@
   "demo": {
     "mockDataGenerated": "Mock data generated successfully!",
     "generateDataFirst": "Please generate data first"
+  },
+  "submissions": {
+    "submissionDeleted": "Submission deleted permanently",
+    "submissionIgnored": "Submission hidden from your feed",
+    "submissionRestored": "Submission restored to your feed"
   }
 }
