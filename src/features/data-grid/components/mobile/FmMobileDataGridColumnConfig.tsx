@@ -58,7 +58,7 @@ function SortableFieldItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'flex items-center gap-3 p-3 border border-border/50 bg-background rounded-md',
+        'flex items-center gap-3 p-3 border border-border/50 bg-background rounded-none',
         isDragging && 'opacity-50 shadow-lg',
         !field.visible && 'opacity-50'
       )}
@@ -257,7 +257,7 @@ export function FmMobileDataGridColumnConfig({
   
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side='bottom' className='h-[80vh] rounded-t-xl'>
+      <SheetContent side='bottom' className='h-[80vh] rounded-none'>
         <SheetHeader className='mb-4'>
           <div className='flex items-center justify-between'>
             <SheetTitle>Card Fields</SheetTitle>

@@ -5,8 +5,7 @@
  * Uses an edge function to securely access Spotify API with credentials stored in Supabase.
  */
 
-import { logger } from '@/shared';
-import { supabase } from '@/integrations/supabase/client';
+import { logger, supabase } from '@/shared';
 
 // Spotify API types
 export interface SpotifyArtist {

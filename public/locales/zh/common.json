@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "加载中..."
+  },
   "nav": {
     "home": "首页",
     "events": "活动",
@@ -37,6 +40,7 @@
     "cancel": "取消",
     "submit": "提交",
     "delete": "删除",
+    "unlink": "取消关联",
     "edit": "编辑",
     "manage": "管理",
     "back": "返回",
@@ -111,6 +115,11 @@
     "showIgnored": "显示已忽略",
     "showingIgnored": "正在显示已忽略",
     "deletePermanently": "永久删除"
+  },
+  "actions": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除"
   },
   "compTickets": {
     "title": "赠票",
@@ -193,14 +202,10 @@
     "saveError": "保存设置时发生错误",
     "enableGuestList": "启用宾客名单",
     "enableGuestListDescription": "允许用户公开显示他们对此活动的出席情况",
-    "minimumThresholds": "最低阈值",
-    "minimumThresholdsDescription": "设置最低宾客数量后才显示宾客名单",
-    "minInterestedGuests": "最低感兴趣宾客数",
-    "minInterestedDescription": "显示「感兴趣」部分前需要的最低感兴趣宾客数",
-    "minPrivateGuests": "最低私人宾客数",
-    "minPrivateDescription": "显示「已购票」部分前需要的最低私人宾客数",
-    "minPublicGuests": "最低公开宾客数",
-    "minPublicDescription": "显示「宾客名单」部分前需要的最低公开宾客数",
+    "minimumThreshold": "最低宾客阈值",
+    "minimumThresholdDescription": "设置宾客名单显示前所需的最低宾客数量",
+    "minGuestThreshold": "最低宾客数",
+    "minGuestThresholdDescription": "宾客名单仅在达到此数量的宾客时才会显示（包括感兴趣、已购票或私人宾客）",
     "displayViewCount": "显示浏览次数",
     "displayViewCountDescription": "在活动页面上显示活动浏览次数",
     "noteLabel": "注意",
@@ -1477,13 +1482,19 @@
     "showPartnersDescription": "在活动页面上显示合作组织",
     "showGuestList": "显示嘉宾名单",
     "showGuestListDescription": "在活动页面上显示嘉宾名单部分",
+    "mobileSettings": "移动端",
+    "mobileSettingsDescription": "移动设备显示相关设置",
+    "mobileFullHeroHeight": "显示完整高度的主图",
+    "mobileFullHeroHeightDescription": "在移动端显示完整高度的主图，不进行裁剪",
     "dangerZone": "危险区域",
     "irreversibleActions": "不可逆操作",
     "deleteEvent": "删除活动",
     "deleteEventDescription": "永久删除此活动及所有相关数据，包括票种和订单。此操作无法撤销。",
     "deleteEventConfirm": "确定要删除「{{title}}」吗？\n\n此操作无法撤销。与此活动相关的所有票种和订单也将被删除。",
     "lookingForUndercardEnabled": "已启用暖场艺术家招募",
-    "lookingForUndercardDisabled": "已禁用暖场艺术家招募"
+    "lookingForUndercardDisabled": "已禁用暖场艺术家招募",
+    "noHeadlinerEnabled": "已启用无主打艺术家模式",
+    "noHeadlinerDisabled": "已恢复主打艺术家模式"
   },
   "promoCodes": {
     "title": "优惠码",
@@ -1698,7 +1709,9 @@
     },
     "publishEvent": "发布活动",
     "publishEventDescription": "将您的活动公开显示",
-    "publishEventInfo": "发布后，此活动将在首页和搜索结果中显示。请确保在发布前完成所有活动详情。"
+    "publishEventInfo": "发布后，此活动将在首页和搜索结果中显示。请确保在发布前完成所有活动详情。",
+    "noHeadliner": "无主演",
+    "noHeadlinerDescription": "此活动没有指定主演"
   },
   "eventAdmin": {
     "testEventMode": "测试活动模式",
@@ -1843,6 +1856,8 @@
     "viewOrganizationDescription": "查看组织详情页面",
     "overview": "概览",
     "overviewDescription": "基本组织信息",
+    "social": "社交媒体",
+    "socialDescription": "网站和社交媒体链接",
     "gallery": "相册",
     "galleryDescription": "管理组织照片和媒体",
     "management": "管理",
@@ -1862,6 +1877,7 @@
     "enterOrganizationName": "输入组织名称",
     "organizationLogo": "组织标志",
     "organizationNameDescription": "此组织显示的公开名称",
+    "socialMediaDescription": "添加您组织的网站和社交媒体链接，让粉丝可以找到并关注您。",
     "gallery": "组织相册",
     "galleryDescription": "管理此组织的照片和媒体。",
     "galleryComingSoon": "相册管理即将推出。",
@@ -1871,6 +1887,17 @@
     "events": "组织活动",
     "eventsDescription": "此组织主办或合作的活动。",
     "eventsComingSoon": "活动管理即将推出。",
+    "createEvent": "创建活动",
+    "createFirstEvent": "创建您的第一个活动",
+    "noEvents": "暂无活动",
+    "noEventsDescription": "此组织尚未创建任何活动。从创建第一个活动开始。",
+    "upcomingEvents": "即将举行的活动",
+    "pastEvents": "过往活动",
+    "viewEvent": "查看活动",
+    "manageEvent": "管理活动",
+    "unlinkEvent": "从组织中取消关联",
+    "unlinkEventTitle": "取消关联活动",
+    "unlinkEventConfirm": "您确定要将"{{eventName}}"从{{orgName}}中取消关联吗？活动将保留但不再与此组织关联。",
     "adminControls": "管理员控制",
     "adminControlsDescription": "此组织的管理设置和控制。",
     "adminInfo": "对组织设置的完全管理访问权限。",
@@ -2318,6 +2345,8 @@
     "people": "人"
   },
   "tracking": {
+    "title": "追踪链接",
+    "description": "创建和管理营销活动的追踪链接",
     "createLink": "创建追踪链接",
     "editLink": "编辑追踪链接",
     "createLinkDescription": "创建唯一的追踪链接以衡量活动效果",
@@ -2929,16 +2958,41 @@
     "tierToggleFailed": "切换层级状态失败：{{error}}",
     "rsvpSettings": "预约设置",
     "rsvpSettingsDescription": "配置此活动的预约功能",
-    "rsvpsAvailable": "开放预约",
-    "rsvpsAvailableDescription": "启用后，用户可以在购票的同时预约参加此活动",
+    "rsvpsEnabled": "启用预约",
+    "rsvpsEnabledDescription": "启用后，用户可以预约参加此活动",
+    "rsvpOnlyEvent": "仅限预约活动",
+    "rsvpOnlyEventDescription": "启用后，此活动仅接受预约，不销售门票",
     "rsvpCapacity": "预约容量",
     "rsvpCapacityInfo": "设置预约人数上限（可选）",
     "rsvpCapacityHint": "留空表示不限制预约人数",
+    "rsvpButtonSubtitle": "按钮副标题",
+    "rsvpButtonSubtitlePlaceholder": "例如：名额有限",
+    "rsvpButtonSubtitleHint": "显示在预约按钮下方的可选文字",
+    "sendRsvpEmail": "发送预约确认邮件",
+    "sendRsvpEmailDescription": "启用后，用户提交预约后将收到确认邮件",
     "currentRsvps": "当前预约数",
     "rsvpAtCapacity": "活动预约已满",
     "unlimited": "无限制",
     "complimentaryTickets": "赠票",
-    "complimentaryTicketsDescription": "向嘉宾、VIP或工作人员发放免费门票"
+    "complimentaryTicketsDescription": "向嘉宾、VIP或工作人员发放免费门票",
+    "eventFeeSettings": "活动费用设置",
+    "eventFeeSettingsDescription": "为此活动配置自定义费用或使用网站默认设置",
+    "useDefaultSiteFees": "使用网站默认费用",
+    "useDefaultSiteFeesDescription": "启用后，此活动将使用网站配置中的全局费用设置",
+    "flatFee": "固定费用",
+    "percentFee": "百分比费用",
+    "flatFeeHint": "添加到每张门票的固定金额",
+    "percentFeeHint": "按门票价格百分比添加的费用",
+    "inherited": "继承",
+    "inheritedFees": "继承的费用",
+    "additionalFees": "附加费用",
+    "customFees": "自定义费用",
+    "addFee": "添加费用",
+    "feeLabel": "费用名称",
+    "feeLabelPlaceholder": "例如：手续费、销售税",
+    "feeType": "费用类型",
+    "noAdditionalFees": "无附加费用。点击\"添加费用\"在继承费用基础上添加费用。",
+    "noCustomFees": "无自定义费用。点击\"添加费用\"添加费用项目。"
   },
   "eventForm": {
     "validation": {
@@ -3106,6 +3160,7 @@
     "noContent": "暂无内容",
     "author": "作者",
     "toSave": "保存",
+    "tapCheckmarkToSave": "点击勾号保存更改",
     "types": {
       "todo": "待办",
       "info": "信息",
@@ -3317,6 +3372,7 @@
     "venueTBA": "场地待定"
   },
   "eventActions": {
+    "expressInterest": "表达兴趣！",
     "removeInterest": "取消关注",
     "markAsInterested": "标记为感兴趣",
     "shareEvent": "分享活动",
@@ -3543,7 +3599,9 @@
     "deleteGroup": "删除分组",
     "ticketTiers": "票务层级",
     "addTierToGroup": "添加层级到 {{groupName}}",
-    "ungroupedNote": "此分组中的门票不会在结账流程中分组显示，它们将作为独立的票种显示。"
+    "ungroupedNote": "此分组中的门票不会在结账流程中分组显示，它们将作为独立的票种显示。",
+    "inheritEventFees": "继承活动费用",
+    "inheritEventFeesDescription": "启用后，此分组使用活动的费用设置。禁用以设置此分组的自定义费用。"
   },
   "termsAndConditions": {
     "title": "条款和条件",
@@ -3644,7 +3702,9 @@
     "availableCount": "剩余 {{count}} 张",
     "nameLockedTooltip": "门票售出后无法更改名称",
     "priceLockedTooltip": "门票售出后无法更改价格",
-    "dragToReorder": "拖动以重新排序"
+    "dragToReorder": "拖动以重新排序",
+    "inheritGroupFees": "继承分组费用",
+    "inheritGroupFeesDescription": "启用后，此级别使用分组的费用设置。禁用以设置此级别的自定义费用。"
   },
   "ticketTiersSection": {
     "addTicketTier": "添加票务级别",

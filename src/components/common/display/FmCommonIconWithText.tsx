@@ -55,7 +55,7 @@ export function FmCommonIconWithText({
     <div
       className={cn(
         'flex items-center',
-        'transition-all duration-200 rounded-md px-2 py-1.5 -mx-2',
+        'transition-all duration-200 rounded-none px-2 py-1.5 -mx-2',
         'group cursor-default',
         gapClasses[gap],
         sizeClasses[size],

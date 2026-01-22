@@ -9,9 +9,9 @@ import { useDebouncedSave } from '@/shared/hooks/useDebouncedSave';
 
 export interface EventOverviewData {
   title: string;
-  description: string | null;
+  subtitle: string | null;
   about_event: string | null;
-  headliner_id: string;
+  headliner_id: string | null;
   venue_id: string;
   start_time: string;
   end_time: string | null;
@@ -21,6 +21,7 @@ export interface EventOverviewData {
   hero_image_focal_y: number;
   display_subtitle: boolean;
   show_venue_map: boolean;
+  no_headliner: boolean;
 }
 
 export interface EventOverviewFormState {
@@ -36,6 +37,7 @@ export interface EventOverviewFormState {
   aboutEvent: string;
   displaySubtitle: boolean;
   showVenueMap: boolean;
+  noHeadliner: boolean;
 }
 
 export interface UseEventOverviewFormOptions {
@@ -49,10 +51,11 @@ export interface UseEventOverviewFormOptions {
     hero_image?: string | null;
     hero_image_focal_y?: number | null;
     title?: string | null;
-    description?: string | null;
+    subtitle?: string | null;
     about_event?: string | null;
     display_subtitle?: boolean;
     show_venue_map?: boolean;
+    no_headliner?: boolean;
   };
 }
 
@@ -72,6 +75,7 @@ export interface UseEventOverviewFormReturn {
   setAboutEvent: (value: string) => void;
   setDisplaySubtitle: (value: boolean) => void;
   setShowVenueMap: (value: boolean) => void;
+  setNoHeadliner: (value: boolean) => void;
   // Save operations
   isSaving: boolean;
   isDirty: boolean;
@@ -111,6 +115,7 @@ export function useEventOverviewForm({
   const [aboutEvent, setAboutEvent] = useState<string>('');
   const [displaySubtitle, setDisplaySubtitle] = useState<boolean>(true);
   const [showVenueMap, setShowVenueMap] = useState<boolean>(true);
+  const [noHeadliner, setNoHeadliner] = useState<boolean>(false);
 
   // Track initial values for dirty state detection
   const initialValuesRef = useRef<{
@@ -126,6 +131,7 @@ export function useEventOverviewForm({
     aboutEvent: string;
     displaySubtitle: boolean;
     showVenueMap: boolean;
+    noHeadliner: boolean;
   } | null>(null);
 
   // Populate form when initial data loads
@@ -147,10 +153,11 @@ export function useEventOverviewForm({
       const initialHeroImage = initialData.hero_image || '';
       const initialHeroImageFocalY = initialData.hero_image_focal_y ?? 50;
       const initialCustomTitle = initialData.title || '';
-      const initialEventSubtitle = initialData.description || '';
+      const initialEventSubtitle = initialData.subtitle || '';
       const initialAboutEvent = initialData.about_event || '';
       const initialDisplaySubtitle = initialData.display_subtitle ?? true;
       const initialShowVenueMap = initialData.show_venue_map ?? true;
+      const initialNoHeadliner = initialData.no_headliner ?? false;
 
       let initialEventDate: Date | undefined;
       if (initialData.start_time) {
@@ -169,6 +176,7 @@ export function useEventOverviewForm({
       setAboutEvent(initialAboutEvent);
       setDisplaySubtitle(initialDisplaySubtitle);
       setShowVenueMap(initialShowVenueMap);
+      setNoHeadliner(initialNoHeadliner);
       setEventDate(initialEventDate);
 
       // Store initial values for dirty detection
@@ -185,6 +193,7 @@ export function useEventOverviewForm({
         aboutEvent: initialAboutEvent,
         displaySubtitle: initialDisplaySubtitle,
         showVenueMap: initialShowVenueMap,
+        noHeadliner: initialNoHeadliner,
       };
     }
   }, [initialData]);
@@ -205,9 +214,10 @@ export function useEventOverviewForm({
       eventSubtitle !== initial.eventSubtitle ||
       aboutEvent !== initial.aboutEvent ||
       displaySubtitle !== initial.displaySubtitle ||
-      showVenueMap !== initial.showVenueMap
+      showVenueMap !== initial.showVenueMap ||
+      noHeadliner !== initial.noHeadliner
     );
-  }, [headlinerId, venueId, eventDate, endTime, isAfterHours, heroImage, heroImageFocalY, customTitle, eventSubtitle, aboutEvent, displaySubtitle, showVenueMap]);
+  }, [headlinerId, venueId, eventDate, endTime, isAfterHours, heroImage, heroImageFocalY, customTitle, eventSubtitle, aboutEvent, displaySubtitle, showVenueMap, noHeadliner]);
 
   // Helper to gather overview data for saving
   const getOverviewData = useCallback((): EventOverviewData => {
@@ -222,9 +232,9 @@ export function useEventOverviewForm({
 
     return {
       title: customTitle.trim(),
-      description: eventSubtitle.trim() || null,
+      subtitle: eventSubtitle.trim() || null,
       about_event: aboutEvent.trim() || null,
-      headliner_id: headlinerId,
+      headliner_id: noHeadliner ? null : (headlinerId || null),
       venue_id: venueId,
       start_time: eventDate ? eventDate.toISOString() : new Date().toISOString(),
       end_time: endTimeISO,
@@ -234,6 +244,7 @@ export function useEventOverviewForm({
       hero_image_focal_y: heroImageFocalY,
       display_subtitle: displaySubtitle,
       show_venue_map: showVenueMap,
+      no_headliner: noHeadliner,
     };
   }, [
     customTitle,
@@ -248,6 +259,7 @@ export function useEventOverviewForm({
     heroImageFocalY,
     displaySubtitle,
     showVenueMap,
+    noHeadliner,
   ]);
 
   // Debounced auto-save for overview changes
@@ -286,15 +298,20 @@ export function useEventOverviewForm({
 
   // Trigger debounced save whenever form data changes
   const triggerAutoSave = useCallback(() => {
-    if (customTitle.trim() && headlinerId && venueId && eventDate) {
+    // Headliner is only required if noHeadliner is false
+    const headlinerValid = noHeadliner || headlinerId;
+    if (customTitle.trim() && headlinerValid && venueId && eventDate) {
       triggerOverviewSave(getOverviewData());
     }
-  }, [customTitle, headlinerId, venueId, eventDate, triggerOverviewSave, getOverviewData]);
+  }, [customTitle, headlinerId, venueId, eventDate, noHeadliner, triggerOverviewSave, getOverviewData]);
 
-  // Validation
+  // Validation - headliner only required if noHeadliner is false
   const canSave = useMemo(
-    () => Boolean(customTitle.trim() && headlinerId && venueId && eventDate),
-    [customTitle, headlinerId, venueId, eventDate]
+    () => {
+      const headlinerValid = noHeadliner || headlinerId;
+      return Boolean(customTitle.trim() && headlinerValid && venueId && eventDate);
+    },
+    [customTitle, headlinerId, venueId, eventDate, noHeadliner]
   );
 
   const handleSave = useCallback(async () => {
@@ -303,7 +320,9 @@ export function useEventOverviewForm({
       return;
     }
 
-    if (!headlinerId || !venueId || !eventDate) {
+    // Headliner is only required if noHeadliner is false
+    const headlinerValid = noHeadliner || headlinerId;
+    if (!headlinerValid || !venueId || !eventDate) {
       toast.error(tToast('events.requiredFieldsMissing'));
       return;
     }
@@ -347,6 +366,7 @@ export function useEventOverviewForm({
     tToast,
     flushOverviewSave,
     getOverviewData,
+    noHeadliner,
   ]);
 
   const handleHeroImageUpload = useCallback(
@@ -397,6 +417,7 @@ export function useEventOverviewForm({
       setAboutEvent(initial.aboutEvent);
       setDisplaySubtitle(initial.displaySubtitle);
       setShowVenueMap(initial.showVenueMap);
+      setNoHeadliner(initial.noHeadliner);
     }
   }, []);
 
@@ -414,6 +435,7 @@ export function useEventOverviewForm({
     aboutEvent,
     displaySubtitle,
     showVenueMap,
+    noHeadliner,
   };
 
   return {
@@ -430,6 +452,7 @@ export function useEventOverviewForm({
     setAboutEvent,
     setDisplaySubtitle,
     setShowVenueMap,
+    setNoHeadliner,
     isSaving,
     isDirty,
     handleSave,

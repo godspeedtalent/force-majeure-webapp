@@ -8,10 +8,11 @@ import { PageTransition } from '@/components/primitives/PageTransition';
 import { EventDetailsLayout } from '@/components/layout/EventDetailsLayout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { PageErrorBoundary } from '@/components/common/feedback/PageErrorBoundary';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { SEOHead } from '@/components/common/seo/SEOHead';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES, PERMISSIONS } from '@/shared';
+import { ROLES, PERMISSIONS, useEventViews } from '@/shared';
 import { useAnalytics } from '@/features/analytics';
 
 import { EventHero, EventHeroActions } from './EventHero';
@@ -25,18 +26,23 @@ export const EventDetailsPage = () => {
   const { data: event, isLoading, error } = useEventDetails(id);
   const { hasAnyRole, hasPermission } = useUserPermissions();
   const { trackEventView } = useAnalytics();
+  const { recordView } = useEventViews(id);
 
-  // Track event view when event data is loaded
+  // Track event view when event data is loaded (analytics funnel)
+  // Also record view count increment (display counter)
   useEffect(() => {
     if (event?.id) {
       trackEventView(event.id);
+      recordView();
     }
-  }, [event?.id, trackEventView]);
+  }, [event?.id, trackEventView, recordView]);
 
-  // Check if user can view non-published events
+  // Check if user can view draft/test events
   const canViewDraft = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER);
   const eventStatus = event?.status ?? 'published';
-  const isPublished = eventStatus === 'published';
+  // Published and invisible events are publicly accessible
+  // Draft and test events require admin/developer access
+  const isPubliclyAccessible = eventStatus === 'published' || eventStatus === 'invisible';
 
   // Check if user can manage events
   const canManage = hasAnyRole(ROLES.ADMIN, ROLES.DEVELOPER) || hasPermission(PERMISSIONS.MANAGE_EVENTS);
@@ -99,8 +105,8 @@ export const EventDetailsPage = () => {
     );
   }
 
-  // Check access control: non-published events require privileged access
-  if (!isPublished && !canViewDraft) {
+  // Check access control: draft/test events require privileged access
+  if (!isPubliclyAccessible && !canViewDraft) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background relative overflow-hidden'>
         <TopographicBackground opacity={0.25} />
@@ -124,7 +130,9 @@ export const EventDetailsPage = () => {
     );
   }
 
-  const displayTitle = event.headliner.name;
+  // Use custom title if set, otherwise fall back to headliner name
+  // Avoid showing 'TBA' - prefer event title when headliner is not set
+  const displayTitle = event.title || (event.headliner.name !== 'TBA' ? event.headliner.name : 'Event');
 
   // Build SEO description from event details
   const seoDescription = event.venue && event.date
@@ -153,11 +161,14 @@ export const EventDetailsPage = () => {
           }
           leftColumn={<EventHero event={event} />}
           rightColumn={
-            <EventDetailsContent
-              event={event}
-              displayTitle={displayTitle}
-            />
+            <PageErrorBoundary section="Event Details">
+              <EventDetailsContent
+                event={event}
+                displayTitle={displayTitle}
+              />
+            </PageErrorBoundary>
           }
+          mobileFullHeroHeight={event.mobileFullHeroHeight}
         />
       </PageTransition>
     </>

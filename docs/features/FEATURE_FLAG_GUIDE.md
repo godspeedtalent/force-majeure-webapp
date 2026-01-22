@@ -49,9 +49,6 @@ export const FEATURE_FLAGS = {
 
   // Commerce
   MERCH_STORE: 'merch_store',
-
-  // Navigation
-  GLOBAL_SEARCH: 'global_search',
 } as const;
 
 export const FEATURE_FLAG_METADATA = {

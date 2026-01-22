@@ -24,6 +24,8 @@ interface FmCommonTextFieldProps
   minRows?: number;
   /** Maximum rows for auto-size mode (default: 10) */
   maxRows?: number;
+  /** When true, min/max validation happens on blur instead of during typing (allows clearing the input) */
+  validateOnBlur?: boolean;
 }
 
 /**
@@ -52,6 +54,10 @@ export const FmCommonTextField = React.forwardRef<
       autoSize = false,
       minRows = 2,
       maxRows = 10,
+      validateOnBlur = true,
+      min,
+      max,
+      onBlur: externalOnBlur,
       ...props
     },
     ref
@@ -85,6 +91,47 @@ export const FmCommonTextField = React.forwardRef<
         resizeTextarea();
       }
     }, [multiline, autoSize, props.value, resizeTextarea]);
+
+    // Handle blur with optional min/max validation for number inputs
+    const handleBlur = React.useCallback(
+      (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setIsFocused(false);
+
+        // Validate min/max on blur for number inputs when validateOnBlur is enabled
+        if (type === 'number' && validateOnBlur && (min !== undefined || max !== undefined)) {
+          const value = e.target.value;
+          // Only validate if there's a value (allow empty/cleared fields)
+          if (value !== '' && value !== null) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+              const minVal = min !== undefined ? parseFloat(String(min)) : -Infinity;
+              const maxVal = max !== undefined ? parseFloat(String(max)) : Infinity;
+              const clampedValue = Math.max(minVal, Math.min(maxVal, numValue));
+              if (clampedValue !== numValue) {
+                // Update the input value to the clamped value
+                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+                  window.HTMLInputElement.prototype,
+                  'value'
+                )?.set;
+                if (nativeInputValueSetter) {
+                  nativeInputValueSetter.call(e.target, clampedValue.toString());
+                  e.target.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+              }
+            }
+          }
+        }
+
+        externalOnBlur?.(e as React.FocusEvent<HTMLInputElement>);
+      },
+      [type, validateOnBlur, min, max, externalOnBlur]
+    );
+
+    // For number inputs with validateOnBlur, we don't pass min/max to the native input
+    const inputMinMax = type === 'number' && validateOnBlur
+      ? {}
+      : { min, max };
+
     const inputType = password ? (showPassword ? 'text' : 'password') : type;
 
     const baseInputClasses = cn(
@@ -142,8 +189,9 @@ export const FmCommonTextField = React.forwardRef<
               type={inputType}
               disabled={disabled}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              onBlur={handleBlur}
               className={cn('h-9 pr-10', baseInputClasses, className)}
+              {...inputMinMax}
               {...props}
             />
             <Button
@@ -183,8 +231,9 @@ export const FmCommonTextField = React.forwardRef<
               type={inputType}
               disabled={disabled}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              onBlur={handleBlur}
               className={cn('h-9 flex-1', baseInputClasses, className)}
+              {...inputMinMax}
               {...props}
             />
           </div>
@@ -198,8 +247,9 @@ export const FmCommonTextField = React.forwardRef<
           type={inputType}
           disabled={disabled}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={handleBlur}
           className={cn('h-9', baseInputClasses, className)}
+          {...inputMinMax}
           {...props}
         />
       );

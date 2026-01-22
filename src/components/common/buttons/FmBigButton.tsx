@@ -5,6 +5,8 @@ import { cn } from '@/shared';
 
 interface FmBigButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Visual variant - primary (gold) or secondary (white/muted) */
+  variant?: 'primary' | 'secondary';
   /** Loading state */
   isLoading?: boolean;
   /** Sold out state */
@@ -41,6 +43,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     {
       children,
       className,
+      variant = 'primary',
       isLoading = false,
       isSoldOut = false,
       isPastEvent = false,
@@ -137,7 +140,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
     const urgencyInfo = urgency !== 'none' ? urgencyConfig[urgency] : null;
 
     // Determine if button should show disabled state styling
-    const isDisabledState = isSoldOut || isPastEvent;
+    const isDisabledState = disabled || isSoldOut || isPastEvent;
+
+    // Color configuration based on variant
+    const isPrimary = variant === 'primary';
 
     const buttonText = isPastEvent
       ? t('buttons.pastEvent')
@@ -160,19 +166,24 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           'w-full px-8 py-3.5',
           'font-canela text-base font-light tracking-[0.15em] uppercase',
           'transition-all duration-300',
-          'focus:outline-none focus-visible:ring-4 focus-visible:ring-fm-gold/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          'focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          isPrimary ? 'focus-visible:ring-fm-gold/30' : 'focus-visible:ring-white/30',
           'disabled:cursor-not-allowed',
           // Cursor
           !disabled && !isLoading && 'cursor-pointer',
-          // Base state with dusty gold
+          // Base state - primary (gold) or secondary (white)
           isDisabledState && !showWaitlist
             ? 'border-2 border-border bg-background text-muted-foreground'
-            : 'border-2 border-fm-gold/50 bg-background text-fm-gold',
+            : isPrimary
+              ? 'border-2 border-fm-gold/50 bg-background text-fm-gold'
+              : 'border-2 border-white/40 bg-background text-foreground',
           // Hover transform
           !disabled &&
             !isLoading &&
             !isDisabledState &&
-            'hover:border-fm-gold/70 hover:bg-fm-gold/5 hover:scale-[1.02]',
+            (isPrimary
+              ? 'hover:border-fm-gold/70 hover:bg-fm-gold/5 hover:scale-[1.02]'
+              : 'hover:border-white/60 hover:bg-white/5 hover:scale-[1.02]'),
           // Active state
           !disabled && !isLoading && !isDisabledState && 'active:scale-[0.99]',
           className
@@ -180,9 +191,13 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         style={{
           boxShadow: isDisabledState
             ? 'none'
-            : isHovered
-              ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
-              : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)',
+            : isPrimary
+              ? isHovered
+                ? '0 0 24px rgb(223 186 125 / 0.2), 0 0 12px rgb(223 186 125 / 0.1), inset 0 0 20px rgb(223 186 125 / 0.06)'
+                : '0 0 16px rgb(223 186 125 / 0.12), inset 0 0 12px rgb(223 186 125 / 0.04)'
+              : isHovered
+                ? '0 0 20px rgb(255 255 255 / 0.12), 0 0 10px rgb(255 255 255 / 0.06), inset 0 0 16px rgb(255 255 255 / 0.04)'
+                : '0 0 12px rgb(255 255 255 / 0.06), inset 0 0 8px rgb(255 255 255 / 0.02)',
           animation:
             !disabled && !isLoading && !isDisabledState && isHovered
               ? 'border-ripple-1 2s ease-out infinite, border-ripple-2 2s ease-out infinite 0.4s, border-ripple-3 2s ease-out infinite 0.8s'
@@ -200,8 +215,9 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
               'transition-opacity duration-300'
             )}
             style={{
-              background:
-                'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box',
+              background: isPrimary
+                ? 'linear-gradient(90deg, transparent, rgb(223 186 125 / 0.3), transparent) border-box'
+                : 'linear-gradient(90deg, transparent, rgb(255 255 255 / 0.2), transparent) border-box',
               WebkitMask:
                 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
@@ -214,7 +230,8 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         {!isDisabledState && !disableAnimations && !isLoading && isHovered && (
           <div
             className={cn(
-              'absolute inset-0 bg-gradient-to-r from-transparent via-fm-gold/10 to-transparent',
+              'absolute inset-0 bg-gradient-to-r from-transparent to-transparent',
+              isPrimary ? 'via-fm-gold/10' : 'via-white/8',
               'motion-safe:animate-[shimmer_2s_ease-in-out_infinite]',
               'pointer-events-none'
             )}
@@ -259,7 +276,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         {ripples.map(ripple => (
           <span
             key={ripple.id}
-            className='absolute rounded-full bg-fm-gold/30 pointer-events-none animate-ripple'
+            className={cn(
+              'absolute rounded-full pointer-events-none animate-ripple',
+              isPrimary ? 'bg-fm-gold/30' : 'bg-white/20'
+            )}
             style={{
               left: `${ripple.x}%`,
               top: `${ripple.y}%`,
@@ -275,7 +295,10 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
           sparkles.map(sparkle => (
             <span
               key={sparkle.id}
-              className='absolute w-1 h-1 bg-fm-gold/60 rounded-full pointer-events-none'
+              className={cn(
+                'absolute w-1 h-1 rounded-full pointer-events-none',
+                isPrimary ? 'bg-fm-gold/60' : 'bg-white/50'
+              )}
               style={{
                 left: `${sparkle.x}%`,
                 top: `${sparkle.y}%`,
@@ -290,13 +313,18 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         <span className='relative z-10 flex items-center justify-center gap-2'>
           {isLoading ? (
             <>
-              <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+              <div
+                className={cn(
+                  'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
+                  isPrimary ? 'border-fm-gold' : 'border-foreground'
+                )}
+              />
               <span>{t('buttons.processing')}</span>
             </>
           ) : (
             <span
               className={cn(
-                'transition-all duration-200',
+                'inline-flex items-center transition-all duration-200',
                 isHovered && !disableAnimations && 'tracking-[0.18em]'
               )}
             >

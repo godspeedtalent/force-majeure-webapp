@@ -24,7 +24,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared/services/logger';
 import type { ChartLabel, ChartLabelsMap } from '../types';

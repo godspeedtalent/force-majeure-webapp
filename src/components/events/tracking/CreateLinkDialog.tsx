@@ -23,6 +23,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { useTrackingLinks } from './hooks/useTrackingLinks';
 import { TrackingLink } from '@/types/tracking';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
+import { getTrackingLinkUrl } from '@/shared/utils/trackingLinkUtils';
 import {
   Select,
   SelectContent,
@@ -128,8 +129,8 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
     form.reset();
   };
 
-  const previewUrl = form.watch('code') 
-    ? `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${form.watch('code')}`
+  const previewUrl = form.watch('code')
+    ? getTrackingLinkUrl(form.watch('code'))
     : '';
 
   return (
@@ -173,7 +174,7 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
             />
 
             {previewUrl && (
-              <div className="p-3 bg-muted rounded-md">
+              <div className="p-3 bg-muted rounded-none">
                 <p className="text-xs text-muted-foreground mb-1">{t('tracking.previewUrl')}:</p>
                 <code className="text-xs break-all">{previewUrl}</code>
               </div>

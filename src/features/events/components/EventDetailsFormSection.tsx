@@ -1,7 +1,10 @@
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { Users, Info } from 'lucide-react';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmArtistSearchDropdown } from '@/components/common/search/FmArtistSearchDropdown';
 import { FmVenueSearchDropdown } from '@/components/common/search/FmVenueSearchDropdown';
 import { FmCommonDatePicker } from '@/components/common/forms/FmCommonDatePicker';
@@ -39,7 +42,7 @@ export function EventDetailsFormSection({
           value={state.title}
           onChange={e => actions.setTitle(e.target.value)}
           placeholder={t('forms.events.titlePlaceholder')}
-          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
+          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-none text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
         />
       </div>
 
@@ -52,7 +55,7 @@ export function EventDetailsFormSection({
           value={state.subtitle}
           onChange={e => actions.setSubtitle(e.target.value)}
           placeholder={t('forms.events.subtitlePlaceholder')}
-          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-md text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
+          className='w-full px-3 py-2 bg-white/5 border border-white/20 rounded-none text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-fm-gold/50'
         />
       </div>
 
@@ -186,6 +189,55 @@ export function EventDetailsFormSection({
           pathPrefix='events'
           onUploadStateChange={onImageUploadStateChange}
         />
+      </div>
+
+      {/* RSVP Settings Section */}
+      <div className='space-y-4 pt-4 border-t border-white/10'>
+        <div className='flex items-center gap-3 p-4 border border-white/20 bg-white/5'>
+          <Users className='h-5 w-5 text-fm-gold' />
+          <div className='flex-1'>
+            <Label htmlFor='rsvp-enabled-create' className='text-white cursor-pointer font-medium'>
+              {t('ticketing.rsvpsAvailable')}
+            </Label>
+            <p className='text-xs text-white/50 mt-1'>
+              {t('ticketing.rsvpsAvailableDescription')}
+            </p>
+          </div>
+          <FmCommonToggle
+            id='rsvp-enabled-create'
+            label={t('ticketing.rsvpsAvailable')}
+            checked={state.isRsvpEnabled}
+            onCheckedChange={actions.setIsRsvpEnabled}
+            hideLabel
+          />
+        </div>
+
+        {state.isRsvpEnabled && (
+          <div className='p-4 border border-white/20 bg-white/5 space-y-4'>
+            <div className='flex items-center gap-2 text-sm text-white/50'>
+              <Info className='h-4 w-4' />
+              <span>{t('ticketing.rsvpCapacityInfo')}</span>
+            </div>
+            <div className='space-y-1.5'>
+              <Label className='text-xs text-white/50 uppercase tracking-wider'>
+                {t('ticketing.rsvpCapacity')}
+              </Label>
+              <FmCommonTextField
+                value={state.rsvpCapacity?.toString() || ''}
+                onChange={e => {
+                  const val = e.target.value;
+                  actions.setRsvpCapacity(val === '' ? null : parseInt(val, 10));
+                }}
+                placeholder={t('ticketing.unlimited')}
+                type='number'
+                min={1}
+              />
+              <p className='text-xs text-white/50'>
+                {t('ticketing.rsvpCapacityHint')}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

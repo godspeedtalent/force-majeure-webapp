@@ -116,6 +116,7 @@
     "hideFailedDescription": "No se pudo ocultar el evento",
     "updateSettingFailed": "Error al actualizar configuración",
     "updateUndercardSettingFailedDescription": "No se pudo guardar la configuración de búsqueda de artistas teloneros",
+    "updateNoHeadlinerSettingFailedDescription": "No se pudo guardar la configuración sin artista principal",
     "artistUpdateFailed": "Error al actualizar artistas",
     "artistUpdateFailedDescription": "No se pudieron guardar los cambios de artistas",
     "rsvpSettingsUpdated": "Configuración de RSVP actualizada",
@@ -126,7 +127,17 @@
     "rsvpFailed": "Error al confirmar RSVP. Por favor, inténtalo de nuevo.",
     "updateStatusFailed": "Error al actualizar el estado del evento",
     "mockDataImportFailed": "Error al importar datos simulados",
-    "mockDataPurgeFailed": "Error al purgar datos de prueba"
+    "mockDataPurgeFailed": "Error al purgar datos de prueba",
+    "feeSettingsUpdated": "Configuración de tarifas actualizada",
+    "feeSettingsUpdateFailed": "Error al actualizar configuración de tarifas"
+  },
+  "fees": {
+    "feeItemAdded": "Tarifa agregada exitosamente",
+    "feeItemAddFailed": "Error al agregar tarifa",
+    "feeItemUpdated": "Tarifa actualizada exitosamente",
+    "feeItemUpdateFailed": "Error al actualizar tarifa",
+    "feeItemDeleted": "Tarifa eliminada",
+    "feeItemDeleteFailed": "Error al eliminar tarifa"
   },
   "validation": {
     "stageNameRequired": "Por favor ingresa tu nombre artístico",
@@ -167,7 +178,9 @@
     "updated": "Organización actualizada exitosamente",
     "deleted": "Organización eliminada exitosamente",
     "updateFailed": "Error al actualizar la organización",
-    "deleteFailed": "Error al eliminar la organización"
+    "deleteFailed": "Error al eliminar la organización",
+    "eventUnlinked": "Evento desvinculado de la organización",
+    "eventUnlinkFailed": "Error al desvincular el evento"
   },
   "artists": {
     "updated": "Artista actualizado exitosamente",

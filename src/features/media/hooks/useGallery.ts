@@ -6,9 +6,8 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, logger } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
-import { logger } from '@/shared/services/logger';
 import type {
   MediaItem,
   ResolvedMediaItem,

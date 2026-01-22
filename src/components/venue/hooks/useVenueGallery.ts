@@ -11,9 +11,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, logger } from '@/shared';
 import { getImageUrl, compressImage } from '@/shared/utils/imageUtils';
-import { logger } from '@/shared/services/logger';
 import { toast } from 'sonner';
 import type { ResolvedMediaItem, MediaGallery, MediaItem } from '@/features/media/types';
 

@@ -238,7 +238,12 @@ export function useEventRsvp(
     rsvpCapacity: rsvpStats.capacity,
     isFull: rsvpStats.isFull,
     isCheckingRsvp,
-    toggleRsvp: () => toggleRsvpMutation.mutate(),
+    // Guard against rapid clicks - only allow toggle if no mutation is pending
+    toggleRsvp: () => {
+      if (!toggleRsvpMutation.isPending) {
+        toggleRsvpMutation.mutate();
+      }
+    },
     isLoading: toggleRsvpMutation.isPending,
   };
 }

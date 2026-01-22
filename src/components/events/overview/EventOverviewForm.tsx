@@ -10,6 +10,7 @@ import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
+import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { useEventOverviewForm } from '@/features/events/hooks';
 import { PublishEventButton } from '@/components/events/status';
@@ -23,9 +24,10 @@ interface EventOverviewFormProps {
     end_time?: string | null;
     is_after_hours?: boolean;
     title?: string | null;
-    description?: string | null;
+    subtitle?: string | null;
     about_event?: string | null;
     display_subtitle?: boolean;
+    no_headliner?: boolean;
     status?: string;
   };
   orderCount: number;
@@ -59,6 +61,7 @@ export const EventOverviewForm = ({
     setCustomTitle,
     setEventSubtitle,
     setAboutEvent,
+    setNoHeadliner,
     isSaving,
     isDirty,
     handleSave,
@@ -84,6 +87,7 @@ export const EventOverviewForm = ({
     customTitle,
     eventSubtitle,
     aboutEvent,
+    noHeadliner,
   } = formState;
 
   // Handle date change with past date confirmation
@@ -159,20 +163,47 @@ export const EventOverviewForm = ({
             placeholder={t('eventOverview.enterEventSubtitle')}
           />
 
-          {/* Headliner */}
-          <div className='space-y-2'>
-            <Label htmlFor='headliner' className='text-xs uppercase tracking-wider text-muted-foreground'>
-              {t('eventOverview.headliner')} <span className='text-destructive'>*</span>
-            </Label>
-            <FmArtistSearchDropdown
-              value={headlinerId}
-              onChange={value => {
-                setHeadlinerId(value);
+          {/* No Headliner Toggle */}
+          <div className='md:col-span-2 flex items-center gap-3 p-3 bg-muted/20 border border-border'>
+            <FmCommonToggle
+              id='no-headliner'
+              label={t('eventOverview.noHeadliner')}
+              hideLabel
+              checked={noHeadliner}
+              onCheckedChange={checked => {
+                setNoHeadliner(checked);
+                if (checked) {
+                  setHeadlinerId('');
+                }
                 triggerAutoSave();
               }}
-              placeholder={t('placeholders.selectHeadliner')}
             />
+            <div className='flex-1'>
+              <Label htmlFor='no-headliner' className='cursor-pointer text-sm font-medium'>
+                {t('eventOverview.noHeadliner')}
+              </Label>
+              <p className='text-xs text-muted-foreground mt-0.5'>
+                {t('eventOverview.noHeadlinerDescription')}
+              </p>
+            </div>
           </div>
+
+          {/* Headliner - only show if noHeadliner is false */}
+          {!noHeadliner && (
+            <div className='space-y-2'>
+              <Label htmlFor='headliner' className='text-xs uppercase tracking-wider text-muted-foreground'>
+                {t('eventOverview.headliner')} <span className='text-destructive'>*</span>
+              </Label>
+              <FmArtistSearchDropdown
+                value={headlinerId}
+                onChange={value => {
+                  setHeadlinerId(value);
+                  triggerAutoSave();
+                }}
+                placeholder={t('placeholders.selectHeadliner')}
+              />
+            </div>
+          )}
 
           {/* Venue */}
           <div className='space-y-2'>

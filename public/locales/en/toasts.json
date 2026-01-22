@@ -117,6 +117,7 @@
     "hideFailedDescription": "Could not hide the event",
     "updateSettingFailed": "Failed to update setting",
     "updateUndercardSettingFailedDescription": "Could not save looking for undercard setting",
+    "updateNoHeadlinerSettingFailedDescription": "Could not save no headliner setting",
     "artistUpdateFailed": "Failed to update artists",
     "artistUpdateFailedDescription": "Could not save artist changes",
     "rsvpSettingsUpdated": "RSVP settings updated",
@@ -127,7 +128,17 @@
     "rsvpFailed": "Failed to RSVP. Please try again.",
     "updateStatusFailed": "Failed to update event status",
     "mockDataImportFailed": "Failed to import mock data",
-    "mockDataPurgeFailed": "Failed to purge test data"
+    "mockDataPurgeFailed": "Failed to purge test data",
+    "feeSettingsUpdated": "Fee settings updated",
+    "feeSettingsUpdateFailed": "Failed to update fee settings"
+  },
+  "fees": {
+    "feeItemAdded": "Fee added successfully",
+    "feeItemAddFailed": "Failed to add fee",
+    "feeItemUpdated": "Fee updated successfully",
+    "feeItemUpdateFailed": "Failed to update fee",
+    "feeItemDeleted": "Fee removed",
+    "feeItemDeleteFailed": "Failed to remove fee"
   },
   "validation": {
     "stageNameRequired": "Please enter your stage name",
@@ -168,7 +179,9 @@
     "updated": "Organization updated successfully",
     "deleted": "Organization deleted successfully",
     "updateFailed": "Failed to update organization",
-    "deleteFailed": "Failed to delete organization"
+    "deleteFailed": "Failed to delete organization",
+    "eventUnlinked": "Event unlinked from organization",
+    "eventUnlinkFailed": "Failed to unlink event"
   },
   "artists": {
     "updated": "Artist updated successfully",

@@ -11,8 +11,7 @@ import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonS
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
-import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/shared';
+import { supabase, cn } from '@/shared';
 import { useVenueCoverImage } from '@/shared/hooks/useGalleryCoverImage';
 
 export interface FmVenueDetailsModalProps {

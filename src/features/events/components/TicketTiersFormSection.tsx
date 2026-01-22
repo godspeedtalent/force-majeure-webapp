@@ -81,7 +81,7 @@ export function TicketTiersFormSection({ state, actions }: TicketTiersFormSectio
         renderRow={(tier: TicketTier, index: number) => (
           <div
             className={cn(
-              'space-y-3 p-4 rounded-md bg-white/5 border',
+              'space-y-3 p-4 rounded-none bg-white/5 border',
               tier.hasOrders ? 'border-fm-gold/30 bg-fm-gold/5' : 'border-white/10'
             )}
           >

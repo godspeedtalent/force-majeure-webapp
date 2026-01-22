@@ -56,7 +56,7 @@ function DropdownItemRenderer({
       <DropdownMenuItem
         onClick={item.onClick}
         className={cn(
-          'group cursor-pointer rounded-md my-0.5 relative',
+          'group cursor-pointer rounded-none my-0.5 relative',
           // Transparent backgrounds to let frosted glass show through
           index % 2 === 0 ? 'bg-white/[0.02]' : 'bg-white/[0.06]',
           'hover:bg-fm-gold/15 hover:scale-[1.02] hover:shadow-lg hover:shadow-fm-gold/20 hover:text-white',

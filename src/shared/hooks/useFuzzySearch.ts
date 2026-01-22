@@ -76,6 +76,8 @@ export interface FuzzySearchConfig {
   upcomingEventsOnly?: boolean;
   /** For events: include test status events (admin/dev only) */
   includeTestEvents?: boolean;
+  /** For events: include invisible status events (for staff members) */
+  includeInvisibleEvents?: boolean;
   /** Enable/disable the search (useful for conditional searching) */
   enabled?: boolean;
 }
@@ -184,6 +186,7 @@ const DEFAULT_CONFIG = {
   minQueryLength: 2,
   upcomingEventsOnly: false,
   includeTestEvents: false,
+  includeInvisibleEvents: false,
   enabled: true,
 };
 
@@ -212,6 +215,7 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
     minQueryLength = DEFAULT_CONFIG.minQueryLength,
     upcomingEventsOnly = DEFAULT_CONFIG.upcomingEventsOnly,
     includeTestEvents = DEFAULT_CONFIG.includeTestEvents,
+    includeInvisibleEvents = DEFAULT_CONFIG.includeInvisibleEvents,
     enabled = DEFAULT_CONFIG.enabled,
   } = config;
 
@@ -308,6 +312,7 @@ export function useFuzzySearch(config: FuzzySearchConfig): UseFuzzySearchReturn 
             limit,
             upcomingEventsOnly,
             includeTestEvents,
+            includeInvisibleEvents,
             hasFuzzySupport
           ).then(data => {
             searchResults.events = reRankWithFuse(
@@ -457,6 +462,7 @@ async function searchEvents(
   limit: number,
   upcomingOnly: boolean,
   includeTestEvents: boolean,
+  includeInvisibleEvents: boolean,
   useFuzzy: boolean
 ): Promise<EventSearchResult[]> {
   try {
@@ -482,9 +488,15 @@ async function searchEvents(
     };
 
     // Determine which statuses to include
-    const allowedStatuses = includeTestEvents
-      ? ['published', 'draft', 'test']
-      : ['published', 'draft'];
+    // Always include published and draft
+    // Add 'test' for admin/dev users
+    // Add 'invisible' for staff members (they'll filter by specific event IDs client-side)
+    const allowedStatuses = [
+      'published',
+      'draft',
+      ...(includeTestEvents ? ['test'] : []),
+      ...(includeInvisibleEvents ? ['invisible'] : []),
+    ];
 
     // Query 1: Search by event title/description (published + draft + optionally test)
     let titleQueryBuilder = supabase

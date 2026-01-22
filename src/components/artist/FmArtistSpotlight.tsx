@@ -8,8 +8,7 @@ import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
 import { FmRecordingsGrid } from '@/components/artist/FmRecordingsGrid';
 import { FmHeroSectionSkeleton } from '@/components/common/feedback/FmHeroSectionSkeleton';
-import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/shared';
+import { supabase, cn } from '@/shared';
 import type { ArtistWithDetails } from '@/shared/api/queries/artistQueries';
 import type { ArtistRecording } from '@/shared/api/queries/recordingQueries';
 

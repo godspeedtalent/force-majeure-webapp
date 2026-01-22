@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { formatTimeDisplay } from '@/shared';
 import type { EventDetailsRecord } from '../types';
-import { CALL_TIME_INTERVAL_MINUTES } from '../components/constants';
 
 export function useEventDetailsData(event: EventDetailsRecord) {
   const eventDate = useMemo(() => new Date(event.date), [event.date]);
@@ -99,18 +98,21 @@ export function useEventDetailsData(event: EventDetailsRecord) {
 
   const callTimeLineup = useMemo(() => {
     // Build lineup with headliner first (descending order - headliner at top)
-    const lineup = [event.headliner, ...event.undercard].filter(Boolean);
+    // Skip headliner if noHeadliner is true (don't show TBA placeholder)
+    const lineup = event.noHeadliner
+      ? [...event.undercard].filter(Boolean)
+      : [event.headliner, ...event.undercard].filter(Boolean);
     if (lineup.length === 0) {
       return [];
     }
 
-    // Check if any artist has a set_time - if so, use real schedule data
+    // Check if any artist has a set_time - only show times if Set Scheduling is enabled
     const hasRealSchedule = lineup.some(artist => artist.setTime);
 
     if (hasRealSchedule) {
       // Use actual set times from the database, sorted by set time descending (latest first)
       const lineupWithTimes = lineup.map((artist, index) => {
-        let callTimeLabel = 'TBD';
+        let callTimeLabel = '';
 
         if (artist.setTime) {
           const setDate = new Date(artist.setTime);
@@ -122,10 +124,13 @@ export function useEventDetailsData(event: EventDetailsRecord) {
           );
         }
 
+        // Only assign Headliner label if this is NOT a noHeadliner event
+        const isHeadlinerSlot = !event.noHeadliner && index === 0;
+
         return {
           ...artist,
           callTime: callTimeLabel,
-          roleLabel: index === 0 ? 'Headliner' : undefined,
+          roleLabel: isHeadlinerSlot ? 'Headliner' : undefined,
           _setTime: artist.setTime ? new Date(artist.setTime).getTime() : 0,
         };
       });
@@ -136,90 +141,14 @@ export function useEventDetailsData(event: EventDetailsRecord) {
         .map(({ _setTime: _, ...artist }) => artist);
     }
 
-    // Fallback: Calculate estimated times based on event start/end time
-    const startTimeMatch = event.time?.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-    if (!startTimeMatch) {
-      // No valid start time - show TBD for all artists
-      return lineup.map((artist, index) => ({
-        ...artist,
-        callTime: 'TBD',
-        roleLabel: index === 0 ? 'Headliner' : undefined,
-      }));
-    }
-
-    // Build start date
-    let startHour = parseInt(startTimeMatch[1], 10);
-    const startMinutes = parseInt(startTimeMatch[2], 10);
-    const startMeridiem = (startTimeMatch[3] || 'PM').toUpperCase();
-
-    if (startMeridiem === 'PM' && startHour !== 12) startHour += 12;
-    if (startMeridiem === 'AM' && startHour === 12) startHour = 0;
-
-    const baseDate = new Date(event.date);
-    baseDate.setHours(startHour, startMinutes, 0, 0);
-
-    // Calculate interval based on end time if available, otherwise use default
-    let intervalMinutes = CALL_TIME_INTERVAL_MINUTES;
-
-    if (event.endTime && !event.isAfterHours) {
-      const endTimeMatch = event.endTime.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-      if (endTimeMatch) {
-        let endHour = parseInt(endTimeMatch[1], 10);
-        const endMinutes = parseInt(endTimeMatch[2], 10);
-        const endMeridiem = (endTimeMatch[3] || 'AM').toUpperCase();
-
-        if (endMeridiem === 'PM' && endHour !== 12) endHour += 12;
-        if (endMeridiem === 'AM' && endHour === 12) endHour = 0;
-
-        const endDate = new Date(event.date);
-        endDate.setHours(endHour, endMinutes, 0, 0);
-
-        // If end time is before start time, it's the next day
-        if (endDate <= baseDate) {
-          endDate.setDate(endDate.getDate() + 1);
-        }
-
-        // Calculate total duration and divide by number of artists
-        const totalDurationMinutes =
-          (endDate.getTime() - baseDate.getTime()) / 60000;
-        if (lineup.length > 1 && totalDurationMinutes > 0) {
-          intervalMinutes = Math.floor(totalDurationMinutes / lineup.length);
-        }
-      }
-    }
-
-    // Calculate times in ascending order (first opener to headliner)
-    // then reverse for display (headliner at top)
-    const lineupWithTimes = lineup.map((artist, index) => {
-      // Headliner plays last, so calculate from end
-      const slotIndex = lineup.length - 1 - index;
-      const callDate = new Date(
-        baseDate.getTime() + slotIndex * intervalMinutes * 60_000
-      );
-
-      const callTimeLabel = formatTimeDisplay(
-        callDate.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-        })
-      );
-
-      return {
-        ...artist,
-        callTime: callTimeLabel,
-        roleLabel: index === 0 ? 'Headliner' : undefined,
-      };
-    });
-
-    return lineupWithTimes;
-  }, [
-    event.date,
-    event.time,
-    event.endTime,
-    event.isAfterHours,
-    event.headliner,
-    event.undercard,
-  ]);
+    // No schedule data - show artists without times
+    // Only assign Headliner label if this is NOT a noHeadliner event
+    return lineup.map((artist, index) => ({
+      ...artist,
+      callTime: '',
+      roleLabel: !event.noHeadliner && index === 0 ? 'Headliner' : undefined,
+    }));
+  }, [event.headliner, event.undercard, event.noHeadliner]);
 
   return {
     eventDate,

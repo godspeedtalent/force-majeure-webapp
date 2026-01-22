@@ -31,11 +31,15 @@ interface EventRow {
   end_time: string | null;
   is_after_hours?: boolean | null;
   looking_for_undercard?: boolean | null;
+  no_headliner?: boolean | null;
   venue_id?: string | null;
-  description: string | null;
+  about_event?: string | null;
   hero_image?: string | null;
   status?: EventStatus | null;
   is_free_event?: boolean | null;
+  is_rsvp_only_event?: boolean | null;
+  rsvp_button_subtitle?: string | null;
+  mobile_full_hero_height?: boolean | null;
   venue?: VenueRow | null;
   headliner_artist: {
     id: string;
@@ -150,12 +154,16 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     endTime,
     isAfterHours: row.is_after_hours ?? false,
     lookingForUndercard: row.looking_for_undercard ?? false,
+    noHeadliner: row.no_headliner ?? false,
     venue: row.venue?.name ?? 'Venue TBA',
     venueDetails: transformVenue(row.venue ?? null),
     heroImage: getImageUrl(row.hero_image ?? row.headliner_artist?.image_url ?? null),
-    description: row.description ?? null,
+    description: row.about_event ?? null,
     status: row.status ?? 'published',
     isFreeEvent: row.is_free_event ?? false,
+    isRsvpOnlyEvent: row.is_rsvp_only_event ?? false,
+    rsvpButtonSubtitle: row.rsvp_button_subtitle ?? null,
+    mobileFullHeroHeight: row.mobile_full_hero_height ?? false,
   };
 };
 
@@ -173,11 +181,15 @@ const fetchEventDetails = async (
       end_time,
       is_after_hours,
       looking_for_undercard,
+      no_headliner,
       venue_id,
-      description,
+      about_event,
       hero_image,
       status,
       is_free_event,
+      is_rsvp_only_event,
+      rsvp_button_subtitle,
+      mobile_full_hero_height,
       venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(

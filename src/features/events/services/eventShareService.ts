@@ -5,8 +5,7 @@
  * Centralizes Supabase RPC calls for share count management.
  */
 
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase, logger } from '@/shared';
 
 export const eventShareService = {
   /**

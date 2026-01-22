@@ -12,6 +12,7 @@ import {
   Shield,
   AlertTriangle,
   Trash2,
+  Share2,
 } from 'lucide-react';
 import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
@@ -25,9 +26,10 @@ import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
+import { OrganizationSocialTab } from './components/manage/OrganizationSocialTab';
+import { OrganizationEventsTab } from './components/manage/OrganizationEventsTab';
 import { toast } from 'sonner';
-import { handleError } from '@/shared/services/errorHandler';
-import { supabase } from '@/integrations/supabase/client';
+import { handleError, supabase } from '@/shared';
 import {
   useOrganizationById,
   organizationKeys,
@@ -37,7 +39,7 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import type { UpdateOrganizationInput } from '@/types/organization';
 
-type OrganizationTab = 'view' | 'overview' | 'gallery' | 'staff' | 'events' | 'admin';
+type OrganizationTab = 'view' | 'overview' | 'social' | 'gallery' | 'staff' | 'events' | 'admin';
 
 export default function OrganizationManagement() {
   const { t } = useTranslation('common');
@@ -53,10 +55,19 @@ export default function OrganizationManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Form state
+  // Form state - Overview
   const [name, setName] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
   const [isImageUploading, setIsImageUploading] = useState(false);
+
+  // Form state - Social Media
+  const [socialEmail, setSocialEmail] = useState('');
+  const [website, setWebsite] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [tiktok, setTiktok] = useState('');
+  const [facebook, setFacebook] = useState('');
+  const [youtube, setYoutube] = useState('');
 
   const { data: organization, isLoading, error } = useOrganizationById(id);
 
@@ -64,6 +75,13 @@ export default function OrganizationManagement() {
   const initialValuesRef = useRef<{
     name: string;
     profilePicture: string;
+    socialEmail: string;
+    website: string;
+    instagram: string;
+    twitter: string;
+    tiktok: string;
+    facebook: string;
+    youtube: string;
   } | null>(null);
 
   useEffect(() => {
@@ -71,10 +89,24 @@ export default function OrganizationManagement() {
       const initialValues = {
         name: organization.name || '',
         profilePicture: organization.profile_picture || '',
+        socialEmail: organization.social_email || '',
+        website: organization.website || '',
+        instagram: organization.instagram_handle || '',
+        twitter: organization.twitter_handle || '',
+        tiktok: organization.tiktok_handle || '',
+        facebook: organization.facebook_url || '',
+        youtube: organization.youtube_url || '',
       };
 
       setName(initialValues.name);
       setProfilePicture(initialValues.profilePicture);
+      setSocialEmail(initialValues.socialEmail);
+      setWebsite(initialValues.website);
+      setInstagram(initialValues.instagram);
+      setTwitter(initialValues.twitter);
+      setTiktok(initialValues.tiktok);
+      setFacebook(initialValues.facebook);
+      setYoutube(initialValues.youtube);
 
       initialValuesRef.current = initialValues;
     }
@@ -84,8 +116,18 @@ export default function OrganizationManagement() {
   const isDirty = useMemo(() => {
     if (!initialValuesRef.current) return false;
     const initial = initialValuesRef.current;
-    return name !== initial.name || profilePicture !== initial.profilePicture;
-  }, [name, profilePicture]);
+    return (
+      name !== initial.name ||
+      profilePicture !== initial.profilePicture ||
+      socialEmail !== initial.socialEmail ||
+      website !== initial.website ||
+      instagram !== initial.instagram ||
+      twitter !== initial.twitter ||
+      tiktok !== initial.tiktok ||
+      facebook !== initial.facebook ||
+      youtube !== initial.youtube
+    );
+  }, [name, profilePicture, socialEmail, website, instagram, twitter, tiktok, facebook, youtube]);
 
   // Unsaved changes warning
   const unsavedChanges = useUnsavedChanges({ isDirty });
@@ -107,6 +149,12 @@ export default function OrganizationManagement() {
           label: t('organizationNav.overview'),
           icon: FileText,
           description: t('organizationNav.overviewDescription'),
+        },
+        {
+          id: 'social',
+          label: t('organizationNav.social'),
+          icon: Share2,
+          description: t('organizationNav.socialDescription'),
         },
         {
           id: 'gallery',
@@ -156,6 +204,7 @@ export default function OrganizationManagement() {
   const mobileTabs: MobileBottomTab[] = [
     { id: 'view', label: t('organizationNav.viewOrganization'), icon: Eye },
     { id: 'overview', label: t('organizationNav.overview'), icon: FileText },
+    { id: 'social', label: t('organizationNav.social'), icon: Share2 },
     { id: 'gallery', label: t('organizationNav.gallery'), icon: Images },
     { id: 'staff', label: t('organizationNav.staff'), icon: Users },
     { id: 'events', label: t('organizationNav.events'), icon: Calendar },
@@ -164,7 +213,7 @@ export default function OrganizationManagement() {
       : []),
   ];
 
-  const handleSaveOverview = async () => {
+  const handleSave = async () => {
     if (!id) return;
 
     setIsSaving(true);
@@ -172,6 +221,13 @@ export default function OrganizationManagement() {
       const updateData: UpdateOrganizationInput = {
         name,
         profile_picture: profilePicture || null,
+        social_email: socialEmail || null,
+        website: website || null,
+        instagram_handle: instagram || null,
+        twitter_handle: twitter || null,
+        tiktok_handle: tiktok || null,
+        facebook_url: facebook || null,
+        youtube_url: youtube || null,
       };
 
       const { error: updateError } = await supabase
@@ -186,6 +242,13 @@ export default function OrganizationManagement() {
         initialValuesRef.current = {
           name,
           profilePicture,
+          socialEmail,
+          website,
+          instagram,
+          twitter,
+          tiktok,
+          facebook,
+          youtube,
         };
       }
 
@@ -334,6 +397,25 @@ export default function OrganizationManagement() {
     </div>
   );
 
+  const renderSocialTab = () => (
+    <OrganizationSocialTab
+      email={socialEmail}
+      onEmailChange={setSocialEmail}
+      website={website}
+      onWebsiteChange={setWebsite}
+      instagram={instagram}
+      onInstagramChange={setInstagram}
+      twitter={twitter}
+      onTwitterChange={setTwitter}
+      tiktok={tiktok}
+      onTiktokChange={setTiktok}
+      facebook={facebook}
+      onFacebookChange={setFacebook}
+      youtube={youtube}
+      onYoutubeChange={setYoutube}
+    />
+  );
+
   const renderGalleryTab = () => (
     <div className='space-y-6'>
       <FmFormSection
@@ -354,18 +436,10 @@ export default function OrganizationManagement() {
   );
 
   const renderEventsTab = () => (
-    <div className='space-y-6'>
-      <FmFormSection
-        title={t('organizationManagement.events')}
-        description={t('organizationManagement.eventsDescription')}
-        icon={Calendar}
-      >
-        <div className='py-8 text-center text-muted-foreground'>
-          <Calendar className='h-12 w-12 mx-auto mb-4 opacity-50' />
-          <p>{t('organizationManagement.eventsComingSoon')}</p>
-        </div>
-      </FmFormSection>
-    </div>
+    <OrganizationEventsTab
+      organizationId={id!}
+      organizationName={organization?.name}
+    />
   );
 
   const renderAdminTab = () => (
@@ -458,6 +532,7 @@ export default function OrganizationManagement() {
       contentWidth='READABLE'
     >
       {activeTab === 'overview' && renderOverviewTab()}
+      {activeTab === 'social' && renderSocialTab()}
       {activeTab === 'gallery' && renderGalleryTab()}
       {activeTab === 'staff' && renderStaffTab()}
       {activeTab === 'events' && renderEventsTab()}
@@ -480,13 +555,13 @@ export default function OrganizationManagement() {
         onCancel={unsavedChanges.cancelNavigation}
       />
 
-      {/* Sticky Save Footer - shows on overview tab */}
-      {activeTab === 'overview' && (
+      {/* Sticky Save Footer - shows on overview and social tabs */}
+      {(activeTab === 'overview' || activeTab === 'social') && (
         <FmStickyFormFooter
           isDirty={isDirty}
           isSaving={isSaving}
           disabled={isImageUploading || !name}
-          onSave={handleSaveOverview}
+          onSave={handleSave}
           hasSidebar
         />
       )}

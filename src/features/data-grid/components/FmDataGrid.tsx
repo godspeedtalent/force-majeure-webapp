@@ -6,7 +6,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableRow } from '@/components/common/shadcn/table';
 import { toast } from 'sonner';
-import { cn, useIsMobile, logger } from '@/shared';
+import { cn, useIsMobile, handleError, logger } from '@/shared';
 import { useDataGridKeyboardNav } from '../hooks/useDataGridKeyboardNav';
 import { useDataGridVirtualization } from '../hooks/useDataGridVirtualization';
 import { useDataGridState } from '../hooks/useDataGridState';
@@ -181,12 +181,25 @@ export function FmDataGrid<T extends Record<string, any>>({
   });
 
   // Render mobile view on small screens (after all hooks)
+  // Combine actions and contextMenuActions for mobile view
+  const mobileActions = useMemo(() => {
+    // If no explicit actions, use contextMenuActions as actions for mobile
+    if (actions.length === 0 && contextMenuActions.length > 0) {
+      return contextMenuActions;
+    }
+    // If both exist, combine them (actions first, then context menu actions)
+    if (actions.length > 0 && contextMenuActions.length > 0) {
+      return [...actions, ...contextMenuActions];
+    }
+    return actions;
+  }, [actions, contextMenuActions]);
+
   if (isMobile) {
     return (
       <FmMobileDataGrid
         data={data}
         columns={columns}
-        actions={actions}
+        actions={mobileActions}
         loading={loading}
         className={className}
         onUpdate={onUpdate}
@@ -407,9 +420,12 @@ export function FmDataGrid<T extends Record<string, any>>({
       toast.success(t('dataGrid.success'));
       selection.clearSelection();
       ui.closeBatchDeleteDialog();
-    } catch (error) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(t('dataGrid.deleteFailed'));
+      handleError(error, {
+        title: t('dataGrid.deleteFailed'),
+        context: 'FmDataGrid.handleBatchDelete',
+      });
     } finally {
       ui.stopBatchDelete();
     }
@@ -433,9 +449,12 @@ export function FmDataGrid<T extends Record<string, any>>({
       toast.dismiss(loadingToast);
       toast.success(t('dataGrid.bulkEditSuccessful'));
       selection.clearSelection();
-    } catch (error) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      toast.error(t('dataGrid.bulkEditFailed'));
+      handleError(error, {
+        title: t('dataGrid.bulkEditFailed'),
+        context: 'FmDataGrid.handleBulkEdit',
+      });
       throw error;
     }
   };

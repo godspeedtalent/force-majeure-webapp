@@ -122,6 +122,8 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         end_time: state.isAfterHours ? null : endTimeISO,
         is_after_hours: state.isAfterHours,
         is_tba: state.isTba,
+        is_free_event: state.isRsvpEnabled,
+        rsvp_capacity: state.rsvpCapacity,
         test_data: false,
         organization_id: profile?.organization_id || null,
       } as const;

@@ -18,6 +18,8 @@ import { TrackingAnalytics } from './TrackingAnalytics';
 import { TrackingLinkQRModal } from './TrackingLinkQRModal';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { getTrackingLinkUrl, getTrackingLinkDisplayPath } from '@/shared/utils/trackingLinkUtils';
+import { useIsMobile } from '@/shared';
 
 interface TrackingLinksManagementProps {
   eventId: string;
@@ -26,6 +28,7 @@ interface TrackingLinksManagementProps {
 export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProps) {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
+  const isMobile = useIsMobile();
   const { links, isLoading, toggleActive, deleteLink } = useTrackingLinks(eventId);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<TrackingLink | null>(null);
@@ -35,7 +38,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
   const [showQrModal, setShowQrModal] = useState(false);
 
   const copyToClipboard = (code: string) => {
-    const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/track-link?code=${code}`;
+    const url = getTrackingLinkUrl(code);
     navigator.clipboard.writeText(url);
     toast.success(tToast('tracking.linkCopied'));
   };
@@ -65,7 +68,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       render: (value: string) => (
         <div className="flex items-center gap-2">
           <code className="text-xs bg-muted px-2 py-1 rounded">
-            /t/{value}
+            {getTrackingLinkDisplayPath(value)}
           </code>
           <button
             className="p-1 hover:bg-muted rounded transition-colors"
@@ -173,25 +176,52 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
       icon={Link2}
     >
       <FmCommonTabs defaultValue="links" className="w-full">
-        <div className="flex items-center justify-between mb-4">
-          <FmCommonTabsList>
-            <FmCommonTabsTrigger value="links">{t('tracking.tabs.links')}</FmCommonTabsTrigger>
-            <FmCommonTabsTrigger value="analytics">{t('tracking.tabs.analytics')}</FmCommonTabsTrigger>
-          </FmCommonTabsList>
+        {/* Mobile: Stack vertically with more breathing room */}
+        {isMobile ? (
+          <div className="space-y-4 mb-6">
+            <FmCommonButton
+              variant="gold"
+              onClick={() => {
+                setEditingLink(null);
+                setIsCreateDialogOpen(true);
+              }}
+              icon={Plus}
+              className="w-full justify-center"
+            >
+              {t('tracking.createLink')}
+            </FmCommonButton>
 
-          <FmCommonButton
-            variant="default"
-            onClick={() => {
-              setEditingLink(null);
-              setIsCreateDialogOpen(true);
-            }}
-            icon={Plus}
-          >
-            {t('tracking.createLink')}
-          </FmCommonButton>
-        </div>
+            <FmCommonTabsList className="w-full grid grid-cols-2">
+              <FmCommonTabsTrigger value="links" className="flex-1">
+                {t('tracking.tabs.links')}
+              </FmCommonTabsTrigger>
+              <FmCommonTabsTrigger value="analytics" className="flex-1">
+                {t('tracking.tabs.analytics')}
+              </FmCommonTabsTrigger>
+            </FmCommonTabsList>
+          </div>
+        ) : (
+          /* Desktop: Horizontal layout */
+          <div className="flex items-center justify-between mb-4">
+            <FmCommonTabsList>
+              <FmCommonTabsTrigger value="links">{t('tracking.tabs.links')}</FmCommonTabsTrigger>
+              <FmCommonTabsTrigger value="analytics">{t('tracking.tabs.analytics')}</FmCommonTabsTrigger>
+            </FmCommonTabsList>
 
-        <FmCommonTabsContent value="links" className="space-y-4">
+            <FmCommonButton
+              variant="default"
+              onClick={() => {
+                setEditingLink(null);
+                setIsCreateDialogOpen(true);
+              }}
+              icon={Plus}
+            >
+              {t('tracking.createLink')}
+            </FmCommonButton>
+          </div>
+        )}
+
+        <FmCommonTabsContent value="links" className={isMobile ? "space-y-4 mt-4" : "space-y-4"}>
           <FmConfigurableDataGrid
             gridId="tracking-links"
             tableName="tracking_links"
@@ -202,7 +232,7 @@ export function TrackingLinksManagement({ eventId }: TrackingLinksManagementProp
           />
         </FmCommonTabsContent>
 
-        <FmCommonTabsContent value="analytics">
+        <FmCommonTabsContent value="analytics" className={isMobile ? "mt-4" : ""}>
           <TrackingAnalytics eventId={eventId} />
         </FmCommonTabsContent>
       </FmCommonTabs>

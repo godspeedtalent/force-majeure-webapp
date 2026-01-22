@@ -134,7 +134,7 @@ export const FmErrorDisplay = ({
 
                   {isStackTraceExpanded && (
                     <div className='mt-2 space-y-2'>
-                      <div className='p-3 bg-black/40 border border-destructive rounded-md max-h-64 overflow-auto'>
+                      <div className='p-3 bg-black/40 border border-destructive rounded-none max-h-64 overflow-auto'>
                         <pre className='text-xs font-mono text-destructive whitespace-pre-wrap break-all w-full'>
                           {errorInfo?.componentStack || error.stack}
                         </pre>

@@ -173,8 +173,11 @@ export const EventCallTimes = ({
     submitRequestMutation.mutate();
   };
 
-  // Use "Artists" for past events, "Call Times" for upcoming events
-  const sectionTitle = isPastEvent
+  // Check if any artist has a call time set
+  const hasCallTimes = callTimeLineup.some(artist => artist.callTime && artist.callTime.trim() !== '');
+
+  // Use "Artists" for past events or when no call times, "Call Times" when schedule exists
+  const sectionTitle = isPastEvent || !hasCallTimes
     ? t('undercardApplication.artists')
     : t('undercardApplication.callTimes');
 
@@ -310,17 +313,6 @@ export const EventCallTimes = ({
               </div>
             )}
 
-            {/* Divider if showing both options */}
-            {user && hasLinkedArtist && !hasExistingRequest && (
-              <div className='flex items-center gap-4'>
-                <div className='flex-1 h-px bg-border' />
-                <span className='text-xs text-muted-foreground uppercase tracking-wider'>
-                  {t('undercardApplication.or')}
-                </span>
-                <div className='flex-1 h-px bg-border' />
-              </div>
-            )}
-
             {/* Show sign up option for users without artist profile */}
             {(!user || !hasLinkedArtist) && (
               <div className='p-4 bg-fm-gold/10 border border-fm-gold/20 rounded-none'>
@@ -333,20 +325,23 @@ export const EventCallTimes = ({
               </div>
             )}
 
-            <Button
-              variant='outline'
-              onClick={handleSignUp}
-              className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10'
-            >
-              {hasLinkedArtist
-                ? t('undercardApplication.registerNewArtist')
-                : t('undercardApplication.signUpAsArtist')}
-              <ArrowRight className='ml-2 h-4 w-4' />
-            </Button>
+            {/* Sign up button - only show for users without artist profile */}
+            {(!user || !hasLinkedArtist) && (
+              <>
+                <Button
+                  variant='outline'
+                  onClick={handleSignUp}
+                  className='w-full border-fm-gold bg-transparent text-white hover:text-fm-gold hover:bg-fm-gold/10'
+                >
+                  {t('undercardApplication.signUpAsArtist')}
+                  <ArrowRight className='ml-2 h-4 w-4' />
+                </Button>
 
-            <p className='text-xs text-center text-muted-foreground/70'>
-              {t('undercardApplication.alreadyHaveProfile')}
-            </p>
+                <p className='text-xs text-center text-muted-foreground/70'>
+                  {t('undercardApplication.alreadyHaveProfile')}
+                </p>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -110,13 +110,16 @@ export const EventHero = ({ event }: EventHeroProps) => {
           src={event.heroImage}
           alt={event.title || event.headliner.name}
           className={cn(
-            'h-full transition-opacity duration-700',
-            // Mobile: cover to fill hero area, Desktop: contain to show full image
-            'w-full object-cover lg:w-auto lg:object-contain',
+            'transition-opacity duration-700',
+            // Mobile: conditionally show full height or cropped based on mobileFullHeroHeight setting
+            // Desktop: always contain to show full image
+            event.mobileFullHeroHeight
+              ? 'w-full h-auto lg:h-full lg:w-auto lg:object-contain' // Full height on mobile: preserve aspect ratio
+              : 'h-full w-full object-cover lg:w-auto lg:object-contain', // Default: crop to fill container
             imageLoaded ? 'opacity-100' : 'opacity-0'
           )}
           style={{
-            objectPosition: `center ${focalY}%`,
+            objectPosition: event.mobileFullHeroHeight ? undefined : `center ${focalY}%`,
           }}
           onLoad={() => setImageLoaded(true)}
           onError={() => setImageError(true)}

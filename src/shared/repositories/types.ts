@@ -47,6 +47,17 @@ export interface GuestAttendeeData {
 }
 
 /**
+ * Consolidated attendee result from get_event_attendees RPC
+ * Returns all attendee types in a single call to avoid N+1 queries
+ */
+export interface ConsolidatedAttendeesResult {
+  ticket_holders: AttendeeData[];
+  rsvp_holders: AttendeeData[];
+  interested_users: AttendeeData[];
+  guest_holders: GuestAttendeeData[];
+}
+
+/**
  * Event Data Repository Interface
  *
  * Defines all data access operations for event-related data.
@@ -88,4 +99,10 @@ export interface IEventDataRepository {
    * Get list of guest ticket holders (anonymous, no user account)
    */
   getGuestTicketHolders(eventId: string): Promise<GuestAttendeeData[]>;
+
+  /**
+   * Get all attendees in a single call (ticket holders, RSVPs, interested, guests)
+   * This is more efficient than calling individual methods - reduces 4+ queries to 1
+   */
+  getAllAttendees(eventId: string): Promise<ConsolidatedAttendeesResult>;
 }

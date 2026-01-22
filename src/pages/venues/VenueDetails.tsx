@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, Settings, MapPin, Users } from 'lucide-react';
+import { Calendar, Settings, MapPin } from 'lucide-react';
 import { supabase, ROLES, PERMISSIONS, cn } from '@/shared';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
@@ -240,12 +240,6 @@ export default function VenueDetails() {
                       {venue.name}
                     </h1>
                   </div>
-                  {venue.capacity && (
-                    <div className='hidden md:flex flex-shrink-0 items-center gap-2 text-sm text-white/70 bg-white/10 px-3 py-1.5 border border-white/20'>
-                      <Users className='h-4 w-4 text-fm-gold' />
-                      <span>{t('venueDetails.capacity', { count: venue.capacity })}</span>
-                    </div>
-                  )}
                 </div>
 
                 <div className='w-full h-[1px] bg-white/30 mb-4' />

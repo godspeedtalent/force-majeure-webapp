@@ -314,6 +314,8 @@
     "emailPlaceholder": "you@example.com",
     "savedPaymentMethods": "Saved Payment Methods",
     "cardInformation": "Card Information",
+    "enterCardManually": "Enter card manually",
+    "useAutofill": "Use autofill",
     "saveCardForFuture": "Save this card for future purchases",
     "streetAddress": "Street address",
     "streetAddressPlaceholder": "123 Main Street",
@@ -333,6 +335,7 @@
     "agreeToTerms": "I agree to the",
     "termsAndConditions": "terms and conditions",
     "completePurchase": "Complete Purchase",
+    "mockModeActive": "Mock payment mode - No real charges will be made",
     "validation": {
       "fullNameRequired": "Full name is required",
       "validEmailRequired": "Valid email is required",
@@ -348,8 +351,11 @@
       "addressNotSavedDescription": "Your order will proceed, but we couldn't save your address for future orders.",
       "paymentSuccessful": "Payment successful!",
       "ticketsPurchased": "Your tickets have been purchased.",
+      "ticketEmailSent": "Your tickets have been emailed to you.",
       "paymentFailed": "Payment failed",
-      "paymentError": "An error occurred processing your payment"
+      "paymentError": "An error occurred processing your payment",
+      "emailFailed": "Email delivery failed",
+      "emailFailedDescription": "Your order was successful, but we couldn't send the confirmation email. You can view your tickets in your wallet."
     }
   },
   "tickets": {
@@ -388,15 +394,19 @@
   },
   "wallet": {
     "title": "My Wallet",
-    "subtitle": "Your tickets and upcoming shows",
+    "subtitle": "Your tickets, RSVPs, and upcoming shows",
     "tabs": {
       "upcoming": "Upcoming",
       "past": "Past"
     },
+    "sections": {
+      "tickets": "Tickets",
+      "rsvps": "RSVPs"
+    },
     "noUpcoming": "No upcoming shows",
     "noUpcomingDescription": "Browse events to find your next show",
     "noPast": "No past shows",
-    "noPastDescription": "Your past events will appear here",
+    "noPastDescription": "Your past tickets and RSVPs will appear here",
     "browseEvents": "Browse Events",
     "scanAtEntry": "Show this QR code at venue entry",
     "downloadPdf": "Download PDF",
@@ -407,9 +417,24 @@
       "cancelled": "Cancelled",
       "refunded": "Refunded"
     },
+    "rsvp": {
+      "ticketType": "RSVP",
+      "freeEvent": "Free Event",
+      "cancel": "Cancel RSVP",
+      "viewEvent": "View Event",
+      "scanTicket": "Scan Ticket",
+      "yourConfirmation": "Your RSVP Confirmation",
+      "confirmationId": "Confirmation ID",
+      "status": {
+        "confirmed": "Confirmed",
+        "waitlisted": "Waitlisted",
+        "cancelled": "Cancelled"
+      }
+    },
     "ticketFor": "Ticket for",
     "viewTicket": "View Ticket",
     "backToWallet": "Back to wallet",
+    "tapToView": "Tap to view ticket",
     "ticketNotFound": "Ticket not found",
     "previousTicket": "Previous ticket",
     "nextTicket": "Next ticket",
@@ -606,6 +631,17 @@
       "duration": "Duration",
       "sourceLabel": "Source",
       "direct": "Direct"
+    },
+    "sessionsChart": {
+      "title": "Page views over time",
+      "noData": "No data available for this period.",
+      "sessions": "Sessions",
+      "users": "Users",
+      "pageViews": "page views",
+      "totalViews": "Total views",
+      "totalSessions": "Total sessions",
+      "uniqueUsers": "Unique users",
+      "avgPagesPerSession": "Avg pages/session"
     }
   },
   "errors": {

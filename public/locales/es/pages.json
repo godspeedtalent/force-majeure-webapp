@@ -314,6 +314,8 @@
     "emailPlaceholder": "tu@ejemplo.com",
     "savedPaymentMethods": "Métodos de Pago Guardados",
     "cardInformation": "Información de Tarjeta",
+    "enterCardManually": "Ingresar tarjeta manualmente",
+    "useAutofill": "Usar autocompletado",
     "saveCardForFuture": "Guardar esta tarjeta para futuras compras",
     "streetAddress": "Dirección",
     "streetAddressPlaceholder": "Calle Principal 123",
@@ -333,6 +335,7 @@
     "agreeToTerms": "Acepto los",
     "termsAndConditions": "términos y condiciones",
     "completePurchase": "Completar Compra",
+    "mockModeActive": "Modo de pago simulado - No se realizarán cargos reales",
     "validation": {
       "fullNameRequired": "El nombre completo es obligatorio",
       "validEmailRequired": "Se requiere un correo electrónico válido",
@@ -348,8 +351,11 @@
       "addressNotSavedDescription": "Tu pedido continuará, pero no pudimos guardar tu dirección para futuros pedidos.",
       "paymentSuccessful": "¡Pago exitoso!",
       "ticketsPurchased": "Tus entradas han sido compradas.",
+      "ticketEmailSent": "Tus entradas han sido enviadas por correo electrónico.",
       "paymentFailed": "Pago fallido",
-      "paymentError": "Ocurrió un error al procesar tu pago"
+      "paymentError": "Ocurrió un error al procesar tu pago",
+      "emailFailed": "Error al enviar el correo",
+      "emailFailedDescription": "Tu pedido fue exitoso, pero no pudimos enviar el correo de confirmación. Puedes ver tus entradas en tu billetera."
     }
   },
   "tickets": {
@@ -388,15 +394,19 @@
   },
   "wallet": {
     "title": "Mi Billetera",
-    "subtitle": "Tus entradas y próximos shows",
+    "subtitle": "Tus entradas, confirmaciones y próximos shows",
     "tabs": {
       "upcoming": "Próximos",
       "past": "Pasados"
     },
+    "sections": {
+      "tickets": "Entradas",
+      "rsvps": "Confirmaciones"
+    },
     "noUpcoming": "Sin shows próximos",
     "noUpcomingDescription": "Explora eventos para encontrar tu próximo show",
     "noPast": "Sin shows pasados",
-    "noPastDescription": "Tus eventos pasados aparecerán aquí",
+    "noPastDescription": "Tus entradas y confirmaciones pasadas aparecerán aquí",
     "browseEvents": "Explorar Eventos",
     "scanAtEntry": "Muestra este código QR en la entrada",
     "downloadPdf": "Descargar PDF",
@@ -407,9 +417,24 @@
       "cancelled": "Cancelada",
       "refunded": "Reembolsada"
     },
+    "rsvp": {
+      "ticketType": "RSVP",
+      "freeEvent": "Evento Gratuito",
+      "cancel": "Cancelar Confirmación",
+      "viewEvent": "Ver Evento",
+      "scanTicket": "Escanear",
+      "yourConfirmation": "Tu Confirmación de Asistencia",
+      "confirmationId": "ID de Confirmación",
+      "status": {
+        "confirmed": "Confirmado",
+        "waitlisted": "En Lista de Espera",
+        "cancelled": "Cancelado"
+      }
+    },
     "ticketFor": "Entrada para",
     "viewTicket": "Ver Entrada",
     "backToWallet": "Volver a billetera",
+    "tapToView": "Toca para ver entrada",
     "ticketNotFound": "Entrada no encontrada",
     "previousTicket": "Entrada anterior",
     "nextTicket": "Siguiente entrada",
@@ -606,6 +631,17 @@
       "duration": "Duración",
       "sourceLabel": "Fuente",
       "direct": "Directo"
+    },
+    "sessionsChart": {
+      "title": "Vistas de página a lo largo del tiempo",
+      "noData": "No hay datos disponibles para este período.",
+      "sessions": "Sesiones",
+      "users": "Usuarios",
+      "pageViews": "vistas de página",
+      "totalViews": "Vistas totales",
+      "totalSessions": "Sesiones totales",
+      "uniqueUsers": "Usuarios únicos",
+      "avgPagesPerSession": "Páginas/sesión promedio"
     }
   },
   "errors": {

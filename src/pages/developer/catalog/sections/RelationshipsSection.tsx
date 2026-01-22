@@ -3,7 +3,7 @@ import { ComponentRelationshipGraph } from '@/components/demo/ComponentRelations
 export function RelationshipsSection() {
   return (
     <div className='space-y-6'>
-      <div className='p-6 bg-muted/30 rounded-lg border border-border'>
+      <div className='p-6 bg-muted/30 rounded-none border border-border'>
         <h3 className='text-xl font-canela font-semibold mb-2 text-fm-gold'>
           Component Architecture Overview
         </h3>

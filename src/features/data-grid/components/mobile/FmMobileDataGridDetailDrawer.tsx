@@ -264,7 +264,7 @@ export function FmMobileDataGridDetailDrawer<T extends Record<string, any>>({
                     ) : (
                       <div
                         className={cn(
-                          'flex items-center justify-between gap-2 p-2 rounded-md border border-border/50',
+                          'flex items-center justify-between gap-2 p-2 rounded-none border border-border/50',
                           'hover:bg-muted/30 cursor-pointer transition-colors',
                           isUpdating && 'opacity-50 pointer-events-none'
                         )}

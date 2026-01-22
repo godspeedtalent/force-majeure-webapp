@@ -14,7 +14,7 @@ import type {
 } from '@/pages/artists/types/registration';
 import { DEFAULT_FORM_DATA } from '@/pages/artists/types/registration';
 import type { Genre } from '@/features/artists/types';
-import { supabase } from '@/shared';
+import { supabase, logger } from '@/shared';
 
 // ========================================
 // Types
@@ -165,7 +165,10 @@ export class ArtistMockDataService {
       .order('name');
 
     if (error) {
-      console.error('Failed to fetch genres:', error);
+      logger.error('Failed to fetch genres', {
+        error: error.message,
+        context: 'ArtistMockDataService.fetchGenres',
+      });
       return [];
     }
 
@@ -194,7 +197,10 @@ export class ArtistMockDataService {
       .order('name');
 
     if (error) {
-      console.error('Failed to fetch cities:', error);
+      logger.error('Failed to fetch cities', {
+        error: error.message,
+        context: 'ArtistMockDataService.fetchCities',
+      });
       return [];
     }
 

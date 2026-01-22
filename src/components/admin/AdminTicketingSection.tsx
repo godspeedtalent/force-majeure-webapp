@@ -183,7 +183,7 @@ export const AdminTicketingSection = () => {
           continue;
         }
 
-        await supabase
+        const { error: feeUpdateError } = await supabase
           .from('ticketing_fees')
           .update({
             fee_type: feeData.type,
@@ -192,6 +192,16 @@ export const AdminTicketingSection = () => {
           })
           .eq('fee_name', feeName)
           .eq('environment_id', fee.environment_id);
+
+        if (feeUpdateError) {
+          logger.error('Failed to update fee', {
+            feeName,
+            error: feeUpdateError.message,
+            code: feeUpdateError.code,
+            details: feeUpdateError.details,
+          });
+          throw feeUpdateError;
+        }
       }
 
       // Update checkout timer setting

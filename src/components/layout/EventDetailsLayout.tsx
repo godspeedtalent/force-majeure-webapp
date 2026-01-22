@@ -8,6 +8,8 @@ interface EventDetailsLayoutProps {
   /** Fixed action buttons (back, manage) rendered at root level to avoid stacking context issues */
   actions?: React.ReactNode;
   className?: string;
+  /** Whether to display the hero image at full height on mobile (default: false, crops to 50vh) */
+  mobileFullHeroHeight?: boolean;
 }
 
 /**
@@ -30,6 +32,7 @@ export function EventDetailsLayout({
   rightColumn,
   actions,
   className,
+  mobileFullHeroHeight = false,
 }: EventDetailsLayoutProps) {
   return (
     <div className={cn('bg-background relative overflow-x-hidden', className)}>
@@ -46,20 +49,25 @@ export function EventDetailsLayout({
         </div>
       )}
 
-      {/* Mobile: stacked layout with gradient fade */}
+      {/* Mobile: stacked layout with clean border */}
       {/* pt-16 accounts for fixed navigation height */}
       <div className='lg:hidden relative z-10 flex flex-col min-h-screen overflow-x-hidden pt-16'>
-        {/* Hero section with gradient fade */}
-        <div className='relative h-[50vh] flex-shrink-0 overflow-hidden'>
+        {/* Hero section with clean bottom border */}
+        {/* When mobileFullHeroHeight is true, show full image without cropping */}
+        <div className={cn(
+          'relative flex-shrink-0 border-b border-white/20',
+          mobileFullHeroHeight ? 'h-auto' : 'h-[50vh] overflow-hidden'
+        )}>
           {/* Hero image container - slight parallax via will-change */}
-          <div className='absolute inset-0 will-change-transform'>
+          <div className={cn(
+            'will-change-transform',
+            mobileFullHeroHeight ? 'relative' : 'absolute inset-0'
+          )}>
             {leftColumn}
           </div>
-          {/* Gradient fade overlay - transparent at top, fades to background */}
-          <div className='absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none' />
         </div>
         {/* Content section - transparent to show topography behind */}
-        <div className='relative z-20 flex-1 -mt-4 overflow-x-hidden max-w-full min-w-0 pb-12'>
+        <div className='relative z-20 flex-1 overflow-x-hidden max-w-full min-w-0 pb-12'>
           {rightColumn}
         </div>
       </div>
@@ -75,18 +83,22 @@ export function EventDetailsLayout({
           </div>
 
           {/* Right Column - Content (internal scroll container) - z-20 */}
-          <div className='flex-1 overflow-y-auto relative z-20 pb-12'>
+          <div className='flex-1 overflow-y-auto relative z-20'>
             <div className='w-full max-w-4xl mx-auto px-8 min-h-full flex flex-col'>
               <div className='flex-1'>
                 {rightColumn}
+              </div>
+              {/* Footer inside scroll container - flows below content */}
+              <div className='mt-8'>
+                <Footer />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Full-width footer - fixed at bottom, spans entire viewport */}
-      <div className='fixed bottom-0 left-0 right-0 z-30'>
+      {/* Mobile footer - fixed at bottom */}
+      <div className='lg:hidden fixed bottom-0 left-0 right-0 z-30'>
         <Footer />
       </div>
     </div>

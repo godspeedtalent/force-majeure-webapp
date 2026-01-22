@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Clock, MapPin, Moon } from 'lucide-react';
@@ -43,6 +43,7 @@ import {
 import { BULLET_SEPARATOR } from './components/constants';
 import { useEventDetailsData } from './hooks/useEventDetailsData';
 import { useAttendeeList } from './hooks/useAttendeeList';
+import { useTicketTiers } from '@/components/ticketing/hooks/useTicketTiers';
 
 interface EventDetailsContentProps {
   event: EventDetailsRecord;
@@ -59,7 +60,9 @@ export const EventDetailsContent = ({
   const { hasAnyRole } = useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
-  const { viewCount, isLoading: isViewCountLoading, recordView } = useEventViews(event.id);
+  // View count hook - recordView() is called in EventDetailsPage to avoid double-counting
+  // (this component is rendered twice in the DOM for mobile/desktop layouts)
+  const { viewCount, isLoading: isViewCountLoading } = useEventViews(event.id);
 
   // Use extracted hooks for date/time calculations and attendee list
   const {
@@ -76,7 +79,12 @@ export const EventDetailsContent = ({
     callTimeLineup,
   } = useEventDetailsData(event);
 
-  const { attendeePreview, totalGoingCount } = useAttendeeList(event.id, event.status);
+  const { attendeePreview, totalGoingCount, isLoading: isLoadingAttendees } = useAttendeeList(event.id, event.status);
+
+  // Fetch ticket tiers to determine if Get Tickets button should show
+  const { data: ticketTiers = [] } = useTicketTiers(event.id);
+  const hasTicketTiers = ticketTiers.length > 0;
+
   const {
     isShareModalOpen,
     handleOpenShareModal,
@@ -120,11 +128,6 @@ export const EventDetailsContent = ({
 
   // Check if venue map should be shown
   const showVenueMap = (event as any).show_venue_map ?? true;
-
-  // Record page view on mount
-  useEffect(() => {
-    recordView();
-  }, [recordView]);
 
   const contentViewportRef = useRef<HTMLDivElement | null>(null);
   const handleContentViewportRef = useCallback(
@@ -218,7 +221,7 @@ export const EventDetailsContent = ({
 
   const handleManageOrganization = useCallback(
     (organizationId: string) => {
-      navigate(`/admin/organizations/${organizationId}`);
+      navigate(`/organizations/${organizationId}/manage`);
     },
     [navigate]
   );
@@ -258,6 +261,7 @@ export const EventDetailsContent = ({
               attendeePreview={attendeePreview}
               ticketCount={totalGoingCount}
               isLoggedIn={!!user}
+              isLoading={isLoadingAttendees}
               onCardClick={handleAttendeeCardClick}
               onPromptLogin={handlePromptLogin}
             />
@@ -341,7 +345,7 @@ export const EventDetailsContent = ({
   );
 
   const primaryHeader = (
-    <div className='flex flex-col gap-5 overflow-hidden'>
+    <div className='flex flex-col gap-5'>
       <div className='flex flex-wrap items-center gap-4 lg:flex-nowrap'>
         <FmDateBox
           weekday={weekdayLabel}
@@ -397,7 +401,7 @@ export const EventDetailsContent = ({
   );
 
   const stickyHeader = (
-    <div className='flex items-center justify-between gap-3 overflow-hidden'>
+    <div className='flex items-center justify-between gap-3'>
       <div className='flex items-center gap-3 min-w-0 flex-1'>
         <div className='flex flex-col items-center justify-center rounded-none border border-border/60 bg-background/70 px-3 py-2 text-[10px] font-semibold tracking-[0.35em] text-muted-foreground/80 flex-shrink-0'>
           <span>{weekdayLabel}</span>
@@ -434,20 +438,26 @@ export const EventDetailsContent = ({
             scrollContainerRef={contentViewportRef}
           />
 
-          {/* Only show ticket/RSVP button for upcoming events */}
-          {!isPastEvent && (
-            <div className='mt-6'>
-              {event.isFreeEvent ? (
+          {/* Only show ticket/RSVP buttons for upcoming events */}
+          {!isPastEvent && (hasTicketTiers || event.isFreeEvent) && (
+            <div className='mt-6 space-y-[10px]'>
+              {/* Get Tickets button - hidden for RSVP-only events */}
+              {hasTicketTiers && !event.isRsvpOnlyEvent && (
+                <FmBigButton onClick={handleOpenCheckout}>
+                  {t('eventDetails.getTickets')}
+                </FmBigButton>
+              )}
+
+              {/* RSVP button - shown for free events (primary button for RSVP-only events) */}
+              {event.isFreeEvent && (
                 <FmRsvpButton
                   eventId={event.id}
                   eventTitle={displayTitle}
                   eventStatus={event.status}
                   isPastEvent={isPastEvent}
+                  subtitle={event.rsvpButtonSubtitle}
+                  variant={event.isRsvpOnlyEvent ? 'primary' : 'secondary'}
                 />
-              ) : (
-                <FmBigButton onClick={handleOpenCheckout}>
-                  {t('eventDetails.getTickets')}
-                </FmBigButton>
               )}
             </div>
           )}

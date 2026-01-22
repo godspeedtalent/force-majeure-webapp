@@ -2,9 +2,9 @@ import { Skeleton } from '@/components/common/shadcn/skeleton';
 
 export const EventRowSkeleton = () => {
   return (
-    <div className='flex items-center gap-4 p-4 bg-card border border-border rounded-lg'>
+    <div className='flex items-center gap-4 p-4 bg-card border border-border rounded-none'>
       {/* Image skeleton */}
-      <Skeleton className='flex-shrink-0 w-20 h-20 rounded-md' />
+      <Skeleton className='flex-shrink-0 w-20 h-20 rounded-none' />
 
       {/* Content skeleton */}
       <div className='flex-1 min-w-0'>

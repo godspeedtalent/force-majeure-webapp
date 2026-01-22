@@ -45,6 +45,10 @@ export function useDebouncedSave<T>({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pendingDataRef = useRef<T | null>(null);
   const isSavingRef = useRef(false);
+  const isMountedRef = useRef(true);
+  // Store saveFn in a ref to always use the latest version without recreating callbacks
+  const saveFnRef = useRef(saveFn);
+  saveFnRef.current = saveFn;
 
   /**
    * Flush any pending save immediately
@@ -65,18 +69,22 @@ export function useDebouncedSave<T>({
       isSavingRef.current = true;
 
       try {
-        await saveFn(dataToSave);
-        logger.info('Flushed pending save', { context: 'useDebouncedSave' });
-      } catch (error) {
-        logger.error('Error flushing pending save', {
-          error: error instanceof Error ? error.message : 'Unknown',
-          context: 'useDebouncedSave',
-        });
+        await saveFnRef.current(dataToSave);
+        if (isMountedRef.current) {
+          logger.info('Flushed pending save', { context: 'useDebouncedSave' });
+        }
+      } catch (error: unknown) {
+        if (isMountedRef.current) {
+          logger.error('Error flushing pending save', {
+            error: error instanceof Error ? error.message : 'Unknown',
+            context: 'useDebouncedSave',
+          });
+        }
       } finally {
         isSavingRef.current = false;
       }
     }
-  }, [saveFn, enabled]);
+  }, [enabled]);
 
   /**
    * Trigger a debounced save
@@ -95,27 +103,35 @@ export function useDebouncedSave<T>({
 
       // Set new timeout
       timeoutRef.current = setTimeout(async () => {
-        if (pendingDataRef.current && !isSavingRef.current) {
-          const dataToSave = pendingDataRef.current;
-          pendingDataRef.current = null;
-          isSavingRef.current = true;
+        // Check if component is still mounted and we have data to save
+        if (!isMountedRef.current || !pendingDataRef.current || isSavingRef.current) {
+          timeoutRef.current = null;
+          return;
+        }
 
-          try {
-            await saveFn(dataToSave);
+        const dataToSave = pendingDataRef.current;
+        pendingDataRef.current = null;
+        isSavingRef.current = true;
+
+        try {
+          await saveFnRef.current(dataToSave);
+          if (isMountedRef.current) {
             logger.info('Auto-save completed', { context: 'useDebouncedSave' });
-          } catch (error) {
+          }
+        } catch (error: unknown) {
+          if (isMountedRef.current) {
             logger.error('Error during auto-save', {
               error: error instanceof Error ? error.message : 'Unknown',
               context: 'useDebouncedSave',
             });
-          } finally {
-            isSavingRef.current = false;
           }
+        } finally {
+          isSavingRef.current = false;
         }
         timeoutRef.current = null;
       }, delay);
     },
-    [saveFn, delay, enabled]
+    [delay, enabled]
   );
 
   /**
@@ -131,28 +147,34 @@ export function useDebouncedSave<T>({
 
   // Cleanup: flush pending saves on unmount or navigation
   useEffect(() => {
+    isMountedRef.current = true;
+
     return () => {
+      isMountedRef.current = false;
+
+      // Clear timeout first to prevent any pending callbacks
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
       // Flush any pending save when component unmounts
       if (pendingDataRef.current && !isSavingRef.current) {
         // Use synchronous approach for unmount cleanup
         const dataToSave = pendingDataRef.current;
         pendingDataRef.current = null;
 
-        // Fire and forget - best effort save on unmount
-        saveFn(dataToSave).catch(error => {
+        // Fire and forget - best effort save on unmount using ref for latest saveFn
+        saveFnRef.current(dataToSave).catch((error: unknown) => {
+          // Don't log if unmounted - component is gone
           logger.error('Error saving on unmount', {
             error: error instanceof Error ? error.message : 'Unknown',
             context: 'useDebouncedSave',
           });
         });
       }
-
-      // Clear timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
     };
-  }, [saveFn]);
+  }, []);
 
   // Listen for navigation events (beforeunload for external navigation)
   useEffect(() => {

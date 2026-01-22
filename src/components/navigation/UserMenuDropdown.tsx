@@ -11,7 +11,7 @@ import {
 import { FmUserAvatar } from '@/components/common/display/FmUserAvatar';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { PERMISSIONS, ROLES, FEATURE_FLAGS, useFeatureFlagHelpers } from '@/shared';
+import { PERMISSIONS, ROLES } from '@/shared';
 import { AdminLockIndicator } from '@/components/common/indicators';
 import { useIsMobile } from '@/shared';
 import { cn } from '@/shared';
@@ -42,7 +42,6 @@ interface UserMenuDropdownProps {
 export function UserMenuDropdown({ onOpenChange }: UserMenuDropdownProps) {
   const { user, profile, signOut } = useAuth();
   const { hasPermission, hasRole } = useUserPermissions();
-  const { isFeatureEnabled } = useFeatureFlagHelpers();
   const navigate = useNavigate();
   const { t } = useTranslation('common');
   const isMobile = useIsMobile();
@@ -65,12 +64,10 @@ export function UserMenuDropdown({ onOpenChange }: UserMenuDropdownProps) {
     navigate(path);
   };
 
-  // Organization tools feature flag
-  const orgToolsEnabled = isFeatureEnabled(FEATURE_FLAGS.ORGANIZATION_TOOLS);
-  // Org tools access: manage_organization permission AND feature flag
-  const hasOrgToolsAccess = orgToolsEnabled && hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
-  // Scanning access: scan_tickets permission AND feature flag
-  const hasScanningAccess = orgToolsEnabled && hasPermission(PERMISSIONS.SCAN_TICKETS);
+  // Org tools access: manage_organization permission
+  const hasOrgToolsAccess = hasPermission(PERMISSIONS.MANAGE_ORGANIZATION);
+  // Scanning access: scan_tickets permission
+  const hasScanningAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);
   // Any org access
   const hasAnyOrgAccess = hasOrgToolsAccess || hasScanningAccess;
   // Developer access

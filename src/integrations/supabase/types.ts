@@ -4181,57 +4181,6 @@ export type Database = {
           },
         ]
       }
-      tags: {
-        Row: {
-          color: string | null
-          created_at: string
-          created_by: string | null
-          description: string | null
-          entity_type: string | null
-          id: string
-          name: string
-          updated_at: string
-          usage_count: number
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          entity_type?: string | null
-          id?: string
-          name: string
-          updated_at?: string
-          usage_count?: number
-        }
-        Update: {
-          color?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          entity_type?: string | null
-          id?: string
-          name?: string
-          updated_at?: string
-          usage_count?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tags_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tags_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "public_guest_list_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       test_event_interests: {
         Row: {
           created_at: string
@@ -5903,20 +5852,6 @@ export type Database = {
           zip_code: string
         }[]
       }
-      get_reviewer_stats: {
-        Args: never
-        Returns: {
-          avg_artistic_score: number
-          avg_genre_fit_score: number
-          avg_overall_score: number
-          avg_review_time_minutes: number
-          avg_technical_score: number
-          reviewer_email: string
-          reviewer_id: string
-          reviewer_name: string
-          total_reviews: number
-        }[]
-      }
       get_rsvp_with_details: {
         Args: { p_rsvp_id: string }
         Returns: {
@@ -5932,37 +5867,6 @@ export type Database = {
           user_id: string
           venue_name: string
         }[]
-      }
-      get_screening_stats: {
-        Args: { p_context?: string; p_end_date?: string; p_start_date?: string }
-        Returns: Json
-      }
-      get_submission_rankings: {
-        Args: { p_context_type: string; p_limit?: number }
-        Returns: {
-          artist_id: string
-          artist_name: string
-          decided_at: string
-          genre: string
-          overall_score: number
-          review_count: number
-          soundcloud_url: string
-          spotify_url: string
-          submission_id: string
-        }[]
-      }
-      get_submissions_with_details: {
-        Args: {
-          p_context?: string
-          p_end_date?: string
-          p_exclude_ignored?: boolean
-          p_genre_mismatch?: boolean
-          p_min_reviews?: number
-          p_start_date?: string
-          p_status?: string
-          p_user_id?: string
-        }
-        Returns: Json
       }
       get_table_list: {
         Args: never

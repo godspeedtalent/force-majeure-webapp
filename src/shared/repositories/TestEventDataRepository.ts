@@ -7,6 +7,7 @@ import type {
   GuestAttendeeData,
   ProfileData,
   GuestData,
+  ConsolidatedAttendeesResult,
 } from './types';
 
 /**
@@ -325,5 +326,23 @@ export class TestEventDataRepository implements IEventDataRepository {
       });
       return [];
     }
+  }
+
+  async getAllAttendees(eventId: string): Promise<ConsolidatedAttendeesResult> {
+    // For test data, we run all queries in parallel since there's no consolidated RPC
+    const [ticketHolders, rsvpHolders, interestedUsers, guestHolders] =
+      await Promise.all([
+        this.getTicketHolders(eventId),
+        this.getRsvpHolders(eventId),
+        this.getInterestedUsers(eventId),
+        this.getGuestTicketHolders(eventId),
+      ]);
+
+    return {
+      ticket_holders: ticketHolders,
+      rsvp_holders: rsvpHolders,
+      interested_users: interestedUsers,
+      guest_holders: guestHolders,
+    };
   }
 }

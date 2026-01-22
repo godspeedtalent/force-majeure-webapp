@@ -1,18 +1,29 @@
 /**
  * QR Code Generation and Verification Utilities
  *
- * Provides secure QR code generation and verification for physical tickets.
+ * Provides secure QR code generation and verification for physical tickets and RSVPs.
  * Uses HMAC-SHA256 signatures to prevent forgery and ensure one-time use.
  *
  * @module _shared/qr
  */
 
 /**
- * QR Code Data Structure
+ * Ticket QR Code Data Structure
  * Compact JSON format to minimize QR code size
  */
 export interface TicketQRData {
   t: string; // ticket_id (UUID)
+  e: string; // event_id (UUID)
+  v: number; // version (1)
+  s: string; // HMAC-SHA256 signature (first 16 chars)
+}
+
+/**
+ * RSVP QR Code Data Structure
+ * Compact JSON format to minimize QR code size
+ */
+export interface RsvpQRData {
+  r: string; // rsvp_id (UUID)
   e: string; // event_id (UUID)
   v: number; // version (1)
   s: string; // HMAC-SHA256 signature (first 16 chars)
@@ -195,6 +206,183 @@ export function looksLikeValidQR(qrDataString: string): boolean {
       typeof data === 'object' &&
       data !== null &&
       'string' === typeof data.t &&
+      'string' === typeof data.e &&
+      'number' === typeof data.v &&
+      'string' === typeof data.s
+    );
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================================
+// RSVP QR Code Functions
+// ============================================================================
+
+/**
+ * RSVP Verification Result
+ */
+export interface RsvpQRVerificationResult {
+  valid: boolean;
+  rsvpId?: string;
+  eventId?: string;
+  error?: string;
+}
+
+/**
+ * Generate HMAC-SHA256 signature for RSVP data
+ *
+ * @param rsvpId - UUID of the RSVP
+ * @param eventId - UUID of the event
+ * @returns Hex string signature (first 16 characters)
+ */
+async function generateRsvpSignature(
+  rsvpId: string,
+  eventId: string
+): Promise<string> {
+  const secret = getQRSecret();
+  const data = `${rsvpId}:${eventId}:v1`;
+
+  // Create key from secret
+  const keyData = new TextEncoder().encode(secret);
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // Sign the data
+  const dataBuffer = new TextEncoder().encode(data);
+  const signature = await crypto.subtle.sign('HMAC', key, dataBuffer);
+
+  // Convert to hex string and take first 16 characters
+  const hashArray = Array.from(new Uint8Array(signature));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex.substring(0, 16);
+}
+
+/**
+ * Generate QR code data for an RSVP
+ *
+ * @param rsvpId - UUID of the RSVP
+ * @param eventId - UUID of the event
+ * @returns JSON string to encode in QR code
+ *
+ * @example
+ * ```ts
+ * const qrData = await generateRsvpQR(
+ *   '550e8400-e29b-41d4-a716-446655440000',
+ *   '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
+ * );
+ * // Returns: '{"r":"550e8400...","e":"6ba7b810...","v":1,"s":"a1b2c3d4..."}'
+ * ```
+ */
+export async function generateRsvpQR(
+  rsvpId: string,
+  eventId: string
+): Promise<string> {
+  const signature = await generateRsvpSignature(rsvpId, eventId);
+
+  const qrData: RsvpQRData = {
+    r: rsvpId,
+    e: eventId,
+    v: 1,
+    s: signature,
+  };
+
+  return JSON.stringify(qrData);
+}
+
+/**
+ * Verify RSVP QR code data and extract RSVP information
+ *
+ * @param qrDataString - JSON string from QR code
+ * @returns Verification result with RSVP/event IDs or error
+ *
+ * @example
+ * ```ts
+ * const result = await verifyRsvpQR(qrCodeData);
+ * if (result.valid) {
+ *   console.log('Valid RSVP:', result.rsvpId);
+ * } else {
+ *   console.error('Invalid:', result.error);
+ * }
+ * ```
+ */
+export async function verifyRsvpQR(
+  qrDataString: string
+): Promise<RsvpQRVerificationResult> {
+  try {
+    // Parse JSON
+    const qrData = JSON.parse(qrDataString) as RsvpQRData;
+
+    // Validate structure
+    if (!qrData.r || !qrData.e || !qrData.v || !qrData.s) {
+      return {
+        valid: false,
+        error: 'Invalid QR code format: missing required fields',
+      };
+    }
+
+    // Check version
+    if (qrData.v !== 1) {
+      return {
+        valid: false,
+        error: `Unsupported QR code version: ${qrData.v}`,
+      };
+    }
+
+    // Validate UUIDs format (basic check)
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(qrData.r) || !uuidRegex.test(qrData.e)) {
+      return {
+        valid: false,
+        error: 'Invalid QR code format: malformed UUIDs',
+      };
+    }
+
+    // Verify signature
+    const expectedSignature = await generateRsvpSignature(qrData.r, qrData.e);
+    if (qrData.s !== expectedSignature) {
+      return {
+        valid: false,
+        error: 'Invalid QR code: signature verification failed',
+      };
+    }
+
+    // All checks passed
+    return {
+      valid: true,
+      rsvpId: qrData.r,
+      eventId: qrData.e,
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      error: `QR code parsing error: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`,
+    };
+  }
+}
+
+/**
+ * Validate that a string looks like valid RSVP QR data
+ * Quick check before attempting full verification
+ *
+ * @param qrDataString - String to validate
+ * @returns true if looks like valid RSVP QR JSON
+ */
+export function looksLikeValidRsvpQR(qrDataString: string): boolean {
+  try {
+    const data = JSON.parse(qrDataString);
+    return (
+      typeof data === 'object' &&
+      data !== null &&
+      'string' === typeof data.r &&
       'string' === typeof data.e &&
       'number' === typeof data.v &&
       'string' === typeof data.s

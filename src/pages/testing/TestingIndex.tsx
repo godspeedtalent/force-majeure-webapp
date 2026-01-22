@@ -40,11 +40,11 @@ export default function TestingIndex() {
               className='group cursor-pointer'
               onClick={() => navigate(suite.route)}
             >
-              <div className='p-6 border border-border rounded-lg bg-card hover:bg-accent/5 hover:border-fm-gold/50 transition-all duration-200'>
+              <div className='p-6 border border-border rounded-none bg-card hover:bg-accent/5 hover:border-fm-gold/50 transition-all duration-200'>
                 <div className='flex items-start justify-between gap-4'>
                   <div className='flex-1 space-y-2'>
                     <div className='flex items-center gap-3'>
-                      <div className='p-2 bg-fm-gold/10 rounded-md group-hover:bg-fm-gold/20 transition-colors'>
+                      <div className='p-2 bg-fm-gold/10 rounded-none group-hover:bg-fm-gold/20 transition-colors'>
                         <Icon className='h-5 w-5 text-fm-gold' />
                       </div>
                       <h2 className='text-2xl font-canela font-semibold group-hover:text-fm-gold transition-colors'>
@@ -71,7 +71,7 @@ export default function TestingIndex() {
       </div>
 
       {/* Footer Note */}
-      <div className='mt-12 p-4 bg-muted/50 rounded-lg border border-border'>
+      <div className='mt-12 p-4 bg-muted/50 rounded-none border border-border'>
         <p className='text-sm text-muted-foreground text-center'>
           {t('testingIndex.accessNote')}
         </p>

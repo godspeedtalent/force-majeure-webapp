@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import { useAttendeeList, Attendee } from '../hooks/useAttendeeList';
 import { cn } from '@/shared';
 
@@ -29,48 +30,73 @@ function AttendeeAvatar({ attendee }: AttendeeAvatarProps) {
   const isInterested = attendee.type === 'interested';
   const isGuest = attendee.type === 'guest';
 
+  // Tooltip content - enlarged image for public users with avatar, name only for others
+  const tooltipContent = isPrivate || isGuest ? (
+    <span className='text-xs text-muted-foreground'>{t('guestList.privateUser')}</span>
+  ) : attendee.avatarUrl ? (
+    <div className='flex flex-col items-center gap-2'>
+      <img
+        src={attendee.avatarUrl}
+        alt={attendee.name}
+        className='w-32 h-32 object-cover rounded-none'
+      />
+      <span className='text-xs font-medium'>{attendee.name}</span>
+    </div>
+  ) : (
+    <span className='text-xs font-medium'>{attendee.name}</span>
+  );
+
   return (
-    <div className='flex flex-col items-center gap-[5px] text-center group'>
-      <div
-        className={cn(
-          'relative flex h-12 w-12 items-center justify-center border-2 text-xs font-semibold uppercase transition-all duration-300 overflow-hidden',
-          isPrivate || isGuest
-            ? 'border-white/5 bg-gradient-to-br from-white/5 to-white/10 text-muted-foreground/50'
-            : isInterested
-              ? 'border-white/10 bg-gradient-to-br from-white/5 to-white/10 text-muted-foreground'
-              : 'border-fm-gold/30 bg-gradient-to-br from-fm-gold/10 to-fm-gold/25 text-fm-gold'
-        )}
-      >
-        {isPrivate || isGuest ? (
-          // Private/guest users: show blurred avatar if available, otherwise UserX icon
-          attendee.avatarUrl ? (
+    <FmPortalTooltip
+      content={tooltipContent}
+      side='top'
+      delayDuration={200}
+      className='bg-black/70 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-[10px]'
+      arrowClassName='fill-black/70'
+    >
+      <div className='flex flex-col items-center gap-[5px] text-center group cursor-pointer'>
+        <div
+          className={cn(
+            'relative flex h-12 w-12 items-center justify-center border-2 text-xs font-semibold uppercase transition-all duration-300 overflow-hidden',
+            'hover:scale-110 hover:z-10',
+            isPrivate || isGuest
+              ? 'border-white/5 bg-gradient-to-br from-white/5 to-white/10 text-muted-foreground/50'
+              : isInterested
+                ? 'border-white/10 bg-gradient-to-br from-white/5 to-white/10 text-muted-foreground hover:border-white/30'
+                : 'border-fm-gold/30 bg-gradient-to-br from-fm-gold/10 to-fm-gold/25 text-fm-gold hover:border-fm-gold/60'
+          )}
+        >
+          {isPrivate || isGuest ? (
+            // Private/guest users: show blurred avatar if available, otherwise UserX icon
+            attendee.avatarUrl ? (
+              <img
+                src={attendee.avatarUrl}
+                alt={t('guestList.privateUser')}
+                className='h-full w-full object-cover blur-md opacity-50'
+              />
+            ) : (
+              <UserX className='h-4 w-4' />
+            )
+          ) : attendee.avatarUrl ? (
             <img
               src={attendee.avatarUrl}
-              alt={t('guestList.privateUser')}
-              className='h-full w-full object-cover blur-md opacity-50'
+              alt={attendee.name}
+              className='h-full w-full object-cover'
             />
           ) : (
-            <UserX className='h-4 w-4' />
-          )
-        ) : attendee.avatarUrl ? (
-          <img
-            src={attendee.avatarUrl}
-            alt={attendee.name}
-            className='h-full w-full object-cover'
-          />
-        ) : (
-          attendee.avatar
-        )}
-        {isFriend && !isPrivate && !isGuest && (
-          <span className='absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center bg-fm-gold text-[8px] text-black shadow-md'>
-            <Heart className='h-2.5 w-2.5 fill-current' />
-          </span>
-        )}
+            attendee.avatar
+          )}
+          {isFriend && !isPrivate && !isGuest && (
+            <span className='absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center bg-fm-gold text-[8px] text-black shadow-md'>
+              <Heart className='h-2.5 w-2.5 fill-current' />
+            </span>
+          )}
+        </div>
+        <span className='w-full truncate text-[10px] leading-tight text-muted-foreground/80'>
+          {isPrivate || isGuest ? t('guestList.privateUser') : attendee.name}
+        </span>
       </div>
-      <span className='w-full truncate text-[10px] leading-tight text-muted-foreground/80'>
-        {isPrivate || isGuest ? t('guestList.privateUser') : attendee.name}
-      </span>
-    </div>
+    </FmPortalTooltip>
   );
 }
 
@@ -146,9 +172,11 @@ interface SectionHeaderProps {
   title: string;
   count: number;
   icon: React.ReactNode;
+  /** Optional right-aligned content (e.g., search input) */
+  rightContent?: React.ReactNode;
 }
 
-function SectionHeader({ title, count, icon }: SectionHeaderProps) {
+function SectionHeader({ title, count, icon, rightContent }: SectionHeaderProps) {
   if (count === 0) return null;
 
   return (
@@ -158,6 +186,9 @@ function SectionHeader({ title, count, icon }: SectionHeaderProps) {
       <span className='text-xs text-muted-foreground/60 bg-white/5 px-2 py-0.5'>
         {count}
       </span>
+      {rightContent && (
+        <div className='ml-auto'>{rightContent}</div>
+      )}
     </div>
   );
 }
@@ -209,11 +240,41 @@ export function AttendeeModal({
   const filteredGoingCount = filteredGoingAttendees.filter(a => a.type !== 'guest').length + guestCount;
   const filteredInterestedCount = filteredInterestedAttendees.filter(a => a.type !== 'guest').length;
 
+  // Search input component to pass to section header
+  const searchInput = (
+    <div className='relative w-[200px]'>
+      <Search className='absolute left-[10px] top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50' />
+      <input
+        type='text'
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder={t('guestList.searchPlaceholder')}
+        className={cn(
+          'w-full h-8 pl-[32px] pr-[32px]',
+          'bg-white/5 border border-white/10',
+          'text-xs text-white placeholder:text-muted-foreground/50',
+          'focus:outline-none focus:border-fm-gold/50 focus:bg-white/10',
+          'transition-all duration-200'
+        )}
+      />
+      {searchQuery && (
+        <button
+          type='button'
+          onClick={() => setSearchQuery('')}
+          className='absolute right-[8px] top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground/50 hover:text-white transition-colors'
+          aria-label={t('guestList.clearSearch')}
+        >
+          <X className='h-3 w-3' />
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'bg-black/95 backdrop-blur-xl border border-white/10',
+          'bg-black/80 backdrop-blur-xl border border-white/20',
           'p-0 overflow-hidden',
           'w-full max-w-none lg:max-w-[65%]',
           'h-[85vh] max-h-[85vh]',
@@ -228,43 +289,13 @@ export function AttendeeModal({
               <div className='p-2 bg-fm-gold/10 border border-fm-gold/20'>
                 <Users className='w-5 h-5 text-fm-gold' />
               </div>
-              <div>
-                <DialogTitle className='font-canela text-xl uppercase tracking-wider'>
-                  {t('guestList.modalTitle')}
-                </DialogTitle>
-                <p className='text-xs text-muted-foreground mt-1'>
-                  {t('guestList.goingCount', { count: totalGoingCount })}
-                </p>
-              </div>
+              <DialogTitle className='font-canela text-xl uppercase tracking-wider'>
+                {t('guestList.modalTitle')}
+              </DialogTitle>
             </div>
-          </div>
-
-          {/* Search Input */}
-          <div className='mt-[15px] relative'>
-            <Search className='absolute left-[10px] top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50' />
-            <input
-              type='text'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('guestList.searchPlaceholder')}
-              className={cn(
-                'w-full h-10 pl-[36px] pr-[36px]',
-                'bg-white/5 border border-white/10',
-                'text-sm text-white placeholder:text-muted-foreground/50',
-                'focus:outline-none focus:border-fm-gold/50 focus:bg-white/10',
-                'transition-all duration-200'
-              )}
-            />
-            {searchQuery && (
-              <button
-                type='button'
-                onClick={() => setSearchQuery('')}
-                className='absolute right-[10px] top-1/2 -translate-y-1/2 p-1 text-muted-foreground/50 hover:text-white transition-colors'
-                aria-label={t('guestList.clearSearch')}
-              >
-                <X className='h-4 w-4' />
-              </button>
-            )}
+            <span className='text-sm text-muted-foreground'>
+              {t('guestList.goingCount', { count: totalGoingCount })}
+            </span>
           </div>
         </DialogHeader>
 
@@ -282,6 +313,7 @@ export function AttendeeModal({
                   title={t('guestList.goingSection')}
                   count={filteredGoingCount}
                   icon={<Users className='h-4 w-4' />}
+                  rightContent={searchInput}
                 />
                 <div className='pt-[15px]'>
                   <UnifiedAttendeeList

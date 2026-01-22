@@ -50,7 +50,7 @@ export class TicketPDFService {
           id,
           user_id,
           event_id,
-          profiles!orders_user_id_fkey (
+          profiles!orders_user_id_profiles_fkey (
             full_name
           ),
           events (
@@ -156,7 +156,7 @@ export class TicketPDFService {
           id,
           user_id,
           event_id,
-          profiles!orders_user_id_fkey (
+          profiles!orders_user_id_profiles_fkey (
             full_name
           ),
           events (

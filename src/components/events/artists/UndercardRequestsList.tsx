@@ -215,7 +215,7 @@ export function UndercardRequestsList({
       >
         <div className='space-y-3'>
           {pendingRequests.length === 0 ? (
-            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-lg'>
+            <div className='text-center py-8 text-muted-foreground border-2 border-dashed border-white/10 rounded-none'>
               <Music className='h-12 w-12 mx-auto mb-2 opacity-30' />
               <p>{t('undercardRequests.noPending')}</p>
               <p className='text-xs mt-1 opacity-70'>
@@ -298,7 +298,7 @@ function RequestCard({
   // Early return if no artist data at all
   if (!registration && !linkedArtist) {
     return (
-      <div className='border border-white/10 rounded-lg p-4 text-muted-foreground text-sm'>
+      <div className='border border-white/10 rounded-none p-4 text-muted-foreground text-sm'>
         {t('undercardRequests.noRegistrationData', 'Artist data unavailable')}
       </div>
     );
@@ -329,7 +329,7 @@ function RequestCard({
   return (
     <div
       className={cn(
-        'border rounded-lg overflow-hidden transition-all duration-300',
+        'border rounded-none overflow-hidden transition-all duration-300',
         request.status === 'pending'
           ? 'border-fm-gold/30 bg-fm-gold/5'
           : request.status === 'approved'

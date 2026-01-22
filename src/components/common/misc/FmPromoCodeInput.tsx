@@ -85,7 +85,7 @@ export const FmPromoCodeInput = ({
         <FmQueryInput placeholder={t('promoCode.enterCode')} onQuery={handleQuery} />
       ) : (
         <div className='flex items-center gap-2'>
-          <div className='flex-1 flex items-center gap-1.5 text-xs text-green-600 bg-green-600/10 px-3 py-2 rounded-md'>
+          <div className='flex-1 flex items-center gap-1.5 text-xs text-green-600 bg-green-600/10 px-3 py-2 rounded-none'>
             <CheckCircle2 className='h-3 w-3' />
             <span>
               {t('promoCode.applied', { code: appliedPromo?.code, discount: getDiscountText() })}

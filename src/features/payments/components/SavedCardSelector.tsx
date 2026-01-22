@@ -48,7 +48,7 @@ export const SavedCardSelector = ({
             onClick={() => onSelectCard(card.id)}
             disabled={loading}
             className={cn(
-              'w-full p-3 rounded-lg border-2 text-left transition-all group',
+              'w-full p-3 rounded-none border-2 text-left transition-all group',
               'hover:border-fm-gold/50',
               selectedCardId === card.id
                 ? 'border-fm-gold bg-fm-gold/5'

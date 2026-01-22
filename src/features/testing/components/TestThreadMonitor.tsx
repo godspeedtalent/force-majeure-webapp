@@ -50,7 +50,7 @@ export function TestThreadMonitor({
             {runningThreads.map(thread => (
               <div
                 key={thread.threadId}
-                className='flex items-center gap-3 p-3 bg-card border border-border rounded-lg'
+                className='flex items-center gap-3 p-3 bg-card border border-border rounded-none'
               >
                 <FmCommonLoadingSpinner size='sm' />
                 <div className='flex-1 min-w-0'>
@@ -83,7 +83,7 @@ export function TestThreadMonitor({
             {completedThreads.slice(0, 3).map(thread => (
               <div
                 key={thread.threadId}
-                className='flex items-center gap-3 p-3 bg-card border border-border rounded-lg opacity-50'
+                className='flex items-center gap-3 p-3 bg-card border border-border rounded-none opacity-50'
               >
                 <CheckCircle2 className='h-4 w-4 text-green-500' />
                 <div className='flex-1 min-w-0'>

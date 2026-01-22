@@ -10,8 +10,7 @@
  * these can be updated to use proper typing.
  */
 
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/shared/services/logger';
+import { supabase, logger } from '@/shared';
 import type { AnalyticsAdapter } from './AnalyticsAdapter';
 import type {
   AdapterResult,

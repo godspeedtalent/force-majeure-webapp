@@ -4,7 +4,6 @@ import {
   Ticket,
   Map,
   Trophy,
-  Search,
   type LucideIcon,
   Settings,
 } from 'lucide-react';
@@ -31,7 +30,6 @@ export const getFlagIcon = (flagName: string): LucideIcon => {
     scavenger_hunt: Map,
     scavenger_hunt_active: Map,
     show_leaderboard: Trophy,
-    global_search: Search,
     spotify_integration: Music,
   };
 
@@ -48,7 +46,6 @@ export const getFlagDescription = (flagName: string): string => {
     scavenger_hunt: 'Enable scavenger hunt feature',
     scavenger_hunt_active: 'Activate scavenger hunt gameplay',
     show_leaderboard: 'Display leaderboard rankings',
-    global_search: 'Enable global search functionality',
     spotify_integration: 'Enable Spotify integration features',
   };
 

@@ -6,8 +6,7 @@ import { MapPin, Users } from 'lucide-react';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
 import { FmCommonExpandableText } from '@/components/common/display/FmCommonExpandableText';
-import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/shared';
+import { supabase, cn } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import type { Venue } from '@/features/events/types';
 

@@ -27,6 +27,7 @@ COMMENT ON TABLE test_profiles IS 'Test profiles for mock data generation. Not l
 -- ============================================
 ALTER TABLE test_profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can manage test profiles" ON test_profiles;
 CREATE POLICY "Admins can manage test profiles"
   ON test_profiles FOR ALL
   TO authenticated
@@ -68,6 +69,7 @@ COMMENT ON TABLE test_event_rsvps IS 'Test RSVPs for mock data generation.';
 
 ALTER TABLE test_event_rsvps ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can manage test RSVPs" ON test_event_rsvps;
 CREATE POLICY "Admins can manage test RSVPs"
   ON test_event_rsvps FOR ALL
   TO authenticated
@@ -108,6 +110,7 @@ COMMENT ON TABLE test_event_interests IS 'Test event interests for mock data gen
 
 ALTER TABLE test_event_interests ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins can manage test interests" ON test_event_interests;
 CREATE POLICY "Admins can manage test interests"
   ON test_event_interests FOR ALL
   TO authenticated

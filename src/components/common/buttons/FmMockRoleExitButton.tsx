@@ -126,7 +126,7 @@ export const FmMockRoleExitButton = () => {
           >
             <div
               className={cn(
-                'z-[10000] overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md',
+                'z-[10000] overflow-hidden rounded-none border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md',
                 'animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2'
               )}
             >

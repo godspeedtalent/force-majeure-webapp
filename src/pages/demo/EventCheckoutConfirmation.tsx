@@ -61,7 +61,7 @@ export default function EventCheckoutConfirmation() {
         <Separator className='my-6' />
 
         {/* Email Confirmation Message */}
-        <div className='bg-muted/20 p-4 rounded-lg mb-8'>
+        <div className='bg-muted/20 p-4 rounded-none mb-8'>
           <p className='text-sm text-center'>
             Your tickets have been sent to{' '}
             <span className='font-medium text-fm-gold'>{email}</span>

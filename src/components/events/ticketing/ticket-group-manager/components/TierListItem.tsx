@@ -9,6 +9,7 @@ import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import { Badge } from '@/components/common/shadcn/badge';
 import type { TicketTier } from '../types';
 import { formatPrice } from '../utils';
+import { FeeEditor } from './FeeEditor';
 
 interface TierListItemProps {
   tier: TicketTier;
@@ -19,6 +20,8 @@ interface TierListItemProps {
   onUpdate: (updates: Partial<TicketTier>) => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  /** Group-level fees to display when tier is inheriting */
+  groupFees?: { flatCents: number; pctBps: number };
 }
 
 export function TierListItem({
@@ -30,6 +33,7 @@ export function TierListItem({
   onUpdate,
   onDuplicate,
   onDelete,
+  groupFees,
 }: TierListItemProps) {
   const { t } = useTranslation('common');
 
@@ -191,6 +195,22 @@ export function TierListItem({
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Fee Settings */}
+            <div className='mt-4 pt-4 border-t border-border/50'>
+              <FeeEditor
+                inheritLabel={t('tierListItem.inheritGroupFees')}
+                inheritDescription={t('tierListItem.inheritGroupFeesDescription')}
+                isInheriting={tier.inherit_group_fees ?? true}
+                onInheritChange={inherit => onUpdate({ inherit_group_fees: inherit })}
+                flatFeeCents={tier.fee_flat_cents ?? 0}
+                onFlatFeeChange={cents => onUpdate({ fee_flat_cents: cents })}
+                pctFeeBps={tier.fee_pct_bps ?? 0}
+                onPctFeeChange={bps => onUpdate({ fee_pct_bps: bps })}
+                disabled={hasOrders}
+                inheritedFees={groupFees}
+              />
             </div>
           </div>
 

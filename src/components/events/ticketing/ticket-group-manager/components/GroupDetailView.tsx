@@ -18,6 +18,7 @@ import type { TicketGroup, TicketTier } from '../types';
 import { GROUP_COLORS, NO_GROUP_ID } from '../constants';
 import { formatPrice, getTotalTicketsInGroup, getTotalRevenueInGroup } from '../utils';
 import { TierListItem } from './TierListItem';
+import { FeeEditor } from './FeeEditor';
 
 interface GroupDetailViewProps {
   group: TicketGroup;
@@ -31,6 +32,8 @@ interface GroupDetailViewProps {
   onUpdateTier: (tierIndex: number, updates: Partial<TicketTier>) => void;
   onDuplicateTier: (tierIndex: number) => void;
   onDeleteTier: (tierIndex: number) => void;
+  /** Event-level fees to display when group is inheriting */
+  eventFees?: { flatCents: number; pctBps: number };
 }
 
 export function GroupDetailView({
@@ -44,6 +47,7 @@ export function GroupDetailView({
   onUpdateTier,
   onDuplicateTier,
   onDeleteTier,
+  eventFees,
 }: GroupDetailViewProps) {
   const { t } = useTranslation('common');
   const colorConfig =
@@ -132,6 +136,23 @@ export function GroupDetailView({
                     {formatPrice(getTotalRevenueInGroup(group))} {t('ticketGroupManager.revenue')}
                   </Badge>
                 </div>
+
+                {/* Group Fee Settings - only for named groups */}
+                {!isNoGroup && (
+                  <div className='mt-4'>
+                    <FeeEditor
+                      inheritLabel={t('ticketGroupManager.inheritEventFees')}
+                      inheritDescription={t('ticketGroupManager.inheritEventFeesDescription')}
+                      isInheriting={group.inherit_event_fees ?? true}
+                      onInheritChange={inherit => onUpdateGroup({ inherit_event_fees: inherit })}
+                      flatFeeCents={group.fee_flat_cents ?? 0}
+                      onFlatFeeChange={cents => onUpdateGroup({ fee_flat_cents: cents })}
+                      pctFeeBps={group.fee_pct_bps ?? 0}
+                      onPctFeeChange={bps => onUpdateGroup({ fee_pct_bps: bps })}
+                      inheritedFees={eventFees}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -178,6 +199,11 @@ export function GroupDetailView({
               onUpdate={updates => onUpdateTier(tierIndex, updates)}
               onDuplicate={() => onDuplicateTier(tierIndex)}
               onDelete={() => onDeleteTier(tierIndex)}
+              groupFees={
+                group.inherit_event_fees && eventFees
+                  ? eventFees
+                  : { flatCents: group.fee_flat_cents ?? 0, pctBps: group.fee_pct_bps ?? 0 }
+              }
             />
           );
         })}

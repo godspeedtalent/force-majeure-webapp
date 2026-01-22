@@ -45,4 +45,12 @@ export interface EventDetailsRecord {
   status: EventStatus;
   /** Whether this event uses RSVP instead of ticketing */
   isFreeEvent: boolean;
+  /** Whether this event is RSVP-only (no paid tickets) */
+  isRsvpOnlyEvent: boolean;
+  /** Optional subtitle/footnote displayed below the RSVP button */
+  rsvpButtonSubtitle?: string | null;
+  /** Whether this event has no headliner (TBA artist should not be shown) */
+  noHeadliner: boolean;
+  /** Whether to display the hero image at full height on mobile */
+  mobileFullHeroHeight: boolean;
 }

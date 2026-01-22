@@ -62,21 +62,21 @@ export const EventInfoSection = ({
         />
 
         <FmCommonInfoCard
-          icon={MapPin}
+          icon={venueLogo ? undefined : MapPin}
+          customIcon={
+            venueLogo ? (
+              <img
+                src={venueLogo}
+                alt=''
+                className='w-5 h-5 object-contain'
+              />
+            ) : undefined
+          }
           label={t('eventInfo.venue')}
           size='sm'
           value={
             <FmTextLink onClick={onVenueSelect} className='text-white'>
-              <span className='flex items-center gap-2'>
-                {venueLogo && (
-                  <img
-                    src={venueLogo}
-                    alt=''
-                    className='w-5 h-5 object-contain flex-shrink-0'
-                  />
-                )}
-                {venue || t('eventInfo.venueTBA')}
-              </span>
+              {venue || t('eventInfo.venueTBA')}
             </FmTextLink>
           }
         />

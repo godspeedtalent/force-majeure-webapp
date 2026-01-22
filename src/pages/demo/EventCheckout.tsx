@@ -173,7 +173,7 @@ export default function EventCheckout() {
           onBack={handleBackToSelection}
         />
       ) : (
-        <div className='bg-card border-border rounded-lg overflow-hidden'>
+        <div className='bg-card border-border rounded-none overflow-hidden'>
           {/* Event Hero Image */}
           {eventDetails && eventDetails.hero_image && (
             <div className='w-full h-64 overflow-hidden'>
@@ -194,7 +194,7 @@ export default function EventCheckout() {
                   <img
                     src={eventDetails.headliner.image_url}
                     alt={eventDetails.title}
-                    className='w-32 h-32 rounded-lg object-cover'
+                    className='w-32 h-32 rounded-none object-cover'
                   />
                 )}
 

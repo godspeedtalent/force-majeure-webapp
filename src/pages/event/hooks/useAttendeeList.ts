@@ -4,7 +4,7 @@ import { supabase } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 import { getEventDataRepository } from '@/shared/repositories';
-import type { ProfileData } from '@/shared/repositories';
+import type { ProfileData, ConsolidatedAttendeesResult } from '@/shared/repositories';
 
 export interface Attendee {
   id: string;
@@ -35,6 +35,15 @@ function getInitials(name: string | null | undefined): string {
     return parts[0].substring(0, 2).toUpperCase();
   }
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Extract first name from full name
+ */
+function getFirstName(fullName: string | null | undefined): string | null {
+  if (!fullName) return null;
+  const parts = fullName.trim().split(/\s+/);
+  return parts[0] || null;
 }
 
 /**
@@ -79,13 +88,15 @@ function profileToAttendee(
     };
   }
 
-  const displayName = profile?.display_name || profile?.full_name || 'Anonymous';
+  // Use first name for display, falling back to display_name or full_name
+  const firstName = getFirstName(profile?.full_name);
+  const displayName = firstName || profile?.display_name || 'Anonymous';
 
   return {
     id: profile?.id || userId,
     userId,
     name: displayName,
-    avatar: getInitials(displayName),
+    avatar: getInitials(profile?.full_name || displayName),
     avatarUrl: profile?.avatar_url,
     isFriend: friendIds.includes(userId),
     type,
@@ -131,33 +142,26 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
     [eventStatus]
   );
 
-  // Fetch ticket holders (from orders)
-  const { data: ticketHolders = [], isLoading: loadingTickets } = useQuery({
-    queryKey: ['event-attendees-tickets', eventId, eventStatus],
-    queryFn: () => repository.getTicketHolders(eventId),
+  // Fetch all attendees in a single consolidated query
+  // This replaces 4 separate queries with 1 call for better performance
+  const emptyResult: ConsolidatedAttendeesResult = {
+    ticket_holders: [],
+    rsvp_holders: [],
+    interested_users: [],
+    guest_holders: [],
+  };
+
+  const { data: attendeeData = emptyResult, isLoading: loadingAttendees } = useQuery({
+    queryKey: ['event-attendees-all', eventId, eventStatus],
+    queryFn: () => repository.getAllAttendees(eventId),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Fetch RSVPs (for free events)
-  const { data: rsvpHolders = [], isLoading: loadingRsvps } = useQuery({
-    queryKey: ['event-attendees-rsvp', eventId, eventStatus],
-    queryFn: () => repository.getRsvpHolders(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // Fetch interested users
-  const { data: interestedHolders = [], isLoading: loadingInterested } = useQuery({
-    queryKey: ['event-attendees-interested', eventId, eventStatus],
-    queryFn: () => repository.getInterestedUsers(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // Fetch guest ticket holders (anonymous checkouts)
-  const { data: guestHolders = [], isLoading: loadingGuests } = useQuery({
-    queryKey: ['event-attendees-guests', eventId, eventStatus],
-    queryFn: () => repository.getGuestTicketHolders(eventId),
-    staleTime: 1000 * 60 * 5,
-  });
+  // Extract individual attendee lists from consolidated result
+  const ticketHolders = attendeeData.ticket_holders;
+  const rsvpHolders = attendeeData.rsvp_holders;
+  const interestedHolders = attendeeData.interested_users;
+  const guestHolders = attendeeData.guest_holders;
 
   // Fetch user's friends (rave family connections)
   // This always queries production tables - friends are real users only
@@ -256,11 +260,17 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
   // Guest count for display
   const guestCount = sortedAttendees.filter(a => a.displayCategory === 'guest').length;
 
-  // Preview for the card (first 5 public attendees, prioritize friends)
+  // Preview for the card (first 5 attendees, showing public and private)
+  // Prioritize public attendees, then add private ones
   const publicGoingAttendees = goingAttendees.filter(a => !a.isPrivate);
-  const attendeePreview = publicGoingAttendees
-    .slice(0, 5)
-    .map(a => ({ name: a.name, avatar: a.avatar }));
+  const privateGoingAttendees = goingAttendees.filter(a => a.isPrivate);
+  const previewAttendees = [...publicGoingAttendees, ...privateGoingAttendees].slice(0, 5);
+  const attendeePreview = previewAttendees.map(a => ({
+    name: a.name,
+    avatar: a.avatar,
+    avatarUrl: a.avatarUrl,
+    isPrivate: a.isPrivate,
+  }));
 
   return {
     // For backward compatibility with existing EventGuestList component
@@ -282,6 +292,6 @@ export function useAttendeeList(eventId: string, eventStatus?: string) {
     interestedCount: interestedAttendees.length,
 
     // Loading state
-    isLoading: loadingTickets || loadingRsvps || loadingInterested || loadingGuests,
+    isLoading: loadingAttendees,
   };
 }

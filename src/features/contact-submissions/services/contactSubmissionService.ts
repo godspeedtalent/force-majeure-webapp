@@ -2,12 +2,9 @@
  * Contact Submission Service
  *
  * API service for managing contact form submissions.
- *
- * Note: contact_submissions table exists but types haven't been regenerated.
- * Using type assertions until types are regenerated.
  */
 
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/shared';
 import { logger } from '@/shared/services/logger';
 import {
   ContactSubmission,
@@ -15,8 +12,7 @@ import {
   ContactSubmissionStatus,
 } from '../types';
 
-// Type-safe table name (table exists but not in generated types yet)
-const TABLE_NAME = 'contact_submissions' as 'profiles';
+const TABLE_NAME = 'contact_submissions' as const;
 
 /**
  * Fetch contact submissions with optional filters

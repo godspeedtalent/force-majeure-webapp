@@ -28,7 +28,7 @@ import {
   FmResponsiveGroupLayout,
   ResponsiveGroup,
 } from '@/components/common/layout/FmResponsiveGroupLayout';
-import { supabase, cn } from '@/shared';
+import { supabase, cn, logger } from '@/shared';
 import type { ErrorLogLevel, ErrorLogSource } from '@/features/error-logging';
 import { ERROR_LEVEL_CONFIG, ERROR_SOURCE_CONFIG } from '@/features/error-logging';
 
@@ -172,9 +172,7 @@ export function ErrorLogTabContent() {
   const { data: logs = [], isLoading, error } = useQuery({
     queryKey: ['error-logs', levelFilter],
     queryFn: async () => {
-      // Note: error_logs table exists but may not be in generated types yet
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let query = (supabase as any)
+      let query = supabase
         .from('error_logs')
         .select('id, level, source, message, endpoint, method, status_code, details, user_id, page_url, created_at')
         .order('created_at', { ascending: false })
@@ -317,15 +315,16 @@ export function ErrorLogTabFooter() {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    // Note: error_logs table exists but may not be in generated types yet
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('error_logs')
       .delete()
       .lt('created_at', sevenDaysAgo.toISOString());
 
     if (error) {
-      console.error('Failed to clear old logs:', error);
+      logger.error('Failed to clear old logs', {
+        error: error.message,
+        context: 'ErrorLogTab.handleClearOldLogs',
+      });
     }
   };
 

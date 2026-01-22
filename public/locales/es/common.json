@@ -1,4 +1,7 @@
 {
+  "common": {
+    "loading": "Cargando..."
+  },
   "nav": {
     "home": "Inicio",
     "events": "Eventos",
@@ -37,6 +40,7 @@
     "cancel": "Cancelar",
     "submit": "Enviar",
     "delete": "Eliminar",
+    "unlink": "Desvincular",
     "edit": "Editar",
     "manage": "Gestionar",
     "back": "Atrás",
@@ -111,6 +115,11 @@
     "showIgnored": "Mostrar Ignorados",
     "showingIgnored": "Mostrando Ignorados",
     "deletePermanently": "Eliminar Permanentemente"
+  },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
   },
   "compTickets": {
     "title": "Entradas de Cortesía",
@@ -193,14 +202,10 @@
     "saveError": "No se pudo guardar la configuración social",
     "enableGuestList": "Habilitar Lista de Invitados",
     "enableGuestListDescription": "Mostrar sección de lista de invitados en la página de detalles del evento",
-    "minimumThresholds": "Umbrales Mínimos de Invitados",
-    "minimumThresholdsDescription": "Establece el número mínimo de invitados requeridos antes de que la lista de invitados sea visible para cada tipo",
-    "minInterestedGuests": "Mínimo de Invitados Interesados",
-    "minInterestedDescription": "Invitados que se marcaron como \"interesados\" en el evento",
-    "minPrivateGuests": "Mínimo de Invitados Privados",
-    "minPrivateDescription": "Invitados en la lista privada (solo por invitación)",
-    "minPublicGuests": "Mínimo de Invitados Públicos",
-    "minPublicDescription": "Invitados que compraron entradas públicas",
+    "minimumThreshold": "Umbral Mínimo de Invitados",
+    "minimumThresholdDescription": "Establece el número mínimo de invitados requeridos antes de que la lista de invitados sea visible",
+    "minGuestThreshold": "Mínimo de Invitados",
+    "minGuestThresholdDescription": "La lista de invitados solo se mostrará cuando haya al menos este número de invitados (interesados, compradores de entradas o invitados privados)",
     "displayViewCount": "Mostrar Contador de Vistas",
     "displayViewCountDescription": "Mostrar el contador de vistas en la página de detalles del evento",
     "noteLabel": "Nota",
@@ -1477,13 +1482,19 @@
     "showPartnersDescription": "Mostrar organizaciones asociadas en la página del evento",
     "showGuestList": "Mostrar Lista de Invitados",
     "showGuestListDescription": "Mostrar la sección de lista de invitados en la página del evento",
+    "mobileSettings": "Móvil",
+    "mobileSettingsDescription": "Configuración específica para dispositivos móviles",
+    "mobileFullHeroHeight": "Mostrar imagen hero a altura completa",
+    "mobileFullHeroHeightDescription": "Mostrar la imagen hero a altura completa en móvil sin recortar",
     "dangerZone": "Zona de Peligro",
     "irreversibleActions": "Acciones irreversibles",
     "deleteEvent": "Eliminar Evento",
     "deleteEventDescription": "Eliminar permanentemente este evento y todos los datos asociados incluyendo tipos de entradas y pedidos. Esta acción no se puede deshacer.",
     "deleteEventConfirm": "¿Estás seguro de que quieres eliminar \"{{title}}\"?\n\nEsta acción no se puede deshacer. Todos los tipos de entradas y pedidos asociados a este evento también serán eliminados.",
     "lookingForUndercardEnabled": "Búsqueda de artistas de apertura activada",
-    "lookingForUndercardDisabled": "Búsqueda de artistas de apertura desactivada"
+    "lookingForUndercardDisabled": "Búsqueda de artistas de apertura desactivada",
+    "noHeadlinerEnabled": "Modo sin artista principal activado",
+    "noHeadlinerDisabled": "Modo artista principal restaurado"
   },
   "promoCodes": {
     "title": "Códigos Promocionales",
@@ -1698,7 +1709,9 @@
     },
     "publishEvent": "Publicar Evento",
     "publishEventDescription": "Hacer visible tu evento al público",
-    "publishEventInfo": "Publicar hará que este evento sea visible en la página principal y en los resultados de búsqueda. Asegúrate de que todos los detalles del evento estén completos antes de publicar."
+    "publishEventInfo": "Publicar hará que este evento sea visible en la página principal y en los resultados de búsqueda. Asegúrate de que todos los detalles del evento estén completos antes de publicar.",
+    "noHeadliner": "Sin artista principal",
+    "noHeadlinerDescription": "Este evento no tiene un artista principal designado"
   },
   "eventAdmin": {
     "testEventMode": "Modo de Evento de Prueba",
@@ -1843,6 +1856,8 @@
     "viewOrganizationDescription": "Ver página de detalles de la organización",
     "overview": "Resumen",
     "overviewDescription": "Información básica de la organización",
+    "social": "Redes Sociales",
+    "socialDescription": "Sitio web y enlaces de redes sociales",
     "gallery": "Galería",
     "galleryDescription": "Administrar fotos y medios de la organización",
     "management": "Gestión",
@@ -1862,6 +1877,7 @@
     "enterOrganizationName": "Ingresa el nombre de la organización",
     "organizationLogo": "Logo de la Organización",
     "organizationNameDescription": "El nombre público mostrado para esta organización",
+    "socialMediaDescription": "Agrega el sitio web y los enlaces de redes sociales de tu organización para que los fans puedan encontrarte y seguirte.",
     "gallery": "Galería de la Organización",
     "galleryDescription": "Administrar fotos y medios para esta organización.",
     "galleryComingSoon": "Gestión de galería próximamente.",
@@ -1871,6 +1887,17 @@
     "events": "Eventos de la Organización",
     "eventsDescription": "Eventos organizados o asociados con esta organización.",
     "eventsComingSoon": "Gestión de eventos próximamente.",
+    "createEvent": "Crear Evento",
+    "createFirstEvent": "Crea tu primer evento",
+    "noEvents": "Sin eventos todavía",
+    "noEventsDescription": "Esta organización no ha creado ningún evento. Comienza creando tu primer evento.",
+    "upcomingEvents": "Próximos Eventos",
+    "pastEvents": "Eventos Pasados",
+    "viewEvent": "Ver evento",
+    "manageEvent": "Gestionar evento",
+    "unlinkEvent": "Desvincular de la organización",
+    "unlinkEventTitle": "Desvincular Evento",
+    "unlinkEventConfirm": "¿Estás seguro de que deseas desvincular \"{{eventName}}\" de {{orgName}}? El evento permanecerá pero ya no estará asociado con esta organización.",
     "adminControls": "Controles de Administrador",
     "adminControlsDescription": "Configuraciones y controles administrativos para esta organización.",
     "adminInfo": "Acceso administrativo completo a la configuración de la organización.",
@@ -2318,6 +2345,8 @@
     "people": "personas"
   },
   "tracking": {
+    "title": "Enlaces de Seguimiento",
+    "description": "Crea y administra enlaces de seguimiento para campañas de marketing",
     "createLink": "Crear Enlace de Seguimiento",
     "editLink": "Editar Enlace de Seguimiento",
     "createLinkDescription": "Crea un enlace de seguimiento único para medir el rendimiento de la campaña",
@@ -2929,16 +2958,41 @@
     "tierToggleFailed": "Error al cambiar estado del nivel: {{error}}",
     "rsvpSettings": "Configuración de RSVP",
     "rsvpSettingsDescription": "Configurar la disponibilidad de RSVP para este evento",
-    "rsvpsAvailable": "RSVPs Disponibles",
-    "rsvpsAvailableDescription": "Cuando está habilitado, los usuarios pueden confirmar asistencia a este evento además de comprar entradas",
+    "rsvpsEnabled": "RSVPs Habilitados",
+    "rsvpsEnabledDescription": "Cuando está habilitado, los usuarios pueden confirmar asistencia a este evento",
+    "rsvpOnlyEvent": "Evento Solo RSVP",
+    "rsvpOnlyEventDescription": "Cuando está habilitado, este evento solo acepta RSVPs sin venta de entradas",
     "rsvpCapacity": "Capacidad de RSVP",
     "rsvpCapacityInfo": "Establecer un límite de capacidad opcional para RSVPs",
     "rsvpCapacityHint": "Dejar vacío para RSVPs ilimitados",
+    "rsvpButtonSubtitle": "Subtítulo del Botón",
+    "rsvpButtonSubtitlePlaceholder": "ej., Disponibilidad limitada",
+    "rsvpButtonSubtitleHint": "Texto opcional que aparece debajo del botón RSVP",
+    "sendRsvpEmail": "Enviar Correo de Confirmación de RSVP",
+    "sendRsvpEmailDescription": "Cuando está habilitado, los usuarios recibirán un correo de confirmación después de enviar su RSVP",
     "currentRsvps": "RSVPs Actuales",
     "rsvpAtCapacity": "El evento está al límite de capacidad de RSVP",
     "unlimited": "Ilimitado",
     "complimentaryTickets": "Entradas de Cortesía",
-    "complimentaryTicketsDescription": "Emitir entradas gratuitas para invitados, VIPs o personal"
+    "complimentaryTicketsDescription": "Emitir entradas gratuitas para invitados, VIPs o personal",
+    "eventFeeSettings": "Configuración de Tarifas del Evento",
+    "eventFeeSettingsDescription": "Configurar tarifas personalizadas para este evento o usar los valores predeterminados del sitio",
+    "useDefaultSiteFees": "Usar Tarifas Predeterminadas del Sitio",
+    "useDefaultSiteFeesDescription": "Cuando está habilitado, este evento usará la configuración de tarifas global del sitio",
+    "flatFee": "Tarifa Fija",
+    "percentFee": "Tarifa Porcentual",
+    "flatFeeHint": "Cantidad fija agregada a cada entrada",
+    "percentFeeHint": "Porcentaje del precio de la entrada agregado como tarifa",
+    "inherited": "heredado",
+    "inheritedFees": "Tarifas Heredadas",
+    "additionalFees": "Tarifas Adicionales",
+    "customFees": "Tarifas Personalizadas",
+    "addFee": "Agregar Tarifa",
+    "feeLabel": "Etiqueta de Tarifa",
+    "feeLabelPlaceholder": "ej., Tarifa de Procesamiento, Impuesto sobre Ventas",
+    "feeType": "Tipo de Tarifa",
+    "noAdditionalFees": "Sin tarifas adicionales. Haga clic en \"Agregar Tarifa\" para añadir tarifas sobre las heredadas.",
+    "noCustomFees": "Sin tarifas personalizadas. Haga clic en \"Agregar Tarifa\" para añadir tarifas."
   },
   "eventForm": {
     "validation": {
@@ -3106,6 +3160,7 @@
     "noContent": "Sin contenido aún",
     "author": "Autor",
     "toSave": "para guardar",
+    "tapCheckmarkToSave": "Toca el check para guardar cambios",
     "types": {
       "todo": "PENDIENTE",
       "info": "INFO",
@@ -3317,6 +3372,7 @@
     "venueTBA": "Venue por confirmar"
   },
   "eventActions": {
+    "expressInterest": "¡Muestra interés!",
     "removeInterest": "Quitar interés",
     "markAsInterested": "Marcar como interesado",
     "shareEvent": "Compartir evento",
@@ -3543,7 +3599,9 @@
     "deleteGroup": "Eliminar grupo",
     "ticketTiers": "Niveles de Entradas",
     "addTierToGroup": "Agregar Nivel a {{groupName}}",
-    "ungroupedNote": "Las entradas en este grupo no aparecerán agrupadas en el proceso de compra. Se mostrarán como niveles de entradas individuales."
+    "ungroupedNote": "Las entradas en este grupo no aparecerán agrupadas en el proceso de compra. Se mostrarán como niveles de entradas individuales.",
+    "inheritEventFees": "Heredar Tarifas del Evento",
+    "inheritEventFeesDescription": "Cuando está habilitado, este grupo usa la configuración de tarifas del evento. Desactívelo para establecer tarifas personalizadas."
   },
   "termsAndConditions": {
     "title": "Términos y Condiciones",
@@ -3644,7 +3702,9 @@
     "availableCount": "{{count}} disponible(s)",
     "nameLockedTooltip": "El nombre no se puede cambiar después de vender entradas",
     "priceLockedTooltip": "El precio no se puede cambiar después de vender entradas",
-    "dragToReorder": "Arrastrar para reordenar"
+    "dragToReorder": "Arrastrar para reordenar",
+    "inheritGroupFees": "Heredar Tarifas del Grupo",
+    "inheritGroupFeesDescription": "Cuando está habilitado, este nivel usa la configuración de tarifas del grupo. Desactívelo para establecer tarifas personalizadas."
   },
   "ticketTiersSection": {
     "addTicketTier": "Agregar Nivel de Entrada",

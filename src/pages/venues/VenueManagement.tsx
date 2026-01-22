@@ -313,8 +313,8 @@ export default function VenueManagement() {
                             path: `venues/${id}/logo`,
                           });
                           setLogoUrl(result.publicUrl);
-                        } catch {
-                          toast.error(t('upload.uploadFailed'));
+                        } catch (error: unknown) {
+                          handleError(error, { title: t('upload.uploadFailed') });
                         } finally {
                           setIsLogoUploading(false);
                         }
@@ -344,8 +344,8 @@ export default function VenueManagement() {
                             path: `venues/${id}/logo`,
                           });
                           setLogoUrl(result.publicUrl);
-                        } catch {
-                          toast.error(t('upload.uploadFailed'));
+                        } catch (error: unknown) {
+                          handleError(error, { title: t('upload.uploadFailed') });
                         } finally {
                           setIsLogoUploading(false);
                         }

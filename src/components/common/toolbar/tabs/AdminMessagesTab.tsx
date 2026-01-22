@@ -14,8 +14,7 @@ import {
   Inbox,
   Mail,
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { cn, handleError } from '@/shared';
+import { supabase, cn, handleError } from '@/shared';
 import { Separator } from '@/components/common/shadcn/separator';
 import { AdminMessagesSection } from '@/components/DevTools/AdminMessagesSection';
 import { Badge } from '@/components/common/shadcn/badge';
