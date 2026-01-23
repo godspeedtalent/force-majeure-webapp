@@ -179,6 +179,19 @@ All colors MUST be HSL.
     --z-popover: 200;
     --z-tooltip: 250;
     --z-toast: 300;
+
+    /* Mobile Layout - Bottom Spacing System */
+    /* Total height of fixed bottom elements: progress bar (3) + indicator padding (20) +
+       indicator (50) + content buffer (20) = 93px */
+    --mobile-bottom-offset: 93px;
+    --mobile-bottom-safe: calc(var(--mobile-bottom-offset) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* For very short devices, use viewport-relative padding */
+  @media (max-height: 700px) {
+    :root {
+      --mobile-bottom-offset: 18vh;
+    }
   }
 
   .dark {
@@ -366,13 +379,17 @@ All colors MUST be HSL.
   }
 
   /* Prevent overscroll bounce effect on macOS/iOS */
-  html,
-  body {
+  html {
     overscroll-behavior: none;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
     max-width: 100vw;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
 
   body {
@@ -431,6 +448,16 @@ All colors MUST be HSL.
 
   .dark * {
     scrollbar-color: hsl(var(--border) / 0.8) hsl(var(--muted) / 0.3);
+  }
+
+  /* Utility to hide scrollbar while maintaining scroll functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
   }
 
   /* Autofill styling - prevents bright white background on autofilled inputs */

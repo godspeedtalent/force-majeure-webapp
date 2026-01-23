@@ -94,8 +94,8 @@ const canViewOrg = hasPermission(PERMISSIONS.VIEW_ORGANIZATION);
 | --------------------- | ----------------------------- | -------------------------------------- |
 | `*`                   | Full system access (wildcard) | admin, developer                       |
 | `debug_mode`          | Access to debug tools         | developer                              |
-| `view_events`         | View event listings           | user, admin, developer                 |
-| `purchase_tickets`    | Buy tickets to events         | user, admin, developer                 |
+| `view_events`         | View event listings           | admin, developer (all authenticated)   |
+| `purchase_tickets`    | Buy tickets to events         | admin, developer (all authenticated)   |
 | `manage_organization` | Full organization management  | org_admin, admin, developer            |
 | `manage_events`       | Create and edit events        | org_admin, admin, developer            |
 | `view_analytics`      | Access analytics dashboard    | org_admin, admin, developer            |
@@ -103,17 +103,19 @@ const canViewOrg = hasPermission(PERMISSIONS.VIEW_ORGANIZATION);
 | `view_organization`   | View organization details     | org_staff, org_admin, admin, developer |
 | `check_in_guests`     | Check guests into events      | org_staff, org_admin, admin, developer |
 | `scan_tickets`        | Scan and validate tickets     | org_staff, org_admin, admin, developer |
-| `manage_own_profile`  | Edit own user profile         | user, admin, developer                 |
+| `manage_own_profile`  | Edit own user profile         | admin, developer (all authenticated)   |
 
 ## Default Roles
 
-| Role        | Display Name       | Description                    | Key Permissions                                                  |
-| ----------- | ------------------ | ------------------------------ | ---------------------------------------------------------------- |
-| `user`      | User               | Standard user                  | view_events, purchase_tickets, manage_own_profile                |
-| `admin`     | Administrator      | Full system administrator      | \* (all)                                                         |
-| `developer` | Developer          | Developer access for testing   | \*, debug_mode                                                   |
-| `org_admin` | Organization Admin | Manage organization and events | manage_organization, manage_events, view_analytics, manage_staff |
-| `org_staff` | Organization Staff | Check-in and scan tickets      | view_organization, check_in_guests, scan_tickets                 |
+| Role          | Display Name       | Description                    | Key Permissions                                                  |
+| ------------- | ------------------ | ------------------------------ | ---------------------------------------------------------------- |
+| `admin`       | Administrator      | Full system administrator      | \* (all)                                                         |
+| `developer`   | Developer          | Developer access for testing   | \*, debug_mode                                                   |
+| `fm_staff`    | FM Staff           | Force Majeure staff            | access_staff_tools                                               |
+| `org_admin`   | Organization Admin | Manage organization and events | manage_organization, manage_events, view_analytics, manage_staff |
+| `org_staff`   | Organization Staff | Check-in and scan tickets      | view_organization, check_in_guests, scan_tickets                 |
+| `venue_admin` | Venue Admin        | Manage venues                  | manage_venues                                                    |
+| `artist`      | Artist             | Artist profile access          | (none - authenticated access)                                    |
 
 ## Database Functions
 

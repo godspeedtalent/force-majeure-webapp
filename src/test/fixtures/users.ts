@@ -10,7 +10,7 @@ export function createMockUserProfile(overrides?: any) {
     last_name: 'User',
     bio: 'Test user bio',
     profile_image_url: 'https://example.com/avatar.jpg',
-    role: 'user',
+    role: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
     ...overrides,

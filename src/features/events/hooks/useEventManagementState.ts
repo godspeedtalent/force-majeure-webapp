@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase, handleError } from '@/shared';
+import { supabase, handleError, logger } from '@/shared';
 import { toast } from 'sonner';
 
 /**
@@ -222,7 +222,24 @@ export function useEventManagementState({
 
     setIsDeleting(true);
     try {
-      // Delete ticket tiers first (foreign key constraint)
+      // Step 1: Purge ALL test data (both new test_* tables and legacy production tables)
+      // This RPC function handles cleanup of test_orders, test_tickets, test_profiles,
+      // test_event_rsvps, test_event_interests, and legacy orders/tickets with test_data=true
+      const { error: purgeError } = await supabase.rpc('delete_mock_orders_by_event', {
+        p_event_id: eventId,
+      });
+
+      if (purgeError) {
+        // Log but continue - test data cleanup is best-effort
+        // The event should still be deletable even if cleanup partially fails
+        logger.warn('Failed to purge test data during event deletion', {
+          error: purgeError.message,
+          eventId,
+          source: 'useEventManagementState.deleteEvent',
+        });
+      }
+
+      // Step 2: Delete ticket tiers (foreign key constraint)
       const { error: tiersError } = await supabase
         .from('ticket_tiers')
         .delete()
@@ -230,7 +247,7 @@ export function useEventManagementState({
 
       if (tiersError) throw tiersError;
 
-      // Delete the event
+      // Step 3: Delete the event
       const { error: eventError } = await supabase
         .from('events')
         .delete()

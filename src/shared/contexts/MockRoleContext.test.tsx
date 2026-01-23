@@ -49,7 +49,7 @@ describe('MockRoleContext', () => {
       const roles: Record<string, { name: string; display_name: string; permissions: string[] }> = {
         admin: { name: 'admin', display_name: 'Admin', permissions: ['*'] },
         developer: { name: 'developer', display_name: 'Developer', permissions: ['*', 'access_dev_tools'] },
-        user: { name: 'user', display_name: 'User', permissions: [] },
+        fm_staff: { name: 'fm_staff', display_name: 'FM Staff', permissions: ['access_staff_tools'] },
         org_admin: { name: 'org_admin', display_name: 'Org Admin', permissions: ['manage_organization', 'view_organization'] },
         org_staff: { name: 'org_staff', display_name: 'Org Staff', permissions: ['view_organization'] },
         venue_admin: { name: 'venue_admin', display_name: 'Venue Admin', permissions: ['manage_venues'] },
@@ -111,31 +111,31 @@ describe('MockRoleContext', () => {
     it('should auto-add dependencies when adding a role with dependencies', () => {
       const { result } = renderHook(() => useMockRole(), { wrapper });
 
-      // org_admin requires user role
+      // developer requires fm_staff role
       act(() => {
-        result.current.togglePendingRole('org_admin');
+        result.current.togglePendingRole('developer');
       });
 
-      expect(result.current.pendingState.roles).toContain('org_admin');
-      expect(result.current.pendingState.roles).toContain('user');
+      expect(result.current.pendingState.roles).toContain('developer');
+      expect(result.current.pendingState.roles).toContain('fm_staff');
     });
 
     it('should auto-remove dependents when removing a required role', () => {
       const { result } = renderHook(() => useMockRole(), { wrapper });
 
-      // First add org_admin (which adds user as dependency)
+      // First add developer (which adds fm_staff as dependency)
       act(() => {
-        result.current.togglePendingRole('org_admin');
+        result.current.togglePendingRole('developer');
       });
-      expect(result.current.pendingState.roles).toContain('org_admin');
-      expect(result.current.pendingState.roles).toContain('user');
+      expect(result.current.pendingState.roles).toContain('developer');
+      expect(result.current.pendingState.roles).toContain('fm_staff');
 
-      // Now remove user - should also remove org_admin
+      // Now remove fm_staff - should also remove developer
       act(() => {
-        result.current.togglePendingRole('user');
+        result.current.togglePendingRole('fm_staff');
       });
-      expect(result.current.pendingState.roles).not.toContain('user');
-      expect(result.current.pendingState.roles).not.toContain('org_admin');
+      expect(result.current.pendingState.roles).not.toContain('fm_staff');
+      expect(result.current.pendingState.roles).not.toContain('developer');
     });
 
     it('should clear unauthenticated when adding roles', () => {
@@ -309,7 +309,7 @@ describe('MockRoleContext', () => {
 
       // Change pending state
       act(() => {
-        result.current.togglePendingRole('user');
+        result.current.togglePendingRole('org_staff');
       });
       expect(result.current.hasPendingChanges).toBe(true);
 
@@ -369,13 +369,13 @@ describe('MockRoleContext', () => {
     it('should return true for auto-selected dependencies', () => {
       const { result } = renderHook(() => useMockRole(), { wrapper });
 
-      // org_admin adds user as dependency
+      // developer adds fm_staff as dependency
       act(() => {
-        result.current.togglePendingRole('org_admin');
+        result.current.togglePendingRole('developer');
       });
 
-      expect(result.current.isRoleSelectedAsDependency('user')).toBe(true);
-      expect(result.current.isRoleSelectedAsDependency('org_admin')).toBe(false);
+      expect(result.current.isRoleSelectedAsDependency('fm_staff')).toBe(true);
+      expect(result.current.isRoleSelectedAsDependency('developer')).toBe(false);
     });
 
     it('should return false for directly selected roles', () => {
@@ -575,15 +575,13 @@ describe('MockRoleContext', () => {
     it('should return roles that depend on the given role', () => {
       const { result } = renderHook(() => useMockRole(), { wrapper });
 
-      // Add org_admin and org_staff which both depend on user
+      // Add developer which depends on fm_staff
       act(() => {
-        result.current.togglePendingRole('org_admin');
-        result.current.togglePendingRole('org_staff');
+        result.current.togglePendingRole('developer');
       });
 
-      const dependents = result.current.getRolesDependingOn('user');
-      expect(dependents).toContain('org_admin');
-      expect(dependents).toContain('org_staff');
+      const dependents = result.current.getRolesDependingOn('fm_staff');
+      expect(dependents).toContain('developer');
     });
 
     it('should return empty array for role with no dependents', () => {
@@ -601,8 +599,8 @@ describe('MockRoleContext', () => {
     it('should return dependencies for a role', () => {
       const { result } = renderHook(() => useMockRole(), { wrapper });
 
-      const required = result.current.getRolesRequiredBy('org_admin');
-      expect(required).toContain('user');
+      const required = result.current.getRolesRequiredBy('developer');
+      expect(required).toContain('fm_staff');
     });
 
     it('should return empty array for role with no dependencies', () => {
@@ -621,10 +619,9 @@ describe('MockRoleContext', () => {
         result.current.togglePendingRole('venue_admin');
       });
 
-      // Both should be selected, plus user as dependency
+      // Both should be selected (no dependencies for these roles anymore)
       expect(result.current.pendingState.roles).toContain('org_admin');
       expect(result.current.pendingState.roles).toContain('venue_admin');
-      expect(result.current.pendingState.roles).toContain('user');
     });
 
     it('should aggregate permissions from multiple roles', () => {

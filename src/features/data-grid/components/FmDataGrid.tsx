@@ -601,13 +601,16 @@ export function FmDataGrid<T extends Record<string, any>>({
         }}
         className={cn(
           'rounded-none border border-border/50 bg-background/30 backdrop-blur-sm relative',
-          isVirtualized ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible',
+          isVirtualized || isInfiniteScroll ? 'overflow-auto' : 'overflow-x-auto overflow-y-visible',
           // Hide native scrollbar when using sticky scrollbar
-          scrollSync.showStickyScrollbar && !isVirtualized && 'scrollbar-hide'
+          scrollSync.showStickyScrollbar && !isVirtualized && !isInfiniteScroll && 'scrollbar-hide'
         )}
-        style={isVirtualized ? { maxHeight: '600px' } : undefined}
+        style={isVirtualized || isInfiniteScroll ? { maxHeight: '600px' } : undefined}
         onKeyDown={handleTableKeyDown}
-        onScroll={scrollSync.handleTableScroll}
+        onScroll={(e) => {
+          scrollSync.handleTableScroll();
+          infiniteScroll.handleScroll(e);
+        }}
         role='grid'
         aria-label={`${resourceName} data grid`}
       >

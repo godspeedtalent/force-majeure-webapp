@@ -32,6 +32,16 @@ import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormChec
 import { FmGenerationProgress } from '@/components/common/feedback/FmGenerationProgress';
 import { Label } from '@/components/common/shadcn/label';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/common/shadcn/alert-dialog';
+import {
   FmCommonTabs,
   FmCommonTabsList,
   FmCommonTabsTrigger,
@@ -113,6 +123,7 @@ export const TestEventConfigSection = ({
   const [isPurging, setIsPurging] = useState(false);
   const [generationProgress, setGenerationProgress] = useState<GenerationProgress | null>(null);
   const [activeTab, setActiveTab] = useState<'current' | 'import'>(orderCount > 0 ? 'current' : 'import');
+  const [showExitTestModeConfirm, setShowExitTestModeConfirm] = useState(false);
 
   // Load persisted progress from localStorage on mount
   useEffect(() => {
@@ -369,13 +380,27 @@ export const TestEventConfigSection = ({
 
   // Allow toggling test mode:
   // 1. From draft to test: always allowed (if not published)
-  // 2. From test to draft: only allowed if no mock data exists
-  const canToggleTestMode =
-    (eventStatus === 'draft' && !hasGoneLive) || (eventStatus === 'test' && !hasMockData);
+  // 2. From test to draft: always allowed (will show confirmation if mock data exists)
+  const canToggleTestMode = (eventStatus === 'draft' && !hasGoneLive) || eventStatus === 'test';
 
-  const handleToggleTestMode = async (enabled: boolean) => {
+  // Handle the actual toggle action (called after confirmation if needed)
+  const performToggleTestMode = async (enabled: boolean) => {
     setIsUpdating(true);
     try {
+      // If disabling test mode (test → draft) and there's mock data, purge it first
+      if (!enabled && eventStatus === 'test' && hasMockData) {
+        const { error: purgeError } = await supabase.rpc('delete_mock_orders_by_event', {
+          p_event_id: eventId,
+        });
+
+        if (purgeError) {
+          throw new Error(t('eventAdmin.failedToPurgeBeforeTransition'));
+        }
+
+        // Clear persisted progress since we just purged
+        clearPersistedProgress();
+      }
+
       const newStatus = enabled ? 'test' : 'draft';
 
       const { error } = await supabase
@@ -390,7 +415,10 @@ export const TestEventConfigSection = ({
 
       toast.success(enabled ? t('eventAdmin.testModeEnabled') : t('eventAdmin.testModeDisabled'));
 
+      // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
     } catch (error) {
       await handleError(error, {
@@ -402,6 +430,24 @@ export const TestEventConfigSection = ({
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  // Handle toggle click - show confirmation if disabling with mock data
+  const handleToggleTestMode = async (enabled: boolean) => {
+    // If disabling test mode and there's mock data, show confirmation first
+    if (!enabled && eventStatus === 'test' && hasMockData) {
+      setShowExitTestModeConfirm(true);
+      return;
+    }
+
+    // Otherwise proceed directly
+    await performToggleTestMode(enabled);
+  };
+
+  // Handle confirmation to exit test mode
+  const handleConfirmExitTestMode = async () => {
+    setShowExitTestModeConfirm(false);
+    await performToggleTestMode(false);
   };
 
   const handleGenerateMockData = async () => {
@@ -605,12 +651,12 @@ export const TestEventConfigSection = ({
           </div>
         )}
 
-        {/* Warning for test events with mock data - must purge before exiting test mode */}
+        {/* Info for test events with mock data - data will be purged on exit */}
         {eventStatus === 'test' && hasMockData && (
           <div className='flex items-start gap-3 p-3 bg-fm-purple/10 border border-fm-purple/20'>
             <FlaskConical className='h-5 w-5 text-fm-purple flex-shrink-0 mt-0.5' />
             <p className='text-sm text-fm-purple/80'>
-              {t('eventAdmin.purgeMockDataToExitTestMode', { count: orderCount })}
+              {t('eventAdmin.mockDataWillBePurgedOnExit', { count: testOrderCount })}
             </p>
           </div>
         )}
@@ -1298,6 +1344,30 @@ export const TestEventConfigSection = ({
           </div>
         )}
       </div>
+
+      {/* Confirmation dialog for exiting test mode */}
+      <AlertDialog open={showExitTestModeConfirm} onOpenChange={setShowExitTestModeConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('eventAdmin.exitTestModeConfirmTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('eventAdmin.exitTestModeConfirmDescription', {
+                orders: testOrderCount,
+                tickets: mockDataSummary?.tickets ?? 0,
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('eventAdmin.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmExitTestMode}
+              className='bg-fm-danger hover:bg-fm-danger/90'
+            >
+              {t('eventAdmin.exitTestModeConfirmButton')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </FmFormSection>
   );
 };

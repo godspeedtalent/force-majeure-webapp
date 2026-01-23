@@ -68,10 +68,6 @@ export const MobileBottomTabBar = ({
       <div
         ref={containerRef}
         className='flex items-center overflow-x-auto scrollbar-hide px-[10px] py-[10px]'
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-        }}
       >
         {tabs.map(tab => {
           const isActive = tab.id === activeTab;

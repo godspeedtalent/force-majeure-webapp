@@ -114,6 +114,7 @@ export const AuthPanel = ({
     firstName: '',
     lastName: '',
     displayName: '',
+    publicProfile: true,
   });
   const [passwordError, setPasswordError] = useState('');
 
@@ -160,7 +161,8 @@ export const AuthPanel = ({
       signUpForm.password,
       signUpForm.displayName,
       signUpForm.firstName,
-      signUpForm.lastName
+      signUpForm.lastName,
+      signUpForm.publicProfile
     );
 
     if (!error && onAuthSuccess) {
@@ -324,6 +326,7 @@ export const AuthPanel = ({
                     displayName: e.target.value,
                   })
                 }
+                required
               />
 
               <FmCommonEmailField
@@ -378,6 +381,25 @@ export const AuthPanel = ({
                 required
                 error={passwordError}
               />
+
+              <div className='flex items-center space-x-2'>
+                <FmCommonCheckbox
+                  id='public-profile'
+                  checked={signUpForm.publicProfile}
+                  onCheckedChange={(checked) =>
+                    setSignUpForm({
+                      ...signUpForm,
+                      publicProfile: checked === true,
+                    })
+                  }
+                />
+                <label
+                  htmlFor='public-profile'
+                  className='text-sm font-normal text-muted-foreground cursor-pointer'
+                >
+                  {t('auth.makeProfilePublic')}
+                </label>
+              </div>
 
               <FmCommonButton
                 type='submit'

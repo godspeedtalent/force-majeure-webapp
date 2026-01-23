@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { cn } from '@/shared';
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
+import { MOBILE_CONTENT_BOTTOM_OFFSET } from '@/shared/constants/mobileLayout';
 
 export interface MobileTitleCardProps {
   /** Callback when auto-advance timer completes */
@@ -86,9 +87,13 @@ export function MobileTitleCard({
       className={cn(
         'flex-1 w-full',
         'flex flex-col items-center justify-center',
-        'px-[20px] pb-[180px]',
+        'px-[20px]',
         'relative'
       )}
+      style={{
+        // Dynamic safe-area-aware bottom padding using CSS variable
+        paddingBottom: `var(--mobile-bottom-safe, ${MOBILE_CONTENT_BOTTOM_OFFSET}px)`,
+      }}
     >
       {/* Main Content - fills ~50% vh */}
       <div className='flex flex-col items-center text-center'>

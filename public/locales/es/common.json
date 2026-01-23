@@ -217,6 +217,9 @@
     "othersCount": "+ {{count}} otros",
     "pageViews": "{{count}} vistas de página"
   },
+  "contextMenu": {
+    "viewProfile": "Ver Perfil"
+  },
   "labels": {
     "email": "Correo Electrónico",
     "password": "Contraseña",
@@ -1732,7 +1735,12 @@
     "hasOrdersWarning": "Este evento tiene {{count}} orden(es) y no puede convertirse en un evento de prueba.",
     "hasBeenPublishedWarning": "Este evento ha sido publicado y no puede convertirse en un evento de prueba.",
     "canExitTestModeDescription": "No existen datos simulados. Puedes salir del modo de prueba y volver al estado de borrador.",
-    "purgeMockDataToExitTestMode": "Este evento tiene {{count}} orden(es) simulada(s). Elimina los datos de prueba a continuación para salir del modo de prueba.",
+    "mockDataWillBePurgedOnExit": "Este evento tiene {{count}} orden(es) simulada(s). Los datos de prueba se eliminarán automáticamente al salir del modo de prueba.",
+    "exitTestModeConfirmTitle": "¿Salir del Modo de Prueba?",
+    "exitTestModeConfirmDescription": "Esto eliminará permanentemente todos los datos de prueba de este evento, incluyendo {{orders}} órdenes simuladas y {{tickets}} boletos. Esta acción no se puede deshacer.",
+    "exitTestModeConfirmButton": "Eliminar Datos de Prueba y Salir",
+    "cancel": "Cancelar",
+    "failedToPurgeBeforeTransition": "Error al eliminar los datos de prueba antes de la transición al modo borrador",
     "mockDataTools": "Herramientas de Datos Simulados",
     "mockDataToolsDescription": "Generar órdenes, boletos e invitados simulados para probar flujos de compra e informes.",
     "showSettings": "Configuración",
@@ -4040,6 +4048,10 @@
       "open": "Abrir herramientas de desarrollo",
       "openWithNotifications": "Abrir herramientas de desarrollo ({{count}} notificaciones)",
       "notifications": "{{count}} notificaciones"
+    },
+    "handle": {
+      "open": "Abrir herramientas",
+      "openWithNotifications": "Abrir herramientas ({{count}} notificaciones)"
     }
   },
   "demoMode": {
@@ -4547,5 +4559,9 @@
     "startTyping": "Empieza a escribir para buscar",
     "noTagsFound": "No se encontraron etiquetas",
     "maximumReached": "Máximo alcanzado"
+  },
+  "mobileBanner": {
+    "artistSignup": "Aplica para unirte a nuestros undercards aquí",
+    "pastEvents": "Viendo eventos pasados"
   }
 }

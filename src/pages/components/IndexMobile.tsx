@@ -1,26 +1,24 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CalendarX, ArrowRight } from 'lucide-react';
+import { CalendarX } from 'lucide-react';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
-import { Button } from '@/components/common/shadcn/button';
-import { cn } from '@/shared';
 import {
   MobileEventSwipeContainer,
   MobileEventFullCard,
   MobileTitleCard,
-  MobilePastEventsHeader,
   MobileSwipeIndicator,
   MobileAutoScrollProgress,
   MobileViewToggle,
   MobileEventListView,
+  MobileMessageBanner,
   type MobileViewMode,
 } from '@/components/mobile';
 import { useAutoScrollMode } from '@/shared/hooks/useAutoScrollMode';
 import { SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
+import { useMobileMessages } from '@/shared/hooks/useMobileMessages';
 
 interface Artist {
   name: string;
@@ -83,7 +81,6 @@ export function IndexMobile({
   totalPastEventsCount,
 }: IndexMobileProps) {
   const { t } = useTranslation('pages');
-  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userHasInteracted, setUserHasInteracted] = useState(false);
   const [viewMode, setViewMode] = useState<MobileViewMode>('carousel');
@@ -100,6 +97,11 @@ export function IndexMobile({
 
   // Check if we're viewing past events
   const isViewingPastEvents = currentIndex >= firstPastEventIndex && pastEvents.length > 0;
+
+  // Get mobile banner messages based on context
+  const mobileMessages = useMobileMessages(
+    useMemo(() => ({ isViewingPastEvents }), [isViewingPastEvents])
+  );
 
   // Mark scroll as programmatic for a duration
   const markProgrammaticScroll = useCallback((durationMs = 1000) => {
@@ -317,20 +319,8 @@ export function IndexMobile({
           onViewModeChange={handleViewModeChange}
         />
 
-        {/* Artist Signup Button - above pagination indicator */}
-        <Button
-          variant="default"
-          onClick={() => navigate('/artists/signup')}
-          className={cn(
-            'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
-            'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200',
-            'text-[8px] py-0.5 px-2 h-auto',
-            'rounded-none font-medium'
-          )}
-        >
-          Are you a local DJ looking to join the undercard?
-          <ArrowRight className="ml-1 h-2 w-2" />
-        </Button>
+        {/* Message Banner - artist signup CTA */}
+        <MobileMessageBanner messages={mobileMessages} />
       </div>
     );
   }
@@ -397,29 +387,14 @@ export function IndexMobile({
         })}
       </MobileEventSwipeContainer>
 
-      {/* Past Events Floating Header */}
-      <MobilePastEventsHeader visible={isViewingPastEvents} />
+      {/* Message Banner - past events indicator and artist signup CTA */}
+      <MobileMessageBanner messages={mobileMessages} />
 
       {/* Auto-Scroll Progress Bar */}
       <MobileAutoScrollProgress
         progress={autoScrollProgress}
         isActive={isAutoScrollActive}
       />
-
-      {/* Artist Signup Button - above pagination indicator */}
-      <Button
-        variant="default"
-        onClick={() => navigate('/artists/signup')}
-        className={cn(
-          'fixed bottom-[62px] left-1/2 -translate-x-1/2 z-40',
-          'bg-fm-gold/20 backdrop-blur-sm border border-fm-gold text-fm-gold hover:bg-fm-gold hover:text-black transition-all duration-200',
-          'text-[8px] py-0.5 px-2 h-auto',
-          'rounded-none font-medium'
-        )}
-      >
-        Are you a local DJ looking to join the undercard?
-        <ArrowRight className="ml-1 h-2 w-2" />
-      </Button>
 
       {/* Pagination Indicator */}
       <MobileSwipeIndicator

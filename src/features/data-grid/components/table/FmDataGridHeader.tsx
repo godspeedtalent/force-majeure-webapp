@@ -178,11 +178,13 @@ export function FmDataGridHeader<T>({
       <TableRow className='border-border/50 bg-background/95 backdrop-blur-sm hover:bg-background/95 group'>
         {/* Checkbox Column - sticky for horizontal scroll */}
         <TableHead className='w-12 sticky left-0 z-30 bg-background/95 backdrop-blur-sm'>
-          <FmCommonCheckbox
-            checked={isAllSelected}
-            onCheckedChange={onSelectAll}
-            aria-label={t('table.selectAll')}
-          />
+          <div className='flex items-center justify-center'>
+            <FmCommonCheckbox
+              checked={isAllSelected}
+              onCheckedChange={onSelectAll}
+              aria-label={t('table.selectAll')}
+            />
+          </div>
         </TableHead>
 
         {/* Row Number Column */}

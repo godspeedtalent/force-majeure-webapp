@@ -93,7 +93,8 @@ interface AuthContextType {
     password: string,
     displayName?: string,
     firstName?: string,
-    lastName?: string
+    lastName?: string,
+    publicProfile?: boolean
   ) => Promise<{ error: any }>;
   signIn: (
     email: string,
@@ -278,7 +279,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     password: string,
     displayName?: string,
     firstName?: string,
-    lastName?: string
+    lastName?: string,
+    publicProfile: boolean = true
   ) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
@@ -292,6 +294,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             display_name: displayName,
             first_name: firstName,
             last_name: lastName,
+            public_profile: publicProfile,
           },
         },
       });

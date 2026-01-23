@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/shared';
 import { useIsMobile } from '@/shared';
 import { SCROLL_THRESHOLDS } from '@/shared';
+import { getMobileSafeBottomPosition } from '@/shared/constants/mobileLayout';
 
 export interface MobileSwipeIndicatorProps {
   /** Total number of items (including title card) */
@@ -105,7 +106,8 @@ export function MobileSwipeIndicator({
     <div
       className={cn(
         // Position just above the progress bar at bottom of viewport
-        'fixed bottom-[20px] left-1/2 -translate-x-1/2 z-40',
+        // Using safe-area-aware positioning for notched devices
+        'fixed left-1/2 -translate-x-1/2 z-40',
         'flex items-center gap-[6px]',
         'px-[16px] py-[10px]',
         'bg-black/70 backdrop-blur-md',
@@ -114,6 +116,7 @@ export function MobileSwipeIndicator({
         'md:hidden',
         className
       )}
+      style={{ bottom: getMobileSafeBottomPosition(20) }}
     >
       {visibleIndices.map((index, visibleIdx) => {
         const isActive = index === currentIndex;

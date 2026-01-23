@@ -217,6 +217,9 @@
     "othersCount": "+ {{count}} others",
     "pageViews": "{{count}} page views"
   },
+  "contextMenu": {
+    "viewProfile": "View Profile"
+  },
   "labels": {
     "email": "Email",
     "password": "Password",
@@ -1733,7 +1736,12 @@
     "hasOrdersWarning": "This event has {{count}} order(s) and cannot be converted to a test event.",
     "hasBeenPublishedWarning": "This event has been published and cannot be converted to a test event.",
     "canExitTestModeDescription": "No mock data exists. You can safely exit test mode and return to draft status.",
-    "purgeMockDataToExitTestMode": "This event has {{count}} mock order(s). Purge the test data below to exit test mode.",
+    "mockDataWillBePurgedOnExit": "This event has {{count}} mock order(s). Test data will be automatically purged when exiting test mode.",
+    "exitTestModeConfirmTitle": "Exit Test Mode?",
+    "exitTestModeConfirmDescription": "This will permanently delete all test data for this event, including {{orders}} mock orders and {{tickets}} tickets. This action cannot be undone.",
+    "exitTestModeConfirmButton": "Delete Test Data & Exit",
+    "cancel": "Cancel",
+    "failedToPurgeBeforeTransition": "Failed to purge test data before transitioning to draft mode",
     "mockDataTools": "Mock Data Tools",
     "mockDataToolsDescription": "Generate mock orders, tickets, and guests for testing checkout flows and reports.",
     "showSettings": "Settings",
@@ -4050,6 +4058,10 @@
       "open": "Open developer tools",
       "openWithNotifications": "Open developer tools ({{count}} notifications)",
       "notifications": "{{count}} notifications"
+    },
+    "handle": {
+      "open": "Open tools",
+      "openWithNotifications": "Open tools ({{count}} notifications)"
     }
   },
   "demoMode": {
@@ -4605,5 +4617,9 @@
     "startTyping": "Start typing to search",
     "noTagsFound": "No tags found",
     "maximumReached": "Maximum reached"
+  },
+  "mobileBanner": {
+    "artistSignup": "Apply to join our event undercards here",
+    "pastEvents": "Viewing past events"
   }
 }

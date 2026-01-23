@@ -217,6 +217,9 @@
     "othersCount": "+ {{count}} 位其他宾客",
     "pageViews": "{{count}} 次页面浏览"
   },
+  "contextMenu": {
+    "viewProfile": "查看资料"
+  },
   "labels": {
     "email": "邮箱",
     "password": "密码",
@@ -1732,7 +1735,12 @@
     "hasOrdersWarning": "此活动有 {{count}} 个订单，无法转换为测试活动。",
     "hasBeenPublishedWarning": "此活动已发布，无法转换为测试活动。",
     "canExitTestModeDescription": "没有模拟数据。您可以安全退出测试模式并返回草稿状态。",
-    "purgeMockDataToExitTestMode": "此活动有 {{count}} 个模拟订单。请清除下方的测试数据以退出测试模式。",
+    "mockDataWillBePurgedOnExit": "此活动有 {{count}} 个模拟订单。退出测试模式时，测试数据将被自动清除。",
+    "exitTestModeConfirmTitle": "退出测试模式？",
+    "exitTestModeConfirmDescription": "这将永久删除此活动的所有测试数据，包括 {{orders}} 个模拟订单和 {{tickets}} 张票券。此操作无法撤销。",
+    "exitTestModeConfirmButton": "删除测试数据并退出",
+    "cancel": "取消",
+    "failedToPurgeBeforeTransition": "转换到草稿模式之前清除测试数据失败",
     "mockDataTools": "模拟数据工具",
     "mockDataToolsDescription": "生成模拟订单、票券和访客，用于测试购票流程和报告。",
     "showSettings": "设置",
@@ -4040,6 +4048,10 @@
       "open": "打开开发者工具",
       "openWithNotifications": "打开开发者工具（{{count}} 条通知）",
       "notifications": "{{count}} 条通知"
+    },
+    "handle": {
+      "open": "打开工具",
+      "openWithNotifications": "打开工具（{{count}} 条通知）"
     }
   },
   "demoMode": {
@@ -4547,5 +4559,9 @@
     "startTyping": "开始输入以搜索",
     "noTagsFound": "未找到标签",
     "maximumReached": "已达到最大值"
+  },
+  "mobileBanner": {
+    "artistSignup": "申请加入我们的活动暖场阵容",
+    "pastEvents": "查看过往活动"
   }
 }

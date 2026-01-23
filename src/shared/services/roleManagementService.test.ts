@@ -440,7 +440,7 @@ describe('RoleManagementService', () => {
       const mockRoles = [
         { id: '1', name: 'admin' },
         { id: '2', name: 'developer' },
-        { id: '3', name: 'user' },
+        { id: '3', name: 'org_staff' },
       ];
 
       const mockBuilder = {
