@@ -10,6 +10,52 @@ import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
 
+/**
+ * Safely extract error message from various error types
+ * Ensures a string is always returned for toast display
+ */
+function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred'): string {
+  if (!error) return fallback;
+
+  // Handle standard Error objects
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  // Handle Supabase AuthError format
+  if (typeof error === 'object' && error !== null) {
+    const err = error as Record<string, unknown>;
+
+    // Check for message property (most common)
+    if (typeof err.message === 'string' && err.message) {
+      return err.message;
+    }
+
+    // Check for error property (some APIs use this)
+    if (typeof err.error === 'string' && err.error) {
+      return err.error;
+    }
+
+    // Check for error_description (OAuth errors)
+    if (typeof err.error_description === 'string' && err.error_description) {
+      return err.error_description;
+    }
+
+    // Last resort: stringify the object (but only if it's not empty)
+    const stringified = JSON.stringify(error);
+    if (stringified !== '{}') {
+      return stringified;
+    }
+  }
+
+  // Handle string errors
+  if (typeof error === 'string' && error) {
+    return error;
+  }
+
+  return fallback;
+}
+
 interface Profile {
   id: string;
   user_id: string;
@@ -251,12 +297,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        const errorMessage = getErrorMessage(error, i18n.t('auth.signUpError', { ns: 'toasts' }));
         logger.error('Sign up error:', {
-          error: error.message,
+          error: errorMessage,
+          errorObject: error,
           email,
           source: 'AuthContext.signUp',
         });
-        toast.error(error.message);
+        toast.error(errorMessage);
       } else {
         authLogger.info('Sign up successful', { userId: data.user?.id });
 
@@ -298,7 +346,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.signInError', { ns: 'toasts' })));
       } else {
         // Set remember device preference
         sessionPersistence.setRememberDevice(rememberMe);
@@ -328,11 +376,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       const { error } = await supabase.auth.signOut();
       if (error) {
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, 'Failed to sign out'));
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(message);
+      toast.error(getErrorMessage(error, 'Failed to sign out'));
     }
   };
 
@@ -374,7 +421,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           details: error.details,
           hint: error.hint,
         });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' })));
       } else if (!data) {
         // No data returned means no rows were updated (possibly RLS blocking)
         authLogger.error('Profile update returned no data - possible RLS issue', {
@@ -395,7 +442,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMsg = getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' }));
       authLogger.error('Profile update exception', {
         userId: user.id,
         error: errorMsg,
@@ -420,15 +467,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, 'Failed to resend verification email'));
       } else {
         toast.success(i18n.t('auth.emailVerificationSent', { ns: 'toasts' }));
       }
 
       return { error };
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(errorMsg);
+      toast.error(getErrorMessage(error, 'Failed to resend verification email'));
       return { error };
     }
   };
@@ -443,7 +489,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         authLogger.error('Password reset request error', { error: error.message });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.passwordResetError', { ns: 'toasts' })));
       } else {
         authLogger.info('Password reset email sent', { email });
         toast.success(i18n.t('auth.passwordResetEmailSent', { ns: 'toasts' }));
@@ -471,7 +517,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         authLogger.error('Password update error', { error: error.message });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.passwordUpdateError', { ns: 'toasts' })));
       } else {
         authLogger.info('Password updated successfully');
         toast.success(i18n.t('auth.passwordUpdateSuccess', { ns: 'toasts' }));

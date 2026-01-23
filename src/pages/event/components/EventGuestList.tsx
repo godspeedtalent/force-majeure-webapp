@@ -175,6 +175,98 @@ export const EventGuestList = ({
 
   const hasAttendees = attendeePreview.length > 0 || ticketCount > 0;
 
+  // Unauthenticated view - show frosted version with count and sign-in prompt
+  if (!isLoggedIn && hasAttendees) {
+    return (
+      <div
+        onClick={onPromptLogin}
+        className={cn(
+          'group relative overflow-hidden',
+          'bg-black/60 backdrop-blur-sm',
+          'p-[20px]',
+          'transition-all duration-300',
+          'cursor-pointer hover:bg-black/70',
+          'hover:shadow-[0_0_30px_rgba(223,186,125,0.08)]'
+        )}
+      >
+        {/* Animated shimmer border */}
+        <div
+          className='absolute inset-0 pointer-events-none'
+          style={{
+            background: 'linear-gradient(90deg, transparent 0%, transparent 25%, rgba(223,186,125,0.5) 50%, transparent 75%, transparent 100%)',
+            backgroundSize: '200% 100%',
+            animation: 'border-shimmer-gold 3s linear infinite',
+            mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            maskComposite: 'exclude',
+            WebkitMaskComposite: 'xor',
+            padding: '1px',
+          }}
+        />
+        {/* Static border fallback */}
+        <div className='absolute inset-0 border border-white/10 pointer-events-none' />
+
+        {/* Subtle corner accent */}
+        <div className='absolute top-0 right-0 w-16 h-16 overflow-hidden pointer-events-none'>
+          <div className='absolute top-0 right-0 w-[1px] h-8 bg-gradient-to-b from-fm-gold/40 to-transparent' />
+          <div className='absolute top-0 right-0 h-[1px] w-8 bg-gradient-to-l from-fm-gold/40 to-transparent' />
+        </div>
+
+        <div className='flex items-center gap-[20px]'>
+          {/* KPI Display - Large Count (still visible) */}
+          <div className='flex-shrink-0 flex flex-col items-center justify-center min-w-[80px]'>
+            <div className='flex items-baseline gap-1'>
+              <span className='text-4xl lg:text-5xl font-canela font-medium text-fm-gold tabular-nums'>
+                {animatedCount}
+              </span>
+              {ticketCount >= 10 && (
+                <Users className='w-4 h-4 text-fm-gold/60' />
+              )}
+            </div>
+            <span className='text-xs uppercase tracking-wider text-muted-foreground mt-1'>
+              {t('guestList.goingLabel')}
+            </span>
+          </div>
+
+          {/* Divider */}
+          <div className='w-[1px] h-16 bg-gradient-to-b from-transparent via-white/10 to-transparent flex-shrink-0' />
+
+          {/* Frosted content area with sign-in prompt */}
+          <div className='flex-1 min-w-0 relative'>
+            {/* Blurred placeholder avatars */}
+            <div className='flex items-center gap-[10px] mb-[10px]'>
+              <div className='flex -space-x-3 blur-sm opacity-40'>
+                {Array.from({ length: Math.min(5, ticketCount) }).map((_, index) => (
+                  <div
+                    key={`placeholder-${index}`}
+                    className={cn(
+                      'relative w-9 h-9 flex items-center justify-center overflow-hidden',
+                      'bg-gradient-to-br from-fm-gold/15 to-fm-gold/30',
+                      'border-2 border-background/80'
+                    )}
+                    style={{ zIndex: 5 - index }}
+                  >
+                    <span className='text-[10px] font-semibold text-fm-gold/90'>?</span>
+                  </div>
+                ))}
+              </div>
+              {ticketCount > 5 && (
+                <span className='text-xs text-fm-gold/40 font-medium blur-sm'>
+                  +{ticketCount - 5}
+                </span>
+              )}
+            </div>
+
+            {/* Sign in prompt */}
+            <p className='text-sm text-fm-gold/90 font-medium flex items-center gap-2'>
+              {t('guestList.signInToSeeGuestList')}
+              <ChevronRight className='w-4 h-4 group-hover:translate-x-0.5 transition-transform' />
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={isLoggedIn ? onCardClick : undefined}
@@ -269,28 +361,10 @@ export const EventGuestList = ({
 
             {/* CTA */}
             <div className='mt-[10px] flex items-center gap-2'>
-              {isLoggedIn ? (
-                <span className='text-xs text-muted-foreground/50 group-hover:text-fm-gold/70 transition-colors duration-300 flex items-center gap-1'>
-                  {t('guestList.seeWhosComing')}
-                  <ChevronRight className='w-3 h-3 group-hover:translate-x-0.5 transition-transform' />
-                </span>
-              ) : (
-                <button
-                  type='button'
-                  onClick={event => {
-                    event.stopPropagation();
-                    onPromptLogin();
-                  }}
-                  className={cn(
-                    'text-xs font-medium text-fm-gold/80',
-                    'hover:text-fm-gold',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                    'transition-colors duration-200'
-                  )}
-                >
-                  {t('guestList.logInToSeeFullList')}
-                </button>
-              )}
+              <span className='text-xs text-muted-foreground/50 group-hover:text-fm-gold/70 transition-colors duration-300 flex items-center gap-1'>
+                {t('guestList.seeWhosComing')}
+                <ChevronRight className='w-3 h-3 group-hover:translate-x-0.5 transition-transform' />
+              </span>
             </div>
           </div>
         </div>

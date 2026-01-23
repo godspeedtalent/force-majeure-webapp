@@ -486,7 +486,8 @@
   "artistUndercard": {
     "lookingForArtists": "招募艺人。",
     "artistDescription": "我们正在寻找本地艺人为活动暖场。注册以获得考虑机会。",
-    "signUpAsArtist": "注册成为艺人"
+    "signUpAsArtist": "注册成为艺人",
+    "floatingCtaText": "你是本地DJ吗？想加入暖场阵容？"
   },
   "artistSignup": {
     "seoTitle": "加入我们的艺术家阵容",

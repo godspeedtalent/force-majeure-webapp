@@ -520,7 +520,8 @@
   "artistUndercard": {
     "lookingForArtists": "Buscando artistas.",
     "artistDescription": "Buscamos talento local para abrir nuestros eventos. Regístrate para ser considerado.",
-    "signUpAsArtist": "Regístrate como artista"
+    "signUpAsArtist": "Regístrate como artista",
+    "floatingCtaText": "¿Eres DJ local y quieres unirte al undercard?"
   },
   "artistSignup": {
     "seoTitle": "Únete a Nuestro Roster de Artistas",

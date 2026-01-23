@@ -158,9 +158,8 @@ export class ProductionEventDataRepository implements IEventDataRepository {
 
   async getInterestCount(eventId: string): Promise<number> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await supabase.rpc('get_event_interest_count' as any, {
-        p_event_id: eventId,
+      const { data, error } = await supabase.rpc('get_event_interest_count', {
+        event_id_param: eventId,
       });
 
       if (error) throw error;
