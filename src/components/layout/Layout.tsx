@@ -50,7 +50,7 @@ export const Layout = ({
 
       <main
         className={cn(
-          'flex-1 animate-fade-in relative overflow-hidden',
+          'flex-1 animate-fade-in relative',
           enableScrollSnap && isMobile && 'snap-y snap-mandatory overflow-y-auto'
         )}
         style={

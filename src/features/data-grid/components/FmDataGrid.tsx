@@ -608,7 +608,7 @@ export function FmDataGrid<T extends Record<string, any>>({
         style={isVirtualized || isInfiniteScroll ? { maxHeight: '600px' } : undefined}
         onKeyDown={handleTableKeyDown}
         onScroll={(e) => {
-          scrollSync.handleTableScroll(e);
+          scrollSync.handleTableScroll();
           infiniteScroll.handleScroll(e);
         }}
         role='grid'
