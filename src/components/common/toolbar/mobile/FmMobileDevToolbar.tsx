@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useIsMobile, ROLES, useShoppingCart } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { FmMobileDevFAB } from './FmMobileDevFAB';
+import { FmMobileToolbarHandle } from './FmMobileToolbarHandle';
 import { FmMobileDevDrawer } from './FmMobileDevDrawer';
 import { FmMobileDevToolContent } from './FmMobileDevToolContent';
 import { useMobileDevTools } from './useMobileDevTools';
@@ -95,8 +95,8 @@ export function FmMobileDevToolbar() {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <FmMobileDevFAB
+      {/* Bottom Handle Bar */}
+      <FmMobileToolbarHandle
         onClick={openMainDrawer}
         badgeCount={totalBadges}
       />

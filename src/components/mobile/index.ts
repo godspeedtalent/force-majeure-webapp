@@ -6,7 +6,7 @@ export { MobileHorizontalTabs } from './MobileHorizontalTabs';
 export { MobileEventSwipeContainer } from './MobileEventSwipeContainer';
 export { MobileEventFullCard } from './MobileEventFullCard';
 export { MobileTitleCard } from './MobileTitleCard';
-export { MobilePastEventsHeader } from './MobilePastEventsHeader';
+export { MobileMessageBanner } from './MobileMessageBanner';
 export { MobileSwipeIndicator } from './MobileSwipeIndicator';
 export { MobileAutoScrollProgress } from './MobileAutoScrollProgress';
 export { MobileEventCardSkeleton } from './MobileEventCardSkeleton';
@@ -21,7 +21,7 @@ export type { MobileHorizontalTabsProps, MobileHorizontalTab } from './MobileHor
 export type { MobileEventSwipeContainerProps } from './MobileEventSwipeContainer';
 export type { MobileEventFullCardProps } from './MobileEventFullCard';
 export type { MobileTitleCardProps } from './MobileTitleCard';
-export type { MobilePastEventsHeaderProps } from './MobilePastEventsHeader';
+export type { MobileMessageBannerProps } from './MobileMessageBanner';
 export type { MobileSwipeIndicatorProps } from './MobileSwipeIndicator';
 export type { MobileAutoScrollProgressProps } from './MobileAutoScrollProgress';
 export type { MobileEventCardSkeletonProps } from './MobileEventCardSkeleton';

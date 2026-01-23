@@ -260,7 +260,3 @@ export function MobileEventSwipeContainer({
     </div>
   );
 }
-
-// CSS to hide scrollbar (add to global styles or use as className)
-// .scrollbar-hide::-webkit-scrollbar { display: none; }
-// .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

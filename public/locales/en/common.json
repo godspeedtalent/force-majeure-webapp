@@ -4057,6 +4057,10 @@
       "open": "Open developer tools",
       "openWithNotifications": "Open developer tools ({{count}} notifications)",
       "notifications": "{{count}} notifications"
+    },
+    "handle": {
+      "open": "Open tools",
+      "openWithNotifications": "Open tools ({{count}} notifications)"
     }
   },
   "demoMode": {
@@ -4612,5 +4616,9 @@
     "startTyping": "Start typing to search",
     "noTagsFound": "No tags found",
     "maximumReached": "Maximum reached"
+  },
+  "mobileBanner": {
+    "artistSignup": "Apply to join our event undercards here",
+    "pastEvents": "Viewing past events"
   }
 }

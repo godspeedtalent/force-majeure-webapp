@@ -20,8 +20,12 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
+  Trash,
+  TrendingUp,
 } from 'lucide-react';
-import { ScreeningFeed } from './ScreeningFeed';
+import { DataGridColumn, DataGridAction } from '@/features/data-grid/components/FmDataGrid';
+import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';

@@ -8,6 +8,7 @@ import { FmDateBox } from '@/components/common/display/FmDateBox';
 import { FmUndercardList } from '@/components/common/display/FmUndercardList';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { ImageWithSkeleton } from '@/components/primitives/ImageWithSkeleton';
+import { getMobileBottomPadding } from '@/shared/constants/mobileLayout';
 
 interface Artist {
   name: string;
@@ -142,9 +143,13 @@ export function MobileEventFullCard({
         </div>
 
         {/* Content - anchored to bottom with parallax */}
+        {/* Bottom padding uses CSS variable for dynamic safe-area-aware spacing */}
         <div
-          className='relative z-10 mt-auto p-[20px] pb-[180px] transition-transform duration-100 ease-linear'
-          style={{ transform: `translateY(${contentParallaxY}vh)` }}
+          className='relative z-10 mt-auto p-[20px] transition-transform duration-100 ease-linear'
+          style={{
+            paddingBottom: getMobileBottomPadding(),
+            transform: `translateY(${contentParallaxY}vh)`,
+          }}
         >
           <div className='flex items-end gap-[20px]'>
             {/* Event Info - Left Side */}
