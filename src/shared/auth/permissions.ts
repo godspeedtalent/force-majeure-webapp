@@ -81,11 +81,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
  */
 export const ROLE_DEPENDENCIES: Partial<Record<Role, Role[]>> = {
   [ROLES.ARTIST]: [ROLES.USER],
+  [ROLES.DEVELOPER]: [ROLES.FM_STAFF], // Developers must also be FM staff
   [ROLES.FM_STAFF]: [ROLES.USER],
   [ROLES.ORG_ADMIN]: [ROLES.USER],
   [ROLES.ORG_STAFF]: [ROLES.USER],
   [ROLES.VENUE_ADMIN]: [ROLES.USER],
-  // Admin and Developer don't require User as they are elevated roles
+  // Admin doesn't require other roles as it's the highest elevated role
 };
 
 /**

@@ -16,12 +16,14 @@ import {
   X,
   Clock,
   User,
+  Trash2,
 } from 'lucide-react';
 import { FaSpotify, FaSoundcloud, FaInstagram } from 'react-icons/fa6';
 import { supabase } from '@/shared';
 import { FormSection } from '@/components/common/forms/FormSection';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { cn } from '@/shared';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
@@ -81,6 +83,7 @@ export function UndercardRequestsList({
   const { t } = useTranslation('common');
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Fetch undercard requests for this event
   const { data: requests, isLoading, error } = useQuery({
@@ -183,6 +186,27 @@ export function UndercardRequestsList({
     },
   });
 
+  // Mutation to delete a request
+  const deleteMutation = useMutation({
+    mutationFn: async (requestId: string) => {
+      const { error } = await supabase
+        .from('undercard_requests' as any)
+        .delete()
+        .eq('id', requestId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['undercard-requests', eventId] });
+      toast.success(t('undercardRequests.requestDeleted'));
+      setDeleteConfirmId(null);
+    },
+    onError: (error) => {
+      logger.error('Failed to delete undercard request', { error });
+      toast.error(t('undercardRequests.deleteFailed'));
+    },
+  });
+
   if (isLoading) {
     return (
       <FormSection title={t('undercardRequests.sectionTitle')}>
@@ -243,7 +267,9 @@ export function UndercardRequestsList({
                     status: 'rejected',
                   })
                 }
+                onDelete={() => setDeleteConfirmId(request.id)}
                 isUpdating={updateStatusMutation.isPending}
+                isDeleting={deleteMutation.isPending}
               />
             ))
           )}
@@ -262,12 +288,30 @@ export function UndercardRequestsList({
                 onToggleExpand={() =>
                   setExpandedId(expandedId === request.id ? null : request.id)
                 }
+                onDelete={() => setDeleteConfirmId(request.id)}
+                isDeleting={deleteMutation.isPending}
                 isReviewed
               />
             ))}
           </div>
         </FormSection>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <FmCommonConfirmDialog
+        open={!!deleteConfirmId}
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+        title={t('undercardRequests.deleteConfirmTitle')}
+        description={t('undercardRequests.deleteConfirmDescription')}
+        confirmText={t('undercardRequests.delete')}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteMutation.mutate(deleteConfirmId);
+          }
+        }}
+        variant='destructive'
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }
@@ -278,7 +322,9 @@ interface RequestCardProps {
   onToggleExpand: () => void;
   onApprove?: () => void;
   onReject?: () => void;
+  onDelete?: () => void;
   isUpdating?: boolean;
+  isDeleting?: boolean;
   isReviewed?: boolean;
 }
 
@@ -288,7 +334,9 @@ function RequestCard({
   onToggleExpand,
   onApprove,
   onReject,
+  onDelete,
   isUpdating,
+  isDeleting,
   isReviewed,
 }: RequestCardProps) {
   const { t } = useTranslation('common');
@@ -480,7 +528,7 @@ function RequestCard({
                 onClick={onApprove}
                 variant='default'
                 icon={Check}
-                disabled={isUpdating}
+                disabled={isUpdating || isDeleting}
                 className='flex-1 bg-green-600 hover:bg-green-700'
               >
                 {t('undercardRequests.approve')}
@@ -489,10 +537,33 @@ function RequestCard({
                 onClick={onReject}
                 variant='secondary'
                 icon={X}
-                disabled={isUpdating}
+                disabled={isUpdating || isDeleting}
                 className='flex-1'
               >
                 {t('undercardRequests.reject')}
+              </FmCommonButton>
+              {onDelete && (
+                <FmCommonButton
+                  onClick={onDelete}
+                  variant='destructive'
+                  icon={Trash2}
+                  disabled={isUpdating || isDeleting}
+                >
+                  {t('undercardRequests.delete')}
+                </FmCommonButton>
+              )}
+            </div>
+          )}
+          {/* Delete button for reviewed requests */}
+          {isReviewed && onDelete && (
+            <div className='flex justify-end pt-4'>
+              <FmCommonButton
+                onClick={onDelete}
+                variant='destructive'
+                icon={Trash2}
+                disabled={isDeleting}
+              >
+                {t('undercardRequests.delete')}
               </FmCommonButton>
             </div>
           )}

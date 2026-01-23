@@ -199,6 +199,20 @@ const snapAnimations = {
   },
 };
 
+// Demo mode touch visualization animations
+const demoModeAnimations = {
+  // Tap ripple - expands and fades out
+  'demo-tap-ripple': {
+    '0%': { transform: 'scale(0.3)', opacity: '1' },
+    '100%': { transform: 'scale(2.5)', opacity: '0' },
+  },
+  // Long press fill - circular progress animation
+  'demo-long-press-fill': {
+    '0%': { strokeDashoffset: '226' },
+    '100%': { strokeDashoffset: '0' },
+  },
+};
+
 // Spring animations for mobile swipe experience
 const springAnimations = {
   // Spring scale for logo entrance
@@ -236,6 +250,7 @@ export const keyframes = {
   ...collapsibleAnimations,
   ...snapAnimations,
   ...springAnimations,
+  ...demoModeAnimations,
 };
 
 // Animation configurations with consistent timing
@@ -312,4 +327,8 @@ export const animations = {
   'spring-slide-up': 'spring-slide-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
   'spring-expand': 'spring-expand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
   'spring-card-in': 'spring-card-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+
+  // Demo mode animations
+  'demo-tap-ripple': 'demo-tap-ripple 0.4s ease-out forwards',
+  'demo-long-press-fill': 'demo-long-press-fill var(--fill-duration, 500ms) linear forwards',
 };

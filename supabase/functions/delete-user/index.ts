@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { verifyAuth, requireAnyRole } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,56 +14,19 @@ serve(async req => {
   }
 
   try {
+    // SECURITY: Use centralized auth verification
+    const { user: requestingUser, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[delete-user] Auth verified for user:', requestingUser.id);
+
+    // Require admin or developer role (admin bypass is automatic)
+    await requireAnyRole(authSupabase, requestingUser.id, ['admin', 'developer']);
+    console.log('[delete-user] Role check passed for user:', requestingUser.id);
+
+    // Create service role client for admin operations
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-
-    // Get auth header to verify the user is an admin
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-
-    // Verify the requesting user
-    const {
-      data: { user: requestingUser },
-      error: userError,
-    } = await supabaseClient.auth.getUser(token);
-
-    if (userError || !requestingUser) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Check if user is admin or developer
-    const { data: userRoles } = await supabaseClient.rpc('get_user_roles', {
-      user_id_param: requestingUser.id,
-    });
-
-    const isAdminOrDev = userRoles?.some(
-      (r: { role_name: string; permission_names?: string[] }) =>
-        r.role_name === 'admin' ||
-        r.role_name === 'developer' ||
-        (Array.isArray(r.permission_names) && r.permission_names.includes('*'))
-    );
-
-    if (!isAdminOrDev) {
-      return new Response(
-        JSON.stringify({ error: 'Forbidden - Admin or Developer access required' }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
 
     // Get the user ID to delete from the request body
     const { userId } = await req.json();
@@ -97,9 +61,25 @@ serve(async req => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in delete-user function:', error);
+    console.error('[delete-user] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: errorMessage }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

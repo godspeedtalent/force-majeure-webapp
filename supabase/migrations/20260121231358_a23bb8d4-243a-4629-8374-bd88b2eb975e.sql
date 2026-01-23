@@ -18,10 +18,12 @@ REVOKE SELECT ON guests FROM anon;
 
 DROP POLICY IF EXISTS "Admins can manage all guests" ON guests;
 DROP POLICY IF EXISTS "Users can view own guest records" ON guests;
+DROP POLICY IF EXISTS "Users can update own guest records" ON guests;
 DROP POLICY IF EXISTS "Anyone can create guests" ON guests;
 DROP POLICY IF EXISTS "Guests are readable for guest list display" ON guests;
 DROP POLICY IF EXISTS "Authenticated users can view own guests" ON guests;
 DROP POLICY IF EXISTS "Users can view guests from their orders" ON guests;
+DROP POLICY IF EXISTS "Guests can only be created by system processes" ON guests;
 
 -- ============================================================================
 -- NEW RESTRICTIVE RLS POLICIES

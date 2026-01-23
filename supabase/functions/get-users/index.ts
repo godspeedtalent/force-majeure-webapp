@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { verifyAuth, requireAnyRole } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,46 +14,19 @@ serve(async req => {
   }
 
   try {
+    // SECURITY: Use centralized auth verification
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[get-users] Auth verified for user:', user.id);
+
+    // Require admin or developer role (admin bypass is automatic)
+    await requireAnyRole(authSupabase, user.id, ['admin', 'developer']);
+    console.log('[get-users] Role check passed for user:', user.id);
+
+    // Create service role client for admin operations
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-
-    // Get auth header to verify the user is an admin
-    const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-
-    // Verify the user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseClient.auth.getUser(token);
-
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Check if user is admin - use new role system
-    const { data: userRoles } = await supabaseClient.rpc('get_user_roles', {
-      user_id_param: user.id,
-    });
-
-    const isAdmin = userRoles?.some(
-      (r: any) => r.role_name === 'admin' || (Array.isArray(r.permissions) && r.permissions.includes('*'))
-    );
-
-    if (!isAdmin) {
-      return new Response(
-        JSON.stringify({ error: 'Forbidden - Admin access required' }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
 
     // Fetch all users using the users_complete view
     // This view joins auth.users, profiles, organizations, and roles in one query
@@ -97,8 +71,24 @@ serve(async req => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
+    console.error('[get-users] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

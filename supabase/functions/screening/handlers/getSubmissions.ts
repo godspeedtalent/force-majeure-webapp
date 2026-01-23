@@ -18,6 +18,8 @@ export async function getSubmissions(
   const filters = validateInput(SubmissionFiltersSchema, params);
 
   // Call database function to get submissions with full details
+  console.log('[getSubmissions] Calling RPC with filters:', JSON.stringify(filters));
+
   const { data, error } = await supabase.rpc('get_submissions_with_details', {
     p_context: filters.context || null,
     p_status: filters.status || null,
@@ -27,8 +29,15 @@ export async function getSubmissions(
     p_min_reviews: filters.minReviews || null,
   });
 
+  console.log('[getSubmissions] RPC result:', {
+    hasData: !!data,
+    dataLength: Array.isArray(data) ? data.length : 'not array',
+    error: error?.message || null,
+    errorCode: error?.code || null
+  });
+
   if (error) {
-    console.error('Error fetching submissions:', error);
+    console.error('[getSubmissions] Error fetching submissions:', error);
     throw new Error(`Failed to fetch submissions: ${error.message}`);
   }
 
@@ -44,52 +53,77 @@ export async function getSubmission(
   _user: User,
   params: unknown
 ) {
-  // Validate input
-  const { id } = validateInput(
-    UuidSchema.transform(id => ({ id })),
-    params
-  );
+  // Validate input - params is { id: string }
+  const paramsObj = params as { id?: unknown };
+  const id = validateInput(UuidSchema, paramsObj?.id);
+
+  console.log('[getSubmission] Fetching submission:', id);
 
   // Fetch submission with all related data
+  // Schema updated to match actual screening_reviews table structure
   const { data, error } = await supabase
     .from('screening_submissions')
     .select(`
       *,
-      artist:artists!inner (
+      artists!inner (
         id,
         name,
-        genre,
-        bio,
-        spotify_url,
-        soundcloud_url,
-        instagram_handle,
         image_url,
-        recordings:artist_recordings (
+        artist_genres (
           id,
-          title,
-          url,
-          recording_type,
-          duration_seconds
+          genre_id,
+          is_primary,
+          genres (
+            id,
+            name
+          )
         )
       ),
-      reviews:screening_reviews (
+      artist_recordings!inner (
+        id,
+        name,
+        url,
+        platform,
+        duration_seconds
+      ),
+      screening_reviews (
         id,
         reviewer_id,
-        technical_score,
-        artistic_score,
-        genre_fit_score,
-        comments,
-        genre_tags,
-        red_flags,
+        rating,
+        internal_notes,
+        listen_duration_seconds,
         created_at,
-        reviewer:profiles!reviewer_id (
-          email,
-          display_name
+        profiles (
+          id,
+          display_name,
+          avatar_url
         )
+      ),
+      submission_scores (
+        review_count,
+        raw_avg_score,
+        confidence_adjusted_score,
+        indexed_score,
+        hot_indexed_score
+      ),
+      venues (
+        id,
+        name
+      ),
+      events (
+        id,
+        title,
+        start_time
       )
     `)
     .eq('id', id)
     .single();
+
+  console.log('[getSubmission] Result:', {
+    hasData: !!data,
+    error: error?.message || null,
+    errorCode: error?.code || null
+  });
 
   if (error) {
     if (error.code === 'PGRST116') {

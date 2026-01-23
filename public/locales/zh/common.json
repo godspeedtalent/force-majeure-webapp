@@ -570,7 +570,11 @@
     "clearFilter": "显示所有级别",
     "copied": "已复制到剪贴板",
     "openInSupabase": "在Supabase中查看",
-    "clearOldLogsTooltip": "清除超过7天的日志"
+    "clearOldLogsTooltip": "清除超过7天的日志",
+    "openMenu": "打开菜单",
+    "copyDetails": "复制详情",
+    "copyEndpoint": "复制端点",
+    "showing": "{{count}} / {{total}}"
   },
   "mockRole": {
     "activeWarning": "模拟角色已激活",
@@ -1439,6 +1443,9 @@
   "eventManagement": {
     "loadingEvent": "加载活动中...",
     "eventNotFound": "未找到活动",
+    "accessDenied": "访问被拒绝",
+    "accessDeniedDescription": "您没有管理此活动的权限。只有活动管理员、组织所有者和系统管理员可以访问此页面。",
+    "viewEventDetails": "查看活动详情",
     "headliners": "主演",
     "noHeadlinersAdded": "尚未添加主演",
     "undercardArtists": "暖场艺术家",
@@ -3116,9 +3123,14 @@
     "djSets": "DJ Sets ({{count}})",
     "approve": "批准",
     "reject": "拒绝",
+    "delete": "删除",
     "requestApproved": "艺人申请已批准",
     "requestRejected": "艺人申请已拒绝",
-    "updateFailed": "更新申请状态失败"
+    "requestDeleted": "艺人申请已删除",
+    "updateFailed": "更新申请状态失败",
+    "deleteFailed": "删除申请失败",
+    "deleteConfirmTitle": "删除申请？",
+    "deleteConfirmDescription": "您确定要删除此艺人申请吗？此操作无法撤销。"
   },
   "trackingLinks": {
     "createSuccess": "跟踪链接创建成功",
@@ -3175,7 +3187,9 @@
       "cancelled": "已取消"
     },
     "inspect": "查看详情",
-    "setStatus": "设置状态"
+    "setStatus": "设置状态",
+    "doubleClickToEdit": "双击编辑",
+    "openMenu": "打开菜单"
   },
   "email": {
     "receiptSent": "收据邮件发送成功",
@@ -3981,6 +3995,14 @@
   "mobileDevTools": {
     "title": "开发者工具",
     "toolNotFound": "未找到工具",
+    "groups": {
+      "user": "用户",
+      "admin": "管理员",
+      "organization": "组织",
+      "staff": "员工工具",
+      "developer": "开发者",
+      "dataConfig": "数据与配置"
+    },
     "tools": {
       "navigation": "导航",
       "database": "数据库",
@@ -3988,7 +4010,14 @@
       "session": "会话",
       "notes": "笔记",
       "staffNotes": "员工笔记",
-      "roles": "角色"
+      "roles": "角色",
+      "pageInfo": "页面信息",
+      "errorLogs": "错误日志",
+      "adminMessages": "消息",
+      "cart": "购物车",
+      "orgDashboard": "组织面板",
+      "scanTickets": "扫描门票",
+      "demoMode": "演示模式"
     },
     "toolLabels": {
       "navigation": "导航",
@@ -3997,13 +4026,39 @@
       "session": "会话覆盖",
       "notes": "开发者笔记",
       "staffNotes": "员工笔记",
-      "roles": "角色模拟"
+      "roles": "角色模拟",
+      "pageInfo": "页面信息",
+      "errorLogs": "错误日志",
+      "adminMessages": "管理员消息",
+      "cart": "购物车",
+      "orgDashboard": "组织管理面板",
+      "scanTickets": "门票扫描器",
+      "demoMode": "演示模式"
     },
     "fab": {
       "open": "打开开发者工具",
       "openWithNotifications": "打开开发者工具（{{count}} 条通知）",
       "notifications": "{{count}} 条通知"
     }
+  },
+  "demoMode": {
+    "title": "演示模式",
+    "description": "在演示和屏幕录制期间显示触摸的视觉指示器。",
+    "enabled": "演示模式已激活",
+    "enabledDescription": "触摸指示器在屏幕上可见。",
+    "toggle": "启用演示模式",
+    "disable": "禁用演示模式",
+    "settings": "设置",
+    "actionDelay": "操作延迟",
+    "actionDelayDescription": "在执行操作前暂停，以便观看者跟上进度。",
+    "delayDuration": "延迟时长",
+    "delayMs": "{{value}}毫秒",
+    "indicatorSize": "指示器大小",
+    "sizeSmall": "小",
+    "sizeMedium": "中",
+    "sizeLarge": "大",
+    "longPressIndicator": "长按指示器",
+    "longPressDescription": "显示长按手势的圆形填充动画。"
   },
   "devNavigation": {
     "core": "核心",

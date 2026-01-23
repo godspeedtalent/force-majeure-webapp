@@ -16,6 +16,15 @@ import {
 import { FeatureTogglesTabContent } from '../tabs/FeatureTogglesTab';
 import { DevNotesTabContent } from '../tabs/DevNotesTab';
 import { MockRoleTabContent } from '../tabs/MockRoleTab';
+import { PageInfoTabContent, PageInfoTabFooter } from '../tabs/PageInfoTab';
+import { ErrorLogTabContent, ErrorLogTabFooter } from '../tabs/ErrorLogTab';
+import { AdminMessagesTabContent } from '../tabs/AdminMessagesTab';
+import { CartTabContent } from '../tabs/CartTab';
+import {
+  ManageOrganizationTabContent,
+  ScanTicketsTabContent,
+} from '../tabs/OrganizationTab';
+import { DemoModeTabContent } from '../tabs/DemoModeTab';
 import { Button } from '@/components/common/shadcn/button';
 
 interface FmMobileDevToolContentProps {
@@ -40,11 +49,24 @@ export function FmMobileDevToolContent({
   const navigate = useNavigate();
 
   const toolLabels: Record<MobileDevToolId, string> = {
+    // Staff tools
     navigation: t('mobileDevTools.toolLabels.navigation'),
+    notes: t('mobileDevTools.toolLabels.staffNotes'),
+    // Developer tools
+    pageInfo: t('mobileDevTools.toolLabels.pageInfo'),
+    roles: t('mobileDevTools.toolLabels.roles'),
+    demoMode: t('mobileDevTools.toolLabels.demoMode'),
+    // Data & Config tools
     database: t('mobileDevTools.toolLabels.database'),
     features: t('mobileDevTools.toolLabels.features'),
-    notes: t('mobileDevTools.toolLabels.staffNotes'),
-    roles: t('mobileDevTools.toolLabels.roles'),
+    errorLogs: t('mobileDevTools.toolLabels.errorLogs'),
+    // Admin tools
+    adminMessages: t('mobileDevTools.toolLabels.adminMessages'),
+    // User tools
+    cart: t('mobileDevTools.toolLabels.cart'),
+    // Organization tools
+    orgDashboard: t('mobileDevTools.toolLabels.orgDashboard'),
+    scanTickets: t('mobileDevTools.toolLabels.scanTickets'),
   };
 
   if (!toolId) return null;
@@ -56,6 +78,7 @@ export function FmMobileDevToolContent({
 
   const renderContent = () => {
     switch (toolId) {
+      // Staff tools
       case 'navigation':
         return (
           <DevNavigationTabContent
@@ -63,6 +86,25 @@ export function FmMobileDevToolContent({
             isAdmin={isAdmin}
           />
         );
+      case 'notes':
+        return <DevNotesTabContent />;
+
+      // Developer tools
+      case 'pageInfo':
+        return (
+          <>
+            <PageInfoTabContent />
+            <div className="mt-4">
+              <PageInfoTabFooter />
+            </div>
+          </>
+        );
+      case 'roles':
+        return <MockRoleTabContent />;
+      case 'demoMode':
+        return <DemoModeTabContent />;
+
+      // Data & Config tools
       case 'database':
         return (
           <>
@@ -74,12 +116,36 @@ export function FmMobileDevToolContent({
         );
       case 'features':
         return <FeatureTogglesTabContent />;
-      case 'notes':
-        return <DevNotesTabContent />;
-      case 'roles':
-        return <MockRoleTabContent />;
+      case 'errorLogs':
+        return (
+          <>
+            <ErrorLogTabContent />
+            <div className="mt-4">
+              <ErrorLogTabFooter />
+            </div>
+          </>
+        );
+
+      // Admin tools
+      case 'adminMessages':
+        return <AdminMessagesTabContent />;
+
+      // User tools
+      case 'cart':
+        return <CartTabContent />;
+
+      // Organization tools
+      case 'orgDashboard':
+        return <ManageOrganizationTabContent onNavigate={handleNavigate} />;
+      case 'scanTickets':
+        return <ScanTicketsTabContent onNavigate={handleNavigate} />;
+
       default:
-        return <div className="text-white/50 text-center">{t('mobileDevTools.toolNotFound')}</div>;
+        return (
+          <div className="text-white/50 text-center">
+            {t('mobileDevTools.toolNotFound')}
+          </div>
+        );
     }
   };
 

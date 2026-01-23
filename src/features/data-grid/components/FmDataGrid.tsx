@@ -180,7 +180,11 @@ export function FmDataGrid<T extends Record<string, any>>({
     enabled: isInfiniteScroll,
   });
 
-  // Render mobile view on small screens (after all hooks)
+  // Drag Select State (kept local as it's UI-specific and temporary)
+  // IMPORTANT: All hooks must be called before any conditional returns (React rules of hooks)
+  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
+
   // Combine actions and contextMenuActions for mobile view
   const mobileActions = useMemo(() => {
     // If no explicit actions, use contextMenuActions as actions for mobile
@@ -193,26 +197,6 @@ export function FmDataGrid<T extends Record<string, any>>({
     }
     return actions;
   }, [actions, contextMenuActions]);
-
-  if (isMobile) {
-    return (
-      <FmMobileDataGrid
-        data={data}
-        columns={columns}
-        actions={mobileActions}
-        loading={loading}
-        className={className}
-        onUpdate={onUpdate}
-        resourceName={resourceName}
-        pageSize={pageSize}
-        paginationMode={paginationMode}
-      />
-    );
-  }
-
-  // Drag Select State (kept local as it's UI-specific and temporary)
-  const dragTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
 
   // Paginate/slice data based on pagination mode
   const paginatedData = useMemo(() => {
@@ -243,7 +227,7 @@ export function FmDataGrid<T extends Record<string, any>>({
       const row = paginatedData[rowIndex];
       if (row) {
         const currentValue = row[columnKey];
-        handleCellEdit(rowIndex, columnKey, currentValue);
+        gridState.startEditing(rowIndex, columnKey, currentValue);
       }
     },
     onStopEditing: () => gridState.setEditingCell(null),
@@ -261,6 +245,23 @@ export function FmDataGrid<T extends Record<string, any>>({
     estimateSize: estimateRowSize,
     enabled: enableVirtualization,
   });
+
+  // Render mobile view on small screens (after all hooks)
+  if (isMobile) {
+    return (
+      <FmMobileDataGrid
+        data={data}
+        columns={columns}
+        actions={mobileActions}
+        loading={loading}
+        className={className}
+        onUpdate={onUpdate}
+        resourceName={resourceName}
+        pageSize={pageSize}
+        paginationMode={paginationMode}
+      />
+    );
+  }
 
 
   // Handlers

@@ -570,7 +570,11 @@
     "clearFilter": "Mostrar todos los niveles",
     "copied": "Copiado al portapapeles",
     "openInSupabase": "Ver en Supabase",
-    "clearOldLogsTooltip": "Eliminar registros de más de 7 días"
+    "clearOldLogsTooltip": "Eliminar registros de más de 7 días",
+    "openMenu": "Abrir menú",
+    "copyDetails": "Copiar detalles",
+    "copyEndpoint": "Copiar endpoint",
+    "showing": "{{count}} de {{total}}"
   },
   "mockRole": {
     "activeWarning": "Rol simulado activo",
@@ -1439,6 +1443,9 @@
   "eventManagement": {
     "loadingEvent": "Cargando evento...",
     "eventNotFound": "Evento no encontrado",
+    "accessDenied": "Acceso denegado",
+    "accessDeniedDescription": "No tienes permiso para gestionar este evento. Solo los gestores del evento, propietarios de la organización y administradores pueden acceder a esta página.",
+    "viewEventDetails": "Ver detalles del evento",
     "headliners": "Artistas Principales",
     "noHeadlinersAdded": "No hay artistas principales añadidos",
     "undercardArtists": "Artistas de Apertura",
@@ -3116,9 +3123,14 @@
     "djSets": "DJ Sets ({{count}})",
     "approve": "Aprobar",
     "reject": "Rechazar",
+    "delete": "Eliminar",
     "requestApproved": "Solicitud de artista aprobada",
     "requestRejected": "Solicitud de artista rechazada",
-    "updateFailed": "Error al actualizar el estado de la solicitud"
+    "requestDeleted": "Solicitud de artista eliminada",
+    "updateFailed": "Error al actualizar el estado de la solicitud",
+    "deleteFailed": "Error al eliminar la solicitud",
+    "deleteConfirmTitle": "¿Eliminar solicitud?",
+    "deleteConfirmDescription": "¿Está seguro de que desea eliminar esta solicitud de artista? Esta acción no se puede deshacer."
   },
   "trackingLinks": {
     "createSuccess": "Enlace de seguimiento creado exitosamente",
@@ -3175,7 +3187,9 @@
       "cancelled": "CANCELADO"
     },
     "inspect": "Inspeccionar",
-    "setStatus": "Cambiar Estado"
+    "setStatus": "Cambiar Estado",
+    "doubleClickToEdit": "Doble clic para editar",
+    "openMenu": "Abrir menú"
   },
   "email": {
     "receiptSent": "Correo de recibo enviado exitosamente",
@@ -3981,6 +3995,14 @@
   "mobileDevTools": {
     "title": "Herramientas de Desarrollo",
     "toolNotFound": "Herramienta no encontrada",
+    "groups": {
+      "user": "Usuario",
+      "admin": "Admin",
+      "organization": "Organización",
+      "staff": "Herramientas de Personal",
+      "developer": "Desarrollador",
+      "dataConfig": "Datos y Config"
+    },
     "tools": {
       "navigation": "Navegación",
       "database": "Base de Datos",
@@ -3988,7 +4010,14 @@
       "session": "Sesión",
       "notes": "Notas",
       "staffNotes": "Notas del Personal",
-      "roles": "Roles"
+      "roles": "Roles",
+      "pageInfo": "Info de Página",
+      "errorLogs": "Registro de Errores",
+      "adminMessages": "Mensajes",
+      "cart": "Carrito",
+      "orgDashboard": "Panel de Org",
+      "scanTickets": "Escanear Boletos",
+      "demoMode": "Modo Demo"
     },
     "toolLabels": {
       "navigation": "Navegación",
@@ -3997,13 +4026,39 @@
       "session": "Anulaciones de Sesión",
       "notes": "Notas de Desarrollo",
       "staffNotes": "Notas del Personal",
-      "roles": "Simulación de Roles"
+      "roles": "Simulación de Roles",
+      "pageInfo": "Información de Página",
+      "errorLogs": "Registro de Errores",
+      "adminMessages": "Mensajes de Admin",
+      "cart": "Carrito de Compras",
+      "orgDashboard": "Panel de Organización",
+      "scanTickets": "Escáner de Boletos",
+      "demoMode": "Modo Demo"
     },
     "fab": {
       "open": "Abrir herramientas de desarrollo",
       "openWithNotifications": "Abrir herramientas de desarrollo ({{count}} notificaciones)",
       "notifications": "{{count}} notificaciones"
     }
+  },
+  "demoMode": {
+    "title": "Modo Demo",
+    "description": "Mostrar indicadores visuales para toques durante demostraciones y grabaciones de pantalla.",
+    "enabled": "Modo Demo Activo",
+    "enabledDescription": "Los indicadores de toque son visibles en la pantalla.",
+    "toggle": "Activar Modo Demo",
+    "disable": "Desactivar Modo Demo",
+    "settings": "Configuración",
+    "actionDelay": "Retraso de Acción",
+    "actionDelayDescription": "Pausar antes de ejecutar acciones para que los espectadores puedan seguir.",
+    "delayDuration": "Duración del Retraso",
+    "delayMs": "{{value}}ms",
+    "indicatorSize": "Tamaño del Indicador",
+    "sizeSmall": "Pequeño",
+    "sizeMedium": "Mediano",
+    "sizeLarge": "Grande",
+    "longPressIndicator": "Indicador de Pulsación Larga",
+    "longPressDescription": "Mostrar animación circular para gestos de mantener presionado."
   },
   "devNavigation": {
     "core": "Principal",

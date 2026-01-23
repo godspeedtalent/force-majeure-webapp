@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { verifyAuth, isAdmin } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,13 +20,59 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: Verify user is authenticated
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[generate-sales-report] Auth verified for user:', user.id);
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: req.headers.get('Authorization')! } },
+    });
 
     const { eventId, sendEmail, recipients, reportConfigId }: SalesReportRequest = await req.json();
 
-    console.log('Generating sales report for event:', eventId);
+    if (!eventId) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Event ID is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // SECURITY: Check user has permission to view this event's sales
+    // User must be admin OR be the event/org manager
+    const userIsAdmin = await isAdmin(authSupabase, user.id);
+
+    if (!userIsAdmin) {
+      // Check if user owns the event or its organization
+      const { data: event } = await supabase
+        .from('events')
+        .select('organization_id, organizations!inner(owner_id)')
+        .eq('id', eventId)
+        .single();
+
+      const isEventOwner = event?.organizations?.owner_id === user.id;
+
+      // Check if user is event staff with manager role
+      const { data: eventStaff } = await supabase
+        .from('event_staff')
+        .select('role')
+        .eq('event_id', eventId)
+        .eq('user_id', user.id)
+        .single();
+
+      const isEventManager = eventStaff?.role === 'manager';
+
+      if (!isEventOwner && !isEventManager) {
+        console.warn('[generate-sales-report] Forbidden: User', user.id, 'has no access to event', eventId);
+        return new Response(
+          JSON.stringify({ success: false, error: 'Forbidden: No access to this event' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    console.log('[generate-sales-report] Generating report for event:', eventId);
 
     // Fetch event details
     const { data: event, error: eventError } = await supabase
@@ -177,9 +224,19 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error generating sales report:', error);
+    console.error('[generate-sales-report] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({ success: false, error: errorMessage }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ success: false, error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

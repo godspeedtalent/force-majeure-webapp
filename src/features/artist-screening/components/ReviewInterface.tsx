@@ -27,9 +27,9 @@ import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmCommonSlider } from '@/components/common/forms/FmCommonSlider';
+import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Badge } from '@/components/common/shadcn/badge';
-import { Slider } from '@/components/common/shadcn/slider';
-import { Textarea } from '@/components/common/shadcn/textarea';
 import { cn, formatTimeDisplay, handleError } from '@/shared';
 import { toast } from 'sonner';
 import {
@@ -186,20 +186,23 @@ export function ReviewInterface() {
 
   return (
     <Layout>
-      <div className="container mx-auto py-[40px] max-w-6xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-[40px]">
+      <div className="container mx-auto px-[10px] md:px-[20px] py-[20px] md:py-[40px] max-w-6xl">
+        {/* Header - Mobile stacks vertically */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[10px] mb-[20px] md:mb-[40px]">
           <FmCommonButton
             variant="default"
             onClick={() => navigate(-1)}
+            size="sm"
+            className="w-fit"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Queue
+            <span className="hidden sm:inline">Back to Queue</span>
+            <span className="sm:hidden">Back</span>
           </FmCommonButton>
 
           <Badge
             className={cn(
-              'rounded-none text-xs font-medium border',
+              'rounded-none text-xs font-medium border w-fit',
               submission.status === 'approved'
                 ? 'bg-green-500/20 text-green-400 border-green-500/40'
                 : submission.status === 'rejected'
@@ -211,50 +214,50 @@ export function ReviewInterface() {
           </Badge>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[40px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[20px] md:gap-[40px]">
           {/* Left Column: Submission Details */}
-          <div className="space-y-[20px]">
+          <div className="space-y-[15px] md:space-y-[20px]">
             {/* Artist & Recording Card */}
-            <FmCommonCard variant="frosted" className="p-[20px]">
-              <h2 className="text-2xl font-canela text-white mb-[20px]">
+            <FmCommonCard variant="frosted" className="p-[15px] md:p-[20px]">
+              <h2 className="text-xl md:text-2xl font-canela text-white mb-[15px] md:mb-[20px]">
                 Submission Details
               </h2>
 
               {/* Artist */}
-              <div className="flex items-center gap-[15px] mb-[20px]">
+              <div className="flex items-center gap-[10px] md:gap-[15px] mb-[15px] md:mb-[20px]">
                 {submission.artists.image_url ? (
                   <img
                     src={submission.artists.image_url}
                     alt={submission.artists.name}
-                    className="h-16 w-16 object-cover rounded-none"
+                    className="h-12 w-12 md:h-16 md:w-16 object-cover rounded-none flex-shrink-0"
                   />
                 ) : (
-                  <div className="h-16 w-16 bg-white/10 flex items-center justify-center rounded-none">
-                    <User className="h-8 w-8 text-white/40" />
+                  <div className="h-12 w-12 md:h-16 md:w-16 bg-white/10 flex items-center justify-center rounded-none flex-shrink-0">
+                    <User className="h-6 w-6 md:h-8 md:w-8 text-white/40" />
                   </div>
                 )}
-                <div>
-                  <div className="text-sm text-muted-foreground uppercase mb-1">
+                <div className="min-w-0">
+                  <div className="text-xs md:text-sm text-muted-foreground uppercase mb-1">
                     Artist
                   </div>
-                  <div className="text-xl font-medium text-white">
+                  <div className="text-lg md:text-xl font-medium text-white truncate">
                     {submission.artists.name}
                   </div>
                 </div>
               </div>
 
               {/* Recording */}
-              <div className="border-t border-white/20 pt-[20px]">
-                <div className="text-sm text-muted-foreground uppercase mb-[10px]">
+              <div className="border-t border-white/20 pt-[15px] md:pt-[20px]">
+                <div className="text-xs md:text-sm text-muted-foreground uppercase mb-[10px]">
                   Recording
                 </div>
                 <div className="flex items-center gap-[10px] mb-[10px]">
-                  <Music className="h-5 w-5 text-fm-gold" />
-                  <div className="text-lg text-white">
+                  <Music className="h-4 w-4 md:h-5 md:w-5 text-fm-gold flex-shrink-0" />
+                  <div className="text-base md:text-lg text-white truncate">
                     {submission.artist_recordings.name}
                   </div>
                 </div>
-                <div className="flex items-center gap-[10px] text-sm text-muted-foreground">
+                <div className="flex items-center gap-[10px] text-xs md:text-sm text-muted-foreground">
                   <span className="uppercase">
                     {submission.artist_recordings.platform}
                   </span>
@@ -273,11 +276,11 @@ export function ReviewInterface() {
 
               {/* Genre Mismatch Warning */}
               {submission.has_genre_mismatch && (
-                <div className="mt-[20px] p-[15px] bg-fm-danger/10 border border-fm-danger/40 rounded-none">
-                  <div className="flex items-center gap-[10px]">
-                    <AlertTriangle className="h-5 w-5 text-fm-danger" />
+                <div className="mt-[15px] md:mt-[20px] p-[10px] md:p-[15px] bg-fm-danger/10 border border-fm-danger/40 rounded-none">
+                  <div className="flex items-start gap-[10px]">
+                    <AlertTriangle className="h-4 w-4 md:h-5 md:w-5 text-fm-danger flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-sm font-medium text-fm-danger">
+                      <div className="text-xs md:text-sm font-medium text-fm-danger">
                         Genre Mismatch
                       </div>
                       <div className="text-xs text-white/60 mt-1">
@@ -289,32 +292,32 @@ export function ReviewInterface() {
               )}
 
               {/* Context */}
-              <div className="border-t border-white/20 pt-[20px] mt-[20px]">
-                <div className="text-sm text-muted-foreground uppercase mb-[10px]">
+              <div className="border-t border-white/20 pt-[15px] md:pt-[20px] mt-[15px] md:mt-[20px]">
+                <div className="text-xs md:text-sm text-muted-foreground uppercase mb-[10px]">
                   Context
                 </div>
                 {submission.context_type === 'event' && submission.events ? (
                   <div>
-                    <div className="text-white/80">Event Undercard</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm md:text-base text-white/80">Event Undercard</div>
+                    <div className="text-xs md:text-sm text-muted-foreground truncate">
                       {submission.events.title}
                     </div>
                   </div>
                 ) : submission.context_type === 'venue' && submission.venues ? (
                   <div>
-                    <div className="text-white/80">Venue Booking</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm md:text-base text-white/80">Venue Booking</div>
+                    <div className="text-xs md:text-sm text-muted-foreground truncate">
                       {submission.venues.name}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-white/80">General Discovery</div>
+                  <div className="text-sm md:text-base text-white/80">General Discovery</div>
                 )}
               </div>
 
               {/* Submitted Date */}
-              <div className="border-t border-white/20 pt-[20px] mt-[20px]">
-                <div className="flex items-center gap-[10px] text-sm text-muted-foreground">
+              <div className="border-t border-white/20 pt-[15px] md:pt-[20px] mt-[15px] md:mt-[20px]">
+                <div className="flex items-center gap-[10px] text-xs md:text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   Submitted {new Date(submission.created_at).toLocaleDateString()}
                 </div>
@@ -336,53 +339,53 @@ export function ReviewInterface() {
             )}
 
             {/* Existing Reviews (blurred until you review) */}
-            <FmCommonCard variant="frosted" className="p-[20px]">
-              <h3 className="text-lg font-canela text-white mb-[20px]">
+            <FmCommonCard variant="frosted" className="p-[15px] md:p-[20px]">
+              <h3 className="text-base md:text-lg font-canela text-white mb-[15px] md:mb-[20px]">
                 Reviews ({reviewCount})
               </h3>
 
               {reviewCount === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-[20px]">
+                <p className="text-xs md:text-sm text-muted-foreground text-center py-[15px] md:py-[20px]">
                   No reviews yet. Be the first!
                 </p>
               ) : (
                 <div
                   className={cn(
-                    'space-y-[15px]',
+                    'space-y-[10px] md:space-y-[15px]',
                     !hasReviewed && 'blur-[2px] select-none pointer-events-none'
                   )}
                 >
                   {submission.screening_reviews.map(review => (
                     <div
                       key={review.id}
-                      className="p-[15px] bg-black/40 border border-white/10 rounded-none"
+                      className="p-[10px] md:p-[15px] bg-black/40 border border-white/10 rounded-none"
                     >
                       <div className="flex items-center justify-between mb-[10px]">
-                        <div className="flex items-center gap-[10px]">
+                        <div className="flex items-center gap-[10px] min-w-0">
                           {review.profiles?.avatar_url ? (
                             <img
                               src={review.profiles.avatar_url}
                               alt={review.profiles.display_name || 'Reviewer'}
-                              className="h-8 w-8 object-cover rounded-none"
+                              className="h-7 w-7 md:h-8 md:w-8 object-cover rounded-none flex-shrink-0"
                             />
                           ) : (
-                            <div className="h-8 w-8 bg-white/10 flex items-center justify-center rounded-none">
-                              <User className="h-4 w-4 text-white/40" />
+                            <div className="h-7 w-7 md:h-8 md:w-8 bg-white/10 flex items-center justify-center rounded-none flex-shrink-0">
+                              <User className="h-3.5 w-3.5 md:h-4 md:w-4 text-white/40" />
                             </div>
                           )}
-                          <div className="text-sm text-white">
+                          <div className="text-xs md:text-sm text-white truncate">
                             {review.profiles?.display_name || 'Anonymous'}
                           </div>
                         </div>
-                        <div className="flex items-center gap-[5px]">
-                          <Star className="h-4 w-4 text-fm-gold fill-fm-gold" />
-                          <span className="text-lg font-bold text-fm-gold">
+                        <div className="flex items-center gap-[5px] flex-shrink-0">
+                          <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-fm-gold fill-fm-gold" />
+                          <span className="text-base md:text-lg font-bold text-fm-gold">
                             {review.rating}
                           </span>
                         </div>
                       </div>
                       {review.internal_notes && (
-                        <p className="text-sm text-white/80 mt-[10px]">
+                        <p className="text-xs md:text-sm text-white/80 mt-[10px]">
                           {review.internal_notes}
                         </p>
                       )}
@@ -400,62 +403,56 @@ export function ReviewInterface() {
           </div>
 
           {/* Right Column: Review Form & Decision */}
-          <div className="space-y-[20px]">
+          <div className="space-y-[15px] md:space-y-[20px]">
             {/* Review Form */}
-            <FmCommonCard variant="frosted" className="p-[20px]">
-              <h3 className="text-lg font-canela text-white mb-[20px]">
+            <FmCommonCard variant="frosted" className="p-[15px] md:p-[20px]">
+              <h3 className="text-base md:text-lg font-canela text-white mb-[15px] md:mb-[20px]">
                 Your Review
               </h3>
 
               {!canReview && !hasReviewed ? (
-                <div className="text-center py-[40px]">
-                  <Play className="h-12 w-12 mx-auto text-fm-gold/40 mb-[15px]" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="text-center py-[20px] md:py-[40px]">
+                  <Play className="h-10 w-10 md:h-12 md:w-12 mx-auto text-fm-gold/40 mb-[10px] md:mb-[15px]" />
+                  <p className="text-xs md:text-sm text-muted-foreground px-[10px]">
                     Start the timer and listen for 20 minutes before reviewing
                   </p>
                 </div>
               ) : hasReviewed ? (
-                <div className="text-center py-[40px]">
-                  <CheckCircle className="h-12 w-12 mx-auto text-green-400 mb-[15px]" />
-                  <p className="text-sm text-white">
+                <div className="text-center py-[20px] md:py-[40px]">
+                  <CheckCircle className="h-10 w-10 md:h-12 md:w-12 mx-auto text-green-400 mb-[10px] md:mb-[15px]" />
+                  <p className="text-xs md:text-sm text-white">
                     You've already reviewed this submission
                   </p>
                 </div>
               ) : (
-                <div className="space-y-[20px]">
+                <div className="space-y-[15px] md:space-y-[20px]">
                   {/* Rating Slider */}
-                  <div>
-                    <label className="block text-xs text-muted-foreground uppercase mb-[10px]">
-                      Rating (1-10)
-                    </label>
-                    <div className="flex items-center gap-[15px]">
-                      <Slider
-                        value={[rating]}
-                        onValueChange={([value]: number[]) => setRating(value)}
+                  <div className="flex items-end gap-[10px] md:gap-[15px]">
+                    <div className="flex-1">
+                      <FmCommonSlider
+                        label="Rating"
+                        value={rating}
+                        onValueChange={setRating}
                         min={1}
                         max={10}
                         step={1}
-                        className="flex-1"
+                        showValue={false}
                       />
-                      <div className="text-2xl font-bold text-fm-gold w-12 text-center">
-                        {rating}
-                      </div>
+                    </div>
+                    <div className="text-xl md:text-2xl font-bold text-fm-gold w-10 md:w-12 text-center pb-1">
+                      {rating}
                     </div>
                   </div>
 
                   {/* Internal Notes */}
-                  <div>
-                    <label className="block text-xs text-muted-foreground uppercase mb-[10px]">
-                      Internal Notes (Staff Only)
-                    </label>
-                    <Textarea
-                      value={internalNotes}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInternalNotes(e.target.value)}
-                      placeholder="Your thoughts on this submission..."
-                      rows={4}
-                      className="rounded-none"
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label="Internal Notes (Staff Only)"
+                    value={internalNotes}
+                    onChange={(e) => setInternalNotes(e.target.value)}
+                    placeholder="Your thoughts on this submission..."
+                    multiline
+                    rows={3}
+                  />
 
                   {/* Submit Review Button */}
                   <FmCommonButton
@@ -465,7 +462,7 @@ export function ReviewInterface() {
                     disabled={createReview.isPending}
                     className="w-full"
                   >
-                    <Star className="h-5 w-5 mr-2" />
+                    <Star className="h-4 w-4 md:h-5 md:w-5 mr-2" />
                     {createReview.isPending ? 'Submitting...' : 'Submit Review'}
                   </FmCommonButton>
                 </div>
@@ -474,20 +471,20 @@ export function ReviewInterface() {
 
             {/* Decision Section */}
             {canMakeDecision && (
-              <FmCommonCard variant="frosted" className="p-[20px]">
-                <h3 className="text-lg font-canela text-white mb-[20px]">
+              <FmCommonCard variant="frosted" className="p-[15px] md:p-[20px]">
+                <h3 className="text-base md:text-lg font-canela text-white mb-[15px] md:mb-[20px]">
                   Make Decision
                 </h3>
 
-                <div className="space-y-[20px]">
+                <div className="space-y-[15px] md:space-y-[20px]">
                   {/* Score Display */}
                   {submission.submission_scores && (
-                    <div className="p-[15px] bg-black/40 border border-fm-gold/40 rounded-none">
+                    <div className="p-[10px] md:p-[15px] bg-black/40 border border-fm-gold/40 rounded-none">
                       <div className="text-center">
-                        <div className="text-sm text-muted-foreground uppercase mb-[5px]">
+                        <div className="text-xs md:text-sm text-muted-foreground uppercase mb-[5px]">
                           Indexed Score
                         </div>
-                        <div className="text-4xl font-bold text-fm-gold">
+                        <div className="text-3xl md:text-4xl font-bold text-fm-gold">
                           {submission.submission_scores.indexed_score ?? 0}
                         </div>
                         <div className="text-xs text-white/60 mt-[5px]">
@@ -498,18 +495,15 @@ export function ReviewInterface() {
                   )}
 
                   {/* Decision Note */}
-                  <div>
-                    <label className="block text-xs text-muted-foreground uppercase mb-[10px]">
-                      Decision Note (Optional, shown to artist)
-                    </label>
-                    <Textarea
-                      value={decisionNote}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDecisionNote(e.target.value)}
-                      placeholder="Optional message to the artist..."
-                      rows={3}
-                      className="rounded-none"
-                    />
-                  </div>
+                  <FmCommonTextField
+                    label="Decision Note (Optional)"
+                    description="This message will be shown to the artist"
+                    value={decisionNote}
+                    onChange={(e) => setDecisionNote(e.target.value)}
+                    placeholder="Optional message to the artist..."
+                    multiline
+                    rows={3}
+                  />
 
                   {/* Decision Buttons */}
                   <div className="grid grid-cols-2 gap-[10px]">
@@ -520,7 +514,8 @@ export function ReviewInterface() {
                       className="border-green-500/40 hover:bg-green-500/20 hover:border-green-500"
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Approve
+                      <span className="hidden sm:inline">Approve</span>
+                      <span className="sm:hidden">Yes</span>
                     </FmCommonButton>
                     <FmCommonButton
                       variant="destructive-outline"
@@ -528,7 +523,8 @@ export function ReviewInterface() {
                       disabled={makeDecision.isPending}
                     >
                       <XCircle className="h-4 w-4 mr-2" />
-                      Reject
+                      <span className="hidden sm:inline">Reject</span>
+                      <span className="sm:hidden">No</span>
                     </FmCommonButton>
                   </div>
                 </div>

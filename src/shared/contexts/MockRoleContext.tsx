@@ -1,8 +1,10 @@
 import { createContext, useContext, useCallback, useMemo, ReactNode } from 'react';
 import { rolesStore } from '@/shared/stores/rolesStore';
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage';
+import { logger } from '@/shared/services/logger';
 import {
   type Role,
+  ROLES,
   getRoleDependencies,
   getDependentRoles,
   ensureRoleDependencies,
@@ -26,6 +28,19 @@ const DEFAULT_STATE: MockRoleState = {
   isUnauthenticated: false,
   roles: [],
 };
+
+/**
+ * Validate that a role name is valid
+ * Checks against the database roles store first, then falls back to ROLES constant
+ */
+function isValidRole(roleName: string): boolean {
+  // Check against database roles first (if loaded)
+  if (rolesStore.isLoaded() && rolesStore.getRoleByName(roleName)) {
+    return true;
+  }
+  // Fall back to ROLES constant for type-safe roles
+  return Object.values(ROLES).includes(roleName as Role);
+}
 
 interface MockRoleContextValue {
   /**
@@ -217,6 +232,15 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
   }, [setAppliedState, setPendingState]);
 
   const togglePendingRole = useCallback((roleName: string) => {
+    // Validate role name before toggling
+    if (!isValidRole(roleName)) {
+      logger.warn('Attempted to toggle invalid role', {
+        roleName,
+        source: 'MockRoleContext.togglePendingRole'
+      });
+      return;
+    }
+
     setPendingState(prev => {
       const currentRoles = new Set(prev.roles);
 
@@ -305,6 +329,12 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
   const getMockPermissions = useCallback((): string[] => {
     if (appliedState.isUnauthenticated) return [];
     if (appliedState.roles.length === 0) return [];
+
+    // Early return empty if roles store not loaded yet
+    // This prevents race conditions where permissions are checked before roles are loaded
+    if (!rolesStore.isLoaded()) {
+      return [];
+    }
 
     // Aggregate permissions from all active mock roles
     const allPermissions = new Set<string>();

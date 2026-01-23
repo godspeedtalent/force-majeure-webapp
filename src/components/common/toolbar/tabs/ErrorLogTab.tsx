@@ -3,6 +3,7 @@
  *
  * Developer toolbar tab for monitoring client-side errors.
  * Shows recent errors logged via the error logging service.
+ * Compact single-row layout with multi-select filters.
  */
 
 import { useState, useMemo } from 'react';
@@ -14,20 +15,22 @@ import {
   Info,
   Bug,
   ExternalLink,
-  Clock,
-  Filter,
   Trash2,
   Copy,
   Check,
+  MoreVertical,
 } from 'lucide-react';
 import { Button } from '@/components/common/shadcn/button';
-import { Badge } from '@/components/common/shadcn/badge';
 import { Separator } from '@/components/common/shadcn/separator';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
+import { ScrollArea } from '@/components/common/shadcn/scroll-area';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import {
-  FmResponsiveGroupLayout,
-  ResponsiveGroup,
-} from '@/components/common/layout/FmResponsiveGroupLayout';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/common/shadcn/dropdown-menu';
 import { supabase, cn, logger } from '@/shared';
 import type { ErrorLogLevel, ErrorLogSource } from '@/features/error-logging';
 import { ERROR_LEVEL_CONFIG, ERROR_SOURCE_CONFIG } from '@/features/error-logging';
@@ -50,113 +53,147 @@ interface ErrorLogRow {
   created_at: string;
 }
 
+// Filter levels (excluding fatal as it's rare)
+const FILTER_LEVELS: ErrorLogLevel[] = ['error', 'warn', 'info', 'debug'];
+
 // ============================================================================
 // Helper Components
 // ============================================================================
 
-function ErrorLevelIcon({ level }: { level: ErrorLogLevel }) {
-  const config = ERROR_LEVEL_CONFIG[level];
-  const iconMap = {
-    debug: Bug,
-    info: Info,
-    warn: AlertTriangle,
-    error: XCircle,
-    fatal: XCircle,
-  };
-  const Icon = iconMap[level] || Info;
+const LEVEL_ICONS = {
+  debug: Bug,
+  info: Info,
+  warn: AlertTriangle,
+  error: XCircle,
+  fatal: XCircle,
+};
 
-  return (
-    <FmPortalTooltip content={config.label} side="right">
-      <Icon className={cn('h-4 w-4', config.color)} />
-    </FmPortalTooltip>
-  );
+interface ErrorLogItemProps {
+  log: ErrorLogRow;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  onCopy: (text: string) => void;
 }
 
-function ErrorLogItem({ log, onCopy }: { log: ErrorLogRow; onCopy: (text: string) => void }) {
+function ErrorLogItem({ log, isExpanded, onToggleExpand, onCopy }: ErrorLogItemProps) {
+  const { t } = useTranslation('common');
   const levelConfig = ERROR_LEVEL_CONFIG[log.level];
   const sourceConfig = ERROR_SOURCE_CONFIG[log.source];
-  const timeAgo = getTimeAgo(log.created_at);
+  const Icon = LEVEL_ICONS[log.level] || Info;
+
+  // Compact time format
+  const compactTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${Math.floor(diffHours / 24)}d`;
+  };
 
   return (
-    <div className="group p-3 bg-white/5 border border-white/10 hover:border-white/20 transition-colors">
-      <div className="flex items-start gap-3">
-        <ErrorLevelIcon level={log.level} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge
-              variant="outline"
-              className={cn('text-xs border-white/20', levelConfig.color)}
-            >
-              {levelConfig.label}
-            </Badge>
-            <Badge
-              variant="outline"
-              className={cn('text-xs border-white/20', sourceConfig.color)}
-            >
-              {sourceConfig.label}
-            </Badge>
-            <span className="text-xs text-muted-foreground ml-auto flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {timeAgo}
-            </span>
+    <div
+      className={cn(
+        'cursor-pointer transition-all duration-150 group',
+        'border-l-2 hover:bg-white/5',
+        isExpanded ? 'bg-white/5 border-fm-gold' : 'border-transparent hover:border-fm-gold/50'
+      )}
+      onClick={onToggleExpand}
+    >
+      {/* Compact Row */}
+      <div className='flex items-center gap-1.5 px-1.5 py-1'>
+        {/* Level Icon */}
+        <FmPortalTooltip content={levelConfig.label} side="right">
+          <div className={cn('w-5 h-5 flex items-center justify-center flex-shrink-0', levelConfig.color)}>
+            <Icon className='h-3 w-3' />
           </div>
-          <p className="text-sm text-white/90 line-clamp-2 mb-2">{log.message}</p>
-          {(log.endpoint || log.method || log.status_code) && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              {log.method && (
-                <span className="font-mono bg-white/5 px-1.5 py-0.5">{log.method}</span>
-              )}
-              {log.endpoint && (
-                <span className="font-mono truncate">{log.endpoint}</span>
-              )}
-              {log.status_code && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'text-xs',
-                    log.status_code >= 500 ? 'text-red-400 border-red-400/30' :
-                    log.status_code >= 400 ? 'text-yellow-400 border-yellow-400/30' :
-                    'text-green-400 border-green-400/30'
-                  )}
-                >
-                  {log.status_code}
-                </Badge>
-              )}
+        </FmPortalTooltip>
+
+        {/* Source Badge */}
+        <span className={cn('text-[9px] font-medium flex-shrink-0 px-1', sourceConfig.color)}>
+          {log.source.slice(0, 3).toUpperCase()}
+        </span>
+
+        {/* Status Code (if present) */}
+        {log.status_code && (
+          <span className={cn(
+            'text-[9px] font-mono flex-shrink-0 w-6 text-center',
+            log.status_code >= 500 ? 'text-red-400' :
+            log.status_code >= 400 ? 'text-yellow-400' : 'text-green-400'
+          )}>
+            {log.status_code}
+          </span>
+        )}
+
+        {/* Message */}
+        <span className='flex-1 min-w-0 text-[11px] text-white/90 truncate'>
+          {log.message}
+        </span>
+
+        {/* Time */}
+        <span className='text-[9px] text-muted-foreground flex-shrink-0 w-6 text-right'>
+          {compactTime(log.created_at)}
+        </span>
+
+        {/* Menu Button - visible on hover */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <FmCommonIconButton
+              icon={MoreVertical}
+              variant='secondary'
+              size='sm'
+              className='h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-fm-gold flex-shrink-0'
+              onClick={e => e.stopPropagation()}
+              aria-label={t('errorLog.openMenu')}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className='bg-card border-border rounded-none w-40'>
+            <DropdownMenuItem
+              onSelect={() => onCopy(JSON.stringify(log, null, 2))}
+              className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+            >
+              <Copy className='h-3 w-3 mr-2' />
+              {t('errorLog.copyDetails')}
+            </DropdownMenuItem>
+            {log.endpoint && (
+              <DropdownMenuItem
+                onSelect={() => onCopy(log.endpoint || '')}
+                className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
+              >
+                <Copy className='h-3 w-3 mr-2' />
+                {t('errorLog.copyEndpoint')}
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Expanded Details */}
+      {isExpanded && (
+        <div className='px-1.5 pb-2 pl-[30px] space-y-1'>
+          {log.endpoint && (
+            <div className='text-[10px]'>
+              <span className='text-muted-foreground'>{log.method || 'GET'} </span>
+              <span className='text-white/70 font-mono'>{log.endpoint}</span>
             </div>
           )}
+          {log.page_url && (
+            <div className='text-[10px] text-white/50 truncate'>
+              {log.page_url}
+            </div>
+          )}
+          {log.details && Object.keys(log.details).length > 0 && (
+            <pre className='text-[9px] text-white/50 bg-black/30 p-1 overflow-x-auto max-h-20'>
+              {JSON.stringify(log.details, null, 2)}
+            </pre>
+          )}
         </div>
-        <FmPortalTooltip content="Copy error details" side="left">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => onCopy(JSON.stringify(log, null, 2))}
-          >
-            <Copy className="h-3 w-3" />
-          </Button>
-        </FmPortalTooltip>
-      </div>
+      )}
     </div>
   );
-}
-
-// ============================================================================
-// Utilities
-// ============================================================================
-
-function getTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSecs / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffSecs < 60) return `${diffSecs}s ago`;
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return `${diffDays}d ago`;
 }
 
 // ============================================================================
@@ -165,38 +202,52 @@ function getTimeAgo(dateString: string): string {
 
 export function ErrorLogTabContent() {
   const { t } = useTranslation('common');
-  const [levelFilter, setLevelFilter] = useState<ErrorLogLevel | 'all'>('all');
+  // Multi-select: all levels enabled by default
+  const [enabledLevels, setEnabledLevels] = useState<Set<ErrorLogLevel>>(
+    new Set(FILTER_LEVELS)
+  );
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Toggle a level filter
+  const toggleLevel = (level: ErrorLogLevel) => {
+    setEnabledLevels(prev => {
+      const next = new Set(prev);
+      if (next.has(level)) {
+        // Don't allow removing all filters
+        if (next.size > 1) {
+          next.delete(level);
+        }
+      } else {
+        next.add(level);
+      }
+      return next;
+    });
+  };
 
   // Fetch recent error logs
   const { data: logs = [], isLoading, error } = useQuery({
-    queryKey: ['error-logs', levelFilter],
+    queryKey: ['error-logs'],
     queryFn: async () => {
-      let query = supabase
+      const { data, error: queryError } = await supabase
         .from('error_logs')
         .select('id, level, source, message, endpoint, method, status_code, details, user_id, page_url, created_at')
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(100);
 
-      if (levelFilter !== 'all') {
-        query = query.eq('level', levelFilter);
-      }
-
-      const { data, error: queryError } = await query;
       if (queryError) throw queryError;
       return (data || []) as ErrorLogRow[];
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 30000,
   });
 
-  const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // Filter logs by enabled levels
+  const filteredLogs = useMemo(() => {
+    return logs.filter(log => enabledLevels.has(log.level));
+  }, [logs, enabledLevels]);
 
-  // Group logs by level for summary
-  const summary = useMemo(() => {
+  // Count by level
+  const levelCounts = useMemo(() => {
     const counts: Record<ErrorLogLevel, number> = {
       debug: 0,
       info: 0,
@@ -212,88 +263,85 @@ export function ErrorLogTabContent() {
     return counts;
   }, [logs]);
 
-  const groups: ResponsiveGroup[] = useMemo(() => [
-    {
-      id: 'summary',
-      title: t('errorLog.summary'),
-      icon: AlertTriangle,
-      defaultExpanded: true,
-      children: (
-        <div className="space-y-3">
-          <div className="grid grid-cols-4 gap-2">
-            {(['error', 'warn', 'info', 'debug'] as ErrorLogLevel[]).map(level => {
-              const config = ERROR_LEVEL_CONFIG[level];
-              const count = summary[level];
-              const isActive = levelFilter === level;
-              return (
-                <button
-                  key={level}
-                  onClick={() => setLevelFilter(isActive ? 'all' : level)}
-                  className={cn(
-                    'p-2 text-center transition-colors border',
-                    isActive
-                      ? 'bg-white/10 border-fm-gold/50'
-                      : 'bg-white/5 border-white/10 hover:border-white/20'
-                  )}
-                >
-                  <div className={cn('text-lg font-mono', config.color)}>{count}</div>
-                  <div className="text-xs text-muted-foreground">{config.label}</div>
-                </button>
-              );
-            })}
-          </div>
-          {levelFilter !== 'all' && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full border-white/20"
-              onClick={() => setLevelFilter('all')}
-            >
-              <Filter className="h-3 w-3 mr-2" />
-              {t('errorLog.clearFilter')}
-            </Button>
-          )}
-        </div>
-      ),
-    },
-    {
-      id: 'logs',
-      title: t('errorLog.recentErrors'),
-      icon: XCircle,
-      defaultExpanded: true,
-      children: (
-        <div className="space-y-2">
-          {isLoading ? (
-            <div className="text-sm text-muted-foreground text-center py-8">
-              {t('errorLog.loading')}
-            </div>
-          ) : error ? (
-            <div className="text-sm text-red-400 text-center py-8">
-              {t('errorLog.fetchError')}
-            </div>
-          ) : logs.length === 0 ? (
-            <div className="text-sm text-muted-foreground text-center py-8">
-              {t('errorLog.noErrors')}
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-              {logs.map(log => (
-                <ErrorLogItem key={log.id} log={log} onCopy={handleCopy} />
-              ))}
-            </div>
-          )}
-        </div>
-      ),
-    },
-  ], [t, logs, isLoading, error, summary, levelFilter, handleCopy]);
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="space-y-4">
-      <Separator className="bg-white/10" />
-      <FmResponsiveGroupLayout groups={groups} />
+    <div className='space-y-3'>
+      <Separator className='bg-white/10' />
+
+      {/* Filter Buttons - Multi-select with gold/grayscale toggle */}
+      <div className='flex gap-1'>
+        {FILTER_LEVELS.map(level => {
+          const config = ERROR_LEVEL_CONFIG[level];
+          const Icon = LEVEL_ICONS[level];
+          const count = levelCounts[level];
+          const isEnabled = enabledLevels.has(level);
+
+          return (
+            <button
+              key={level}
+              onClick={() => toggleLevel(level)}
+              className={cn(
+                'flex-1 flex items-center justify-center gap-1 py-1.5 px-2 transition-all border',
+                isEnabled
+                  ? 'border-fm-gold bg-white/5'
+                  : 'border-white/10 bg-white/[0.02] grayscale opacity-50 hover:opacity-70'
+              )}
+            >
+              <Icon className={cn('h-3 w-3', isEnabled ? config.color : 'text-muted-foreground')} />
+              <span className={cn(
+                'text-[10px] font-mono',
+                isEnabled ? config.color : 'text-muted-foreground'
+              )}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Count */}
+      <div className='flex items-center justify-between text-[10px] text-muted-foreground'>
+        <span>{t('errorLog.showing', { count: filteredLogs.length, total: logs.length })}</span>
+      </div>
+
+      {/* Logs List */}
+      <ScrollArea className='h-[calc(100vh-280px)] min-h-[300px]'>
+        {isLoading ? (
+          <div className='text-center py-8 text-muted-foreground text-sm'>
+            {t('errorLog.loading')}
+          </div>
+        ) : error ? (
+          <div className='text-center py-8 text-red-400 text-sm'>
+            {t('errorLog.fetchError')}
+          </div>
+        ) : filteredLogs.length === 0 ? (
+          <div className='text-center py-8 text-muted-foreground text-sm'>
+            {t('errorLog.noErrors')}
+          </div>
+        ) : (
+          <div className='divide-y divide-border/30'>
+            {filteredLogs.map(log => (
+              <ErrorLogItem
+                key={log.id}
+                log={log}
+                isExpanded={expandedLogId === log.id}
+                onToggleExpand={() => setExpandedLogId(expandedLogId === log.id ? null : log.id)}
+                onCopy={handleCopy}
+              />
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+
+      {/* Copy Toast */}
       {copied && (
-        <div className="fixed bottom-4 right-4 bg-green-500/90 text-white px-4 py-2 text-sm flex items-center gap-2 z-50">
-          <Check className="h-4 w-4" />
+        <div className='fixed bottom-4 right-4 bg-green-500/90 text-white px-4 py-2 text-sm flex items-center gap-2 z-50'>
+          <Check className='h-4 w-4' />
           {t('errorLog.copied')}
         </div>
       )}

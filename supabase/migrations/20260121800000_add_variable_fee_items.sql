@@ -65,6 +65,12 @@ CREATE TRIGGER update_entity_fee_items_updated_at
 -- RLS policies for entity_fee_items
 ALTER TABLE entity_fee_items ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (for idempotency)
+DROP POLICY IF EXISTS "entity_fee_items_select_policy" ON entity_fee_items;
+DROP POLICY IF EXISTS "entity_fee_items_insert_policy" ON entity_fee_items;
+DROP POLICY IF EXISTS "entity_fee_items_update_policy" ON entity_fee_items;
+DROP POLICY IF EXISTS "entity_fee_items_delete_policy" ON entity_fee_items;
+
 -- Allow authenticated users to read fee items
 CREATE POLICY "entity_fee_items_select_policy" ON entity_fee_items
   FOR SELECT USING (true);

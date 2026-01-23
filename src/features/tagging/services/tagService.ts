@@ -3,12 +3,77 @@
  *
  * Handles all tag-related API operations including search, create, and
  * applying/removing tags from submissions.
+ *
+ * Note: The 'tags' and 'submission_tags' tables are not yet in the generated
+ * Supabase types. We use explicit typing to bypass TypeScript's type checking
+ * until types are regenerated.
  */
 
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/shared/services/logger';
 import { handleError } from '@/shared/services/errorHandler';
 import type { Tag, CreateTagInput, TagEntityType } from '../types';
+
+/**
+ * Database row type for the tags table.
+ * Matches the Tag interface but with snake_case naming.
+ */
+interface TagRow {
+  id: string;
+  name: string;
+  entity_type: string | null;
+  color: string | null;
+  description: string | null;
+  usage_count: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Database row type for submission_tags join with tags.
+ */
+interface SubmissionTagJoinRow {
+  tag_id: string;
+  tags: TagRow;
+}
+
+/**
+ * Helper to convert a database row to a Tag object.
+ */
+function rowToTag(row: TagRow): Tag {
+  return {
+    id: row.id,
+    name: row.name,
+    entity_type: row.entity_type as TagEntityType,
+    color: row.color,
+    description: row.description,
+    usage_count: row.usage_count,
+    created_by: row.created_by,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+/**
+ * Get the Supabase client typed for the tags table.
+ * This bypasses TypeScript since the table isn't in generated types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getTagsTable(): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return supabase.from('tags' as any);
+}
+
+/**
+ * Get the Supabase client typed for the submission_tags table.
+ * This bypasses TypeScript since the table isn't in generated types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSubmissionTagsTable(): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return supabase.from('submission_tags' as any);
+}
 
 // ============================================================================
 // Tag Operations
@@ -28,8 +93,7 @@ export async function searchTags(
   limit: number = 20
 ): Promise<Tag[]> {
   try {
-    let queryBuilder = supabase
-      .from('tags')
+    let queryBuilder = getTagsTable()
       .select('*')
       .ilike('name', `%${query}%`)
       .order('usage_count', { ascending: false })
@@ -49,17 +113,7 @@ export async function searchTags(
 
     if (error) throw error;
 
-    return (data || []).map(row => ({
-      id: row.id,
-      name: row.name,
-      entity_type: row.entity_type as TagEntityType,
-      color: row.color,
-      description: row.description,
-      usage_count: row.usage_count,
-      created_by: row.created_by,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-    }));
+    return ((data as TagRow[]) || []).map(rowToTag);
   } catch (error) {
     handleError(error, {
       title: 'Failed to search tags',
@@ -78,8 +132,7 @@ export async function searchTags(
  */
 export async function createTag(input: CreateTagInput): Promise<Tag> {
   try {
-    const { data, error } = await supabase
-      .from('tags')
+    const { data, error } = await getTagsTable()
       .insert({
         name: input.name,
         entity_type: input.entity_type ?? null,
@@ -98,22 +151,14 @@ export async function createTag(input: CreateTagInput): Promise<Tag> {
       throw error;
     }
 
+    const row = data as TagRow;
+
     logger.info('Tag created successfully', {
       context: 'tagService.createTag',
-      details: { tagId: data.id, name: data.name },
+      details: { tagId: row.id, name: row.name },
     });
 
-    return {
-      id: data.id,
-      name: data.name,
-      entity_type: data.entity_type as TagEntityType,
-      color: data.color,
-      description: data.description,
-      usage_count: data.usage_count,
-      created_by: data.created_by,
-      created_at: data.created_at,
-      updated_at: data.updated_at,
-    };
+    return rowToTag(row);
   } catch (error) {
     handleError(error, {
       title: 'Failed to create tag',
@@ -131,8 +176,7 @@ export async function createTag(input: CreateTagInput): Promise<Tag> {
  */
 export async function getAllTags(entityType?: TagEntityType): Promise<Tag[]> {
   try {
-    let queryBuilder = supabase
-      .from('tags')
+    let queryBuilder = getTagsTable()
       .select('*')
       .order('usage_count', { ascending: false })
       .order('name', { ascending: true });
@@ -149,17 +193,7 @@ export async function getAllTags(entityType?: TagEntityType): Promise<Tag[]> {
 
     if (error) throw error;
 
-    return (data || []).map(row => ({
-      id: row.id,
-      name: row.name,
-      entity_type: row.entity_type as TagEntityType,
-      color: row.color,
-      description: row.description,
-      usage_count: row.usage_count,
-      created_by: row.created_by,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-    }));
+    return ((data as TagRow[]) || []).map(rowToTag);
   } catch (error) {
     handleError(error, {
       title: 'Failed to fetch tags',
@@ -185,8 +219,7 @@ export async function applyTagToSubmission(
   tagId: string
 ): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('submission_tags')
+    const { error } = await getSubmissionTagsTable()
       .insert({
         submission_id: submissionId,
         tag_id: tagId,
@@ -226,8 +259,7 @@ export async function removeTagFromSubmission(
   tagId: string
 ): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('submission_tags')
+    const { error } = await getSubmissionTagsTable()
       .delete()
       .match({ submission_id: submissionId, tag_id: tagId });
 
@@ -261,8 +293,7 @@ export async function removeTagFromSubmission(
  */
 export async function getSubmissionTags(submissionId: string): Promise<Tag[]> {
   try {
-    const { data, error } = await supabase
-      .from('submission_tags')
+    const { data, error } = await getSubmissionTagsTable()
       .select(`
         tag_id,
         tags (*)
@@ -271,17 +302,7 @@ export async function getSubmissionTags(submissionId: string): Promise<Tag[]> {
 
     if (error) throw error;
 
-    return (data || []).map(row => ({
-      id: row.tags.id,
-      name: row.tags.name,
-      entity_type: row.tags.entity_type as TagEntityType,
-      color: row.tags.color,
-      description: row.tags.description,
-      usage_count: row.tags.usage_count,
-      created_by: row.tags.created_by,
-      created_at: row.tags.created_at,
-      updated_at: row.tags.updated_at,
-    }));
+    return ((data as SubmissionTagJoinRow[]) || []).map(row => rowToTag(row.tags));
   } catch (error) {
     handleError(error, {
       title: 'Failed to fetch submission tags',

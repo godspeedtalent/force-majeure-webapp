@@ -15,6 +15,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { verifyTicketQR } from '../_shared/qr.ts';
 import { logActivity, getRequestContext, createTicketScanLog } from '../_shared/activityLogger.ts';
+import { verifyAuth, requirePermission } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -61,76 +62,20 @@ Deno.serve(async req => {
   }
 
   try {
-    // Get Supabase client
+    // SECURITY: Use centralized auth verification
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[validate-ticket] Auth verified for user:', user.id);
+
+    // Require scan_tickets permission (admin bypass is automatic)
+    await requirePermission(authSupabase, user.id, 'scan_tickets');
+    console.log('[validate-ticket] Permission check passed for user:', user.id);
+
+    // Get Supabase client for operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const authHeader = req.headers.get('Authorization');
-
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({
-          valid: false,
-          error: 'Missing authorization header',
-          reason: 'permission_denied',
-        } as ValidateTicketResponse),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
     const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader } },
+      global: { headers: { Authorization: req.headers.get('Authorization')! } },
     });
-
-    // Get current user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({
-          valid: false,
-          error: 'Unauthorized',
-          reason: 'permission_denied',
-        } as ValidateTicketResponse),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // Check scan permission
-    const { data: permissions } = await supabase
-      .from('user_permissions')
-      .select('permission')
-      .eq('user_id', user.id)
-      .eq('permission', 'scan_tickets')
-      .single();
-
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .in('role', ['admin', 'developer']);
-
-    if (!permissions && (!roles || roles.length === 0)) {
-      return new Response(
-        JSON.stringify({
-          valid: false,
-          error: 'User does not have permission to scan tickets',
-          reason: 'permission_denied',
-        } as ValidateTicketResponse),
-        {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
 
     // Parse request body
     const body: ValidateTicketRequest = await req.json();
@@ -417,13 +362,35 @@ Deno.serve(async req => {
       }
     );
   } catch (error) {
-    console.error('Validation error:', error);
+    console.error('[validate-ticket] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({
+          valid: false,
+          error: errorMessage,
+          reason: 'permission_denied',
+        } as ValidateTicketResponse),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(
+        JSON.stringify({
+          valid: false,
+          error: 'User does not have permission to scan tickets',
+          reason: 'permission_denied',
+        } as ValidateTicketResponse),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(
       JSON.stringify({
         valid: false,
-        error: `Internal server error: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
+        error: `Internal server error: ${errorMessage}`,
       } as ValidateTicketResponse),
       {
         status: 500,

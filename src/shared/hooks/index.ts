@@ -72,3 +72,6 @@ export type {
 // Developer bookmarks hook
 export { useDevBookmarks } from './useDevBookmarks';
 export type { DevBookmark } from './useDevBookmarks';
+
+// Event access control hook
+export { useCanManageEvent, eventAccessKeys } from './useCanManageEvent';

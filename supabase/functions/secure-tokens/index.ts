@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { verifyAuth, isAdmin } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,26 +23,39 @@ Deno.serve(async req => {
   }
 
   try {
+    // SECURITY: Verify user is authenticated
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[secure-tokens] Auth verified for user:', user.id);
+
+    // Use service role for encryption/decryption operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const requestBody: RequestBody = await req.json();
     const { action, userId, accessToken, refreshToken } = requestBody;
 
-    if (!userId) {
-      return new Response(JSON.stringify({ error: 'User ID is required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Default to authenticated user's ID if not provided
+    const targetUserId = userId || user.id;
+
+    // SECURITY: Users can only access their own tokens unless they're admin
+    if (targetUserId !== user.id) {
+      const userIsAdmin = await isAdmin(authSupabase, user.id);
+      if (!userIsAdmin) {
+        console.warn('[secure-tokens] Forbidden: User', user.id, 'tried to access tokens for', targetUserId);
+        return new Response(JSON.stringify({ error: 'Forbidden: Cannot access other user tokens' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      console.log('[secure-tokens] Admin bypass: User', user.id, 'accessing tokens for', targetUserId);
     }
 
     // Create a user-specific salt for encryption
-    const userSalt = userId.substring(0, 16).padEnd(16, '0');
+    const userSalt = targetUserId.substring(0, 16).padEnd(16, '0');
 
     if (action === 'store') {
-      console.log(`Storing encrypted tokens for user: ${userId}`);
+      console.log(`[secure-tokens] Storing encrypted tokens for user: ${targetUserId}`);
 
       const updates: any = {};
 
@@ -71,7 +85,7 @@ Deno.serve(async req => {
         const { error: updateError } = await supabase
           .from('profiles')
           .update(updates)
-          .eq('user_id', userId);
+          .eq('user_id', targetUserId);
 
         if (updateError) {
           console.error('Error storing encrypted tokens:', updateError);
@@ -89,7 +103,7 @@ Deno.serve(async req => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } else if (action === 'retrieve') {
-      console.log(`Retrieving encrypted tokens for user: ${userId}`);
+      console.log(`[secure-tokens] Retrieving encrypted tokens for user: ${targetUserId}`);
 
       // Get encrypted tokens from profile
       const { data: profile, error: profileError } = await supabase
@@ -97,7 +111,7 @@ Deno.serve(async req => {
         .select(
           'spotify_access_token_encrypted, spotify_refresh_token_encrypted'
         )
-        .eq('user_id', userId)
+        .eq('user_id', targetUserId)
         .single();
 
       if (profileError || !profile) {
@@ -138,7 +152,23 @@ Deno.serve(async req => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in secure-tokens function:', error);
+    console.error('[secure-tokens] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

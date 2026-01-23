@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import * as bcrypt from 'https://deno.land/x/bcrypt@v0.4.1/mod.ts';
+import { verifyAuth, requireAnyRole } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,27 +15,17 @@ serve(async req => {
   }
 
   try {
+    // SECURITY: Verify user is authenticated and has admin/developer role
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[generate-dev-tokens] Auth verified for user:', user.id);
+
+    await requireAnyRole(authSupabase, user.id, ['admin', 'developer']);
+    console.log('[generate-dev-tokens] Role check passed for user:', user.id);
+
+    // Use service role for operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Verify service role authentication with exact match
-    const authHeader = req.headers.get('Authorization');
-
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    if (token !== supabaseServiceKey) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Get all 5 scavenger hunt locations
     const { data: locations, error: locError } = await supabase
@@ -166,8 +157,24 @@ serve(async req => {
       }
     );
   } catch (error: any) {
-    console.error('Error in generate-dev-tokens:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('[generate-dev-tokens] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

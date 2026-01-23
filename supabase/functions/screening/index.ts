@@ -54,13 +54,16 @@ serve(async (req) => {
   try {
     // Verify authentication
     const { user, supabase } = await verifyAuth(req);
+    console.log('[screening] Auth verified for user:', user.id, 'email:', user.email);
 
     // Require staff or admin role for all screening operations
     // Matches RLS policies: fm_staff, admin, or developer
     await requireAnyRole(supabase, user.id, ['admin', 'developer', 'fm_staff']);
+    console.log('[screening] Role check passed for user:', user.id);
 
     // Parse operation from request
     const { operation, ...params } = await req.json();
+    console.log('[screening] Operation:', operation, 'Params:', JSON.stringify(params));
 
     // Route to appropriate handler
     let result;

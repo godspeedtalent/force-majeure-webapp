@@ -11,6 +11,7 @@
 
 -- Drop the overly permissive INSERT policy
 DROP POLICY IF EXISTS "Authenticated users can insert activity logs" ON activity_logs;
+DROP POLICY IF EXISTS "Only admins can insert activity logs directly" ON activity_logs;
 
 -- Create a more restrictive INSERT policy - only admins/developers can insert directly
 -- The log_activity() SECURITY DEFINER function bypasses RLS, so it will still work

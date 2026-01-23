@@ -8,6 +8,7 @@
 
 import { ArrowLeft, X } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { cn } from '@/shared';
 
 // ============================================================================
@@ -78,9 +79,13 @@ export function ReviewTimer({
   return (
     <div
       className={cn(
-        'fixed bottom-[20px] left-[20px] z-50',
-        'w-[320px]',
-        'bg-black/60 backdrop-blur-sm',
+        // Mobile: center at bottom with full width minus margins
+        'fixed bottom-[10px] left-[10px] right-[10px] z-50',
+        // Desktop: fixed width at bottom-left
+        'md:bottom-[20px] md:left-[20px] md:right-auto',
+        'md:w-[320px]',
+        // Styling
+        'bg-black/70 backdrop-blur-md md:bg-black/60 md:backdrop-blur-sm',
         'border-2 border-fm-gold',
         'transition-all duration-300',
         'hover:bg-black/80 hover:backdrop-blur-md',
@@ -88,32 +93,32 @@ export function ReviewTimer({
       )}
     >
       {/* Header */}
-      <div className="p-[15px] border-b border-white/20">
-        <div className="flex items-center justify-between mb-[10px]">
-          <h4 className="text-sm font-medium text-fm-gold uppercase">
+      <div className="p-[10px] md:p-[15px] border-b border-white/20">
+        <div className="flex items-center justify-between mb-[5px] md:mb-[10px]">
+          <h4 className="text-xs md:text-sm font-medium text-fm-gold uppercase">
             Review Timer
           </h4>
-          <button
+          <FmCommonIconButton
             onClick={onCancel}
-            className="p-1 hover:bg-white/10 transition-colors rounded-none"
-            title="Cancel timer"
-          >
-            <X className="h-4 w-4 text-white/60" />
-          </button>
+            variant="secondary"
+            size="sm"
+            icon={X}
+            aria-label="Cancel timer"
+          />
         </div>
 
-        <p className="text-xs text-white/60 truncate" title={submissionTitle}>
+        <p className="text-[10px] md:text-xs text-white/60 truncate" title={submissionTitle}>
           {submissionTitle}
         </p>
       </div>
 
       {/* Timer Display */}
-      <div className="p-[20px]">
+      <div className="p-[10px] md:p-[20px]">
         {/* Time Remaining */}
-        <div className="text-center mb-[15px]">
+        <div className="text-center mb-[10px] md:mb-[15px]">
           <div
             className={cn(
-              'text-4xl font-bold font-mono mb-[5px]',
+              'text-3xl md:text-4xl font-bold font-mono mb-[5px]',
               isComplete
                 ? 'text-green-400'
                 : remainingSeconds < 60
@@ -123,13 +128,13 @@ export function ReviewTimer({
           >
             {formatTime(remainingSeconds)}
           </div>
-          <div className="text-xs text-muted-foreground uppercase">
+          <div className="text-[10px] md:text-xs text-muted-foreground uppercase">
             {isComplete ? 'Timer Complete' : 'Remaining'}
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-2 bg-black/40 rounded-none mb-[15px] overflow-hidden">
+        <div className="w-full h-1.5 md:h-2 bg-black/40 rounded-none mb-[10px] md:mb-[15px] overflow-hidden">
           <div
             className={cn(
               'h-full transition-all duration-1000 ease-linear',
@@ -140,24 +145,25 @@ export function ReviewTimer({
         </div>
 
         {/* Progress Text */}
-        <div className="text-xs text-center text-white/60 mb-[15px]">
+        <div className="text-[10px] md:text-xs text-center text-white/60 mb-[10px] md:mb-[15px]">
           {progress}% complete
         </div>
 
         {/* Actions */}
-        <div className="space-y-[10px]">
+        <div className="space-y-[8px] md:space-y-[10px]">
           <FmCommonButton
             variant="default"
             size="sm"
             onClick={onReturnToSubmission}
             className="w-full"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Return to Submission
+            <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4 mr-2" />
+            <span className="hidden sm:inline">Return to Submission</span>
+            <span className="sm:hidden">Return</span>
           </FmCommonButton>
 
           {isComplete && (
-            <div className="text-xs text-center text-green-400 font-medium">
+            <div className="text-[10px] md:text-xs text-center text-green-400 font-medium">
               You can now submit your review!
             </div>
           )}

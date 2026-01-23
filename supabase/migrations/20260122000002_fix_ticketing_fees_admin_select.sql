@@ -2,8 +2,9 @@
 -- Previously, the SELECT policy only allowed viewing active fees, which broke
 -- the admin UI when trying to manage disabled fees.
 
--- Drop the old restrictive policy
+-- Drop old policies for idempotency
 DROP POLICY IF EXISTS "Ticketing fees are publicly viewable" ON ticketing_fees;
+DROP POLICY IF EXISTS "Public can view active ticketing fees" ON ticketing_fees;
 
 -- Create two policies: one for public (active only) and one for admins (all fees)
 CREATE POLICY "Public can view active ticketing fees"

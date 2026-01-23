@@ -1,11 +1,24 @@
 import { useState, useCallback } from 'react';
 
 export type MobileDevToolId =
+  // Staff tools
   | 'navigation'
+  | 'notes'
+  // Developer tools
+  | 'pageInfo'
+  | 'roles'
+  | 'demoMode'
+  // Data & Config tools
   | 'database'
   | 'features'
-  | 'notes'
-  | 'roles';
+  | 'errorLogs'
+  // Admin tools
+  | 'adminMessages'
+  // User tools
+  | 'cart'
+  // Organization tools
+  | 'orgDashboard'
+  | 'scanTickets';
 
 export interface MobileDevTool {
   id: MobileDevToolId;
@@ -41,11 +54,24 @@ export function useMobileDevTools(): UseMobileDevToolsReturn {
   const [isMainDrawerOpen, setIsMainDrawerOpen] = useState(false);
   const [activeTool, setActiveTool] = useState<MobileDevToolId | null>(null);
   const [badges, setBadges] = useState<Record<MobileDevToolId, number>>({
+    // Staff tools
     navigation: 0,
+    notes: 0,
+    // Developer tools
+    pageInfo: 0,
+    roles: 0,
+    demoMode: 0,
+    // Data & Config tools
     database: 0,
     features: 0,
-    notes: 0,
-    roles: 0,
+    errorLogs: 0,
+    // Admin tools
+    adminMessages: 0,
+    // User tools
+    cart: 0,
+    // Organization tools
+    orgDashboard: 0,
+    scanTickets: 0,
   });
 
   const openMainDrawer = useCallback(() => {

@@ -13,6 +13,7 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+import { verifyAuth, requireAnyRole } from '../_shared/auth.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,60 +38,18 @@ Deno.serve(async req => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const mailchimpApiKey = Deno.env.get('MAILCHIMP_TRANSACTIONAL_API_KEY');
 
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Missing authorization header' }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
+    // SECURITY: Use centralized auth verification
+    const { user, supabase: authSupabase } = await verifyAuth(req);
+    console.log('[issue-comp-ticket] Auth verified for user:', user.id);
 
-    // Create client with user context
-    const supabaseWithAuth = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false },
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Require admin or developer role (admin bypass is automatic)
+    await requireAnyRole(authSupabase, user.id, ['admin', 'developer']);
+    console.log('[issue-comp-ticket] Role check passed for user:', user.id);
 
     // Create admin client for privileged operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
       auth: { persistSession: false },
     });
-
-    // Verify user is authenticated
-    const {
-      data: { user },
-      error: userError,
-    } = await supabaseWithAuth.auth.getUser();
-
-    if (userError || !user) {
-      console.error('Auth error:', userError);
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Check if user has admin/developer role
-    const { data: roles } = await supabaseAdmin
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id);
-
-    const userRoles = roles?.map(r => r.role) || [];
-    const isAdmin = userRoles.includes('admin') || userRoles.includes('developer');
-
-    if (!isAdmin) {
-      return new Response(
-        JSON.stringify({ error: 'Forbidden: Admin access required' }),
-        {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
 
     // Parse request
     const { eventId, ticketTierId, recipientEmail, expiresAt }: IssueCompTicketRequest =
@@ -267,11 +226,27 @@ Deno.serve(async req => {
       }
     );
   } catch (error) {
-    console.error('Error issuing comp ticket:', error);
+    console.error('[issue-comp-ticket] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(
+        JSON.stringify({ error: errorMessage }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(
       JSON.stringify({
         error: 'Failed to issue comp ticket',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: errorMessage,
       }),
       {
         status: 500,

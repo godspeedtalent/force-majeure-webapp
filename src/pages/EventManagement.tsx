@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -51,6 +51,7 @@ import { toast } from 'sonner';
 import { FmCommonToggle } from '@/components/common/forms/FmCommonToggle';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useCanManageEvent } from '@/shared/hooks/useCanManageEvent';
 import { ROLES } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { AdminLockIndicator } from '@/components/common/indicators';
@@ -134,6 +135,12 @@ export default function EventManagement() {
     },
     enabled: !!id,
   });
+
+  // Check if user can manage this event (admin, event manager, or org owner)
+  const { canManage, isLoading: isAccessLoading } = useCanManageEvent(
+    id,
+    event?.organization_id
+  );
 
   // Fetch event artists with scheduling data from event_artists junction table
   const { data: eventArtistsData } = useQuery({
@@ -475,7 +482,7 @@ export default function EventManagement() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isAccessLoading) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <p className='text-muted-foreground'>{t('eventManagement.loadingEvent')}</p>
@@ -489,6 +496,11 @@ export default function EventManagement() {
         <p className='text-muted-foreground'>{t('eventManagement.eventNotFound')}</p>
       </div>
     );
+  }
+
+  // Access control: Only admins, event managers, or organization owners can access
+  if (!canManage) {
+    return <Navigate to='/' replace />;
   }
 
   // Check if event is in test mode

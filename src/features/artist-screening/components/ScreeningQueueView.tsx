@@ -2,7 +2,8 @@
  * Screening Queue View
  *
  * Displays submission queue with filtering, sorting, and context menu actions.
- * Uses FmConfigurableDataGrid for the table display.
+ * Uses FmConfigurableDataGrid for desktop and card-based layout for mobile.
+ * Responsive design with collapsible filters on mobile.
  */
 
 import { useMemo, useState, useEffect } from 'react';
@@ -13,21 +14,19 @@ import {
   Music,
   User,
   Star,
-  TrendingUp,
-  ExternalLink,
   AlertTriangle,
-  Trash,
   EyeOff,
   Eye,
+  Filter,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
-import {
-  FmConfigurableDataGrid,
-  type DataGridColumn,
-  type DataGridAction,
-} from '@/features/data-grid';
+import { ScreeningFeed } from './ScreeningFeed';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import { FmCommonBadgeGroup } from '@/components/common/display/FmCommonBadgeGroup';
+import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { Badge } from '@/components/common/shadcn/badge';
 import { cn, formatTimeDisplay } from '@/shared';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -61,7 +60,7 @@ interface ScreeningQueueViewProps {
 /**
  * Get status badge color
  */
-function getStatusColor(status: SubmissionStatus): string {
+function getStatusColor(status: SubmissionStatus | undefined): string {
   switch (status) {
     case 'approved':
       return 'bg-green-500/20 text-green-400 border-green-500/40';
@@ -77,7 +76,7 @@ function getStatusColor(status: SubmissionStatus): string {
  * Get platform icon
  */
 function getPlatformIcon(
-  platform: 'spotify' | 'soundcloud' | 'youtube'
+  platform: string | undefined
 ): string {
   switch (platform) {
     case 'spotify':
@@ -86,11 +85,163 @@ function getPlatformIcon(
       return '☁️';
     case 'youtube':
       return '▶️';
+    default:
+      return '🎧';
   }
 }
 
 // ============================================================================
-// Component
+// Mobile Submission Card Component
+// ============================================================================
+
+interface MobileSubmissionCardProps {
+  submission: ScreeningSubmissionWithDetails;
+  onReview: () => void;
+  onOpenRecording: () => void;
+  onIgnore: () => void;
+  onDelete?: () => void;
+  showIgnored: boolean;
+  canDelete: boolean;
+}
+
+function MobileSubmissionCard({
+  submission,
+  onReview,
+  onOpenRecording,
+  onIgnore,
+  onDelete,
+  showIgnored,
+  canDelete,
+}: MobileSubmissionCardProps) {
+  const reviewCount = submission.submission_scores?.review_count ?? 0;
+  const indexedScore = submission.submission_scores?.indexed_score ?? null;
+
+  return (
+    <FmCommonCard variant="frosted" className="p-0 overflow-hidden">
+      {/* Two-column layout: Image | Content */}
+      <div className="flex">
+        {/* Artist Image Column */}
+        <div className="flex-shrink-0">
+          {submission.artists?.image_url ? (
+            <img
+              src={submission.artists.image_url}
+              alt={submission.artists?.name || 'Artist'}
+              className="h-full w-24 object-cover rounded-none"
+              style={{ minHeight: '160px' }}
+            />
+          ) : (
+            <div
+              className="w-24 bg-white/10 flex items-center justify-center rounded-none"
+              style={{ minHeight: '160px' }}
+            >
+              <User className="h-10 w-10 text-white/40" />
+            </div>
+          )}
+        </div>
+
+        {/* Content Column */}
+        <div className="flex-1 p-[15px] min-w-0">
+          {/* Header Row: Name + Status */}
+          <div className="flex items-start justify-between gap-[10px] mb-[10px]">
+            <div className="min-w-0">
+              <div className="font-medium text-white truncate">
+                {submission.artists?.name || 'Unknown Artist'}
+              </div>
+              <div className="text-sm text-muted-foreground truncate">
+                {submission.artist_recordings?.name || 'Unknown Recording'}
+              </div>
+            </div>
+            <Badge
+              className={cn(
+                'rounded-none text-xs font-medium border flex-shrink-0',
+                getStatusColor(submission.status ?? 'pending')
+              )}
+            >
+              {(submission.status ?? 'pending').toUpperCase()}
+            </Badge>
+          </div>
+
+          {/* Genre Mismatch Warning */}
+          {submission.has_genre_mismatch && (
+            <div className="flex items-center gap-[5px] text-xs text-fm-danger mb-[10px]">
+              <AlertTriangle className="h-3 w-3" />
+              Genre mismatch
+            </div>
+          )}
+
+          {/* Stats Row */}
+          <div className="flex items-center justify-between text-sm mb-[10px] pb-[10px] border-b border-white/10">
+            <div className="flex items-center gap-[10px]">
+              <div className="text-muted-foreground text-xs">
+                {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+              </div>
+              {indexedScore !== null && (
+                <div className="flex items-center gap-[5px]">
+                  <Star className="h-3 w-3 text-fm-gold" />
+                  <span className="font-bold text-fm-gold text-sm">{indexedScore}</span>
+                </div>
+              )}
+            </div>
+            <div className="text-[10px] text-muted-foreground">
+              {new Date(submission.created_at).toLocaleDateString()}
+            </div>
+          </div>
+
+          {/* Context Info */}
+          {(submission.context_type === 'event' || submission.context_type === 'venue') && (
+            <div className="text-[10px] text-muted-foreground mb-[10px]">
+              {submission.context_type === 'event' && submission.events && (
+                <span>Event: {submission.events.title}</span>
+              )}
+              {submission.context_type === 'venue' && submission.venues && (
+                <span>Venue: {submission.venues.name}</span>
+              )}
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-[8px]">
+            <FmCommonButton
+              variant="gold"
+              size="sm"
+              onClick={onReview}
+              className="flex-1"
+            >
+              <Star className="h-3 w-3 mr-1" />
+              Review
+            </FmCommonButton>
+            <FmCommonIconButton
+              variant="default"
+              size="sm"
+              onClick={onOpenRecording}
+              icon={ExternalLink}
+              tooltip="Open recording"
+            />
+            <FmCommonIconButton
+              variant="default"
+              size="sm"
+              onClick={onIgnore}
+              icon={showIgnored ? Eye : EyeOff}
+              tooltip={showIgnored ? 'Restore' : 'Ignore'}
+            />
+            {canDelete && onDelete && (
+              <FmCommonIconButton
+                variant="destructive"
+                size="sm"
+                onClick={onDelete}
+                icon={Trash}
+                tooltip="Delete"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+    </FmCommonCard>
+  );
+}
+
+// ============================================================================
+// Main Component
 // ============================================================================
 
 export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
@@ -106,6 +257,9 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
 
   // Show ignored toggle
   const [showIgnored, setShowIgnored] = useState(false);
+
+  // Mobile filter panel state
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState<SubmissionFilters>({
@@ -124,37 +278,60 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
   // Fetch submissions
   const { data: submissions = [], isLoading, error, refetch } = useScreeningSubmissions(filters);
 
-  // Column definitions
+  // Ignore/unignore handler
+  const handleIgnoreToggle = async (submission: ScreeningSubmissionWithDetails) => {
+    try {
+      if (showIgnored) {
+        await unignoreSubmission(submission.id);
+        toast.success(tToast('submissions.submissionRestored', 'Submission restored to your feed'));
+      } else {
+        await ignoreSubmission(submission.id);
+        toast.success(tToast('submissions.submissionIgnored', 'Submission hidden from your feed'));
+      }
+      refetch();
+    } catch {
+      // Error handled by service
+    }
+  };
+
+  // Column definitions for desktop data grid
   const columns = useMemo<DataGridColumn<ScreeningSubmissionWithDetails>[]>(
     () => [
+      {
+        key: 'image',
+        label: '',
+        sortable: false,
+        width: '80px',
+        cellClassName: 'p-0',
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => (
+          submission.artists?.image_url ? (
+            <img
+              src={submission.artists.image_url}
+              alt={submission.artists?.name || 'Artist'}
+              className="h-16 w-16 object-cover rounded-none"
+            />
+          ) : (
+            <div className="h-16 w-16 bg-white/10 flex items-center justify-center rounded-none">
+              <User className="h-8 w-8 text-white/40" />
+            </div>
+          )
+        ),
+      },
       {
         key: 'artist',
         label: 'Artist',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => (
-          <div className="flex items-center gap-[10px]">
-            {submission.artists.image_url ? (
-              <img
-                src={submission.artists.image_url}
-                alt={submission.artists.name}
-                className="h-10 w-10 object-cover rounded-none"
-              />
-            ) : (
-              <div className="h-10 w-10 bg-white/10 flex items-center justify-center rounded-none">
-                <User className="h-5 w-5 text-white/40" />
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => (
+          <div>
+            <div className="font-medium text-white">
+              {submission.artists?.name || 'Unknown Artist'}
+            </div>
+            {submission.has_genre_mismatch && (
+              <div className="flex items-center gap-1 text-xs text-fm-danger">
+                <AlertTriangle className="h-3 w-3" />
+                Genre mismatch
               </div>
             )}
-            <div>
-              <div className="font-medium text-white">
-                {submission.artists.name}
-              </div>
-              {submission.has_genre_mismatch && (
-                <div className="flex items-center gap-1 text-xs text-fm-danger">
-                  <AlertTriangle className="h-3 w-3" />
-                  Genre mismatch
-                </div>
-              )}
-            </div>
           </div>
         ),
       },
@@ -162,19 +339,20 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'artist_genres',
         label: 'Genres',
         sortable: false,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           const artistGenres = submission.artists?.artist_genres ?? [];
           const venueRequiredGenreIds =
             submission.venues?.venue_required_genres?.map(vrg => vrg.genre_id) ?? [];
 
-          const badges = artistGenres.map(ag => ({
-            id: ag.genre_id,
-            label: ag.genre.name,
-            // Gold for venue-matching genres, secondary otherwise
-            variant: venueRequiredGenreIds.includes(ag.genre_id)
-              ? ('primary' as const)
-              : ('secondary' as const),
-          }));
+          const badges = artistGenres
+            .filter(ag => ag.genre?.name) // Filter out any with missing genre data
+            .map(ag => ({
+              id: ag.genre_id,
+              label: ag.genre.name,
+              variant: venueRequiredGenreIds.includes(ag.genre_id)
+                ? ('primary' as const)
+                : ('secondary' as const),
+            }));
 
           return (
             <FmCommonBadgeGroup
@@ -190,16 +368,18 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'tags',
         label: 'Tags',
         sortable: false,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           const badges =
-            submission.submission_tags?.map(st => ({
-              id: st.tag_id,
-              label: st.tag.name,
-              variant: 'secondary' as const,
-              className: st.tag.color
-                ? `border-[${st.tag.color}] text-[${st.tag.color}]`
-                : undefined,
-            })) ?? [];
+            submission.submission_tags
+              ?.filter(st => st.tag?.name) // Filter out any with missing tag data
+              .map(st => ({
+                id: st.tag_id,
+                label: st.tag.name,
+                variant: 'secondary' as const,
+                className: st.tag.color
+                  ? `border-[${st.tag.color}] text-[${st.tag.color}]`
+                  : undefined,
+              })) ?? [];
 
           return (
             <FmCommonBadgeGroup
@@ -215,16 +395,16 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'recording',
         label: 'Recording',
         sortable: false,
-        render: (submission: ScreeningSubmissionWithDetails) => (
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => (
           <div className="flex items-center gap-[10px]">
             <span className="text-lg">
-              {getPlatformIcon(submission.artist_recordings.platform)}
+              {getPlatformIcon(submission.artist_recordings?.platform || 'unknown')}
             </span>
             <div>
               <div className="font-medium text-white">
-                {submission.artist_recordings.name}
+                {submission.artist_recordings?.name || 'Unknown Recording'}
               </div>
-              {submission.artist_recordings.duration_seconds && (
+              {submission.artist_recordings?.duration_seconds && (
                 <div className="text-xs text-muted-foreground">
                   {formatTimeDisplay(
                     submission.artist_recordings.duration_seconds
@@ -239,7 +419,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'context',
         label: 'Context',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           if (submission.context_type === 'event' && submission.events) {
             return (
               <div className="text-sm">
@@ -271,7 +451,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'submitted',
         label: 'Submitted',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           const date = new Date(submission.created_at);
           return (
             <div className="text-sm text-muted-foreground">
@@ -284,7 +464,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'reviews',
         label: 'Reviews',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           const reviewCount =
             submission.submission_scores?.review_count ?? 0;
           const avgRating =
@@ -314,7 +494,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'score',
         label: 'Score',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => {
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => {
           const indexedScore =
             submission.submission_scores?.indexed_score ?? null;
           const hotScore =
@@ -343,14 +523,14 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         key: 'status',
         label: 'Status',
         sortable: true,
-        render: (submission: ScreeningSubmissionWithDetails) => (
+        render: (_value: unknown, submission: ScreeningSubmissionWithDetails) => (
           <Badge
             className={cn(
               'rounded-none text-xs font-medium border',
-              getStatusColor(submission.status)
+              getStatusColor(submission.status ?? 'pending')
             )}
           >
-            {submission.status.toUpperCase()}
+            {(submission.status ?? 'pending').toUpperCase()}
           </Badge>
         ),
       },
@@ -364,10 +544,10 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
 
     await deleteSubmission(submissionToDelete.id);
     setSubmissionToDelete(null);
-    refetch(); // Refresh the list
+    refetch();
   };
 
-  // Context menu actions
+  // Context menu actions for desktop
   const actions = useMemo<
     DataGridAction<ScreeningSubmissionWithDetails>[]
   >(
@@ -386,32 +566,18 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         label: 'Open Recording',
         icon: <ExternalLink className="h-4 w-4" />,
         onClick: submission => {
-          window.open(
-            submission.artist_recordings.url,
-            '_blank',
-            'noopener,noreferrer'
-          );
+          const url = submission.artist_recordings?.url;
+          if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
         },
-        separator: true, // Add separator after this action
+        separator: true,
       },
       {
         label: showIgnored ? 'Restore Submission' : 'Ignore Submission',
         icon: showIgnored ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />,
-        onClick: async submission => {
-          try {
-            if (showIgnored) {
-              await unignoreSubmission(submission.id);
-              toast.success(tToast('submissions.submissionRestored', 'Submission restored to your feed'));
-            } else {
-              await ignoreSubmission(submission.id);
-              toast.success(tToast('submissions.submissionIgnored', 'Submission hidden from your feed'));
-            }
-            refetch();
-          } catch (error) {
-            // Error handled by service
-          }
-        },
-        separator: canDelete, // Add separator only if delete action follows
+        onClick: handleIgnoreToggle,
+        separator: canDelete,
       },
       ...(canDelete ? [
         {
@@ -425,13 +591,13 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         },
       ] : []),
     ],
-    [navigate, showIgnored, canDelete, tToast, refetch]
+    [navigate, showIgnored, canDelete, handleIgnoreToggle]
   );
 
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[300px] md:min-h-[400px]">
         <FmCommonLoadingSpinner size="lg" />
       </div>
     );
@@ -440,7 +606,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
   // Error state
   if (error) {
     return (
-      <div className="text-center py-12">
+      <FmCommonCard variant="frosted" className="p-[20px] text-center">
         <p className="text-muted-foreground mb-[20px]">
           Failed to load submissions
         </p>
@@ -450,16 +616,16 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
         >
           Retry
         </FmCommonButton>
-      </div>
+      </FmCommonCard>
     );
   }
 
   // Empty state
   if (submissions.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Music className="h-16 w-16 mx-auto text-fm-gold/40 mb-[20px]" />
-        <h3 className="text-xl text-white/60 font-canela mb-[10px]">
+      <FmCommonCard variant="frosted" className="p-[40px] text-center">
+        <Music className="h-12 w-12 md:h-16 md:w-16 mx-auto text-fm-gold/40 mb-[15px] md:mb-[20px]" />
+        <h3 className="text-lg md:text-xl text-white/60 font-canela mb-[10px]">
           No submissions found.
         </h3>
         <p className="text-sm text-white/40">
@@ -467,18 +633,25 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
             ? 'All pending submissions have been reviewed.'
             : 'Try adjusting your filters.'}
         </p>
-      </div>
+      </FmCommonCard>
     );
   }
 
-  return (
-    <div className="space-y-[20px]">
-      {/* Filter Controls */}
-      <div className="flex items-center gap-[10px] flex-wrap">
-        <div className="flex items-center gap-[10px]">
-          <span className="text-sm text-muted-foreground uppercase">
-            Status:
-          </span>
+  // Filter controls component (shared between mobile and desktop)
+  const FilterControls = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <div className={cn(
+      'flex gap-[10px]',
+      isMobile ? 'flex-col' : 'flex-wrap items-center'
+    )}>
+      {/* Status Filter */}
+      <div className={cn(
+        'flex items-center gap-[10px]',
+        isMobile && 'flex-wrap'
+      )}>
+        <span className="text-xs md:text-sm text-muted-foreground uppercase">
+          Status:
+        </span>
+        <div className="flex gap-[5px] flex-wrap">
           {(['all', 'pending', 'approved', 'rejected'] as const).map(status => (
             <FmCommonButton
               key={status}
@@ -501,11 +674,18 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
             </FmCommonButton>
           ))}
         </div>
+      </div>
 
-        <div className="flex items-center gap-[10px] ml-auto">
-          <span className="text-sm text-muted-foreground uppercase">
-            Sort:
-          </span>
+      {/* Sort & Show Ignored */}
+      <div className={cn(
+        'flex items-center gap-[10px]',
+        !isMobile && 'ml-auto',
+        isMobile && 'flex-wrap'
+      )}>
+        <span className="text-xs md:text-sm text-muted-foreground uppercase">
+          Sort:
+        </span>
+        <div className="flex gap-[5px] flex-wrap">
           <FmCommonButton
             variant="default"
             size="sm"
@@ -523,7 +703,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
             )}
           >
             <Calendar className="h-4 w-4 mr-1" />
-            Oldest First
+            Oldest
           </FmCommonButton>
           <FmCommonButton
             variant="default"
@@ -542,7 +722,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
             )}
           >
             <Star className="h-4 w-4 mr-1" />
-            Highest Score
+            Score
           </FmCommonButton>
           <FmCommonButton
             variant="default"
@@ -555,18 +735,85 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
             )}
           >
             {showIgnored ? <Eye className="h-4 w-4 mr-1" /> : <EyeOff className="h-4 w-4 mr-1" />}
-            {showIgnored ? 'Showing Ignored' : 'Show Ignored'}
+            {showIgnored ? 'Ignored' : 'Hidden'}
           </FmCommonButton>
         </div>
       </div>
+    </div>
+  );
 
-      {/* Data Grid */}
-      <FmConfigurableDataGrid
-        gridId="screening-queue"
-        data={submissions}
-        columns={columns}
-        actions={actions}
-      />
+  return (
+    <div className="space-y-[15px] md:space-y-[20px]">
+      {/* Mobile Filter Toggle */}
+      <div className="md:hidden">
+        <FmCommonButton
+          variant="default"
+          size="sm"
+          onClick={() => setShowMobileFilters(!showMobileFilters)}
+          className="w-full justify-between"
+        >
+          <span className="flex items-center gap-[10px]">
+            <Filter className="h-4 w-4" />
+            Filters
+          </span>
+          {showMobileFilters ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </FmCommonButton>
+
+        {/* Mobile Filter Panel */}
+        {showMobileFilters && (
+          <FmCommonCard variant="frosted" className="p-[15px] mt-[10px]">
+            <FilterControls isMobile />
+          </FmCommonCard>
+        )}
+      </div>
+
+      {/* Desktop Filter Controls */}
+      <div className="hidden md:block">
+        <FilterControls />
+      </div>
+
+      {/* Submission Count */}
+      <div className="text-xs text-muted-foreground">
+        {submissions.length} submission{submissions.length !== 1 ? 's' : ''}
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-[10px]">
+        {submissions.map(submission => (
+          <MobileSubmissionCard
+            key={submission.id}
+            submission={submission}
+            onReview={() => navigate(`/staff/screening/review/${submission.id}`)}
+            onOpenRecording={() => {
+              const url = submission.artist_recordings?.url;
+              if (url) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }
+            }}
+            onIgnore={() => handleIgnoreToggle(submission)}
+            onDelete={canDelete ? () => {
+              setSubmissionToDelete(submission);
+              setDeleteModalOpen(true);
+            } : undefined}
+            showIgnored={showIgnored}
+            canDelete={canDelete}
+          />
+        ))}
+      </div>
+
+      {/* Desktop Data Grid */}
+      <div className="hidden md:block">
+        <FmConfigurableDataGrid
+          gridId="screening-queue"
+          data={submissions}
+          columns={columns}
+          actions={actions}
+        />
+      </div>
 
       {/* Delete Confirmation Modal */}
       <DeleteSubmissionModal

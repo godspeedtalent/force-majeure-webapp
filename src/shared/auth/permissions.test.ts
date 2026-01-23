@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest';
-import { PERMISSIONS, ROLES, ROLE_PERMISSIONS, Permission, Role } from './permissions';
+import {
+  PERMISSIONS,
+  ROLES,
+  ROLE_PERMISSIONS,
+  ROLE_DEPENDENCIES,
+  Permission,
+  Role,
+  getRoleDependencies,
+  getDependentRoles,
+  ensureRoleDependencies,
+  getRolesToRemove,
+} from './permissions';
 
 describe('PERMISSIONS', () => {
   it('has correct permission values', () => {
@@ -53,9 +64,11 @@ describe('ROLES', () => {
     expect(roleKeys).toEqual([
       'ADMIN',
       'DEVELOPER',
+      'FM_STAFF',
       'ORG_ADMIN',
       'ORG_STAFF',
       'VENUE_ADMIN',
+      'ARTIST',
       'USER',
     ]);
   });
@@ -190,5 +203,176 @@ describe('TypeScript types', () => {
   it('Role type includes all role values', () => {
     const testRole: Role = ROLES.ADMIN;
     expect(testRole).toBe('admin');
+  });
+});
+
+describe('Role Dependencies', () => {
+  describe('ROLE_DEPENDENCIES constant', () => {
+    it('defines user as dependency for org_admin', () => {
+      expect(ROLE_DEPENDENCIES[ROLES.ORG_ADMIN]).toContain(ROLES.USER);
+    });
+
+    it('defines user as dependency for org_staff', () => {
+      expect(ROLE_DEPENDENCIES[ROLES.ORG_STAFF]).toContain(ROLES.USER);
+    });
+
+    it('defines user as dependency for venue_admin', () => {
+      expect(ROLE_DEPENDENCIES[ROLES.VENUE_ADMIN]).toContain(ROLES.USER);
+    });
+
+    it('does not define dependencies for admin', () => {
+      expect(ROLE_DEPENDENCIES[ROLES.ADMIN]).toBeUndefined();
+    });
+
+    it('does not define dependencies for developer', () => {
+      expect(ROLE_DEPENDENCIES[ROLES.DEVELOPER]).toBeUndefined();
+    });
+  });
+
+  describe('getRoleDependencies', () => {
+    it('should return user for org_admin', () => {
+      const deps = getRoleDependencies(ROLES.ORG_ADMIN);
+      expect(deps).toContain(ROLES.USER);
+    });
+
+    it('should return user for org_staff', () => {
+      const deps = getRoleDependencies(ROLES.ORG_STAFF);
+      expect(deps).toContain(ROLES.USER);
+    });
+
+    it('should return user for venue_admin', () => {
+      const deps = getRoleDependencies(ROLES.VENUE_ADMIN);
+      expect(deps).toContain(ROLES.USER);
+    });
+
+    it('should return empty array for admin', () => {
+      const deps = getRoleDependencies(ROLES.ADMIN);
+      expect(deps).toEqual([]);
+    });
+
+    it('should return empty array for developer', () => {
+      const deps = getRoleDependencies(ROLES.DEVELOPER);
+      expect(deps).toEqual([]);
+    });
+
+    it('should return empty array for user', () => {
+      const deps = getRoleDependencies(ROLES.USER);
+      expect(deps).toEqual([]);
+    });
+  });
+
+  describe('getDependentRoles', () => {
+    it('should return all roles that depend on user', () => {
+      const dependents = getDependentRoles(ROLES.USER);
+      expect(dependents).toContain(ROLES.ORG_ADMIN);
+      expect(dependents).toContain(ROLES.ORG_STAFF);
+      expect(dependents).toContain(ROLES.VENUE_ADMIN);
+      expect(dependents).toContain(ROLES.ARTIST);
+      expect(dependents).toContain(ROLES.FM_STAFF);
+    });
+
+    it('should return empty array for admin', () => {
+      const dependents = getDependentRoles(ROLES.ADMIN);
+      expect(dependents).toEqual([]);
+    });
+
+    it('should return empty array for developer', () => {
+      const dependents = getDependentRoles(ROLES.DEVELOPER);
+      expect(dependents).toEqual([]);
+    });
+
+    it('should return empty array for org_admin', () => {
+      const dependents = getDependentRoles(ROLES.ORG_ADMIN);
+      expect(dependents).toEqual([]);
+    });
+  });
+
+  describe('ensureRoleDependencies', () => {
+    it('should add user when org_admin is selected', () => {
+      const result = ensureRoleDependencies([ROLES.ORG_ADMIN]);
+      expect(result).toContain(ROLES.ORG_ADMIN);
+      expect(result).toContain(ROLES.USER);
+    });
+
+    it('should add user when org_staff is selected', () => {
+      const result = ensureRoleDependencies([ROLES.ORG_STAFF]);
+      expect(result).toContain(ROLES.ORG_STAFF);
+      expect(result).toContain(ROLES.USER);
+    });
+
+    it('should add user when venue_admin is selected', () => {
+      const result = ensureRoleDependencies([ROLES.VENUE_ADMIN]);
+      expect(result).toContain(ROLES.VENUE_ADMIN);
+      expect(result).toContain(ROLES.USER);
+    });
+
+    it('should not duplicate user when multiple roles share dependency', () => {
+      const result = ensureRoleDependencies([ROLES.ORG_ADMIN, ROLES.VENUE_ADMIN]);
+      const userCount = result.filter(r => r === ROLES.USER).length;
+      expect(userCount).toBe(1);
+    });
+
+    it('should handle roles with no dependencies', () => {
+      const result = ensureRoleDependencies([ROLES.ADMIN]);
+      expect(result).toEqual([ROLES.ADMIN]);
+    });
+
+    it('should handle empty array', () => {
+      const result = ensureRoleDependencies([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should not add extra dependencies when user is already included', () => {
+      const result = ensureRoleDependencies([ROLES.ORG_ADMIN, ROLES.USER]);
+      expect(result).toContain(ROLES.ORG_ADMIN);
+      expect(result).toContain(ROLES.USER);
+      expect(result.length).toBe(2);
+    });
+  });
+
+  describe('getRolesToRemove', () => {
+    it('should remove org_admin when user is removed', () => {
+      const roles = [ROLES.USER, ROLES.ORG_ADMIN];
+      const toRemove = getRolesToRemove(roles, ROLES.USER);
+      expect(toRemove).toContain(ROLES.USER);
+      expect(toRemove).toContain(ROLES.ORG_ADMIN);
+    });
+
+    it('should remove org_staff when user is removed', () => {
+      const roles = [ROLES.USER, ROLES.ORG_STAFF];
+      const toRemove = getRolesToRemove(roles, ROLES.USER);
+      expect(toRemove).toContain(ROLES.USER);
+      expect(toRemove).toContain(ROLES.ORG_STAFF);
+    });
+
+    it('should remove multiple dependents when user is removed', () => {
+      const roles = [ROLES.USER, ROLES.ORG_ADMIN, ROLES.ORG_STAFF, ROLES.VENUE_ADMIN, ROLES.ARTIST, ROLES.FM_STAFF];
+      const toRemove = getRolesToRemove(roles, ROLES.USER);
+      expect(toRemove).toContain(ROLES.USER);
+      expect(toRemove).toContain(ROLES.ORG_ADMIN);
+      expect(toRemove).toContain(ROLES.ORG_STAFF);
+      expect(toRemove).toContain(ROLES.VENUE_ADMIN);
+      expect(toRemove).toContain(ROLES.ARTIST);
+      expect(toRemove).toContain(ROLES.FM_STAFF);
+    });
+
+    it('should return only the role if no dependents in selection', () => {
+      const roles = [ROLES.USER, ROLES.ADMIN];
+      const toRemove = getRolesToRemove(roles, ROLES.ADMIN);
+      expect(toRemove).toEqual([ROLES.ADMIN]);
+    });
+
+    it('should not remove roles that are not in the original array', () => {
+      const roles = [ROLES.USER];
+      const toRemove = getRolesToRemove(roles, ROLES.USER);
+      expect(toRemove).toEqual([ROLES.USER]);
+      expect(toRemove).not.toContain(ROLES.ORG_ADMIN);
+    });
+
+    it('should handle removing a role with no dependents', () => {
+      const roles = [ROLES.ADMIN, ROLES.DEVELOPER];
+      const toRemove = getRolesToRemove(roles, ROLES.DEVELOPER);
+      expect(toRemove).toEqual([ROLES.DEVELOPER]);
+    });
   });
 });

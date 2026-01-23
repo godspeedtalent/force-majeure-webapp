@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
 import { getCorsHeaders, handleCorsPreflightRequest, isOriginAllowed, createForbiddenResponse } from '../_shared/cors.ts';
+import { verifyAuth, requireAnyRole } from '../_shared/auth.ts';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
@@ -28,6 +29,14 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: Verify user is authenticated and has admin/developer role
+    // This prevents unauthorized email sending which could be used for spam/phishing
+    const { user, supabase } = await verifyAuth(req);
+    console.log('[send-email] Auth verified for user:', user.id);
+
+    await requireAnyRole(supabase, user.id, ['admin', 'developer']);
+    console.log('[send-email] Role check passed for user:', user.id);
+
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY is not configured');
@@ -61,9 +70,25 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: any) {
-    console.error('Error sending email:', error);
+    console.error('[send-email] Error:', error);
+
+    // Handle auth errors specifically
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (errorMessage.includes('Unauthorized')) {
+      return new Response(
+        JSON.stringify({ success: false, error: errorMessage }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (errorMessage.includes('Forbidden')) {
+      return new Response(
+        JSON.stringify({ success: false, error: errorMessage }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

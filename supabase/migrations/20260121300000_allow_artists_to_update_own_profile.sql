@@ -6,6 +6,10 @@
 -- Solution: Add an RLS policy that allows users to update artist profiles
 -- where their user_id matches auth.uid().
 
+-- Drop existing policies if they exist (for idempotency)
+DROP POLICY IF EXISTS "Artists can update their own profile" ON artists;
+DROP POLICY IF EXISTS "Users can insert their own artist profile" ON artists;
+
 -- Add UPDATE policy for artist owners
 CREATE POLICY "Artists can update their own profile"
   ON artists FOR UPDATE

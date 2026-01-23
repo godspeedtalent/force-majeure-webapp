@@ -6,6 +6,8 @@
  *
  * This function is primarily for backwards compatibility.
  * The preferred approach is to use the log_error() RPC directly from the client.
+ *
+ * SECURITY: Rate limiting is applied to prevent log flooding attacks.
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -17,9 +19,56 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
 };
 
+// Simple in-memory rate limiting
+// Allows max 10 requests per minute per IP
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || entry.resetAt < now) {
+    // First request or window expired - reset counter
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    return false; // Rate limited
+  }
+
+  entry.count++;
+  return true;
+}
+
+// Clean up old entries periodically (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (entry.resetAt < now) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 300000);
+
 serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // SECURITY: Apply rate limiting
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  if (!checkRateLimit(ip)) {
+    console.warn('[log-error] Rate limited:', ip);
+    return new Response(
+      JSON.stringify({ error: 'Rate limited. Please try again later.' }),
+      {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   try {

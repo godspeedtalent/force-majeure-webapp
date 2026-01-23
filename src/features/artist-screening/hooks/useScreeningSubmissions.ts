@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase, logger } from '@/shared';
 import type {
   ScreeningSubmissionWithDetails,
@@ -19,6 +20,50 @@ import type {
  * const { data: stats } = useSubmissionStats();
  * ```
  */
+
+// ============================================================================
+// Error Handling Helpers
+// ============================================================================
+
+interface EdgeFunctionErrorResponse {
+  success: false;
+  error: string;
+  requestId?: string;
+  errors?: Array<{ field: string; message: string }>;
+}
+
+/**
+ * Extract detailed error message from Edge Function response
+ * Supabase's FunctionsHttpError contains the response body in context.body
+ */
+async function extractEdgeFunctionError(
+  error: Error,
+  fallbackMessage: string
+): Promise<{ message: string; details: Record<string, unknown> }> {
+  const details: Record<string, unknown> = {
+    originalError: error.message,
+    errorName: error.name,
+  };
+
+  // Handle FunctionsHttpError - contains response body
+  if (error instanceof FunctionsHttpError) {
+    try {
+      // The error context contains the response
+      const errorBody: EdgeFunctionErrorResponse = await error.context.json();
+      details.serverError = errorBody.error;
+      details.requestId = errorBody.requestId;
+      details.validationErrors = errorBody.errors;
+
+      const message = errorBody.error || fallbackMessage;
+      return { message, details };
+    } catch {
+      // JSON parsing failed
+      details.parseError = 'Failed to parse error response';
+    }
+  }
+
+  return { message: error.message || fallbackMessage, details };
+}
 
 // ============================================================================
 // Query Keys
@@ -65,12 +110,16 @@ export function useScreeningSubmissions(filters?: SubmissionFilters) {
       });
 
       if (error) {
+        const { message, details } = await extractEdgeFunctionError(
+          error,
+          'Error fetching screening submissions'
+        );
         logger.error('Error fetching screening submissions', {
-          error: error.message,
+          error: message,
           source: 'useScreeningSubmissions',
-          details: { filters },
+          details: { ...details, filters },
         });
-        throw error;
+        throw new Error(message);
       }
 
       // Edge function returns standardized response
@@ -127,12 +176,16 @@ export function useSubmission(submissionId: string | undefined) {
       });
 
       if (error) {
+        const { message, details } = await extractEdgeFunctionError(
+          error,
+          'Error fetching submission'
+        );
         logger.error('Error fetching submission', {
-          error: error.message,
+          error: message,
           source: 'useSubmission',
-          details: { submissionId },
+          details: { ...details, submissionId },
         });
-        throw error;
+        throw new Error(message);
       }
 
       return data.data as ScreeningSubmissionWithDetails;
@@ -156,11 +209,16 @@ export function useSubmissionStats() {
       });
 
       if (error) {
+        const { message, details } = await extractEdgeFunctionError(
+          error,
+          'Error fetching submission stats'
+        );
         logger.error('Error fetching submission stats', {
-          error: error.message,
+          error: message,
           source: 'useSubmissionStats',
+          details,
         });
-        throw error;
+        throw new Error(message);
       }
 
       // Map database response to expected format
@@ -223,12 +281,16 @@ export function useSubmissionRankings(type: 'all-time' | 'hot') {
       });
 
       if (error) {
+        const { message, details } = await extractEdgeFunctionError(
+          error,
+          'Error fetching submission rankings'
+        );
         logger.error('Error fetching submission rankings', {
-          error: error.message,
+          error: message,
           source: 'useSubmissionRankings',
-          type,
+          details: { ...details, type },
         });
-        throw error;
+        throw new Error(message);
       }
 
       return data.data || [];
@@ -251,11 +313,16 @@ export function useReviewerStats() {
       });
 
       if (error) {
+        const { message, details } = await extractEdgeFunctionError(
+          error,
+          'Error fetching reviewer stats'
+        );
         logger.error('Error fetching reviewer stats', {
-          error: error.message,
+          error: message,
           source: 'useReviewerStats',
+          details,
         });
-        throw error;
+        throw new Error(message);
       }
 
       return data.data || [];

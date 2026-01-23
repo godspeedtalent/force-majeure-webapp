@@ -570,7 +570,11 @@
     "clearFilter": "Show all levels",
     "copied": "Copied to clipboard",
     "openInSupabase": "View in Supabase",
-    "clearOldLogsTooltip": "Clear logs older than 7 days"
+    "clearOldLogsTooltip": "Clear logs older than 7 days",
+    "openMenu": "Open menu",
+    "copyDetails": "Copy details",
+    "copyEndpoint": "Copy endpoint",
+    "showing": "{{count}} of {{total}}"
   },
   "mockRole": {
     "activeWarning": "Mock role active",
@@ -1440,6 +1444,9 @@
   "eventManagement": {
     "loadingEvent": "Loading event...",
     "eventNotFound": "Event not found",
+    "accessDenied": "Access denied",
+    "accessDeniedDescription": "You don't have permission to manage this event. Only event managers, organization owners, and administrators can access this page.",
+    "viewEventDetails": "View event details",
     "headliners": "Headliners",
     "noHeadlinersAdded": "No headliners added yet",
     "undercardArtists": "Undercard Artists",
@@ -3126,9 +3133,14 @@
     "djSets": "DJ Sets ({{count}})",
     "approve": "Approve",
     "reject": "Reject",
+    "delete": "Delete",
     "requestApproved": "Artist request approved",
     "requestRejected": "Artist request rejected",
-    "updateFailed": "Failed to update request status"
+    "requestDeleted": "Artist request deleted",
+    "updateFailed": "Failed to update request status",
+    "deleteFailed": "Failed to delete request",
+    "deleteConfirmTitle": "Delete request?",
+    "deleteConfirmDescription": "Are you sure you want to delete this artist request? This action cannot be undone."
   },
   "trackingLinks": {
     "createSuccess": "Tracking link created successfully",
@@ -3185,7 +3197,9 @@
       "cancelled": "CANCELLED"
     },
     "inspect": "Inspect",
-    "setStatus": "Set Status"
+    "setStatus": "Set Status",
+    "doubleClickToEdit": "Double-click to edit",
+    "openMenu": "Open menu"
   },
   "email": {
     "receiptSent": "Receipt email sent successfully",
@@ -3991,6 +4005,14 @@
   "mobileDevTools": {
     "title": "Developer Tools",
     "toolNotFound": "Tool not found",
+    "groups": {
+      "user": "User",
+      "admin": "Admin",
+      "organization": "Organization",
+      "staff": "Staff Tools",
+      "developer": "Developer",
+      "dataConfig": "Data & Config"
+    },
     "tools": {
       "navigation": "Navigation",
       "database": "Database",
@@ -3998,7 +4020,14 @@
       "session": "Session",
       "notes": "Notes",
       "staffNotes": "Staff Notes",
-      "roles": "Roles"
+      "roles": "Roles",
+      "pageInfo": "Page Info",
+      "errorLogs": "Error Logs",
+      "adminMessages": "Messages",
+      "cart": "Cart",
+      "orgDashboard": "Org Dashboard",
+      "scanTickets": "Scan Tickets",
+      "demoMode": "Demo Mode"
     },
     "toolLabels": {
       "navigation": "Navigation",
@@ -4007,13 +4036,39 @@
       "session": "Session Overrides",
       "notes": "Developer Notes",
       "staffNotes": "Staff Notes",
-      "roles": "Role Simulation"
+      "roles": "Role Simulation",
+      "pageInfo": "Page Info",
+      "errorLogs": "Error Logs",
+      "adminMessages": "Admin Messages",
+      "cart": "Shopping Cart",
+      "orgDashboard": "Organization Dashboard",
+      "scanTickets": "Ticket Scanner",
+      "demoMode": "Demo Mode"
     },
     "fab": {
       "open": "Open developer tools",
       "openWithNotifications": "Open developer tools ({{count}} notifications)",
       "notifications": "{{count}} notifications"
     }
+  },
+  "demoMode": {
+    "title": "Demo Mode",
+    "description": "Show visual indicators for touches during demonstrations and screen recordings.",
+    "enabled": "Demo Mode Active",
+    "enabledDescription": "Touch indicators are visible on screen.",
+    "toggle": "Enable Demo Mode",
+    "disable": "Disable Demo Mode",
+    "settings": "Settings",
+    "actionDelay": "Action Delay",
+    "actionDelayDescription": "Pause before actions execute so viewers can follow along.",
+    "delayDuration": "Delay Duration",
+    "delayMs": "{{value}}ms",
+    "indicatorSize": "Indicator Size",
+    "sizeSmall": "Small",
+    "sizeMedium": "Medium",
+    "sizeLarge": "Large",
+    "longPressIndicator": "Long Press Indicator",
+    "longPressDescription": "Show circular fill animation for press and hold gestures."
   },
   "devNavigation": {
     "core": "Core",

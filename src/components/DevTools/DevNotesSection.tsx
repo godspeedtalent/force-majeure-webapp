@@ -51,7 +51,7 @@ export const DevNotesSection = () => {
   const [notes, setNotes] = useState<DevNote[]>([]);
   const createModal = useModalState();
   const [expandedNote, setExpandedNote] = useState<DevNote | null>(null);
-  const [focusedNoteId, setFocusedNoteId] = useState<string | null>(null);
+  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -391,30 +391,24 @@ export const DevNotesSection = () => {
                 : t('devNotes.noNotesYet')}
             </div>
           ) : (
-            <div className='space-y-[2px]'>
-              {filteredNotes.map(note => {
-                const isFocused = focusedNoteId === note.id;
-
-                return (
-                  <DevNoteCard
-                    key={note.id}
-                    note={note}
-                    isFocused={isFocused}
-                    canEdit={canEditNote(note) || false}
-                    typeConfig={NOTE_TYPE_CONFIG[note.type]}
-                    statusConfig={NOTE_STATUS_INDICATOR_CONFIG[note.status]}
-                    onFocus={() => setFocusedNoteId(note.id)}
-                    onInspect={() => setExpandedNote(note)}
-                    onDoubleClick={() => setExpandedNote(note)}
-                    onStatusChange={status =>
-                      handleUpdateStatus(note.id, status)
-                    }
-                    onDelete={() => handleDeleteNote(note.id)}
-                    formatDate={formatDate}
-                    getStatusDisplayName={getStatusDisplayName}
-                  />
-                );
-              })}
+            <div className='divide-y divide-border/30'>
+              {filteredNotes.map(note => (
+                <DevNoteCard
+                  key={note.id}
+                  note={note}
+                  isExpanded={expandedNoteId === note.id}
+                  canEdit={canEditNote(note) || false}
+                  typeConfig={NOTE_TYPE_CONFIG[note.type]}
+                  statusConfig={NOTE_STATUS_INDICATOR_CONFIG[note.status]}
+                  onToggleExpand={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
+                  onDoubleClick={() => setExpandedNote(note)}
+                  onStatusChange={status =>
+                    handleUpdateStatus(note.id, status)
+                  }
+                  onDelete={() => handleDeleteNote(note.id)}
+                  getStatusDisplayName={getStatusDisplayName}
+                />
+              ))}
             </div>
           )}
         </ScrollArea>

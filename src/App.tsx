@@ -91,6 +91,8 @@ import { NavigationProvider } from '@/contexts/NavigationContext';
 import { ShoppingCartProvider } from '@/shared';
 import { MockRoleProvider } from '@/shared/contexts/MockRoleContext';
 import { FmToolbarProvider } from '@/shared/contexts/FmToolbarContext';
+import { DemoModeProvider } from '@/shared/contexts/DemoModeContext';
+import { DemoModeOverlay } from '@/features/demo-mode/components/DemoModeOverlay';
 import {
   GlobalSearchProvider,
   useGlobalSearch,
@@ -244,11 +246,11 @@ const AppRoutes = () => {
         element={<Navigate to='/developer?tab=dash_recordings' replace />}
       />
 
-      {/* Staff Routes - Protected by org staff/admin roles */}
+      {/* Staff Routes - Protected by fm_staff or org_staff roles */}
       <Route
         path='/staff'
         element={
-          <ProtectedRoute role={ROLES.ORG_STAFF}>
+          <ProtectedRoute role={[ROLES.FM_STAFF, ROLES.ORG_STAFF]}>
             <Suspense fallback={<LazyLoadFallback />}>
               <StaffHome />
             </Suspense>
@@ -258,7 +260,7 @@ const AppRoutes = () => {
       <Route
         path='/staff/screening/review/:id'
         element={
-          <ProtectedRoute role={ROLES.ORG_STAFF}>
+          <ProtectedRoute role={[ROLES.FM_STAFF, ROLES.ORG_STAFF]}>
             <Suspense fallback={<LazyLoadFallback />}>
               <ReviewInterface />
             </Suspense>
@@ -638,8 +640,9 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MockRoleProvider>
-            <FmToolbarProvider>
+          <DemoModeProvider>
+            <MockRoleProvider>
+              <FmToolbarProvider>
               <StripeProvider>
                 <ShoppingCartProvider>
                   <GlobalSearchProvider>
@@ -654,6 +657,7 @@ const App = () => {
                             </Suspense>
                             <FmToolbar />
                             <FmMobileDevToolbar />
+                            <DemoModeOverlay />
                             <FmMockRoleExitButton />
                             <GlobalSearchWrapper />
                             </CheckoutProvider>
@@ -664,8 +668,9 @@ const App = () => {
                   </GlobalSearchProvider>
                 </ShoppingCartProvider>
               </StripeProvider>
-            </FmToolbarProvider>
-          </MockRoleProvider>
+              </FmToolbarProvider>
+            </MockRoleProvider>
+          </DemoModeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       activity_logs: {
@@ -2984,12 +3009,19 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string | null
+          facebook_url: string | null
           id: string
+          instagram_handle: string | null
           name: string
           owner_id: string
           profile_picture: string | null
+          social_email: string | null
           state: string | null
+          tiktok_handle: string | null
+          twitter_handle: string | null
           updated_at: string | null
+          website: string | null
+          youtube_url: string | null
           zip_code: string | null
         }
         Insert: {
@@ -2998,12 +3030,19 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          facebook_url?: string | null
           id?: string
+          instagram_handle?: string | null
           name: string
           owner_id: string
           profile_picture?: string | null
+          social_email?: string | null
           state?: string | null
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
+          website?: string | null
+          youtube_url?: string | null
           zip_code?: string | null
         }
         Update: {
@@ -3012,12 +3051,19 @@ export type Database = {
           city?: string | null
           country?: string | null
           created_at?: string | null
+          facebook_url?: string | null
           id?: string
+          instagram_handle?: string | null
           name?: string
           owner_id?: string
           profile_picture?: string | null
+          social_email?: string | null
           state?: string | null
+          tiktok_handle?: string | null
+          twitter_handle?: string | null
           updated_at?: string | null
+          website?: string | null
+          youtube_url?: string | null
           zip_code?: string | null
         }
         Relationships: [
@@ -4177,6 +4223,57 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          entity_type: string | null
+          id: string
+          name: string
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_guest_list_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -5745,6 +5842,7 @@ export type Database = {
           ticket_holder_count: number
         }[]
       }
+      get_event_attendees: { Args: { p_event_id: string }; Returns: Json }
       get_event_guest_count: {
         Args: { event_id_param: string }
         Returns: number
@@ -5852,6 +5950,18 @@ export type Database = {
           zip_code: string
         }[]
       }
+      get_reviewer_stats: {
+        Args: never
+        Returns: {
+          avg_listen_time_seconds: number
+          avg_rating: number
+          avg_review_time_minutes: number
+          reviewer_email: string
+          reviewer_id: string
+          reviewer_name: string
+          total_reviews: number
+        }[]
+      }
       get_rsvp_with_details: {
         Args: { p_rsvp_id: string }
         Returns: {
@@ -5867,6 +5977,36 @@ export type Database = {
           user_id: string
           venue_name: string
         }[]
+      }
+      get_screening_stats: {
+        Args: { p_context?: string; p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      get_submission_rankings: {
+        Args: { p_context_type: string; p_limit?: number }
+        Returns: {
+          artist_id: string
+          artist_name: string
+          decided_at: string
+          hot_indexed_score: number
+          indexed_score: number
+          recording_url: string
+          review_count: number
+          submission_id: string
+        }[]
+      }
+      get_submissions_with_details: {
+        Args: {
+          p_context?: string
+          p_end_date?: string
+          p_exclude_ignored?: boolean
+          p_genre_mismatch?: boolean
+          p_min_reviews?: number
+          p_start_date?: string
+          p_status?: string
+          p_user_id?: string
+        }
+        Returns: Json
       }
       get_table_list: {
         Args: never
@@ -5900,6 +6040,10 @@ export type Database = {
           tier_id: string
           total_tickets: number
         }[]
+      }
+      get_user_organization_ids: {
+        Args: { p_user_id: string }
+        Returns: string[]
       }
       get_user_roles: {
         Args: { user_id_param: string }
@@ -6398,6 +6542,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       activity_category: [

@@ -209,27 +209,6 @@ export const FmErrorToast = ({
               <FileEdit className='h-4 w-4 text-muted-foreground' />
             </button>
           )}
-          <button
-            onClick={() => setShowOverlay(true)}
-            className='flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors'
-            title={t('errors.viewDetails')}
-          >
-            <FileText className='h-4 w-4 text-muted-foreground' />
-          </button>
-          <button
-            onClick={handleCopy}
-            className={cn(
-              'flex-shrink-0 p-1.5 rounded-none hover:bg-white/10 transition-colors',
-              copied && 'bg-white/10'
-            )}
-            title={t('errors.copyErrorDetails')}
-          >
-            {copied ? (
-              <Check className='h-4 w-4 text-fm-gold' />
-            ) : (
-              <Copy className='h-4 w-4 text-muted-foreground' />
-            )}
-          </button>
         </div>
       )}
       {error && (
