@@ -21,11 +21,10 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Trash,
+  Trash2,
   TrendingUp,
 } from 'lucide-react';
-import { DataGridColumn, DataGridAction } from '@/features/data-grid/components/FmDataGrid';
-import { FmConfigurableDataGrid } from '@/features/data-grid/components/FmConfigurableDataGrid';
+import { DataGridColumn, DataGridAction, FmConfigurableDataGrid } from '@/features/data-grid';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
@@ -233,7 +232,7 @@ function MobileSubmissionCard({
                 variant="destructive"
                 size="sm"
                 onClick={onDelete}
-                icon={Trash}
+                icon={Trash2}
                 tooltip="Delete"
               />
             )}
@@ -586,7 +585,7 @@ export function ScreeningQueueView({ context }: ScreeningQueueViewProps) {
       ...(canDelete ? [
         {
           label: 'Delete Permanently',
-          icon: <Trash className="h-4 w-4" />,
+          icon: <Trash2 className="h-4 w-4" />,
           onClick: (submission: ScreeningSubmissionWithDetails) => {
             setSubmissionToDelete(submission);
             setDeleteModalOpen(true);
