@@ -224,7 +224,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
         ) : column.type === 'boolean' ? (
           <div
             onClick={e => e.stopPropagation()}
-            className='flex items-center gap-2'
+            className='flex items-center justify-center gap-2'
             data-no-select
           >
             <Switch
@@ -358,7 +358,7 @@ export function FmDataGridCell<T extends Record<string, any>>({
               ] : [];
 
               const booleanContent = (
-                <div className='flex items-center gap-2' data-no-select>
+                <div className='flex items-center justify-center gap-2' data-no-select>
                   <Switch
                     checked={value === true}
                     onCheckedChange={checked => {

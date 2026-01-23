@@ -153,9 +153,15 @@ export function useDataGridState({
       }
     } else {
       // Single-column sort mode (regular click)
+      // Cycle: none → asc → desc → none
       if (existingIndex === 0 && sortSpecs.length === 1) {
-        // Same column, toggle direction
-        setSortSpecs([{ column: columnKey, direction: sortDirection === 'asc' ? 'desc' : 'asc' }]);
+        // Same column - cycle through asc → desc → none
+        if (sortDirection === 'asc') {
+          setSortSpecs([{ column: columnKey, direction: 'desc' }]);
+        } else {
+          // Was desc, clear the sort
+          setSortSpecs([]);
+        }
       } else {
         // New column or replacing multi-sort with single sort
         setSortSpecs([{ column: columnKey, direction: 'asc' }]);

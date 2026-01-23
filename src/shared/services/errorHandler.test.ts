@@ -234,7 +234,7 @@ describe('errorHandler', () => {
 
         await handleError(error, {
           title: 'User Error',
-          userRole: 'user',
+          userRole: 'org_staff',
         });
 
         expect(showErrorToast).toHaveBeenCalledWith(

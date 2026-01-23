@@ -1,11 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { supabase, logger, RoleManagementService } from '@/shared';
-import { FmConfigurableDataGrid, DataGridColumn } from '@/features/data-grid';
+import { FmConfigurableDataGrid, DataGridColumn, DataGridAction } from '@/features/data-grid';
 import { FmCommonCheckbox } from '@/components/common/forms/FmCommonCheckbox';
 import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
-import { UserCog } from 'lucide-react';
+import { UserCog, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserRole {
@@ -40,6 +41,7 @@ interface AdminUser {
 export function UserRoleMatrixTab() {
   const { t } = useTranslation('common');
   const { t: tToast } = useTranslation('toasts');
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [togglingRole, setTogglingRole] = useState<string | null>(null);
 
@@ -87,7 +89,7 @@ export function UserRoleMatrixTab() {
 
   // Toggle role for a user
   const handleToggleRole = useCallback(
-    async (userId: string, roleName: string, shouldAdd: boolean) => {
+    async (userId: string, roleName: string, userEmail: string, shouldAdd: boolean) => {
       const toggleKey = `${userId}-${roleName}`;
       setTogglingRole(toggleKey);
 
@@ -95,12 +97,12 @@ export function UserRoleMatrixTab() {
         if (shouldAdd) {
           await RoleManagementService.addRole(userId, roleName);
           toast.success(tToast('admin.roleAdded'), {
-            description: tToast('admin.roleAddedDescription', { roleName }),
+            description: tToast('admin.roleAddedDescription', { roleName, userEmail }),
           });
         } else {
           await RoleManagementService.removeRole(userId, roleName);
           toast.success(tToast('admin.roleRemoved'), {
-            description: tToast('admin.roleRemovedDescription', { roleName }),
+            description: tToast('admin.roleRemovedDescription', { roleName, userEmail }),
           });
         }
 
@@ -129,6 +131,17 @@ export function UserRoleMatrixTab() {
     return (user.roles || []).some((r) => r.role_name === roleName);
   }, []);
 
+  // Add computed role boolean properties to users for sorting
+  const usersWithRoleFlags = useMemo(() => {
+    return users.map((user: AdminUser) => {
+      const userWithFlags: Record<string, unknown> = { ...user };
+      availableRoles.forEach((role) => {
+        userWithFlags[`role_${role.name}`] = userHasRole(user, role.name);
+      });
+      return userWithFlags as AdminUser & Record<string, boolean>;
+    });
+  }, [users, availableRoles, userHasRole]);
+
   // Build columns dynamically based on available roles
   const columns: DataGridColumn[] = useMemo(() => {
     const baseColumns: DataGridColumn[] = [
@@ -152,6 +165,7 @@ export function UserRoleMatrixTab() {
       label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
       width: '120px',
       editable: false,
+      sortable: true,
       render: (_value: unknown, row: AdminUser) => {
         const hasRole = userHasRole(row, role.name);
         const toggleKey = `${row.id}-${role.name}`;
@@ -162,7 +176,7 @@ export function UserRoleMatrixTab() {
             <FmCommonCheckbox
               id={`${row.id}-${role.name}`}
               checked={hasRole}
-              onCheckedChange={(checked) => handleToggleRole(row.id, role.name, checked)}
+              onCheckedChange={(checked) => handleToggleRole(row.id, role.name, row.email, checked)}
               disabled={isToggling}
             />
           </div>
@@ -175,6 +189,15 @@ export function UserRoleMatrixTab() {
 
   const isLoading = usersLoading || rolesLoading;
 
+  // Context menu actions for user rows
+  const contextMenuActions: DataGridAction<AdminUser>[] = [
+    {
+      label: t('contextMenu.viewProfile'),
+      icon: <User className="h-4 w-4" />,
+      onClick: (user: AdminUser) => navigate(`/admin/users/${user.id}`),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <FmSectionHeader
@@ -185,8 +208,9 @@ export function UserRoleMatrixTab() {
 
       <FmConfigurableDataGrid
         gridId="user-role-matrix"
-        data={users}
+        data={usersWithRoleFlags}
         columns={columns}
+        contextMenuActions={contextMenuActions}
         loading={isLoading}
         pageSize={20}
         resourceName="User"

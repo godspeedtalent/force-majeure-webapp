@@ -7,6 +7,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
   INSERT INTO public.profiles (
+    id,
     user_id,
     email,
     display_name,
@@ -16,9 +17,19 @@ BEGIN
   )
   VALUES (
     NEW.id,
+    NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1)),
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    -- Combine first_name + last_name when full_name not provided
+    -- Priority: full_name > first_name + last_name > name > NULL
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NULLIF(TRIM(CONCAT_WS(' ',
+        NEW.raw_user_meta_data->>'first_name',
+        NEW.raw_user_meta_data->>'last_name'
+      )), ''),
+      NEW.raw_user_meta_data->>'name'
+    ),
     NOW(),
     NOW()
   );
@@ -36,4 +47,4 @@ CREATE TRIGGER on_auth_user_created
   EXECUTE FUNCTION public.handle_new_user();
 
 -- Add a comment explaining the trigger
-COMMENT ON FUNCTION public.handle_new_user() IS 'Automatically creates a profile record when a new user signs up via auth.users';
+COMMENT ON FUNCTION public.handle_new_user() IS 'Automatically creates a profile record when a new user signs up. Combines first_name + last_name into full_name.';

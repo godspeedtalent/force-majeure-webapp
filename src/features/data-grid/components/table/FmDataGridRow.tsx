@@ -232,11 +232,13 @@ export function FmDataGridRow<T extends Record<string, any>>({
           onMouseEnter={() => !isDragMode && onSetHoveredColumn('__checkbox')}
           onMouseLeave={() => !isDragMode && onSetHoveredColumn(null)}
         >
-          <FmCommonCheckbox
-            checked={isSelected}
-            onCheckedChange={(checked) => onSelectRow(!!checked, false)}
-            aria-label={`Select row ${globalIndex + 1}`}
-          />
+          <div className='flex items-center justify-center'>
+            <FmCommonCheckbox
+              checked={isSelected}
+              onCheckedChange={(checked) => onSelectRow(!!checked, false)}
+              aria-label={`Select row ${globalIndex + 1}`}
+            />
+          </div>
         </TableCell>
 
         {/* Row Number Cell */}

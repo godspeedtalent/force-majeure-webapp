@@ -39,7 +39,6 @@ export const ROLES = {
   ORG_STAFF: 'org_staff',
   VENUE_ADMIN: 'venue_admin',
   ARTIST: 'artist',
-  USER: 'user',
 } as const;
 
 export type Role = (typeof ROLES)[keyof typeof ROLES];
@@ -69,7 +68,6 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   [ROLES.ORG_STAFF]: [PERMISSIONS.VIEW_ORGANIZATION, PERMISSIONS.SCAN_TICKETS],
   [ROLES.VENUE_ADMIN]: [PERMISSIONS.MANAGE_VENUES],
   [ROLES.ARTIST]: [], // Artist role - no additional permissions for now
-  [ROLES.USER]: [],
 };
 
 /**
@@ -77,15 +75,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
  * Defines which roles require other roles to be present.
  * Key = role that has dependencies, Value = array of required roles
  *
- * Example: Artist role requires User role (artists must be users)
+ * Note: Most roles have no dependencies. The DEVELOPER role requires FM_STAFF.
  */
 export const ROLE_DEPENDENCIES: Partial<Record<Role, Role[]>> = {
-  [ROLES.ARTIST]: [ROLES.USER],
   [ROLES.DEVELOPER]: [ROLES.FM_STAFF], // Developers must also be FM staff
-  [ROLES.FM_STAFF]: [ROLES.USER],
-  [ROLES.ORG_ADMIN]: [ROLES.USER],
-  [ROLES.ORG_STAFF]: [ROLES.USER],
-  [ROLES.VENUE_ADMIN]: [ROLES.USER],
   // Admin doesn't require other roles as it's the highest elevated role
 };
 

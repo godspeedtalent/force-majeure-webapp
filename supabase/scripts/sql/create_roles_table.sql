@@ -73,11 +73,6 @@ USING (has_role(auth.uid(), 'admin'::app_role) OR is_dev_admin());
 
 -- 6. Insert default roles with permission_ids
 INSERT INTO public.roles (name, display_name, description, is_system_role, permission_ids)
-SELECT 'user', 'User', 'Standard user with basic access', true, 
-  ARRAY(SELECT id FROM public.permissions WHERE name IN ('view_events', 'purchase_tickets', 'manage_own_profile'))
-WHERE NOT EXISTS (SELECT 1 FROM public.roles WHERE name = 'user');
-
-INSERT INTO public.roles (name, display_name, description, is_system_role, permission_ids)
 SELECT 'admin', 'Administrator', 'Full system administrator', true,
   ARRAY(SELECT id FROM public.permissions WHERE name = '*')
 WHERE NOT EXISTS (SELECT 1 FROM public.roles WHERE name = 'admin');

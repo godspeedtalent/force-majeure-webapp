@@ -145,7 +145,7 @@ describe('useUserPermissions', () => {
 
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [
-          { role_name: 'user', display_name: 'User', permissions: [] },
+          { role_name: 'org_staff', display_name: 'Org Staff', permissions: ['view_organization'] },
         ],
         error: null,
       } as any);
@@ -234,8 +234,8 @@ describe('useUserPermissions', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [
           {
-            role_name: 'user',
-            display_name: 'User',
+            role_name: 'artist',
+            display_name: 'Artist',
             permissions: [],
           },
         ],
@@ -316,8 +316,8 @@ describe('useUserPermissions', () => {
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [
           {
-            role_name: 'user',
-            display_name: 'User',
+            role_name: 'artist',
+            display_name: 'Artist',
             permissions: [],
           },
         ],
@@ -430,7 +430,7 @@ describe('useUserPermissions', () => {
 
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [
-          { role_name: 'user', display_name: 'User', permissions: [] },
+          { role_name: 'artist', display_name: 'Artist', permissions: [] },
         ],
         error: null,
       } as any);
@@ -495,7 +495,7 @@ describe('useUserPermissions', () => {
 
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [
-          { role_name: 'user', display_name: 'User', permissions: [] },
+          { role_name: 'artist', display_name: 'Artist', permissions: [] },
         ],
         error: null,
       } as any);

@@ -454,10 +454,17 @@ INSERT INTO roles (name, display_name, description, permissions, is_system_role)
     true
   ),
   (
-    'user',
-    'User',
-    'Standard user with basic access',
-    '[]'::jsonb,
+    'fm_staff',
+    'FM Staff',
+    'Force Majeure staff with internal tools access',
+    '["access_staff_tools"]'::jsonb,
+    true
+  ),
+  (
+    'venue_admin',
+    'Venue Admin',
+    'Venue administrator with venue management access',
+    '["manage_venues"]'::jsonb,
     true
   )
 ON CONFLICT (name) DO UPDATE SET
@@ -474,5 +481,5 @@ COMMIT;
 -- Successfully seeded:
 -- - 200+ electronic music genres with hierarchical relationships
 -- - 9 feature flags (all disabled by default)
--- - 5 default system roles (admin, developer, org_admin, org_staff, user)
+-- - 7 default system roles (admin, developer, org_admin, org_staff, artist, fm_staff, venue_admin)
 -- ============================================================================

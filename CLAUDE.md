@@ -434,9 +434,11 @@ When code and types don't match:
 
 - `ROLES.ADMIN` - **Full system administrator (automatically grants ALL permissions and roles without database assignment)**
 - `ROLES.DEVELOPER` - Developer access (debugging, dev tools, all permissions)
+- `ROLES.FM_STAFF` - Force Majeure staff (staff tools access)
 - `ROLES.ORG_ADMIN` - Organization administrator (manage events, venues, staff)
 - `ROLES.ORG_STAFF` - Organization staff (view org, scan tickets)
-- `ROLES.USER` - Standard user (basic access)
+- `ROLES.VENUE_ADMIN` - Venue administrator (manage venues)
+- `ROLES.ARTIST` - Artist profile access
 
 **Key Permissions:**
 
