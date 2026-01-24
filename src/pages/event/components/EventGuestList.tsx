@@ -195,7 +195,7 @@ export const EventGuestList = ({
           style={{
             background: 'linear-gradient(90deg, transparent 0%, transparent 25%, rgba(223,186,125,0.5) 50%, transparent 75%, transparent 100%)',
             backgroundSize: '200% 100%',
-            animation: 'border-shimmer-gold 3s linear infinite',
+            animation: 'border-shimmer-gold 6s linear infinite',
             mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
             maskComposite: 'exclude',
             WebkitMaskComposite: 'xor',
@@ -285,7 +285,7 @@ export const EventGuestList = ({
         style={{
           background: 'linear-gradient(90deg, transparent 0%, transparent 25%, rgba(223,186,125,0.5) 50%, transparent 75%, transparent 100%)',
           backgroundSize: '200% 100%',
-          animation: 'border-shimmer-gold 3s linear infinite',
+          animation: 'border-shimmer-gold 6s linear infinite',
           mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           maskComposite: 'exclude',
           WebkitMaskComposite: 'xor',

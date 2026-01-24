@@ -2,15 +2,16 @@
  * Centralized Logging Service
  *
  * Provides a clean API for logging throughout the application with:
- * - Dual-layer access control: environment check AND role check
+ * - Three-tier access control: local dev mode, role-based, pre-auth buffering
  * - Structured logging with context objects
  * - Optional namespacing for different modules
  * - Log levels (DEBUG, INFO, WARN, ERROR)
- * - Color coding in development mode
+ * - Color coding for visual distinction
  *
  * Access Control:
- * - Development builds: All logs shown (for development)
- * - Production builds: Debug/info/warn only shown for admin/developer roles
+ * - Local Developer Mode (VITE_DEBUG_MODE=true): All logs shown immediately
+ * - Role-Based Access (admin/developer): Logs shown after auth resolves
+ * - Pre-Auth State: Logs buffered until auth resolves, then flushed or discarded
  * - Errors: Always logged (for monitoring)
  *
  * Usage:
@@ -23,7 +24,7 @@
  * logger.error('API call failed', { error, endpoint });
  *
  * // With namespace
- * const authLogger = logger.namespace('Auth');
+ * const authLogger = logger.createNamespace('Auth');
  * authLogger.info('Sign up successful', { userId });
  * ```
  */
@@ -33,6 +34,7 @@ import { debugAccessService } from './debugAccessService';
 type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
 
 export interface LogContext {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -45,10 +47,24 @@ class Logger {
 
   /**
    * Check if debug logging is allowed
-   * Uses debugAccessService which checks both environment AND user role
+   * Uses debugAccessService which checks local dev mode AND user role
    */
   private hasDebugAccess(): boolean {
     return debugAccessService.hasDebugAccess();
+  }
+
+  /**
+   * Check if we should buffer this log (pre-auth state)
+   */
+  private shouldBuffer(): boolean {
+    // Don't buffer if local developer mode - they see everything
+    if (debugAccessService.isLocalDeveloperMode()) return false;
+
+    // Don't buffer if auth has resolved - we know if user has access
+    if (debugAccessService.isAuthResolved()) return false;
+
+    // Auth not resolved yet - buffer the log
+    return true;
   }
 
   /**
@@ -68,37 +84,74 @@ class Logger {
   }
 
   /**
-   * Log a debug message (dev mode or admin/developer role)
+   * Log a debug message (local dev mode or admin/developer role)
+   * Buffers if auth state is not yet resolved
    */
   debug(message: string, context?: LogContext): void {
+    // If auth not resolved, buffer for later
+    if (this.shouldBuffer()) {
+      debugAccessService.bufferLog(
+        'debug',
+        message,
+        context as Record<string, unknown>,
+        this.namespace
+      );
+      return;
+    }
+
     if (this.hasDebugAccess()) {
       this.log('DEBUG', message, context, 'color: #9CA3AF');
     }
   }
 
   /**
-   * Log an informational message (dev mode or admin/developer role)
+   * Log an informational message (local dev mode or admin/developer role)
+   * Buffers if auth state is not yet resolved
    */
   info(message: string, context?: LogContext): void {
+    // If auth not resolved, buffer for later
+    if (this.shouldBuffer()) {
+      debugAccessService.bufferLog(
+        'info',
+        message,
+        context as Record<string, unknown>,
+        this.namespace
+      );
+      return;
+    }
+
     if (this.hasDebugAccess()) {
       this.log('INFO', message, context, 'color: #3B82F6');
     }
   }
 
   /**
-   * Log a warning message (dev mode or admin/developer role)
+   * Log a warning message (local dev mode or admin/developer role)
+   * Buffers if auth state is not yet resolved
    */
   warn(message: string, context?: LogContext): void {
+    // If auth not resolved, buffer for later
+    if (this.shouldBuffer()) {
+      debugAccessService.bufferLog(
+        'warn',
+        message,
+        context as Record<string, unknown>,
+        this.namespace
+      );
+      return;
+    }
+
     if (this.hasDebugAccess()) {
       this.log('WARN', message, context, 'color: #F59E0B');
     }
   }
 
   /**
-   * Log an error message (logs in all environments)
+   * Log an error message (logs in all environments, always visible)
+   * Errors are NOT buffered - they always log immediately
    */
   error(message: string, context?: LogContext): void {
-    // Errors are logged in all environments
+    // Errors are logged in all environments, never buffered
     this.log('ERROR', message, context, 'color: #EF4444', true);
   }
 

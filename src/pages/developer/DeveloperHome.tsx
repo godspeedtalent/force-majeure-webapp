@@ -41,9 +41,8 @@ import {
   DeveloperDatabaseRecordingsTab,
   ActivityLogsTab,
   DemoToolsTab,
-  DocumentationViewerTab,
   UserRoleMatrixTab,
-  RoleDiagnosticsTab,
+  ResendDashboardTab,
 } from './tabs';
 
 // Data and navigation hooks
@@ -56,7 +55,6 @@ import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardConten
 
 // Developer Tools components
 import { OrderCsvImportContent } from './orderImport';
-import { TemplateDesignerContent } from '@/features/template-designer';
 
 // Types
 import { DeveloperTab, VALID_TABS, EXTERNAL_ROUTES } from './types';
@@ -181,25 +179,14 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
-        {activeTab === 'dev_docs' && (
-          <PageErrorBoundary section="Documentation Viewer">
-            <DocumentationViewerTab />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'dev_template_designer' && (
-          <PageErrorBoundary section="Template Designer">
-            <TemplateDesignerContent />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'dev_role_diagnostics' && (
-          <PageErrorBoundary section="Role Diagnostics">
-            <RoleDiagnosticsTab />
-          </PageErrorBoundary>
-        )}
 
         {/* ======================== DASHBOARDS ======================== */}
+        {activeTab === 'dash_email_traffic' && (
+          <PageErrorBoundary section="Email Traffic">
+            <ResendDashboardTab />
+          </PageErrorBoundary>
+        )}
+
         {activeTab === 'dash_recordings' && (
           <PageErrorBoundary section="Recording Ratings">
             <RecordingRatingsDashboard />

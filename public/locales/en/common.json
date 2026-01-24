@@ -215,7 +215,8 @@
     "privateGuests": "Private Guests",
     "more": "more",
     "othersCount": "+ {{count}} others",
-    "pageViews": "{{count}} page views"
+    "pageViews": "{{count}} page views",
+    "privacyFootnote": "Don't want to appear on this list? Change your profile to private in"
   },
   "contextMenu": {
     "viewProfile": "View Profile"
@@ -316,7 +317,9 @@
     "soundcloud": "SoundCloud",
     "submittedOn": "Submitted on",
     "actions": "Actions",
-    "tags": "Tags"
+    "tags": "Tags",
+    "requestedBy": "Requested by",
+    "whatWillHappen": "What will happen"
   },
   "entities": {
     "venue": "Venue",
@@ -3450,6 +3453,53 @@
     "clearAll": "Clear all",
     "showingLogs": "Showing {{showing}} of {{total}} logs"
   },
+  "resendDashboard": {
+    "title": "Email dashboard",
+    "description": "Monitor email delivery status and analytics from Resend",
+    "stats": {
+      "totalEmails": "Total Emails",
+      "delivered": "Delivered",
+      "bounced": "Bounced",
+      "opened": "Opened",
+      "clicked": "Clicked",
+      "complained": "Complained",
+      "pending": "Pending",
+      "deliveryRate": "Delivery Rate"
+    },
+    "domains": {
+      "title": "Configured domains",
+      "noDomainsFound": "No domains configured",
+      "addDomainHint": "Add a domain in the Resend dashboard to get started",
+      "status": {
+        "verified": "Verified",
+        "pending": "Pending",
+        "failed": "Failed",
+        "notStarted": "Not Started",
+        "temporaryFailure": "Temporary Failure"
+      }
+    },
+    "emails": {
+      "title": "Recent emails",
+      "noEmailsFound": "No emails found",
+      "sendFirstEmail": "Send your first email to see it here",
+      "showing": "Showing {{count}} emails",
+      "columns": {
+        "recipient": "Recipient",
+        "subject": "Subject",
+        "status": "Status",
+        "sentAt": "Sent At"
+      },
+      "status": {
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "bounced": "Bounced",
+        "opened": "Opened",
+        "clicked": "Clicked",
+        "complained": "Complained",
+        "deliveryDelayed": "Delayed"
+      }
+    }
+  },
   "statisticsPage": {
     "title": "Statistics",
     "description": "Application metrics and analytics",
@@ -3494,6 +3544,8 @@
     "ticketFlowTestsDescription": "Comprehensive smoke testing suite for the complete ticketing flow including queue management, selection, payment, timeouts, and delivery",
     "orderCsvImport": "Order CSV Import",
     "orderCsvImportDescription": "Import historical orders from CSV files, automatically linking to existing users by email and creating order, ticket, and order item records",
+    "resendDashboard": "Resend Dashboard",
+    "resendDashboardDescription": "Monitor email delivery status and analytics from Resend",
     "categoryDatabase": "Database",
     "categoryTesting": "Testing",
     "categoryDocumentation": "Documentation",

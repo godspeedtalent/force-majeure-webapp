@@ -61,8 +61,12 @@ export const useUserRole = () => {
       );
       debugAccessService.setDebugAccess(isDevOrAdmin);
     } else if (!user) {
-      // Clear debug access when user logs out
-      debugAccessService.clearDebugAccess();
+      // User is anonymous or logged out - mark auth as resolved with no access
+      // Note: We use setDebugAccess(false) instead of clearDebugAccess() because:
+      // - clearDebugAccess() is called during signOut() to clear any buffered logs
+      // - Here we just need to mark auth as resolved so buffered logs are discarded
+      // - Using setDebugAccess(false) properly triggers the buffer flush/discard
+      debugAccessService.setDebugAccess(false);
     }
   }, [query.data, user]);
 

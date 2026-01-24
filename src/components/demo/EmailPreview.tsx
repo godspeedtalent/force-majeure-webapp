@@ -5,13 +5,23 @@ import { Button } from '@/components/common/shadcn/button';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { Separator } from '@/components/common/shadcn/separator';
-import { Mail, Copy, Send, Eye, FileDown, Loader2 } from 'lucide-react';
-import { OrderReceiptEmailData } from '@/types/email';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/common/shadcn/tabs';
+import { Mail, Copy, Send, Eye, FileDown, Loader2, Ticket, ShieldCheck } from 'lucide-react';
+import { OrderReceiptEmailData, EmailConfirmationData } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from '@/services/email/templates/OrderReceiptEmail';
+import { generateFmTicketReceiptEmailHTML } from '@/services/email/templates/FmTicketReceiptEmail';
+import { generateEmailConfirmationHTML } from '@/services/email/templates/EmailConfirmationEmail';
 import { useSendTestEmail } from '@/shared/hooks/useEmailReceipt';
 import { toast } from 'sonner';
 import { formatHeader } from '@/shared';
 import { TicketPDFGenerator, TicketPDFData } from '@/services/pdf/TicketPDFGenerator';
+
+type TemplateType = 'order-receipt' | 'fm-ticket-receipt' | 'email-confirmation';
 
 /**
  * EmailPreview - Developer tool for previewing and testing email templates
@@ -29,6 +39,15 @@ export const EmailPreview = () => {
   const [testEmail, setTestEmail] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState<TemplateType>('fm-ticket-receipt');
+
+  // Sample email confirmation data
+  const sampleEmailConfirmation: EmailConfirmationData = {
+    userName: 'Alex',
+    userEmail: testEmail || 'alex.johnson@example.com',
+    confirmationUrl: 'https://forcemajeure.com/auth/confirm?token=abc123xyz',
+    expiresInHours: 24,
+  };
 
   // Sample data for preview
   const sampleData: OrderReceiptEmailData = {
@@ -77,9 +96,33 @@ export const EmailPreview = () => {
   };
 
   const handleCopyHTML = () => {
-    const html = generateOrderReceiptEmailHTML(sampleData);
+    const html = getActiveTemplateHTML();
     navigator.clipboard.writeText(html);
     toast.success(t('emailPreview.htmlCopied'));
+  };
+
+  const getActiveTemplateHTML = () => {
+    switch (activeTemplate) {
+      case 'email-confirmation':
+        return generateEmailConfirmationHTML(sampleEmailConfirmation);
+      case 'fm-ticket-receipt':
+        return generateFmTicketReceiptEmailHTML(sampleData);
+      case 'order-receipt':
+      default:
+        return generateOrderReceiptEmailHTML(sampleData);
+    }
+  };
+
+  const getActiveTemplateName = () => {
+    switch (activeTemplate) {
+      case 'email-confirmation':
+        return 'Email Confirmation';
+      case 'fm-ticket-receipt':
+        return 'FM Ticket Receipt (New)';
+      case 'order-receipt':
+      default:
+        return 'Order Receipt (Legacy)';
+    }
   };
 
   const handleDownloadPDF = async () => {
@@ -141,18 +184,49 @@ export const EmailPreview = () => {
     await sendTestEmail(testEmail);
   };
 
-  const htmlContent = generateOrderReceiptEmailHTML(sampleData);
+  const htmlContent = getActiveTemplateHTML();
 
   return (
     <div className='space-y-6'>
-      {/* Controls */}
-      <FmCommonCard className='p-[20px]'>
-        <div className='flex items-center gap-[10px] mb-[20px]'>
-          <Mail className='h-5 w-5 text-fm-gold' />
-          <h3 className='text-lg font-canela'>
-            {formatHeader(t('emailPreview.title'))}
-          </h3>
-        </div>
+      {/* Template Selection Tabs */}
+      <Tabs
+        value={activeTemplate}
+        onValueChange={value => setActiveTemplate(value as TemplateType)}
+        className='w-full'
+      >
+        <TabsList className='grid w-full grid-cols-3 bg-black/40'>
+          <TabsTrigger
+            value='fm-ticket-receipt'
+            className='data-[state=active]:bg-fm-gold data-[state=active]:text-black'
+          >
+            <Ticket className='h-4 w-4 mr-2' />
+            FM Ticket Receipt
+          </TabsTrigger>
+          <TabsTrigger
+            value='email-confirmation'
+            className='data-[state=active]:bg-fm-gold data-[state=active]:text-black'
+          >
+            <ShieldCheck className='h-4 w-4 mr-2' />
+            Email Confirmation
+          </TabsTrigger>
+          <TabsTrigger
+            value='order-receipt'
+            className='data-[state=active]:bg-fm-gold data-[state=active]:text-black'
+          >
+            <Mail className='h-4 w-4 mr-2' />
+            Legacy Receipt
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTemplate} className='mt-6'>
+          {/* Controls */}
+          <FmCommonCard className='p-[20px]'>
+            <div className='flex items-center gap-[10px] mb-[20px]'>
+              <Mail className='h-5 w-5 text-fm-gold' />
+              <h3 className='text-lg font-canela'>
+                {getActiveTemplateName()}
+              </h3>
+            </div>
 
         <div className='space-y-4'>
           <div>
@@ -254,50 +328,52 @@ export const EmailPreview = () => {
         </p>
       </FmCommonCard>
 
-      {/* Implementation Notes */}
-      <FmCommonCard className='p-[20px] bg-muted/20 border-fm-gold/30'>
-        <h4 className='text-md font-canela mb-[20px]'>
-          {formatHeader(t('emailPreview.implementationNotes'))}
-        </h4>
-        <div className='space-y-2 text-sm'>
-          <p>
-            <strong>{t('emailPreview.emailServiceSetup')}</strong> {t('emailPreview.emailServiceSetupDescription')}
-          </p>
-          <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
-            <li>
-              {t('emailPreview.step1EdgeFunction')}{' '}
-              <code className='text-xs bg-muted px-1 py-0.5 rounded'>
-                send-email
-              </code>
-            </li>
-            <li>
-              {t('emailPreview.step2Provider')}
-            </li>
-            <li>{t('emailPreview.step3Credentials')}</li>
-            <li>{t('emailPreview.step4Deploy')}</li>
-          </ol>
+          {/* Implementation Notes */}
+          <FmCommonCard className='p-[20px] bg-muted/20 border-fm-gold/30'>
+            <h4 className='text-md font-canela mb-[20px]'>
+              {formatHeader(t('emailPreview.implementationNotes'))}
+            </h4>
+            <div className='space-y-2 text-sm'>
+              <p>
+                <strong>{t('emailPreview.emailServiceSetup')}</strong> {t('emailPreview.emailServiceSetupDescription')}
+              </p>
+              <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
+                <li>
+                  {t('emailPreview.step1EdgeFunction')}{' '}
+                  <code className='text-xs bg-muted px-1 py-0.5 rounded'>
+                    send-email
+                  </code>
+                </li>
+                <li>
+                  {t('emailPreview.step2Provider')}
+                </li>
+                <li>{t('emailPreview.step3Credentials')}</li>
+                <li>{t('emailPreview.step4Deploy')}</li>
+              </ol>
 
-          <Separator className='my-4' />
+              <Separator className='my-4' />
 
-          <p>
-            <strong>{t('emailPreview.pdfTickets')}</strong> {t('emailPreview.pdfTicketsDescription')}
-          </p>
-          <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
-            <li>
-              {t('emailPreview.pdfStep1')}
-            </li>
-            <li>
-              {t('emailPreview.pdfStep2')}{' '}
-              <code className='text-xs bg-muted px-1 py-0.5 rounded'>
-                TicketPDFService
-              </code>{' '}
-              {t('emailPreview.pdfStep2Methods')}
-            </li>
-            <li>{t('emailPreview.pdfStep3')}</li>
-            <li>{t('emailPreview.pdfStep4')}</li>
-          </ol>
-        </div>
-      </FmCommonCard>
+              <p>
+                <strong>{t('emailPreview.pdfTickets')}</strong> {t('emailPreview.pdfTicketsDescription')}
+              </p>
+              <ol className='list-decimal list-inside space-y-1 ml-4 text-muted-foreground'>
+                <li>
+                  {t('emailPreview.pdfStep1')}
+                </li>
+                <li>
+                  {t('emailPreview.pdfStep2')}{' '}
+                  <code className='text-xs bg-muted px-1 py-0.5 rounded'>
+                    TicketPDFService
+                  </code>{' '}
+                  {t('emailPreview.pdfStep2Methods')}
+                </li>
+                <li>{t('emailPreview.pdfStep3')}</li>
+                <li>{t('emailPreview.pdfStep4')}</li>
+              </ol>
+            </div>
+          </FmCommonCard>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

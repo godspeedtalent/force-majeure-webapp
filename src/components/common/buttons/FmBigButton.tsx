@@ -205,7 +205,23 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         }}
         {...props}
       >
-        {/* Animated border shimmer */}
+        {/* Traveling border shimmer - always visible for primary variant */}
+        {!isDisabledState && !disableAnimations && isPrimary && (
+          <div
+            className='absolute inset-0 pointer-events-none'
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, transparent 25%, rgba(223,186,125,0.5) 50%, transparent 75%, transparent 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'border-shimmer-gold 6s linear infinite',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'exclude',
+              WebkitMaskComposite: 'xor',
+              padding: '2px',
+            }}
+          />
+        )}
+
+        {/* Additional border glow on hover */}
         {!isDisabledState && !disableAnimations && (
           <div
             className={cn(

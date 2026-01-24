@@ -283,7 +283,7 @@ export const animations = {
   'border-shimmer': createAnimation('border-shimmer', '2s', 'infinite'),
   'glow-gold': createAnimation('glow-gold', '4s', 'ease-in-out', 'infinite'),
   'glow-purple': createAnimation('glow-purple', '4s', 'ease-in-out', 'infinite'),
-  'border-shimmer-gold': createAnimation('border-shimmer-gold', '3s', 'linear', 'infinite'),
+  'border-shimmer-gold': createAnimation('border-shimmer-gold', '6s', 'linear', 'infinite'),
 
   // Feedback animations
   'input-pulse': createAnimation('input-pulse', '0.15s'),

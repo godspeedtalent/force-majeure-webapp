@@ -108,7 +108,8 @@ export const EventHeaderActions = ({
               }`}
             />
           )}
-          {shouldShowInterestCount && interestCount > 0 && (
+          {/* Always show count when user is attending, otherwise follow threshold */}
+          {((userIsAttending && interestCount > 0) || (shouldShowInterestCount && interestCount > 0)) && (
             <span className={`text-xs ${userIsAttending ? 'text-fm-gold' : 'text-muted-foreground'}`}>
               {interestCount.toLocaleString()}
             </span>

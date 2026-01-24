@@ -10,11 +10,10 @@ import { useTranslation } from 'react-i18next';
 import {
   // Developer Tools icons
   Database,
-  FileText,
   FlaskConical,
   Code,
   FileSpreadsheet,
-  Palette,
+  Mail,
   // Admin icons
   Shield,
   Sliders,
@@ -96,28 +95,10 @@ export function useDeveloperNavigation({
         description: t('developerIndex.demoToolsDescription'),
       },
       {
-        id: 'dev_docs',
-        label: t('developerIndex.documentationViewer'),
-        icon: FileText,
-        description: t('developerIndex.documentationViewerDescription'),
-      },
-      {
         id: 'dev_order_import',
         label: t('developerIndex.orderCsvImport'),
         icon: FileSpreadsheet,
         description: t('developerIndex.orderCsvImportDescription'),
-      },
-      {
-        id: 'dev_role_diagnostics',
-        label: 'Role Diagnostics',
-        icon: Shield,
-        description: 'Debug role fetching and permission issues',
-      },
-      {
-        id: 'dev_template_designer',
-        label: t('developerIndex.templateDesigner', 'Template Designer'),
-        icon: Palette,
-        description: t('developerIndex.templateDesignerDescription', 'Customize email and PDF templates'),
       },
     ];
 
@@ -145,6 +126,12 @@ export function useDeveloperNavigation({
 
     // Dashboards group - conditionally include Recording Ratings based on feature flag
     const dashboardItems: FmCommonSideNavItem<DeveloperTab>[] = [
+      {
+        id: 'dash_email_traffic',
+        label: t('developerIndex.emailTraffic', 'Email Traffic'),
+        icon: Mail,
+        description: t('developerIndex.emailTrafficDescription', 'Monitor email delivery and statistics'),
+      },
       ...(isRecordingRatingsEnabled
         ? [
             {

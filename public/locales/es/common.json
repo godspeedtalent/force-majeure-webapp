@@ -215,7 +215,8 @@
     "privateGuests": "Invitados Privados",
     "more": "más",
     "othersCount": "+ {{count}} otros",
-    "pageViews": "{{count}} vistas de página"
+    "pageViews": "{{count}} vistas de página",
+    "privacyFootnote": "¿No quieres aparecer en esta lista? Cambia tu perfil a privado en"
   },
   "contextMenu": {
     "viewProfile": "Ver Perfil"
@@ -316,7 +317,9 @@
     "soundcloud": "SoundCloud",
     "submittedOn": "Enviado el",
     "actions": "Acciones",
-    "tags": "Etiquetas"
+    "tags": "Etiquetas",
+    "requestedBy": "Solicitado por",
+    "whatWillHappen": "Qué sucederá"
   },
   "entities": {
     "venue": "Local",
@@ -3440,6 +3443,53 @@
     "clearAll": "Limpiar todo",
     "showingLogs": "Mostrando {{showing}} de {{total}} registros"
   },
+  "resendDashboard": {
+    "title": "Panel de emails",
+    "description": "Monitorear el estado de entrega de emails y analíticas de Resend",
+    "stats": {
+      "totalEmails": "Total de Emails",
+      "delivered": "Entregados",
+      "bounced": "Rebotados",
+      "opened": "Abiertos",
+      "clicked": "Clicados",
+      "complained": "Con Quejas",
+      "pending": "Pendientes",
+      "deliveryRate": "Tasa de Entrega"
+    },
+    "domains": {
+      "title": "Dominios configurados",
+      "noDomainsFound": "No hay dominios configurados",
+      "addDomainHint": "Añade un dominio en el panel de Resend para comenzar",
+      "status": {
+        "verified": "Verificado",
+        "pending": "Pendiente",
+        "failed": "Fallido",
+        "notStarted": "No Iniciado",
+        "temporaryFailure": "Fallo Temporal"
+      }
+    },
+    "emails": {
+      "title": "Emails recientes",
+      "noEmailsFound": "No se encontraron emails",
+      "sendFirstEmail": "Envía tu primer email para verlo aquí",
+      "showing": "Mostrando {{count}} emails",
+      "columns": {
+        "recipient": "Destinatario",
+        "subject": "Asunto",
+        "status": "Estado",
+        "sentAt": "Enviado"
+      },
+      "status": {
+        "sent": "Enviado",
+        "delivered": "Entregado",
+        "bounced": "Rebotado",
+        "opened": "Abierto",
+        "clicked": "Clicado",
+        "complained": "Con Queja",
+        "deliveryDelayed": "Retrasado"
+      }
+    }
+  },
   "statisticsPage": {
     "title": "Estadísticas",
     "description": "Métricas y análisis de la aplicación",
@@ -3484,6 +3534,8 @@
     "ticketFlowTestsDescription": "Suite completa de pruebas de humo para el flujo de venta de entradas incluyendo gestión de cola, selección, pago, tiempos de espera y entrega",
     "orderCsvImport": "Importar CSV de Pedidos",
     "orderCsvImportDescription": "Importar pedidos históricos desde archivos CSV, vinculando automáticamente a usuarios existentes por email y creando registros de pedidos, entradas e ítems",
+    "resendDashboard": "Panel de Resend",
+    "resendDashboardDescription": "Monitorear el estado de entrega de emails y analíticas de Resend",
     "categoryDatabase": "Base de Datos",
     "categoryTesting": "Pruebas",
     "categoryDocumentation": "Documentación",

@@ -5,6 +5,8 @@
  * Follows the adapter pattern used by ErrorLoggingService.
  */
 
+import { logger } from '@/shared/services/logger';
+
 import type {
   AdapterResult,
   PageViewEntry,
@@ -127,20 +129,24 @@ export interface AnalyticsAdapter {
 
 /**
  * Console adapter for development/testing
+ * Uses the centralized logger to respect debug access controls
+ * Logs will only appear for admin/developer users or in local dev mode
  */
+const analyticsLogger = logger.createNamespace('Analytics');
+
 export class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
   async initSession(entry: SessionEntry): Promise<AdapterResult<string>> {
-    console.log('[Analytics] Init session:', entry);
+    analyticsLogger.debug('Init session', { sessionId: entry.sessionId });
     return { success: true, data: entry.sessionId };
   }
 
   async writePageView(entry: PageViewEntry): Promise<AdapterResult<string>> {
-    console.log('[Analytics] Page view:', entry);
+    analyticsLogger.debug('Page view', { pagePath: entry.pagePath, pageTitle: entry.pageTitle });
     return { success: true, data: crypto.randomUUID() };
   }
 
   async writePageViewBatch(entries: PageViewEntry[]): Promise<AdapterResult<string[]>> {
-    console.log('[Analytics] Page view batch:', entries.length, 'items');
+    analyticsLogger.debug('Page view batch', { count: entries.length });
     return { success: true, data: entries.map(() => crypto.randomUUID()) };
   }
 
@@ -149,32 +155,32 @@ export class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
     timeOnPageMs: number,
     scrollDepthPercent?: number
   ): Promise<AdapterResult> {
-    console.log('[Analytics] Update duration:', { viewId, timeOnPageMs, scrollDepthPercent });
+    analyticsLogger.debug('Update duration', { viewId, timeOnPageMs, scrollDepthPercent });
     return { success: true };
   }
 
   async writeFunnelEvent(entry: FunnelEventEntry): Promise<AdapterResult<string>> {
-    console.log('[Analytics] Funnel event:', entry);
+    analyticsLogger.debug('Funnel event', { eventType: entry.eventType, eventId: entry.eventId });
     return { success: true, data: crypto.randomUUID() };
   }
 
   async writeFunnelEventBatch(entries: FunnelEventEntry[]): Promise<AdapterResult<string[]>> {
-    console.log('[Analytics] Funnel batch:', entries.length, 'items');
+    analyticsLogger.debug('Funnel batch', { count: entries.length });
     return { success: true, data: entries.map(() => crypto.randomUUID()) };
   }
 
   async writePerformanceMetric(entry: PerformanceEntry): Promise<AdapterResult<string>> {
-    console.log('[Analytics] Performance:', entry);
+    analyticsLogger.debug('Performance', { metricType: entry.metricType, metricValue: entry.metricValue });
     return { success: true, data: crypto.randomUUID() };
   }
 
   async writePerformanceBatch(entries: PerformanceEntry[]): Promise<AdapterResult<string[]>> {
-    console.log('[Analytics] Performance batch:', entries.length, 'items');
+    analyticsLogger.debug('Performance batch', { count: entries.length });
     return { success: true, data: entries.map(() => crypto.randomUUID()) };
   }
 
   async endSession(sessionId: string): Promise<AdapterResult> {
-    console.log('[Analytics] End session:', sessionId);
+    analyticsLogger.debug('End session', { sessionId });
     return { success: true };
   }
 

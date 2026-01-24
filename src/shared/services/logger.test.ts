@@ -1,12 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Logger, logger } from './logger';
+import { debugAccessService } from './debugAccessService';
 
 describe('Logger', () => {
-  let consoleLogSpy: any;
-  let consoleWarnSpy: any;
-  let consoleErrorSpy: any;
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    // Reset debug access service state
+    debugAccessService.reset();
+    // Clear the VITE_DEBUG_MODE env var
+    vi.stubEnv('VITE_DEBUG_MODE', '');
+
     // Spy on console methods
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -15,15 +21,16 @@ describe('Logger', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
-  describe('in development mode', () => {
+  describe('with debug access (local developer mode)', () => {
     beforeEach(() => {
-      vi.stubEnv('DEV', true);
+      vi.stubEnv('VITE_DEBUG_MODE', 'true');
     });
 
     describe('debug()', () => {
-      it('logs debug message in development', () => {
+      it('logs debug message when user has access', () => {
         const testLogger = new Logger();
         testLogger.debug('Test debug message');
         expect(consoleLogSpy).toHaveBeenCalled();
@@ -48,7 +55,7 @@ describe('Logger', () => {
     });
 
     describe('info()', () => {
-      it('logs info message in development', () => {
+      it('logs info message when user has access', () => {
         const testLogger = new Logger();
         testLogger.info('Test info message');
         expect(consoleLogSpy).toHaveBeenCalled();
@@ -64,7 +71,7 @@ describe('Logger', () => {
     });
 
     describe('warn()', () => {
-      it('logs warning message in development', () => {
+      it('logs warning message when user has access', () => {
         const testLogger = new Logger();
         testLogger.warn('Test warning');
         expect(consoleWarnSpy).toHaveBeenCalled();
@@ -80,7 +87,7 @@ describe('Logger', () => {
     });
 
     describe('error()', () => {
-      it('logs error message in development', () => {
+      it('logs error message when user has access', () => {
         const testLogger = new Logger();
         testLogger.error('Test error');
         expect(consoleErrorSpy).toHaveBeenCalled();
@@ -148,30 +155,59 @@ describe('Logger', () => {
     });
   });
 
-  describe('in production mode', () => {
+  describe('with debug access (role-based)', () => {
     beforeEach(() => {
-      vi.stubEnv('DEV', false);
+      // Simulate user with admin/developer role
+      debugAccessService.setDebugAccess(true);
     });
 
-    it('does not log debug messages in production', () => {
+    it('logs debug messages for admin/developer users', () => {
+      const testLogger = new Logger();
+      testLogger.debug('Admin debug message');
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(consoleLogSpy.mock.calls[0][0]).toContain('DEBUG');
+    });
+
+    it('logs info messages for admin/developer users', () => {
+      const testLogger = new Logger();
+      testLogger.info('Admin info message');
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(consoleLogSpy.mock.calls[0][0]).toContain('INFO');
+    });
+
+    it('logs warning messages for admin/developer users', () => {
+      const testLogger = new Logger();
+      testLogger.warn('Admin warning');
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      expect(consoleWarnSpy.mock.calls[0][0]).toContain('WARN');
+    });
+  });
+
+  describe('without debug access (regular user, auth resolved)', () => {
+    beforeEach(() => {
+      // Simulate regular user (no admin/developer role)
+      debugAccessService.setDebugAccess(false);
+    });
+
+    it('does not log debug messages for regular users', () => {
       const testLogger = new Logger();
       testLogger.debug('Should not log');
       expect(consoleLogSpy).not.toHaveBeenCalled();
     });
 
-    it('does not log info messages in production', () => {
+    it('does not log info messages for regular users', () => {
       const testLogger = new Logger();
       testLogger.info('Should not log');
       expect(consoleLogSpy).not.toHaveBeenCalled();
     });
 
-    it('does not log warning messages in production', () => {
+    it('does not log warning messages for regular users', () => {
       const testLogger = new Logger();
       testLogger.warn('Should not log');
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
 
-    it('still logs error messages in production', () => {
+    it('still logs error messages for regular users', () => {
       const testLogger = new Logger();
       testLogger.error('Critical error');
       expect(consoleErrorSpy).toHaveBeenCalled();
@@ -179,7 +215,7 @@ describe('Logger', () => {
       expect(consoleErrorSpy.mock.calls[0][0]).toContain('Critical error');
     });
 
-    it('logs error context in production', () => {
+    it('logs error context for regular users', () => {
       const testLogger = new Logger();
       const context = { error: 'Database connection failed' };
       testLogger.error('Database error', context);
@@ -188,11 +224,98 @@ describe('Logger', () => {
       expect(consoleErrorSpy.mock.calls[1][1]).toEqual(context);
     });
 
-    it('does not apply styling in production', () => {
+    it('does not apply styling for errors when no debug access', () => {
       const testLogger = new Logger();
       testLogger.error('Production error');
       // In production, no styling (no %c)
       expect(consoleErrorSpy.mock.calls[0][0]).not.toContain('%c');
+    });
+  });
+
+  describe('pre-auth buffering (auth not yet resolved)', () => {
+    // Auth not resolved - logs should be buffered, not output
+
+    it('buffers debug messages before auth resolves', () => {
+      const testLogger = new Logger();
+      testLogger.debug('Pre-auth debug');
+
+      // Nothing logged immediately
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      // But buffered
+      expect(debugAccessService.getBufferSize()).toBe(1);
+    });
+
+    it('buffers info messages before auth resolves', () => {
+      const testLogger = new Logger();
+      testLogger.info('Pre-auth info');
+
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(1);
+    });
+
+    it('buffers warn messages before auth resolves', () => {
+      const testLogger = new Logger();
+      testLogger.warn('Pre-auth warning');
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(1);
+    });
+
+    it('does NOT buffer error messages - they always log immediately', () => {
+      const testLogger = new Logger();
+      testLogger.error('Pre-auth error');
+
+      // Errors are never buffered, always logged
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(0);
+    });
+
+    it('flushes buffered logs when admin/developer logs in', () => {
+      const testLogger = new Logger();
+      testLogger.debug('Pre-auth debug');
+      testLogger.info('Pre-auth info');
+
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(2);
+
+      // Admin logs in - triggers flush
+      debugAccessService.setDebugAccess(true);
+
+      // Buffered logs should now be output
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(0);
+    });
+
+    it('discards buffered logs when regular user logs in', () => {
+      const testLogger = new Logger();
+      testLogger.debug('Pre-auth debug');
+      testLogger.info('Pre-auth info');
+
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(2);
+
+      // Regular user logs in - triggers discard
+      debugAccessService.setDebugAccess(false);
+
+      // Buffer should be cleared but nothing logged
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(debugAccessService.getBufferSize()).toBe(0);
+    });
+
+    it('buffers logs with namespace information', () => {
+      const testLogger = new Logger('Auth');
+      testLogger.debug('Pre-auth debug');
+
+      expect(debugAccessService.getBufferSize()).toBe(1);
+
+      // When flushed by admin, namespace should be included
+      debugAccessService.setDebugAccess(true);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      // Check that namespace is in the output
+      const logOutput = consoleLogSpy.mock.calls.find(
+        call => typeof call[0] === 'string' && call[0].includes('Auth')
+      );
+      expect(logOutput).toBeDefined();
     });
   });
 
@@ -201,8 +324,15 @@ describe('Logger', () => {
       expect(logger).toBeInstanceOf(Logger);
     });
 
-    it('singleton works like a regular logger', () => {
-      vi.stubEnv('DEV', true);
+    it('singleton works with local developer mode', () => {
+      vi.stubEnv('VITE_DEBUG_MODE', 'true');
+      logger.info('Test from singleton');
+      expect(consoleLogSpy).toHaveBeenCalled();
+      expect(consoleLogSpy.mock.calls[0][0]).toContain('INFO');
+    });
+
+    it('singleton works with role-based access', () => {
+      debugAccessService.setDebugAccess(true);
       logger.info('Test from singleton');
       expect(consoleLogSpy).toHaveBeenCalled();
       expect(consoleLogSpy.mock.calls[0][0]).toContain('INFO');
@@ -211,7 +341,7 @@ describe('Logger', () => {
 
   describe('console method selection', () => {
     beforeEach(() => {
-      vi.stubEnv('DEV', true);
+      vi.stubEnv('VITE_DEBUG_MODE', 'true');
     });
 
     it('uses console.log for DEBUG', () => {
@@ -249,7 +379,7 @@ describe('Logger', () => {
 
   describe('edge cases', () => {
     beforeEach(() => {
-      vi.stubEnv('DEV', true);
+      vi.stubEnv('VITE_DEBUG_MODE', 'true');
     });
 
     it('handles empty message', () => {
@@ -286,6 +416,20 @@ describe('Logger', () => {
       };
       testLogger.info('Complex context', context);
       expect(consoleLogSpy.mock.calls[1][1]).toEqual(context);
+    });
+
+    it('handles Error objects in context', () => {
+      const testLogger = new Logger();
+      const error = new Error('Test error');
+      testLogger.error('Error occurred', { error });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      // Error should be serialized - context is logged via console.log when debug access is available
+      // consoleLogSpy call 0 is "Context:", context
+      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
+      expect(consoleLogSpy.mock.calls[0][0]).toBe('Context:');
+      const contextArg = consoleLogSpy.mock.calls[0][1] as { error: { message: string; name: string } };
+      expect(contextArg.error).toHaveProperty('message', 'Test error');
+      expect(contextArg.error).toHaveProperty('name', 'Error');
     });
   });
 });

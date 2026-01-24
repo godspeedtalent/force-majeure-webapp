@@ -215,7 +215,8 @@
     "privateGuests": "私人宾客",
     "more": "更多",
     "othersCount": "+ {{count}} 位其他宾客",
-    "pageViews": "{{count}} 次页面浏览"
+    "pageViews": "{{count}} 次页面浏览",
+    "privacyFootnote": "不想出现在此列表中？在以下位置将您的个人资料设为私密"
   },
   "contextMenu": {
     "viewProfile": "查看资料"
@@ -316,7 +317,9 @@
     "soundcloud": "SoundCloud",
     "submittedOn": "提交于",
     "actions": "操作",
-    "tags": "标签"
+    "tags": "标签",
+    "requestedBy": "请求者",
+    "whatWillHappen": "将会发生什么"
   },
   "entities": {
     "venue": "场地",
@@ -3440,6 +3443,53 @@
     "clearAll": "清除全部",
     "showingLogs": "显示 {{showing}} / {{total}} 条日志"
   },
+  "resendDashboard": {
+    "title": "邮件仪表板",
+    "description": "监控 Resend 的邮件投递状态和分析数据",
+    "stats": {
+      "totalEmails": "邮件总数",
+      "delivered": "已投递",
+      "bounced": "已退回",
+      "opened": "已打开",
+      "clicked": "已点击",
+      "complained": "已投诉",
+      "pending": "待处理",
+      "deliveryRate": "投递率"
+    },
+    "domains": {
+      "title": "已配置的域名",
+      "noDomainsFound": "未配置域名",
+      "addDomainHint": "在 Resend 仪表板中添加域名以开始使用",
+      "status": {
+        "verified": "已验证",
+        "pending": "待验证",
+        "failed": "验证失败",
+        "notStarted": "未开始",
+        "temporaryFailure": "临时失败"
+      }
+    },
+    "emails": {
+      "title": "最近的邮件",
+      "noEmailsFound": "未找到邮件",
+      "sendFirstEmail": "发送您的第一封邮件以在此处查看",
+      "showing": "显示 {{count}} 封邮件",
+      "columns": {
+        "recipient": "收件人",
+        "subject": "主题",
+        "status": "状态",
+        "sentAt": "发送时间"
+      },
+      "status": {
+        "sent": "已发送",
+        "delivered": "已投递",
+        "bounced": "已退回",
+        "opened": "已打开",
+        "clicked": "已点击",
+        "complained": "已投诉",
+        "deliveryDelayed": "延迟中"
+      }
+    }
+  },
   "statisticsPage": {
     "title": "统计数据",
     "description": "应用程序指标和分析",
@@ -3484,6 +3534,8 @@
     "ticketFlowTestsDescription": "完整的门票流程冒烟测试套件，包括队列管理、选择、支付、超时和交付",
     "orderCsvImport": "订单 CSV 导入",
     "orderCsvImportDescription": "从 CSV 文件导入历史订单，自动通过电子邮件链接到现有用户，并创建订单、门票和订单项记录",
+    "resendDashboard": "Resend 仪表板",
+    "resendDashboardDescription": "监控 Resend 的邮件投递状态和分析数据",
     "categoryDatabase": "数据库",
     "categoryTesting": "测试",
     "categoryDocumentation": "文档",

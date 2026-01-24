@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Users, Heart, Sparkles, UserX, Eye, Search, X } from 'lucide-react';
 import {
   Dialog,
@@ -10,6 +11,7 @@ import {
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmPortalTooltip } from '@/components/common/feedback/FmPortalTooltip';
 import { useAttendeeList, Attendee } from '../hooks/useAttendeeList';
+import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn } from '@/shared';
 
 interface AttendeeModalProps {
@@ -200,7 +202,11 @@ export function AttendeeModal({
   eventStatus,
 }: AttendeeModalProps) {
   const { t } = useTranslation('common');
+  const { user, profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Check if the current user is authenticated and has a public profile
+  const isPublicUser = user && profile?.guest_list_visible !== false;
 
   const {
     goingAttendees,
@@ -367,6 +373,23 @@ export function AttendeeModal({
                 </p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Privacy footnote for public authenticated users */}
+        {isPublicUser && (
+          <div className='flex-shrink-0 px-[20px] lg:px-[40px] py-[15px] border-t border-white/5'>
+            <p className='text-xs text-muted-foreground/60 text-center'>
+              {t('guestList.privacyFootnote')}{' '}
+              <Link
+                to={`/users/${user.id}/edit`}
+                state={{ activeTab: 'account' }}
+                className='text-fm-gold/70 hover:text-fm-gold underline underline-offset-2 transition-colors'
+                onClick={() => onOpenChange(false)}
+              >
+                {t('nav.accountSettings')}
+              </Link>
+            </p>
           </div>
         )}
       </DialogContent>

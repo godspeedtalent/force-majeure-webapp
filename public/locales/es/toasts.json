@@ -38,7 +38,11 @@
     "emailVerificationSent": "Correo de verificación enviado",
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
     "loginRequired": "Debes iniciar sesión para realizar esta acción",
-    "unexpectedError": "Ocurrió un error inesperado"
+    "unexpectedError": "Ocurrió un error inesperado",
+    "signUpSuccessDescription": "Si no lo ves, revisa tu carpeta de spam.",
+    "authenticationSuccessful": "Autenticación exitosa",
+    "authSuccess": "¡Sesión iniciada exitosamente!",
+    "accountCreatedSuccessfully": "¡Cuenta creada exitosamente!"
   },
   "profile": {
     "updateSuccess": "Perfil actualizado exitosamente",
@@ -121,7 +125,7 @@
     "artistUpdateFailedDescription": "No se pudieron guardar los cambios de artistas",
     "rsvpSettingsUpdated": "Configuración de RSVP actualizada",
     "rsvpSettingsUpdateFailed": "Error al actualizar configuración de RSVP",
-    "rsvpConfirmed": "¡Estás en la lista para {{eventTitle}}! Revisa tu correo para tu entrada.",
+    "rsvpConfirmed": "¡Estás en la lista para {{eventTitle}}! Revisa tu cartera para tu entrada.",
     "rsvpCancelled": "Tu RSVP para {{eventTitle}} ha sido cancelado.",
     "rsvpAtCapacity": "Este evento ha alcanzado su capacidad. Puedes unirte a la lista de espera.",
     "rsvpFailed": "Error al confirmar RSVP. Por favor, inténtalo de nuevo.",
@@ -269,11 +273,6 @@
     "requestApproveFailed": "Error al aprobar solicitud",
     "requestDenied": "Solicitud denegada",
     "requestDenyFailed": "Error al denegar solicitud"
-  },
-  "auth": {
-    "authenticationSuccessful": "Autenticación exitosa",
-    "authSuccess": "¡Sesión iniciada exitosamente!",
-    "accountCreatedSuccessfully": "¡Cuenta creada exitosamente!"
   },
   "share": {
     "copyFailed": "Error al copiar enlace"

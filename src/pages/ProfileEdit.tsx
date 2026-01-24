@@ -20,7 +20,7 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection } from '@/pages/profile/sections';
+import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection, PrivacySettingsSection } from '@/pages/profile/sections';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
@@ -572,6 +572,9 @@ const ProfileEdit = () => {
 
             {/* Notification Settings */}
             <NotificationSettingsSection disabled={!user.email_confirmed_at} />
+
+            {/* Privacy Settings */}
+            <PrivacySettingsSection disabled={!user.email_confirmed_at} />
 
             {/* Preferences Section */}
             <FmFormSection

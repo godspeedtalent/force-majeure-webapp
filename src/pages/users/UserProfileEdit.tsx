@@ -21,7 +21,7 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection } from '@/pages/profile/sections';
+import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection, PrivacySettingsSection } from '@/pages/profile/sections';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
@@ -392,6 +392,7 @@ const UserProfileEdit = () => {
       defaultOpen={true}
       showBackButton
       onBack={() => navigate(`/users/${id}`)}
+      contentWidth="READABLE"
       backButtonLabel={t('profile.title')}
       backButtonActions={
         <FmCommonButton
@@ -672,6 +673,9 @@ const UserProfileEdit = () => {
 
             {/* Notification Settings */}
             <NotificationSettingsSection disabled={!emailConfirmed} />
+
+            {/* Privacy Settings */}
+            <PrivacySettingsSection disabled={!emailConfirmed} />
 
             {/* Preferences Section */}
             <FmFormSection

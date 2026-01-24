@@ -19,15 +19,32 @@ function getErrorMessage(error: unknown, fallback = 'An unexpected error occurre
 
   // Handle standard Error objects
   if (error instanceof Error) {
-    return error.message || fallback;
+    // Check for specific error types that indicate server issues
+    if (error.name === 'AuthRetryableFetchError') {
+      // This typically means a timeout or network issue with Supabase
+      return 'Server connection timed out. Please try again in a moment.';
+    }
+
+    // Check for empty or useless error messages
+    const message = error.message;
+    if (!message || message === '{}' || message === '""' || message === 'null') {
+      return fallback;
+    }
+
+    return message;
   }
 
   // Handle Supabase AuthError format
   if (typeof error === 'object' && error !== null) {
     const err = error as Record<string, unknown>;
 
+    // Check for specific error names that indicate server issues
+    if (err.name === 'AuthRetryableFetchError') {
+      return 'Server connection timed out. Please try again in a moment.';
+    }
+
     // Check for message property (most common)
-    if (typeof err.message === 'string' && err.message) {
+    if (typeof err.message === 'string' && err.message && err.message !== '{}') {
       return err.message;
     }
 
@@ -49,7 +66,7 @@ function getErrorMessage(error: unknown, fallback = 'An unexpected error occurre
   }
 
   // Handle string errors
-  if (typeof error === 'string' && error) {
+  if (typeof error === 'string' && error && error !== '{}') {
     return error;
   }
 
@@ -75,6 +92,7 @@ interface Profile {
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
   preferred_locale?: string | null;
+  guest_list_visible?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notification_settings?: any;
   created_at: string;
