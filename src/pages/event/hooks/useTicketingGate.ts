@@ -32,9 +32,19 @@ interface UseTicketingGateOptions {
   useRealtime?: boolean;
 }
 
+interface SessionResponse {
+  success: boolean;
+  canAccess?: boolean;
+  queuePosition?: number | null;
+  waitingCount?: number;
+  activeCount?: number;
+  sessionStatus?: 'active' | 'waiting' | 'completed' | null;
+  error?: string;
+}
+
 /**
  * Hook to manage ticketing gate/queue system for events
- * Limits the number of concurrent users who can access ticketing for an event
+ * Uses a secure edge function to manage sessions (prevents queue manipulation)
  */
 export const useTicketingGate = (
   eventId: string,
@@ -42,7 +52,6 @@ export const useTicketingGate = (
 ) => {
   const {
     maxConcurrent,
-    sessionTimeoutMinutes = 30,
     onQueueEvent,
     useRealtime = true,
   } = options;
@@ -70,42 +79,52 @@ export const useTicketingGate = (
   }, []);
 
   /**
+   * Call the ticketing session edge function
+   */
+  const callSessionApi = useCallback(async (
+    action: 'enter' | 'exit' | 'status' | 'cleanup'
+  ): Promise<SessionResponse | null> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('ticketing-session', {
+        body: {
+          action,
+          eventId,
+          sessionId: getSessionId(),
+          maxConcurrent,
+        },
+      });
+
+      if (error) {
+        logger.error('Ticketing session API error', { error, action, eventId });
+        return null;
+      }
+
+      return data as SessionResponse;
+    } catch (error) {
+      logger.error('Failed to call ticketing session API', { error, action, eventId });
+      return null;
+    }
+  }, [eventId, getSessionId, maxConcurrent]);
+
+  /**
    * Check current gate status
    */
   const checkGateStatus = useCallback(async () => {
     if (!eventId) return;
 
     try {
-      const sessionId = getSessionId();
+      const response = await callSessionApi('status');
+      
+      if (!response || !response.success) {
+        setState(prev => ({ ...prev, isChecking: false }));
+        return;
+      }
 
-      // Get current user's session if it exists
-      const { data: userSession } = await supabase
-        .from('ticketing_sessions')
-        .select('*')
-        .eq('event_id', eventId)
-        .eq('user_session_id', sessionId)
-        .in('status', ['active', 'waiting'])
-        .single();
-
-      // Count active sessions
-      const { count: activeCount } = await supabase
-        .from('ticketing_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', eventId)
-        .eq('status', 'active');
-
-      // Count waiting sessions
-      const { count: waitingCount } = await supabase
-        .from('ticketing_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', eventId)
-        .eq('status', 'waiting');
-
-      const currentActiveCount = activeCount ?? 0;
-      const currentWaitingCount = waitingCount ?? 0;
+      const currentActiveCount = response.activeCount ?? 0;
+      const currentWaitingCount = response.waitingCount ?? 0;
 
       // If user has an active session, they can access
-      if (userSession?.status === 'active') {
+      if (response.canAccess) {
         // Check if promoted from waiting
         if (previousPositionRef.current !== null && previousPositionRef.current > 0) {
           onQueueEvent?.({
@@ -130,16 +149,8 @@ export const useTicketingGate = (
       }
 
       // If user is waiting, calculate their position
-      if (userSession?.status === 'waiting') {
-        // Get all waiting sessions before this one
-        const { count: positionCount } = await supabase
-          .from('ticketing_sessions')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_id', eventId)
-          .eq('status', 'waiting')
-          .lt('created_at', userSession.created_at);
-
-        const newPosition = (positionCount ?? 0) + 1;
+      if (response.sessionStatus === 'waiting' && response.queuePosition != null) {
+        const newPosition = response.queuePosition;
 
         // Notify on position changes
         if (
@@ -180,8 +191,8 @@ export const useTicketingGate = (
       setState({
         canAccess: false,
         queuePosition: null,
-        waitingCount: currentWaitingCount,
-        activeCount: currentActiveCount,
+        waitingCount: currentWaitingCount ?? 0,
+        activeCount: currentActiveCount ?? 0,
         isChecking: false,
         estimatedWaitMinutes: 0,
       });
@@ -189,7 +200,7 @@ export const useTicketingGate = (
       logger.error('Failed to check gate status', { error, eventId });
       setState(prev => ({ ...prev, isChecking: false }));
     }
-  }, [eventId, getSessionId, onQueueEvent, maxConcurrent]);
+  }, [eventId, callSessionApi, onQueueEvent, maxConcurrent]);
 
   /**
    * Attempt to enter the ticketing gate
@@ -199,89 +210,21 @@ export const useTicketingGate = (
     if (!eventId) return false;
 
     try {
-      const sessionId = getSessionId();
-
-      // Check if user already has a session
-      const { data: existingSession } = await supabase
-        .from('ticketing_sessions')
-        .select('*')
-        .eq('event_id', eventId)
-        .eq('user_session_id', sessionId)
-        .in('status', ['active', 'waiting'])
-        .single();
-
-      if (existingSession) {
-        // Activate if already active
-        if (existingSession.status === 'active') {
-          await checkGateStatus();
-          return true;
-        }
-
-        // Try to promote from waiting to active
-        const { count: activeCount } = await supabase
-          .from('ticketing_sessions')
-          .select('*', { count: 'exact', head: true })
-          .eq('event_id', eventId)
-          .eq('status', 'active');
-
-        if ((activeCount ?? 0) < maxConcurrent) {
-          // Space available, promote to active
-          await supabase
-            .from('ticketing_sessions')
-            .update({
-              status: 'active',
-              entered_at: new Date().toISOString(),
-            })
-            .eq('id', existingSession.id);
-
-          await checkGateStatus();
-          return true;
-        }
-
-        // Still waiting
-        await checkGateStatus();
-        return false;
-      }
-
-      // Create new session
-      // First check if there's space
-      const { count: activeCount } = await supabase
-        .from('ticketing_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('event_id', eventId)
-        .eq('status', 'active');
-
-      const status = (activeCount ?? 0) < maxConcurrent ? 'active' : 'waiting';
-      const enteredAt = status === 'active' ? new Date().toISOString() : null;
-
-      const { error: insertError } = await supabase
-        .from('ticketing_sessions')
-        .insert({
-          event_id: eventId,
-          user_session_id: sessionId,
-          status,
-          entered_at: enteredAt,
-        });
-
-      if (insertError) {
-        logger.error('Failed to create ticketing session', {
-          error: insertError,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code,
-        });
+      const response = await callSessionApi('enter');
+      
+      if (!response || !response.success) {
         setState(prev => ({ ...prev, isChecking: false }));
         return false;
       }
 
       await checkGateStatus();
-      return status === 'active';
+      return response.canAccess ?? false;
     } catch (error) {
       logger.error('Failed to enter gate', { error, eventId });
       setState(prev => ({ ...prev, isChecking: false }));
       return false;
     }
-  }, [eventId, maxConcurrent, getSessionId, checkGateStatus]);
+  }, [eventId, callSessionApi, checkGateStatus]);
 
   /**
    * Exit the ticketing gate (cleanup)
@@ -290,40 +233,12 @@ export const useTicketingGate = (
     if (!eventId) return;
 
     try {
-      const sessionId = getSessionId();
-
-      // Mark session as completed
-      await supabase
-        .from('ticketing_sessions')
-        .update({ status: 'completed' })
-        .eq('event_id', eventId)
-        .eq('user_session_id', sessionId);
-
-      // Try to promote the next waiting user
-      const { data: nextWaiting } = await supabase
-        .from('ticketing_sessions')
-        .select('*')
-        .eq('event_id', eventId)
-        .eq('status', 'waiting')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .single();
-
-      if (nextWaiting) {
-        await supabase
-          .from('ticketing_sessions')
-          .update({
-            status: 'active',
-            entered_at: new Date().toISOString(),
-          })
-          .eq('id', nextWaiting.id);
-      }
-
-      logger.info('Exited ticketing gate', { eventId, sessionId });
+      await callSessionApi('exit');
+      logger.info('Exited ticketing gate', { eventId, sessionId: getSessionId() });
     } catch (error) {
       logger.error('Failed to exit gate', { error, eventId });
     }
-  }, [eventId, getSessionId]);
+  }, [eventId, callSessionApi, getSessionId]);
 
   // Set up real-time subscription or polling for status updates
   useEffect(() => {
@@ -395,22 +310,13 @@ export const useTicketingGate = (
     return undefined;
   }, [state.canAccess, state.isChecking, eventId, checkGateStatus, useRealtime]);
 
-  // Clean up sessions older than configured timeout (background cleanup)
+  // Clean up old sessions via edge function (background cleanup)
   useEffect(() => {
     if (!eventId) return;
 
     const cleanupOldSessions = async () => {
       try {
-        const timeoutAgo = new Date(
-          Date.now() - sessionTimeoutMinutes * 60 * 1000
-        ).toISOString();
-
-        await supabase
-          .from('ticketing_sessions')
-          .update({ status: 'completed' })
-          .eq('event_id', eventId)
-          .in('status', ['active', 'waiting'])
-          .lt('created_at', timeoutAgo);
+        await callSessionApi('cleanup');
       } catch (error) {
         logger.error('Failed to cleanup old sessions', { error });
       }
@@ -423,22 +329,24 @@ export const useTicketingGate = (
     const cleanupInterval = setInterval(cleanupOldSessions, 5 * 60 * 1000);
 
     return () => clearInterval(cleanupInterval);
-  }, [eventId, sessionTimeoutMinutes]);
+  }, [eventId, callSessionApi]);
 
   // Auto-exit gate when browser tab closes or navigates away
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // Call exitGate synchronously during unload
+      // Use sendBeacon for reliable unload handling
       const sessionId = sessionIdRef.current;
       if (sessionId && eventId) {
-        // Try to mark session as completed
-        // Note: This may not always succeed due to browser unload timing
-        // The cleanup function will handle orphaned sessions
-        void supabase
-          .from('ticketing_sessions')
-          .update({ status: 'completed' })
-          .eq('event_id', eventId)
-          .eq('user_session_id', sessionId);
+        // Note: sendBeacon doesn't support custom headers, 
+        // but the edge function doesn't require auth
+        const url = `https://orgxcrnnecblhuxjfruy.supabase.co/functions/v1/ticketing-session`;
+        const body = JSON.stringify({
+          action: 'exit',
+          eventId,
+          sessionId,
+        });
+        
+        navigator.sendBeacon(url, body);
       }
     };
 
