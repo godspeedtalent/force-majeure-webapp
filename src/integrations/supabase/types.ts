@@ -3051,6 +3051,50 @@ export type Database = {
           },
         ]
       }
+      pending_order_links: {
+        Row: {
+          created_at: string
+          email: string
+          error_message: string | null
+          id: string
+          orders_linked: number | null
+          processed_at: string | null
+          status: string
+          tickets_updated: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          error_message?: string | null
+          id?: string
+          orders_linked?: number | null
+          processed_at?: string | null
+          status?: string
+          tickets_updated?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          error_message?: string | null
+          id?: string
+          orders_linked?: number | null
+          processed_at?: string | null
+          status?: string
+          tickets_updated?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_order_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users_complete"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       process_items: {
         Row: {
           created_at: string
@@ -5666,6 +5710,7 @@ export type Database = {
         Args: { p_submission_id: string }
         Returns: boolean
       }
+      cleanup_old_order_links: { Args: never; Returns: number }
       cleanup_old_ticketing_sessions: { Args: never; Returns: undefined }
       convert_hold_to_sale: { Args: { p_hold_id: string }; Returns: boolean }
       create_artist_gallery: {
@@ -6144,6 +6189,11 @@ export type Database = {
         }
         Returns: string
       }
+      process_all_pending_order_links: {
+        Args: { batch_size?: number }
+        Returns: Json
+      }
+      process_pending_order_link: { Args: { link_id: string }; Returns: Json }
       promo_code_applies_to_tier: {
         Args: { p_promo_code_id: string; p_ticket_tier_id: string }
         Returns: boolean
@@ -6318,6 +6368,10 @@ export type Database = {
           p_zip_code?: string
         }
         Returns: string
+      }
+      user_has_reviewed_submission: {
+        Args: { p_submission_id: string; p_user_id: string }
+        Returns: boolean
       }
       verify_rsvp_signature: {
         Args: { p_event_id: string; p_rsvp_id: string; p_signature: string }
