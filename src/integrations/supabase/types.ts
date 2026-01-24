@@ -62,13 +62,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "activity_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "activity_logs_user_id_profiles_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -292,13 +285,6 @@ export type Database = {
             referencedRelation: "ticket_tiers"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "analytics_funnel_events_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       analytics_funnel_events_archive: {
@@ -422,13 +408,6 @@ export type Database = {
             columns: ["session_ref"]
             isOneToOne: false
             referencedRelation: "analytics_sessions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "analytics_page_views_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -611,15 +590,7 @@ export type Database = {
           utm_source?: string | null
           utm_term?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "analytics_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       analytics_sessions_archive: {
         Row: {
@@ -964,20 +935,6 @@ export type Database = {
             referencedRelation: "cities"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "artist_registrations_reviewed_by_fkey"
-            columns: ["reviewed_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "artist_registrations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       artists: {
@@ -1062,13 +1019,6 @@ export type Database = {
             referencedRelation: "media_galleries"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "artists_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       chart_labels: {
@@ -1105,15 +1055,7 @@ export type Database = {
           point_id?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "chart_labels_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       cities: {
         Row: {
@@ -1191,15 +1133,7 @@ export type Database = {
           table_name?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "column_customizations_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       comp_tickets: {
         Row: {
@@ -1258,13 +1192,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "comp_tickets_claimed_by_user_id_fkey"
-            columns: ["claimed_by_user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "comp_tickets_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
@@ -1272,24 +1199,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "comp_tickets_issued_by_user_id_fkey"
-            columns: ["issued_by_user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "comp_tickets_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comp_tickets_recipient_user_id_fkey"
-            columns: ["recipient_user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
           {
@@ -1351,22 +1264,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "contact_submissions_replied_by_fkey"
-            columns: ["replied_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contact_submissions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       datagrid_configs: {
         Row: {
@@ -1393,15 +1291,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "datagrid_configs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       dev_bookmarks: {
         Row: {
@@ -1434,15 +1324,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "dev_bookmarks_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       dev_notes: {
         Row: {
@@ -1484,15 +1366,7 @@ export type Database = {
           type?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "dev_notes_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       entity_fee_items: {
         Row: {
@@ -1630,15 +1504,7 @@ export type Database = {
           user_agent?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "error_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       error_logs_archive: {
         Row: {
@@ -1805,13 +1671,6 @@ export type Database = {
             referencedRelation: "events"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "event_images_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       event_partners: {
@@ -1935,13 +1794,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "event_rsvps_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "event_rsvps_user_id_profiles_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -2000,13 +1852,6 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "event_staff_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       event_views: {
@@ -2046,13 +1891,6 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "event_views_viewer_id_fkey"
-            columns: ["viewer_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -2265,13 +2103,6 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "exclusive_content_grants_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -2913,13 +2744,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "orders_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "orders_user_id_profiles_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -2966,13 +2790,6 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "organization_staff_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -3041,15 +2858,7 @@ export type Database = {
           youtube_url?: string | null
           zip_code?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "organizations_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       pending_order_links: {
         Row: {
@@ -3085,15 +2894,7 @@ export type Database = {
           tickets_updated?: number | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "pending_order_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       process_items: {
         Row: {
@@ -3206,22 +3007,7 @@ export type Database = {
           total_items?: number | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "processes_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "processes_rolled_back_by_fkey"
-            columns: ["rolled_back_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       products: {
         Row: {
@@ -3372,13 +3158,6 @@ export type Database = {
           username?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "profiles_organization_id_fkey"
             columns: ["organization_id"]
@@ -3816,13 +3595,6 @@ export type Database = {
             referencedRelation: "event_rsvps"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "rsvp_scan_events_scanned_by_fkey"
-            columns: ["scanned_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       scavenger_claims: {
@@ -3850,13 +3622,6 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "scavenger_locations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "scavenger_claims_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -4236,15 +4001,7 @@ export type Database = {
           updated_at?: string | null
           updated_by?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "table_metadata_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tags: {
         Row: {
@@ -4705,13 +4462,6 @@ export type Database = {
             referencedRelation: "ticket_tiers"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "ticket_holds_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       ticket_scan_events: {
@@ -4751,13 +4501,6 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ticket_scan_events_scanned_by_fkey"
-            columns: ["scanned_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
           {
@@ -5254,13 +4997,6 @@ export type Database = {
             referencedRelation: "events"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_event_interests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
         ]
       }
       user_ignored_submissions: {
@@ -5343,22 +5079,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_requests_resolved_by_fkey"
-            columns: ["resolved_by"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -5385,13 +5106,6 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users_complete"
             referencedColumns: ["id"]
           },
         ]
@@ -5645,15 +5359,7 @@ export type Database = {
           id?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "users_complete"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users_complete: {
         Row: {
@@ -5664,24 +5370,17 @@ export type Database = {
           email_confirmed_at: string | null
           full_name: string | null
           id: string | null
-          is_verified: boolean | null
           last_sign_in_at: string | null
           organization_id: string | null
           organization_name: string | null
           profile_created_at: string | null
           profile_updated_at: string | null
           roles: Json | null
+          spotify_connected: boolean | null
+          spotify_token_expires_at: string | null
           user_id: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
@@ -5791,6 +5490,8 @@ export type Database = {
           profile_created_at: string
           profile_updated_at: string
           roles: Json
+          spotify_connected: boolean
+          spotify_token_expires_at: string
           user_id: string
         }[]
       }
