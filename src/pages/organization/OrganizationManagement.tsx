@@ -25,6 +25,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { OrganizationSocialTab } from './components/manage/OrganizationSocialTab';
 import { OrganizationEventsTab } from './components/manage/OrganizationEventsTab';
@@ -372,7 +373,7 @@ export default function OrganizationManagement() {
               )}
               {isImageUploading && (
                 <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
-                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                 </div>
               )}
             </div>

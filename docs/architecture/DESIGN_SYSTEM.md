@@ -384,6 +384,63 @@ All reusable components should be in `/src/components/common/` or similar `FmCom
 5. **FmDateBox** - Date picker component
 6. **FmDataGrid** - Data table/grid component
 7. **FmCollapsibleGroupHeader** - Primary toggleable section header
+8. **FmGoldenGridLoader** - Primary loading spinner (square grid animation)
+
+#### FmGoldenGridLoader (Primary Loading Spinner)
+
+**This is the PRIMARY loading animation for Force Majeure.** A mesmerizing square grid that pulses in a spiral pattern with the fm-gold accent color.
+
+**Location:** `/src/components/common/feedback/FmGoldenGridLoader.tsx`
+
+**Features:**
+
+- Dynamic grid sizing based on size prop (sm: 2×2, md: 3×3, lg: 4×4, xl: 5×5)
+- Spiral activation pattern from center outward
+- Gold glow effect on center cell
+- Slow rotation for hypnotic effect
+- Respects `prefers-reduced-motion` for accessibility
+
+**Usage:**
+
+```tsx
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
+
+// Basic usage
+<FmGoldenGridLoader />
+
+// With size variants
+<FmGoldenGridLoader size="sm" />  // 2×2 grid, 16px
+<FmGoldenGridLoader size="md" />  // 3×3 grid, 24px (default)
+<FmGoldenGridLoader size="lg" />  // 4×4 grid, 40px
+<FmGoldenGridLoader size="xl" />  // 5×5 grid, 64px
+
+// In a button loading state
+{isLoading && <FmGoldenGridLoader size="sm" className="mr-2" />}
+
+// Full-page loading
+<div className="flex flex-col items-center justify-center min-h-screen gap-4">
+  <FmGoldenGridLoader size="lg" />
+  <p className="text-muted-foreground">Loading...</p>
+</div>
+```
+
+**Props:**
+
+| Prop        | Type                           | Default | Description                |
+| ----------- | ------------------------------ | ------- | -------------------------- |
+| `size`      | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'`  | Size and grid dimensions   |
+| `className` | `string`                       | -       | Additional CSS classes     |
+
+**Size Reference:**
+
+| Size | Dimensions | Grid  | Use Case                    |
+| ---- | ---------- | ----- | --------------------------- |
+| sm   | 16×16px    | 2×2   | Inline, buttons             |
+| md   | 24×24px    | 3×3   | Default, cards, modals      |
+| lg   | 40×40px    | 4×4   | Overlays, page sections     |
+| xl   | 64×64px    | 5×5   | Full-page loading states    |
+
+**Note:** The deprecated `FmCommonLoadingSpinner` now wraps `FmGoldenGridLoader` for backwards compatibility. Migrate to using `FmGoldenGridLoader` directly.
 
 #### FmCollapsibleGroupHeader (Primary Toggleable Header)
 

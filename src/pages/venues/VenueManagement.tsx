@@ -13,6 +13,7 @@ import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { VenueGallerySection } from '@/components/venue/VenueGallerySection';
 import { VenueSocialTab } from './components/manage';
 import { toast } from 'sonner';
@@ -357,7 +358,7 @@ export default function VenueManagement() {
               )}
               {isLogoUploading && (
                 <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
-                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                 </div>
               )}
             </div>
@@ -467,7 +468,7 @@ export default function VenueManagement() {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <div className='animate-spin rounded-full h-8 w-8 border-[3px] border-fm-gold border-b-transparent' />
+        <FmGoldenGridLoader size="md" />
       </div>
     );
   }

@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { toast } from 'sonner';
 import { supabase } from '@/shared';
 import { cn } from '@/shared';
@@ -290,7 +291,7 @@ export function FmDataGridImageUploadModal({
           >
             {isUploading ? (
               <div className='flex items-center gap-2 whitespace-nowrap'>
-                <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                <FmGoldenGridLoader size="sm" />
                 <span>{t('imageUpload.uploading')}</span>
               </div>
             ) : (

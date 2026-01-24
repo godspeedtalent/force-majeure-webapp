@@ -21,4 +21,4 @@ export {
   useUpdateConfig,
 } from './useScreeningMutations';
 
-export { useReviewTimer } from './useReviewTimer';
+export { useReviewTimer, type PendingTimerRequest } from './useReviewTimer';

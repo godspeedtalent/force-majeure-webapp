@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { imageUploadService } from '@/shared';
 import { toast } from 'sonner';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -217,7 +218,7 @@ export const FmFlexibleImageUpload = ({
               {/* Upload progress overlay */}
               {isUploading && (
                 <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm'>
-                  <div className='mb-3 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="lg" className="mb-3" />
                   <p className='text-sm font-medium text-white'>
                     {uploadState === 'compressing'
                       ? t('upload.compressing')

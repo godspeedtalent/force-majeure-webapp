@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Users, Heart, Sparkles, UserX, Eye, Search, X } from 'lucide-react';
+import { Users, Heart, Sparkles, Eye, Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -69,7 +69,7 @@ function AttendeeAvatar({ attendee }: AttendeeAvatarProps) {
           )}
         >
           {isPrivate || isGuest ? (
-            // Private/guest users: show blurred avatar if available, otherwise UserX icon
+            // Private/guest users: show blurred avatar or blurred initials
             attendee.avatarUrl ? (
               <img
                 src={attendee.avatarUrl}
@@ -77,7 +77,7 @@ function AttendeeAvatar({ attendee }: AttendeeAvatarProps) {
                 className='h-full w-full object-cover blur-md opacity-50'
               />
             ) : (
-              <UserX className='h-4 w-4' />
+              <span className='blur-[3px] opacity-50'>{attendee.avatar}</span>
             )
           ) : attendee.avatarUrl ? (
             <img
@@ -94,8 +94,13 @@ function AttendeeAvatar({ attendee }: AttendeeAvatarProps) {
             </span>
           )}
         </div>
-        <span className='w-full truncate text-[10px] leading-tight text-muted-foreground/80'>
-          {isPrivate || isGuest ? t('guestList.privateUser') : attendee.name}
+        <span
+          className={cn(
+            'w-full truncate text-[10px] leading-tight text-muted-foreground/80',
+            (isPrivate || isGuest) && 'blur-[3px] opacity-60'
+          )}
+        >
+          {attendee.name}
         </span>
       </div>
     </FmPortalTooltip>
@@ -217,15 +222,15 @@ export function AttendeeModal({
     isLoading,
   } = useAttendeeList(eventId, eventStatus);
 
-  // Filter attendees by name - private users and guests are always shown
+  // Filter attendees by name - private users and guests are excluded when filtering
   const filterAttendees = useMemo(() => {
     return (attendees: Attendee[]) => {
       if (!searchQuery.trim()) return attendees;
 
       const query = searchQuery.toLowerCase().trim();
       return attendees.filter((attendee) => {
-        // Private users and guests are always shown regardless of filter
-        if (attendee.isPrivate || attendee.type === 'guest') return true;
+        // Private users and guests cannot be searched by name, so exclude them when filtering
+        if (attendee.isPrivate || attendee.type === 'guest') return false;
         // Filter public attendees by name
         return attendee.name.toLowerCase().includes(query);
       });
@@ -243,7 +248,9 @@ export function AttendeeModal({
   );
 
   // Calculate filtered counts (excluding guests which are shown separately)
-  const filteredGoingCount = filteredGoingAttendees.filter(a => a.type !== 'guest').length + guestCount;
+  // When searching, don't include guest count since guests can't be searched
+  const isSearching = searchQuery.trim().length > 0;
+  const filteredGoingCount = filteredGoingAttendees.filter(a => a.type !== 'guest').length + (isSearching ? 0 : guestCount);
   const filteredInterestedCount = filteredInterestedAttendees.filter(a => a.type !== 'guest').length;
 
   // Search input component to pass to section header
@@ -282,7 +289,7 @@ export function AttendeeModal({
         className={cn(
           'bg-black/80 backdrop-blur-xl border border-white/20',
           'p-0 overflow-hidden',
-          'w-full max-w-none lg:max-w-[65%]',
+          'w-[calc(100%-32px)] lg:w-[65%] lg:max-w-[65%]',
           'h-[85vh] max-h-[85vh]',
           'flex flex-col'
         )}
@@ -324,7 +331,7 @@ export function AttendeeModal({
                 <div className='pt-[15px]'>
                   <UnifiedAttendeeList
                     attendees={filteredGoingAttendees}
-                    guestCount={guestCount}
+                    guestCount={isSearching ? 0 : guestCount}
                   />
                 </div>
               </div>

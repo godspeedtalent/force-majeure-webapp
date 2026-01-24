@@ -467,7 +467,9 @@
       "messageLabel": "留言",
       "messagePlaceholder": "告诉我们您的想法...",
       "requiredFields": "请填写所有必填项",
-      "successMessage": "消息已发送！我们会尽快回复您。",
+      "successMessage": "消息已发送！",
+      "successDescription": "我们已收到您的留言，会尽快回复您。",
+      "sendAnother": "发送另一条消息",
       "errorMessage": "发送失败，请重试或直接发送邮件给我们。"
     }
   },

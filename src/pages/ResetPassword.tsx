@@ -7,6 +7,7 @@ import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayo
 import { ForceMajeureLogo } from '@/components/navigation/ForceMajeureLogo';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import {
   FmCommonCard,
   FmCommonCardContent,
@@ -160,7 +161,7 @@ const ResetPassword = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full'>
-          <div className='w-8 h-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
+          <FmGoldenGridLoader size="md" />
         </div>
       </ForceMajeureRootLayout>
     );

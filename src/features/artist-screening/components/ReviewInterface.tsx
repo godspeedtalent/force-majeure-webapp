@@ -13,7 +13,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft,
   Play,
   Star,
   User,
@@ -22,6 +21,10 @@ import {
   CheckCircle,
   XCircle,
   Music,
+  ArrowLeft,
+  MoreHorizontal,
+  EyeOff,
+  Trash,
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -30,7 +33,17 @@ import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonSlider } from '@/components/common/forms/FmCommonSlider';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Badge } from '@/components/common/shadcn/badge';
-import { cn, formatTimeDisplay, handleError } from '@/shared';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/common/shadcn/dropdown-menu';
+import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
+import { cn, handleError } from '@/shared';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared/auth/permissions';
 import { toast } from 'sonner';
 import {
   useSubmission,
@@ -38,7 +51,11 @@ import {
   useMakeDecision,
   useReviewTimer,
 } from '../hooks';
-import { ReviewTimer } from './ReviewTimer';
+import {
+  ignoreSubmission,
+  deleteSubmission,
+} from '../services/submissionService';
+import { ReviewTimer, TimerSwitchConfirm } from './ReviewTimer';
 import type { CreateReviewInput, MakeDecisionInput } from '../types';
 
 // ============================================================================
@@ -48,6 +65,9 @@ import type { CreateReviewInput, MakeDecisionInput } from '../types';
 export function ReviewInterface() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isAdmin, hasRole } = useUserPermissions();
+  const isDeveloper = hasRole(ROLES.DEVELOPER);
+  const canDelete = isAdmin() || isDeveloper;
 
   // Fetch submission details
   const {
@@ -61,9 +81,14 @@ export function ReviewInterface() {
     timerState,
     remainingSeconds,
     isTimerActive,
-    startTimer,
+    pendingRequest,
+    requestTimer,
+    confirmPendingTimer,
+    cancelPendingRequest,
     cancelTimer,
+    relaunchRecording,
     isTimerCompleted,
+    overrideTimer,
   } = useReviewTimer();
 
   // Mutations
@@ -91,15 +116,12 @@ export function ReviewInterface() {
   const handleStartReview = () => {
     if (!submission) return;
 
-    const success = startTimer(
+    const submissionTitle = `${submission.artists.name} - ${submission.artist_recordings.name}`;
+    requestTimer(
       submission.id,
+      submissionTitle,
       submission.artist_recordings.url
     );
-
-    if (!success) {
-      // Timer already active or other error
-      return;
-    }
   };
 
   // Handle review submission
@@ -156,6 +178,32 @@ export function ReviewInterface() {
     }
   };
 
+  // Handle ignore submission
+  const handleIgnore = async () => {
+    if (!submission) return;
+
+    try {
+      await ignoreSubmission(submission.id);
+      toast.success('Submission hidden from your feed');
+      navigate('/staff?tab=dash_overview');
+    } catch {
+      // Error handled by service
+    }
+  };
+
+  // Handle delete submission
+  const handleDelete = async () => {
+    if (!submission || !canDelete) return;
+
+    try {
+      await deleteSubmission(submission.id);
+      toast.success('Submission deleted');
+      navigate('/staff?tab=dash_overview');
+    } catch {
+      // Error handled by service
+    }
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -176,7 +224,6 @@ export function ReviewInterface() {
             Submission not found
           </p>
           <FmCommonButton variant="default" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
             Go Back
           </FmCommonButton>
         </div>
@@ -187,31 +234,68 @@ export function ReviewInterface() {
   return (
     <Layout>
       <div className="container mx-auto px-[10px] md:px-[20px] py-[20px] md:py-[40px] max-w-6xl">
-        {/* Header - Mobile stacks vertically */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[10px] mb-[20px] md:mb-[40px]">
+        {/* Header: Back Button + Actions */}
+        <div className="flex items-center justify-between gap-[10px] mb-[20px] md:mb-[40px]">
           <FmCommonButton
             variant="default"
-            onClick={() => navigate(-1)}
             size="sm"
-            className="w-fit"
+            onClick={() => navigate('/staff?tab=dash_overview')}
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            <span className="hidden sm:inline">Back to Queue</span>
-            <span className="sm:hidden">Back</span>
+            <ArrowLeft className="h-4 w-4 mr-[5px]" />
+            Back to Screenings
           </FmCommonButton>
 
-          <Badge
-            className={cn(
-              'rounded-none text-xs font-medium border w-fit',
-              submission.status === 'approved'
-                ? 'bg-green-500/20 text-green-400 border-green-500/40'
-                : submission.status === 'rejected'
-                ? 'bg-red-500/20 text-red-400 border-red-500/40'
-                : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40'
-            )}
-          >
-            {submission.status.toUpperCase()}
-          </Badge>
+          <div className="flex items-center gap-[10px]">
+            <Badge
+              className={cn(
+                'rounded-none text-xs font-medium border',
+                submission.status === 'approved'
+                  ? 'bg-green-500/20 text-green-400 border-green-500/40'
+                  : submission.status === 'rejected'
+                  ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                  : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40'
+              )}
+            >
+              {submission.status.toUpperCase()}
+            </Badge>
+
+            {/* Context Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <FmCommonIconButton
+                  variant="default"
+                  size="sm"
+                  icon={MoreHorizontal}
+                  tooltip="More actions"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="bg-black/90 backdrop-blur-md border-white/20"
+              >
+                <DropdownMenuItem
+                  onClick={handleIgnore}
+                  className="cursor-pointer hover:bg-white/10"
+                >
+                  <EyeOff className="h-4 w-4 mr-[10px]" />
+                  Ignore Submission
+                </DropdownMenuItem>
+
+                {canDelete && (
+                  <>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem
+                      onClick={handleDelete}
+                      className="cursor-pointer text-fm-danger hover:bg-fm-danger/20"
+                    >
+                      <Trash className="h-4 w-4 mr-[10px]" />
+                      Delete Submission
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-[20px] md:gap-[40px]">
@@ -261,16 +345,6 @@ export function ReviewInterface() {
                   <span className="uppercase">
                     {submission.artist_recordings.platform}
                   </span>
-                  {submission.artist_recordings.duration_seconds && (
-                    <>
-                      <span>•</span>
-                      <span>
-                        {formatTimeDisplay(
-                          submission.artist_recordings.duration_seconds
-                        )}
-                      </span>
-                    </>
-                  )}
                 </div>
               </div>
 
@@ -537,16 +611,29 @@ export function ReviewInterface() {
         {isTimerActive && timerState && (
           <ReviewTimer
             submissionId={timerState.submissionId}
-            submissionTitle={
-              submission.artists.name +
-              ' - ' +
-              submission.artist_recordings.name
-            }
+            submissionTitle={timerState.submissionTitle}
+            recordingUrl={timerState.recordingUrl}
             remainingSeconds={remainingSeconds}
+            isAdmin={isAdmin()}
             onReturnToSubmission={() => {
-              // Already on the review page
+              // Navigate to the submission being timed (may be different from current)
+              if (timerState.submissionId !== id) {
+                navigate(`/staff/screening/review/${timerState.submissionId}`);
+              }
             }}
+            onRelaunchRecording={relaunchRecording}
             onCancel={cancelTimer}
+            onOverrideTimer={overrideTimer}
+          />
+        )}
+
+        {/* Timer Switch Confirmation Modal */}
+        {pendingRequest && timerState && (
+          <TimerSwitchConfirm
+            currentTitle={timerState.submissionTitle}
+            newTitle={pendingRequest.submissionTitle}
+            onConfirm={confirmPendingTimer}
+            onCancel={cancelPendingRequest}
           />
         )}
       </div>

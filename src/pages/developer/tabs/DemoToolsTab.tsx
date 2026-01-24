@@ -16,6 +16,7 @@ import {
   ArrowRight,
   FlaskConical,
   ClipboardCheck,
+  Square,
 } from 'lucide-react';
 import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { formatHeader } from '@/shared';
@@ -56,6 +57,14 @@ export function DemoToolsTab() {
       path: '/developer/demo/event-checkout',
       icon: ShoppingCart,
       category: t('demoIndex.categoryEcommerce'),
+      status: 'Active',
+    },
+    {
+      title: t('demoIndex.squareSpinners'),
+      description: t('demoIndex.squareSpinnersDescription'),
+      path: '/developer/demo/square-spinners',
+      icon: Square,
+      category: t('demoIndex.categoryDesign'),
       status: 'Active',
     },
     {

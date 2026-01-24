@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Upload, X, ImageIcon } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { imageUploadService, cn } from '@/shared';
 import { toast } from 'sonner';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -200,7 +201,7 @@ export const FmImageUpload = ({
         >
           {uploading ? (
             <>
-              <div className='mb-4 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
+              <FmGoldenGridLoader size="lg" className="mb-4" />
               <p className='text-sm text-muted-foreground'>{t('upload.uploading')}</p>
             </>
           ) : (

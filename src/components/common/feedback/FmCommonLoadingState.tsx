@@ -6,6 +6,7 @@
  */
 
 import { cn } from '@/shared';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 interface FmCommonLoadingStateProps {
   /** Loading message */
@@ -18,10 +19,10 @@ interface FmCommonLoadingStateProps {
   className?: string;
 }
 
-const sizeMap = {
-  sm: 'w-4 h-4 border-2',
-  md: 'w-8 h-8 border-[3px]',
-  lg: 'w-12 h-12 border-4',
+const sizeMap: Record<'sm' | 'md' | 'lg', 'sm' | 'md' | 'lg'> = {
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
 };
 
 export const FmCommonLoadingState = ({
@@ -32,12 +33,7 @@ export const FmCommonLoadingState = ({
 }: FmCommonLoadingStateProps) => {
   const content = (
     <div className={cn('text-center', className)}>
-      <div
-        className={cn(
-          sizeMap[size],
-          'animate-spin rounded-full border-fm-gold border-b-transparent mx-auto mb-4'
-        )}
-      />
+      <FmGoldenGridLoader size={sizeMap[size]} className="mx-auto mb-4" />
       {message && <p className='text-sm text-muted-foreground'>{message}</p>}
     </div>
   );

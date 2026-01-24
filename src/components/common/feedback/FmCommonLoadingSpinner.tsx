@@ -1,27 +1,30 @@
-import { cn } from '@/shared';
+import { FmGoldenGridLoader } from './FmGoldenGridLoader';
 
 interface FmCommonLoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
+/**
+ * @deprecated Use FmGoldenGridLoader directly instead.
+ *
+ * This component now wraps FmGoldenGridLoader for backwards compatibility.
+ * Migrate to FmGoldenGridLoader which supports an additional 'xl' size.
+ *
+ * @example
+ * ```tsx
+ * // Old (deprecated)
+ * import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+ * <FmCommonLoadingSpinner size="md" />
+ *
+ * // New (preferred)
+ * import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
+ * <FmGoldenGridLoader size="md" />
+ * ```
+ */
 export function FmCommonLoadingSpinner({
   size = 'md',
   className,
 }: FmCommonLoadingSpinnerProps) {
-  const sizeClasses = {
-    sm: 'h-4 w-4 border-2',
-    md: 'h-6 w-6 border-[3px]',
-    lg: 'h-8 w-8 border-4',
-  };
-
-  return (
-    <div
-      className={cn(
-        'animate-spin rounded-full border-b-transparent border-fm-gold',
-        sizeClasses[size],
-        className
-      )}
-    />
-  );
+  return <FmGoldenGridLoader size={size} className={className} />;
 }

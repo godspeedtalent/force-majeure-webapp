@@ -22,6 +22,7 @@ const EventCheckout = lazy(() => import('./pages/demo/EventCheckout'));
 const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutConfirmation'));
 const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
 const StoryDesigner = lazy(() => import('./pages/demo/StoryDesigner'));
+const SquareSpinnersDemo = lazy(() => import('./pages/demo/SquareSpinnersDemo'));
 
 // Lazy load developer pages
 const DeveloperHome = lazy(() => import('./pages/developer/DeveloperHome'));
@@ -319,6 +320,16 @@ const AppRoutes = () => {
           <DemoProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
               <StoryDesigner />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
+      <Route
+        path='/developer/demo/square-spinners'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <SquareSpinnersDemo />
             </Suspense>
           </DemoProtectedRoute>
         }

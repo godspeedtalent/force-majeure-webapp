@@ -501,7 +501,9 @@
       "messageLabel": "Mensaje",
       "messagePlaceholder": "Cuéntanos lo que tienes en mente...",
       "requiredFields": "Por favor completa todos los campos requeridos",
-      "successMessage": "¡Mensaje enviado! Te responderemos pronto.",
+      "successMessage": "¡Mensaje enviado!",
+      "successDescription": "Hemos recibido tu mensaje y te responderemos lo antes posible.",
+      "sendAnother": "Enviar otro mensaje",
       "errorMessage": "Error al enviar mensaje. Por favor intenta de nuevo o envíanos un correo directamente."
     }
   },

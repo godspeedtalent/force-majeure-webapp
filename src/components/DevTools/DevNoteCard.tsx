@@ -1,15 +1,11 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical } from 'lucide-react';
+import { MoreVertical, Eye, CircleDot, Trash2, Circle } from 'lucide-react';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from '@/components/common/shadcn/context-menu';
+  FmCommonContextMenu,
+  ContextMenuAction,
+} from '@/components/common/modals/FmCommonContextMenu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,13 +15,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/common/shadcn/dropdown-menu';
-import { cn } from '@/shared';
+import { cn, getDepthClasses, getListItemClasses } from '@/shared';
 import { PRIORITY_CONFIG, type DevNote, type NoteStatus } from './config/devNotesConfig';
 
 interface DevNoteCardProps {
   note: DevNote;
   isExpanded: boolean;
   canEdit: boolean;
+  isAdmin?: boolean;
   typeConfig: {
     icon: any;
     color: string;
@@ -42,10 +39,20 @@ interface DevNoteCardProps {
   getStatusDisplayName: (status: NoteStatus) => string;
 }
 
+// Status icon colors for the submenu
+const STATUS_COLORS: Record<NoteStatus, string> = {
+  TODO: 'text-gray-400',
+  IN_PROGRESS: 'text-yellow-400',
+  RESOLVED: 'text-green-400',
+  ARCHIVED: 'text-blue-400',
+  CANCELLED: 'text-red-400',
+};
+
 export const DevNoteCard = ({
   note,
   isExpanded,
   canEdit,
+  isAdmin = false,
   typeConfig,
   statusConfig,
   onToggleExpand,
@@ -84,216 +91,267 @@ export const DevNoteCard = ({
     return `${month} ${day}, ${hour12}:${minutes} ${ampm}`;
   };
 
+  // Build context menu actions
+  const contextMenuActions = useMemo((): ContextMenuAction<DevNote>[] => {
+    const actions: ContextMenuAction<DevNote>[] = [
+      {
+        label: t('devNotes.inspect'),
+        icon: <Eye className='h-4 w-4' />,
+        onClick: () => onDoubleClick(),
+      },
+    ];
+
+    // Add status submenu for authors and admins
+    if (canEdit || isAdmin) {
+      actions.push({
+        label: t('devNotes.setStatus'),
+        icon: <CircleDot className='h-4 w-4' />,
+        submenu: [
+          {
+            label: getStatusDisplayName('TODO'),
+            icon: <Circle className={cn('h-3 w-3', STATUS_COLORS.TODO)} />,
+            onClick: () => onStatusChange('TODO'),
+          },
+          {
+            label: getStatusDisplayName('IN_PROGRESS'),
+            icon: <Circle className={cn('h-3 w-3', STATUS_COLORS.IN_PROGRESS)} />,
+            onClick: () => onStatusChange('IN_PROGRESS'),
+          },
+          {
+            label: getStatusDisplayName('RESOLVED'),
+            icon: <Circle className={cn('h-3 w-3', STATUS_COLORS.RESOLVED)} />,
+            onClick: () => onStatusChange('RESOLVED'),
+          },
+          {
+            label: getStatusDisplayName('ARCHIVED'),
+            icon: <Circle className={cn('h-3 w-3', STATUS_COLORS.ARCHIVED)} />,
+            onClick: () => onStatusChange('ARCHIVED'),
+          },
+          {
+            label: getStatusDisplayName('CANCELLED'),
+            icon: <Circle className={cn('h-3 w-3', STATUS_COLORS.CANCELLED)} />,
+            onClick: () => onStatusChange('CANCELLED'),
+          },
+        ],
+      });
+    }
+
+    // Add delete for authors only (or admins with the new RLS policy)
+    if (canEdit || isAdmin) {
+      actions.push({
+        label: t('actions.delete'),
+        icon: <Trash2 className='h-4 w-4' />,
+        onClick: () => onDelete(),
+        variant: 'destructive',
+        separator: true,
+      });
+    }
+
+    return actions;
+  }, [canEdit, isAdmin, t, onDoubleClick, onStatusChange, onDelete, getStatusDisplayName]);
+
   return (
-    <ContextMenu>
-      <ContextMenuTrigger asChild>
-        <div
-          className={cn(
-            'cursor-pointer transition-all duration-150 group',
-            'border-l-2 hover:bg-white/5',
-            isExpanded ? 'bg-white/5 border-fm-gold' : 'border-transparent hover:border-fm-gold/50',
-            typeConfig.borderColor
-          )}
-          onClick={onToggleExpand}
-          onDoubleClick={e => {
-            e.stopPropagation();
-            onDoubleClick();
-          }}
-        >
-          {/* Row 1: Main content */}
-          <div className='flex items-center gap-1.5 px-1.5 py-1'>
-            {/* Type Icon + Status Dot */}
-            <div className='relative flex-shrink-0'>
-              <div
+    <FmCommonContextMenu actions={contextMenuActions} data={note}>
+      <div
+        className={cn(
+          'cursor-pointer transition-all duration-150 group',
+          'border-l-2 hover:bg-white/5',
+          // Type-specific border color comes first, then override for expanded state
+          typeConfig.borderColor,
+          isExpanded && 'bg-white/5 !border-l-fm-gold'
+        )}
+        onClick={onToggleExpand}
+        onDoubleClick={e => {
+          e.stopPropagation();
+          onDoubleClick();
+        }}
+      >
+        {/* Row 1: Main content */}
+        <div className='flex items-center gap-1.5 px-1.5 py-1'>
+          {/* Type Icon + Status Dot */}
+          <div className='relative flex-shrink-0'>
+            <div
+              className={cn(
+                'w-5 h-5 flex items-center justify-center',
+                typeConfig.color
+              )}
+            >
+              <TypeIcon className='h-3 w-3' />
+            </div>
+            <div
+              className={cn(
+                'absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full',
+                statusConfig.color
+              )}
+              title={statusConfig.label}
+            />
+          </div>
+
+          {/* Priority Badge */}
+          <span
+            className={cn(
+              'text-[9px] font-bold flex-shrink-0 w-4 text-center',
+              PRIORITY_CONFIG[note.priority || 3]?.color
+            )}
+          >
+            {note.priority || 3}
+          </span>
+
+          {/* Title or Message */}
+          <span className='flex-1 min-w-0 text-[11px] text-white/90 truncate'>
+            {note.title || note.message}
+          </span>
+
+          {/* Menu Button - visible on hover */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <FmCommonIconButton
+                icon={MoreVertical}
+                variant='secondary'
+                size='sm'
+                className='h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-fm-gold flex-shrink-0'
+                onClick={e => e.stopPropagation()}
+                aria-label={t('devNotes.openMenu')}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className={cn(
+                'w-48',
+                getDepthClasses(3),
+                'border border-white/20 border-l-[3px] border-l-fm-gold/60 shadow-lg shadow-black/50',
+                'p-1'
+              )}
+            >
+              <DropdownMenuItem
+                onSelect={() => onDoubleClick()}
                 className={cn(
-                  'w-5 h-5 flex items-center justify-center',
-                  typeConfig.color
+                  'group cursor-pointer rounded-none my-0.5 relative',
+                  getListItemClasses(0)
                 )}
               >
-                <TypeIcon className='h-3 w-3' />
-              </div>
-              <div
-                className={cn(
-                  'absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full',
-                  statusConfig.color
-                )}
-                title={statusConfig.label}
-              />
-            </div>
-
-            {/* Priority Badge */}
-            <span
-              className={cn(
-                'text-[9px] font-bold flex-shrink-0 w-4 text-center',
-                PRIORITY_CONFIG[note.priority || 3]?.color
-              )}
-            >
-              {note.priority || 3}
-            </span>
-
-            {/* Title or Message */}
-            <span className='flex-1 min-w-0 text-[11px] text-white/90 truncate'>
-              {note.title || note.message}
-            </span>
-
-            {/* Menu Button - visible on hover */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <FmCommonIconButton
-                  icon={MoreVertical}
-                  variant='secondary'
-                  size='sm'
-                  className='h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-fm-gold flex-shrink-0'
-                  onClick={e => e.stopPropagation()}
-                  aria-label={t('devNotes.openMenu')}
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className='bg-card border-border rounded-none w-48'>
-                <DropdownMenuItem
-                  onSelect={() => onDoubleClick()}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {t('devNotes.inspect')}
-                </DropdownMenuItem>
-                {canEdit && (
-                  <>
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className='text-white hover:bg-muted focus:bg-muted cursor-pointer'>
-                        {t('devNotes.setStatus')}
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className='bg-card border-border rounded-none w-40'>
-                        <DropdownMenuItem
-                          onSelect={() => onStatusChange('TODO')}
-                          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                        >
-                          {getStatusDisplayName('TODO')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => onStatusChange('IN_PROGRESS')}
-                          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                        >
-                          {getStatusDisplayName('IN_PROGRESS')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => onStatusChange('RESOLVED')}
-                          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                        >
-                          {getStatusDisplayName('RESOLVED')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => onStatusChange('ARCHIVED')}
-                          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                        >
-                          {getStatusDisplayName('ARCHIVED')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => onStatusChange('CANCELLED')}
-                          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                        >
-                          {getStatusDisplayName('CANCELLED')}
-                        </DropdownMenuItem>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
+                <Eye className='h-4 w-4 mr-2' />
+                {t('devNotes.inspect')}
+              </DropdownMenuItem>
+              {(canEdit || isAdmin) && (
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger
+                    className={cn(
+                      'group cursor-pointer rounded-none my-0.5 relative',
+                      getListItemClasses(1)
+                    )}
+                  >
+                    <CircleDot className='h-4 w-4 mr-2' />
+                    {t('devNotes.setStatus')}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent
+                    className={cn(
+                      'w-40',
+                      getDepthClasses(3),
+                      'border border-white/20 border-l-[3px] border-l-fm-gold/60 shadow-lg shadow-black/50',
+                      'p-1'
+                    )}
+                  >
                     <DropdownMenuItem
-                      onSelect={onDelete}
-                      className='text-red-400 hover:bg-muted focus:bg-muted cursor-pointer'
+                      onSelect={() => onStatusChange('TODO')}
+                      className={cn(
+                        'group cursor-pointer rounded-none my-0.5 relative',
+                        getListItemClasses(0)
+                      )}
                     >
-                      {t('actions.delete')}
+                      <Circle className={cn('h-3 w-3 mr-2', STATUS_COLORS.TODO)} />
+                      {getStatusDisplayName('TODO')}
                     </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Row 2: Author name + time */}
-          <div className='flex items-center gap-1.5 px-1.5 pb-1 pl-[30px]'>
-            <span className='text-[9px] text-fm-gold/80 truncate flex-1'>
-              {note.author_name}
-            </span>
-            <span className='text-[9px] text-muted-foreground flex-shrink-0'>
-              {relativeTime(note.created_at)}
-            </span>
-          </div>
-
-          {/* Expanded Body */}
-          {isExpanded && note.message && (
-            <div className='px-1.5 pb-2 pl-[30px] border-t border-border/30 pt-1.5 mt-0.5'>
-              {/* Full date when expanded */}
-              <div className='text-[9px] text-muted-foreground mb-1'>
-                {shortDate(note.created_at)}
-              </div>
-              <p className='text-[10px] text-white/70 leading-relaxed whitespace-pre-wrap'>
-                {note.title ? note.message : null}
-              </p>
-              {!note.title && note.message.length > 60 && (
-                <p className='text-[10px] text-white/70 leading-relaxed whitespace-pre-wrap line-clamp-3'>
-                  {note.message}
-                </p>
+                    <DropdownMenuItem
+                      onSelect={() => onStatusChange('IN_PROGRESS')}
+                      className={cn(
+                        'group cursor-pointer rounded-none my-0.5 relative',
+                        getListItemClasses(1)
+                      )}
+                    >
+                      <Circle className={cn('h-3 w-3 mr-2', STATUS_COLORS.IN_PROGRESS)} />
+                      {getStatusDisplayName('IN_PROGRESS')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => onStatusChange('RESOLVED')}
+                      className={cn(
+                        'group cursor-pointer rounded-none my-0.5 relative',
+                        getListItemClasses(2)
+                      )}
+                    >
+                      <Circle className={cn('h-3 w-3 mr-2', STATUS_COLORS.RESOLVED)} />
+                      {getStatusDisplayName('RESOLVED')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => onStatusChange('ARCHIVED')}
+                      className={cn(
+                        'group cursor-pointer rounded-none my-0.5 relative',
+                        getListItemClasses(3)
+                      )}
+                    >
+                      <Circle className={cn('h-3 w-3 mr-2', STATUS_COLORS.ARCHIVED)} />
+                      {getStatusDisplayName('ARCHIVED')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => onStatusChange('CANCELLED')}
+                      className={cn(
+                        'group cursor-pointer rounded-none my-0.5 relative',
+                        getListItemClasses(4)
+                      )}
+                    >
+                      <Circle className={cn('h-3 w-3 mr-2', STATUS_COLORS.CANCELLED)} />
+                      {getStatusDisplayName('CANCELLED')}
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
               )}
-              <div className='mt-1.5 text-[9px] text-muted-foreground'>
-                {t('devNotes.doubleClickToEdit')}
-              </div>
-            </div>
-          )}
+              {(canEdit || isAdmin) && (
+                <DropdownMenuItem
+                  onSelect={onDelete}
+                  className={cn(
+                    'group cursor-pointer rounded-none my-0.5 relative',
+                    'text-destructive hover:bg-destructive/15 hover:text-destructive',
+                    getListItemClasses(2)
+                  )}
+                >
+                  <Trash2 className='h-4 w-4 mr-2' />
+                  {t('actions.delete')}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </ContextMenuTrigger>
 
-      <ContextMenuContent className='bg-card border-border rounded-none w-48'>
-        <ContextMenuItem
-          onSelect={() => onDoubleClick()}
-          className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-        >
-          {t('devNotes.inspect')}
-        </ContextMenuItem>
-        {canEdit && (
-          <>
-            <ContextMenuSub>
-              <ContextMenuSubTrigger className='text-white hover:bg-muted focus:bg-muted cursor-pointer'>
-                {t('devNotes.setStatus')}
-              </ContextMenuSubTrigger>
-              <ContextMenuSubContent className='bg-card border-border rounded-none w-40'>
-                <ContextMenuItem
-                  onSelect={() => onStatusChange('TODO')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {getStatusDisplayName('TODO')}
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onSelect={() => onStatusChange('IN_PROGRESS')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {getStatusDisplayName('IN_PROGRESS')}
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onSelect={() => onStatusChange('RESOLVED')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {getStatusDisplayName('RESOLVED')}
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onSelect={() => onStatusChange('ARCHIVED')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {getStatusDisplayName('ARCHIVED')}
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onSelect={() => onStatusChange('CANCELLED')}
-                  className='text-white hover:bg-muted focus:bg-muted cursor-pointer'
-                >
-                  {getStatusDisplayName('CANCELLED')}
-                </ContextMenuItem>
-              </ContextMenuSubContent>
-            </ContextMenuSub>
-            <ContextMenuItem
-              onSelect={onDelete}
-              className='text-red-400 hover:bg-muted focus:bg-muted cursor-pointer'
-            >
-              {t('actions.delete')}
-            </ContextMenuItem>
-          </>
+        {/* Row 2: Author name + time */}
+        <div className='flex items-center gap-1.5 px-1.5 pb-1 pl-[30px]'>
+          <span className='text-[9px] text-fm-gold/80 truncate flex-1'>
+            {note.author_name}
+          </span>
+          <span className='text-[9px] text-muted-foreground flex-shrink-0'>
+            {relativeTime(note.created_at)}
+          </span>
+        </div>
+
+        {/* Expanded Body */}
+        {isExpanded && note.message && (
+          <div className='px-1.5 pb-2 pl-[30px] border-t border-border/30 pt-1.5 mt-0.5'>
+            {/* Full date when expanded */}
+            <div className='text-[9px] text-muted-foreground mb-1'>
+              {shortDate(note.created_at)}
+            </div>
+            <p className='text-[10px] text-white/70 leading-relaxed whitespace-pre-wrap'>
+              {note.title ? note.message : null}
+            </p>
+            {!note.title && note.message.length > 60 && (
+              <p className='text-[10px] text-white/70 leading-relaxed whitespace-pre-wrap line-clamp-3'>
+                {note.message}
+              </p>
+            )}
+            <div className='mt-1.5 text-[9px] text-muted-foreground'>
+              {t('devNotes.doubleClickToEdit')}
+            </div>
+          </div>
         )}
-      </ContextMenuContent>
-    </ContextMenu>
+      </div>
+    </FmCommonContextMenu>
   );
 };

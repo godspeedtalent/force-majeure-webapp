@@ -6,23 +6,9 @@ import type { StaffTabCounts } from '../types';
  * Staff Counts Hook
  *
  * Fetches badge counts for staff navigation items.
- * - Unread contact submissions
  * - Pending user requests
  */
 export function useStaffCounts(): StaffTabCounts {
-  // Unread contact submissions count
-  const { data: pendingContacts = 0 } = useQuery({
-    queryKey: ['contact-submissions-unread-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('contact_submissions')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'unread');
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
-
   // Pending user requests count
   const { data: pendingRequests = 0 } = useQuery({
     queryKey: ['user-requests-pending-count'],
@@ -37,7 +23,6 @@ export function useStaffCounts(): StaffTabCounts {
   });
 
   return {
-    pendingContacts,
     pendingRequests,
   };
 }

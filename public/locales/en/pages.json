@@ -501,7 +501,9 @@
       "messageLabel": "Message",
       "messagePlaceholder": "Tell us what's on your mind...",
       "requiredFields": "Please fill in all required fields",
-      "successMessage": "Message sent! We'll get back to you soon.",
+      "successMessage": "Message sent!",
+      "successDescription": "We've received your message and will get back to you as soon as possible.",
+      "sendAnother": "Send another message",
       "errorMessage": "Failed to send message. Please try again or email us directly."
     }
   },

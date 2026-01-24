@@ -148,7 +148,7 @@ export const FmCollapsibleGroupHeader = ({
           isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         )}
       >
-        <div className="overflow-visible w-full min-w-0">{children}</div>
+        <div className="overflow-hidden w-full min-w-0">{children}</div>
       </div>
     </div>
   );
@@ -234,7 +234,7 @@ export const FmCollapsibleSubgroupHeader = ({
           isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
         )}
       >
-        <div className="overflow-visible w-full min-w-0">{children}</div>
+        <div className="overflow-hidden w-full min-w-0">{children}</div>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { forwardRef, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 interface FmBigButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -329,12 +330,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         <span className='relative z-10 flex items-center justify-center gap-2'>
           {isLoading ? (
             <>
-              <div
-                className={cn(
-                  'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
-                  isPrimary ? 'border-fm-gold' : 'border-foreground'
-                )}
-              />
+              <FmGoldenGridLoader size="sm" />
               <span>{t('buttons.processing')}</span>
             </>
           ) : (

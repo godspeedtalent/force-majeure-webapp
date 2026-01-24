@@ -1,12 +1,5 @@
 import { useMemo } from 'react';
-import {
-  BarChart3,
-  MessageSquare,
-  Users,
-  Mail,
-  UserCircle,
-  LayoutDashboard,
-} from 'lucide-react';
+import { BarChart3, Users, UserCircle, LayoutDashboard } from 'lucide-react';
 import type { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import type { StaffTab, StaffTabCounts } from '../types';
 
@@ -53,22 +46,11 @@ export function useStaffNavigation({
           },
         ],
       },
-      // Messages Group
+      // Requests Group
       {
-        label: 'Messages',
-        icon: MessageSquare,
+        label: 'Requests',
+        icon: UserCircle,
         items: [
-          {
-            id: 'logs_contact',
-            label: 'Contact Submissions',
-            icon: Mail,
-            description: 'Contact form submissions',
-            badge: counts?.pendingContacts ? (
-              <span className='text-xs font-medium text-fm-gold'>
-                {counts.pendingContacts}
-              </span>
-            ) : undefined,
-          },
           {
             id: 'db_user_requests',
             label: 'User Requests',
@@ -97,11 +79,6 @@ export function useStaffNavigation({
         id: 'dash_users' as StaffTab,
         label: 'Metrics',
         icon: Users,
-      },
-      {
-        id: 'logs_contact' as StaffTab,
-        label: 'Contact',
-        icon: Mail,
       },
       {
         id: 'db_user_requests' as StaffTab,

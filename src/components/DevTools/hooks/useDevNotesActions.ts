@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase, handleError } from '@/shared';
 import { toast } from 'sonner';
@@ -42,7 +42,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
   /**
    * Load all dev notes from the database
    */
-  const loadNotes = async (
+  const loadNotes = useCallback(async (
     sortOrder: 'asc' | 'desc' = 'desc'
   ): Promise<DevNote[]> => {
     setIsLoading(true);
@@ -64,7 +64,7 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
 
   /**
    * Create a new dev note
@@ -113,12 +113,19 @@ export function useDevNotesActions(): UseDevNotesActionsReturn {
     newStatus: NoteStatus
   ): Promise<void> => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('dev_notes')
         .update({ status: newStatus })
-        .eq('id', noteId);
+        .eq('id', noteId)
+        .select();
 
       if (error) throw error;
+
+      // Check if any rows were actually updated (RLS may block silently)
+      if (!data || data.length === 0) {
+        throw new Error(t('devNotes.noPermissionToUpdate'));
+      }
+
       toast.success(t('devNotes.statusUpdated'));
     } catch (error: unknown) {
       handleError(error, {

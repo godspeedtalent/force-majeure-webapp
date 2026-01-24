@@ -17,27 +17,59 @@ serve(async (req) => {
   const origin = req.headers.get('origin');
   const corsHeaders = getCorsHeaders(origin);
 
+  console.log('=== Contact form request received ===');
+  console.log('Origin:', origin);
+  console.log('Method:', req.method);
+
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return handleCorsPreflightRequest(origin);
   }
 
   // Check origin for non-preflight requests
   if (!isOriginAllowed(origin)) {
+    console.error('Origin not allowed:', origin);
     return createForbiddenResponse();
   }
 
+  console.log('Origin allowed, processing request');
+
   try {
+    // Log environment variable status (not values for security)
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const emailFrom = Deno.env.get('EMAIL_FROM');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    console.log('Environment check:', {
+      hasResendApiKey: !!resendApiKey,
+      resendApiKeyLength: resendApiKey?.length || 0,
+      hasEmailFrom: !!emailFrom,
+      emailFrom: emailFrom || 'NOT SET',
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseServiceKey: !!supabaseServiceKey,
+    });
+
     if (!resendApiKey) {
+      console.error('RESEND_API_KEY is not configured');
       throw new Error('RESEND_API_KEY is not configured');
     }
 
-    const emailFrom = Deno.env.get('EMAIL_FROM');
     if (!emailFrom) {
+      console.error('EMAIL_FROM is not configured');
       throw new Error('EMAIL_FROM is not configured');
     }
 
-    const { name, email, subject, message }: ContactFormRequest = await req.json();
+    const requestBody = await req.json();
+    console.log('Request body received:', {
+      hasName: !!requestBody.name,
+      hasEmail: !!requestBody.email,
+      hasSubject: !!requestBody.subject,
+      hasMessage: !!requestBody.message,
+      messageLength: requestBody.message?.length || 0,
+    });
+
+    const { name, email, subject, message }: ContactFormRequest = requestBody;
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -89,7 +121,21 @@ serve(async (req) => {
       `,
     });
 
-    console.log('Contact email sent successfully:', emailResponse);
+    console.log('Contact email response:', emailResponse);
+
+    // Check if Resend returned an error
+    if ('error' in emailResponse && emailResponse.error) {
+      console.error('Resend email error:', emailResponse.error);
+      throw new Error(`Email send failed: ${emailResponse.error.message || 'Unknown Resend error'}`);
+    }
+
+    // Verify we got a valid email ID back
+    if (!emailResponse.data?.id) {
+      console.error('Resend did not return email ID:', emailResponse);
+      throw new Error('Email send failed: No confirmation received from email service');
+    }
+
+    console.log('Contact email sent successfully, ID:', emailResponse.data.id);
 
     // Store contact submission in database and log to activity logs
     try {
@@ -131,7 +177,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, result: emailResponse }),
+      JSON.stringify({ success: true, emailId: emailResponse.data?.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: any) {

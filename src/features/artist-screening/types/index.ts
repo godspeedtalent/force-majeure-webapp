@@ -61,7 +61,7 @@ export interface ScreeningSubmissionWithDetails extends ScreeningSubmission {
     name: string;
     url: string;
     platform: 'spotify' | 'soundcloud' | 'youtube';
-    duration_seconds: number | null;
+    cover_art?: string | null;
   };
   venues?: {
     id: string;
@@ -227,6 +227,8 @@ export interface SubmissionStats {
  */
 export interface ReviewTimerState {
   submissionId: string;
+  submissionTitle: string; // For display in widget
+  recordingUrl: string; // For relaunching the recording
   startTime: number; // Unix timestamp
   duration: number; // Total duration in seconds (1200 = 20 minutes)
   isActive: boolean;

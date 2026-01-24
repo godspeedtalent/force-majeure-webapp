@@ -6,6 +6,7 @@ import { Check } from 'lucide-react';
 import { cn } from '@/shared';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useEventRsvp } from '@/features/events/hooks/useEventRsvp';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 interface FmRsvpButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> {
@@ -229,10 +230,7 @@ export const FmRsvpButton = forwardRef<HTMLButtonElement, FmRsvpButtonProps>(
           <span className="relative z-10 flex items-center justify-center gap-2">
             {showLoading ? (
               <>
-                <div className={cn(
-                  'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
-                  isPrimary ? 'border-fm-gold' : 'border-foreground'
-                )} />
+                <FmGoldenGridLoader size="sm" />
                 <span>{t('buttons.processing')}</span>
               </>
             ) : (

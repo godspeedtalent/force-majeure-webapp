@@ -3,6 +3,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
 import { LucideIcon } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 export interface FmCommonSlidingIconButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -129,12 +130,7 @@ export const FmCommonSlidingIconButton = forwardRef<
       >
         <>
           {loading ? (
-            <div
-              className={cn(
-                'animate-spin rounded-full border-2 border-fm-gold border-b-transparent',
-                iconSizeClasses[size]
-              )}
-            />
+            <FmGoldenGridLoader size="sm" />
           ) : (
             <div className='flex items-center gap-2'>
               <Icon

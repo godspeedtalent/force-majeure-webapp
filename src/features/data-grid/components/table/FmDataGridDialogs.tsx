@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { Trash2 } from 'lucide-react';
 import { FmI18nCommon } from '@/components/common/i18n';
 
@@ -72,7 +73,7 @@ export function FmDataGridBatchDeleteDialog<T extends Record<string, any>>({
           <Button variant='destructive' onClick={onConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <div className='h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                <FmGoldenGridLoader size="sm" className="mr-2" />
                 {t('dataGrid.deleting')}
               </>
             ) : (

@@ -42,12 +42,15 @@ import {
   FmMultiCheckboxOption,
 } from '@/components/common/forms/FmMultiCheckboxInput';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
-import { cn, useModalState } from '@/shared';
+import { cn, useModalState, ROLES } from '@/shared';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import * as React from 'react';
 
 export const DevNotesSection = () => {
   const { t } = useTranslation('common');
   const { user } = useAuth();
+  const { hasAnyRole } = useUserPermissions();
+  const isAdmin = hasAnyRole(ROLES.ADMIN);
   const [notes, setNotes] = useState<DevNote[]>([]);
   const createModal = useModalState();
   const [expandedNote, setExpandedNote] = useState<DevNote | null>(null);
@@ -86,7 +89,7 @@ export const DevNotesSection = () => {
   const handleLoadNotes = useCallback(async () => {
     const data = await loadNotes(sortOrder);
     setNotes(data);
-  }, [sortOrder]); // Removed loadNotes from deps - it's stable from the hook
+  }, [loadNotes, sortOrder]);
 
   useEffect(() => {
     handleLoadNotes();
@@ -398,6 +401,7 @@ export const DevNotesSection = () => {
                   note={note}
                   isExpanded={expandedNoteId === note.id}
                   canEdit={canEditNote(note) || false}
+                  isAdmin={isAdmin}
                   typeConfig={NOTE_TYPE_CONFIG[note.type]}
                   statusConfig={NOTE_STATUS_INDICATOR_CONFIG[note.status]}
                   onToggleExpand={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
