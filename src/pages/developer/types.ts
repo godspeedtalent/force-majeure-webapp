@@ -27,9 +27,7 @@ export type DeveloperTab =
   | 'db_organizations'
   | 'db_users'
   // Database - Storage
-  | 'db_galleries'
-  // Database - Messages
-  | 'db_registrations';
+  | 'db_galleries';
 
 export const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
@@ -50,7 +48,6 @@ export const VALID_TABS: DeveloperTab[] = [
   'db_organizations',
   'db_users',
   'db_galleries',
-  'db_registrations',
 ];
 
 // External navigation mapping (pages that still open as separate routes)

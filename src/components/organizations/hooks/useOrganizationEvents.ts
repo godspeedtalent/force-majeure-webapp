@@ -5,6 +5,8 @@ import { handleError } from '@/shared/services/errorHandler';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
+export type OrganizationEventRelationship = 'organizer' | 'partner';
+
 export interface OrganizationEvent {
   id: string;
   title: string;
@@ -21,6 +23,8 @@ export interface OrganizationEvent {
     id: string;
     name: string;
   } | null;
+  /** Indicates if the org is the organizer or a partner/sponsor */
+  relationship: OrganizationEventRelationship;
 }
 
 export interface UseOrganizationEventsOptions {
@@ -37,12 +41,13 @@ export const organizationEventsKeys = {
 };
 
 /**
- * Fetch all events for an organization
+ * Fetch all events for an organization (both as organizer and as partner/sponsor)
  */
 async function fetchOrganizationEvents(
   organizationId: string
 ): Promise<OrganizationEvent[]> {
-  const { data, error } = await supabase
+  // Fetch events where organization is the direct organizer
+  const { data: organizerEvents, error: organizerError } = await supabase
     .from('events')
     .select(
       `
@@ -60,16 +65,90 @@ async function fetchOrganizationEvents(
     .eq('organization_id', organizationId)
     .order('start_time', { ascending: false });
 
-  if (error) {
-    logger.error('Failed to fetch organization events', {
-      error: error.message,
+  if (organizerError) {
+    logger.error('Failed to fetch organizer events', {
+      error: organizerError.message,
       source: 'useOrganizationEvents.fetchOrganizationEvents',
       organizationId,
     });
-    throw error;
+    throw organizerError;
   }
 
-  return (data || []) as unknown as OrganizationEvent[];
+  // Fetch events where organization is a partner/sponsor
+  const { data: partnerEventIds, error: partnerIdsError } = await supabase
+    .from('event_partners')
+    .select('event_id')
+    .eq('organization_id', organizationId);
+
+  if (partnerIdsError) {
+    logger.error('Failed to fetch partner event IDs', {
+      error: partnerIdsError.message,
+      source: 'useOrganizationEvents.fetchOrganizationEvents',
+      organizationId,
+    });
+    throw partnerIdsError;
+  }
+
+  // Fetch partner event details if there are any
+  let partnerEvents: typeof organizerEvents = [];
+  const partnerIds = (partnerEventIds || []).map((p) => p.event_id);
+
+  if (partnerIds.length > 0) {
+    const { data: partnerEventsData, error: partnerEventsError } = await supabase
+      .from('events')
+      .select(
+        `
+        id,
+        title,
+        start_time,
+        end_time,
+        status,
+        hero_image,
+        organization_id,
+        venue:venues!events_venue_id_fkey(id, name),
+        headliner:artists!events_headliner_id_fkey(id, name)
+      `
+      )
+      .in('id', partnerIds)
+      .order('start_time', { ascending: false });
+
+    if (partnerEventsError) {
+      logger.error('Failed to fetch partner events', {
+        error: partnerEventsError.message,
+        source: 'useOrganizationEvents.fetchOrganizationEvents',
+        organizationId,
+      });
+      throw partnerEventsError;
+    }
+
+    partnerEvents = partnerEventsData || [];
+  }
+
+  // Create a set of organizer event IDs for deduplication
+  const organizerEventIds = new Set((organizerEvents || []).map((e) => e.id));
+
+  // Map organizer events with relationship type
+  const organizerEventsWithRelation: OrganizationEvent[] = (organizerEvents || []).map(
+    (event) => ({
+      ...event,
+      relationship: 'organizer' as const,
+    })
+  ) as OrganizationEvent[];
+
+  // Map partner events with relationship type (excluding duplicates)
+  const partnerEventsWithRelation: OrganizationEvent[] = (partnerEvents || [])
+    .filter((event) => !organizerEventIds.has(event.id))
+    .map((event) => ({
+      ...event,
+      relationship: 'partner' as const,
+    })) as OrganizationEvent[];
+
+  // Combine and sort by start_time descending
+  const allEvents = [...organizerEventsWithRelation, ...partnerEventsWithRelation].sort(
+    (a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime()
+  );
+
+  return allEvents;
 }
 
 /**

@@ -7,6 +7,7 @@ import { Switch } from '@/components/common/shadcn/switch';
 import { Slider } from '@/components/common/shadcn/slider';
 import { type IndicatorSize } from '@/features/demo-mode/types';
 
+
 /**
  * Settings panel content for Demo Mode.
  * Allows users to configure touch visualization options.
@@ -96,13 +97,19 @@ export function DemoModeTabContent() {
 
       {/* Settings Section - Only show when enabled */}
       {isActive && (
-        <>
-          <div className="space-y-3">
-            <p className="text-xs text-white/50 uppercase tracking-wider">
-              {t('demoMode.settings')}
-            </p>
+        <div className="space-y-3">
+          <p
+            className="text-xs text-white/50 uppercase tracking-wider animate-in fade-in slide-in-from-top-1 duration-200"
+            style={{ animationDelay: '0ms', animationFillMode: 'backwards' }}
+          >
+            {t('demoMode.settings')}
+          </p>
 
-            {/* Action Delay Toggle */}
+          {/* Action Delay Toggle */}
+          <div
+            className="animate-in fade-in slide-in-from-top-2 duration-300"
+            style={{ animationDelay: '50ms', animationFillMode: 'backwards' }}
+          >
             <div
               className={cn(
                 'border p-3 transition-all duration-200',
@@ -150,7 +157,7 @@ export function DemoModeTabContent() {
 
               {/* Delay Duration Slider */}
               {settings.delayEnabled && (
-                <div className="mt-3 pt-3 border-t border-white/10">
+                <div className="mt-3 pt-3 border-t border-white/10 animate-in fade-in slide-in-from-top-1 duration-200">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs text-white/50">
                       {t('demoMode.delayDuration')}
@@ -176,38 +183,46 @@ export function DemoModeTabContent() {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Indicator Size */}
-            <div className="bg-white/5 border border-white/10 p-3">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-1.5 bg-white/10">
-                  <Maximize2 className="h-4 w-4 text-white/70" />
-                </div>
-                <p className="text-sm font-medium text-white">
-                  {t('demoMode.indicatorSize')}
-                </p>
+          {/* Indicator Size */}
+          <div
+            className="bg-white/5 border border-white/10 p-3 animate-in fade-in slide-in-from-top-2 duration-300"
+            style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-1.5 bg-white/10">
+                <Maximize2 className="h-4 w-4 text-white/70" />
               </div>
-              <div className="flex gap-2">
-                {sizeOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() =>
-                      updateSettings({ indicatorSize: option.value })
-                    }
-                    className={cn(
-                      'flex-1 py-2 px-3 text-xs font-medium transition-all duration-200 border',
-                      settings.indicatorSize === option.value
-                        ? 'bg-fm-gold text-black border-fm-gold'
-                        : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+              <p className="text-sm font-medium text-white">
+                {t('demoMode.indicatorSize')}
+              </p>
             </div>
+            <div className="flex gap-2">
+              {sizeOptions.map(option => (
+                <button
+                  key={option.value}
+                  onClick={() =>
+                    updateSettings({ indicatorSize: option.value })
+                  }
+                  className={cn(
+                    'flex-1 py-2 px-3 text-xs font-medium transition-all duration-200 border',
+                    settings.indicatorSize === option.value
+                      ? 'bg-fm-gold text-black border-fm-gold'
+                      : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-            {/* Long Press Indicator Toggle */}
+          {/* Long Press Indicator Toggle */}
+          <div
+            className="animate-in fade-in slide-in-from-top-2 duration-300"
+            style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}
+          >
             <div
               className={cn(
                 'border p-3 transition-all duration-200',
@@ -260,17 +275,7 @@ export function DemoModeTabContent() {
               </div>
             </div>
           </div>
-
-          {/* Disable Button */}
-          <Button
-            variant="outline"
-            className="w-full border-white/20 hover:bg-white/10"
-            onClick={disable}
-          >
-            <X className="h-4 w-4 mr-2" />
-            {t('demoMode.disable')}
-          </Button>
-        </>
+        </div>
       )}
     </div>
   );

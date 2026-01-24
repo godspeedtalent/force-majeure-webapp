@@ -9,9 +9,9 @@ interface FmMobileToolbarHandleProps {
 }
 
 /**
- * Persistent bottom handle bar for mobile toolbar
- * Replaces the FAB with a more discoverable swipe-up indicator
- * Shows a subtle tool icon and drag handle at the bottom of the screen
+ * Side edge tab for mobile toolbar
+ * Compact tab on right edge that stays above bottom navigation
+ * Tap to open the dev tools drawer
  * Only visible on mobile (< 768px)
  */
 export function FmMobileToolbarHandle({
@@ -26,24 +26,22 @@ export function FmMobileToolbarHandle({
     <button
       onClick={onClick}
       className={cn(
-        // Fixed position at screen bottom
-        'fixed bottom-0 left-0 right-0 z-[60]',
-        // Height - compact with safe area
-        'h-[48px]',
-        // Styling - subtle frosted glass (very unobtrusive)
-        'bg-black/40 backdrop-blur-sm',
-        // Border - subtle top border
-        'border-t border-white/10',
-        // Sharp corners (design system)
-        'rounded-none',
-        // Layout - flex for icon and handle
-        'flex items-center justify-center gap-[20px]',
-        // Safe area padding
-        'pb-[env(safe-area-inset-bottom)]',
+        // Fixed position - right edge, above bottom nav
+        'fixed right-0 bottom-[100px] z-[60]',
+        // Dimensions - compact tab
+        'w-[36px] h-[56px]',
+        // Styling - frosted glass
+        'bg-black/50 backdrop-blur-sm',
+        // Border - left edge tab effect
+        'border-l border-t border-b border-white/15',
+        // Slight rounding on left edge only (tab peeking out)
+        'rounded-l-[4px]',
+        // Layout - vertical stack
+        'flex flex-col items-center justify-center gap-[8px]',
         // Transitions
         'transition-all duration-200',
-        // Active state - subtle feedback
-        'active:bg-black/60',
+        // Active state
+        'active:bg-black/70',
         // Visibility - mobile only
         'md:hidden',
         // Focus states
@@ -57,10 +55,10 @@ export function FmMobileToolbarHandle({
       }
       type="button"
     >
-      {/* Tool Icon - semi-transparent */}
+      {/* Tool Icon */}
       <div className="relative">
         <Wrench
-          className="h-[18px] w-[18px] text-white/30"
+          className="h-[16px] w-[16px] text-white/40"
           strokeWidth={1.5}
         />
 
@@ -69,7 +67,7 @@ export function FmMobileToolbarHandle({
           <span
             className={cn(
               // Position - top-right of icon
-              'absolute -top-[4px] -right-[4px]',
+              'absolute -top-[3px] -right-[3px]',
               // Size - small dot
               'h-[8px] w-[8px]',
               // Styling
@@ -77,22 +75,14 @@ export function FmMobileToolbarHandle({
               // Shape
               'rounded-full',
               // Border for contrast
-              'border border-black/50'
+              'border border-black/50',
+              // Subtle pulse animation
+              'animate-pulse'
             )}
             aria-hidden="true"
           />
         )}
       </div>
-
-      {/* Drag Handle - gold bar */}
-      <div
-        className={cn(
-          'h-[4px] w-[80px]',
-          'bg-fm-gold/40',
-          'rounded-full'
-        )}
-        aria-hidden="true"
-      />
     </button>
   );
 }

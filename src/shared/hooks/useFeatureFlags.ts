@@ -31,29 +31,24 @@ export const useFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async (): Promise<FeatureFlags> => {
-      // Get current environment dynamically from service
-      const currentEnv = await environmentService.getCurrentEnvironment();
+      // Fetch current environment and "all" environment in parallel
+      const [currentEnv, allEnvResult] = await Promise.all([
+        environmentService.getCurrentEnvironment(),
+        supabase.from('environments').select('id').eq('name', 'all').single(),
+      ]);
 
       if (!currentEnv) {
         flagLogger.warn('Could not determine environment, using defaults');
         return createEmptyFeatureFlagsState();
       }
 
-      // Fetch flags for current environment OR 'all' environment
-      // Using subquery to get all environment IDs that match
-      const { data: allEnvData, error: allEnvError } = await supabase
-        .from('environments')
-        .select('id')
-        .eq('name', 'all')
-        .single();
-
-      if (allEnvError) {
-        flagLogger.error('Failed to fetch "all" environment:', allEnvError);
+      if (allEnvResult.error) {
+        flagLogger.error('Failed to fetch "all" environment:', allEnvResult.error);
       }
 
       const environmentIds = [currentEnv.id];
-      if (allEnvData) {
-        environmentIds.push(allEnvData.id);
+      if (allEnvResult.data) {
+        environmentIds.push(allEnvResult.data.id);
       }
 
       const { data, error } = await supabase
@@ -110,8 +105,10 @@ export const useFeatureFlags = () => {
 
       return flags;
     },
-    staleTime: 30 * 1000, // 30 seconds cache
-    refetchOnWindowFocus: true,
+    // Feature flags rarely change mid-session - cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
+    // Don't refetch on window focus - flags don't change that frequently
+    refetchOnWindowFocus: false,
   });
 };
 

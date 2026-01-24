@@ -36,7 +36,6 @@ import {
   HardDrive,
   Images,
   MessageSquare,
-  UserPlus,
 } from 'lucide-react';
 import {
   FmCommonSideNavGroup,
@@ -51,7 +50,6 @@ interface UseDeveloperNavigationProps {
   isAdmin: boolean;
   isRecordingRatingsEnabled: boolean;
   counts: {
-    pendingRegistrationsCount: number;
     venuesCount: number;
     organizationsCount: number;
     usersCount: number;
@@ -75,7 +73,6 @@ export function useDeveloperNavigation({
   const { t } = useTranslation('common');
 
   const {
-    pendingRegistrationsCount,
     venuesCount,
     organizationsCount,
     usersCount,
@@ -262,29 +259,15 @@ export function useDeveloperNavigation({
       ],
     };
 
-    // Messages subgroup (admin only)
+    // Messages subgroup (admin only - activity logs)
     const messagesItems: FmCommonSideNavItem<DeveloperTab>[] = [];
     if (isAdmin) {
-      messagesItems.push(
-        {
-          id: 'logs_all',
-          label: t('activityLogsPage.activityLogs'),
-          icon: Activity,
-          description: t('activityLogsPage.allLogsDescription'),
-        },
-        {
-          id: 'db_registrations',
-          label: t('artistRegistrations.navLabel'),
-          icon: UserPlus,
-          description: t('artistRegistrations.navDescription'),
-          badge:
-            pendingRegistrationsCount > 0 ? (
-              <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                {pendingRegistrationsCount}
-              </span>
-            ) : undefined,
-        }
-      );
+      messagesItems.push({
+        id: 'logs_all',
+        label: t('activityLogsPage.activityLogs'),
+        icon: Activity,
+        description: t('activityLogsPage.allLogsDescription'),
+      });
     }
 
     // Build the groups array
@@ -348,7 +331,6 @@ export function useDeveloperNavigation({
     isAdmin,
     isRecordingRatingsEnabled,
     t,
-    pendingRegistrationsCount,
     artistsCount,
     eventsCount,
     guestsCount,

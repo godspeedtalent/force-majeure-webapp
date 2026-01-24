@@ -155,7 +155,7 @@ export const EventPartners = ({
                         {/* Profile picture */}
                         <div
                           className={cn(
-                            'flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors',
+                            'flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 group-hover:border-fm-gold/30 transition-colors flex items-center justify-center',
                             getPartnerImageSize(importance)
                           )}
                         >
@@ -163,12 +163,10 @@ export const EventPartners = ({
                             <img
                               src={partner.organization.profile_picture}
                               alt={partner.organization.name}
-                              className='w-full h-full object-cover'
+                              className='max-w-full max-h-full object-contain'
                             />
                           ) : (
-                            <div className='w-full h-full flex items-center justify-center'>
-                              <Building2 className={cn('text-white/30', getPartnerIconSize(importance))} />
-                            </div>
+                            <Building2 className={cn('text-white/30', getPartnerIconSize(importance))} />
                           )}
                         </div>
 

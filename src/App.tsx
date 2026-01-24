@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
@@ -110,25 +110,7 @@ import ArtistSignup from './pages/artists/ArtistSignup';
 import ArtistRegister from './pages/artists/ArtistRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Disable automatic retries for 403/401 errors
-      retry: (failureCount, error) => {
-        if (
-          error &&
-          typeof error === 'object' &&
-          'code' in error &&
-          (error.code === '403' || error.code === '401' || error.code === '42501')
-        ) {
-          return false; // Don't retry permission errors
-        }
-        return failureCount < 3;
-      },
-    },
-  },
-});
+import { queryClient } from '@/lib/queryClient';
 
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
@@ -478,11 +460,11 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Artist Management Routes - Protected by admin/developer roles */}
+      {/* Artist Management Routes - Protected by authentication, ownership checked in component */}
       <Route
         path='/artists/:id/manage'
         element={
-          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+          <ProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
               <ArtistManagement />
             </Suspense>

@@ -1,9 +1,29 @@
 /**
  * Session persistence utilities for "Remember Device" functionality
  *
- * Note: Supabase handles session persistence automatically via localStorage
- * and manages token refresh. This utility only tracks user preference for
- * the "Remember Me" checkbox state for UI purposes.
+ * IMPORTANT LIMITATIONS:
+ * ----------------------
+ * This utility tracks the user's "Remember Me" checkbox preference for UI purposes ONLY.
+ * It does NOT actually extend the Supabase session duration.
+ *
+ * What this DOES:
+ * - Stores user's checkbox preference in localStorage
+ * - Tracks when the preference was set (30-day expiry)
+ * - Pre-fills the checkbox on next visit if still valid
+ *
+ * What this does NOT do:
+ * - Extend Supabase session duration (controlled by Supabase project settings)
+ * - Prevent session expiration (Supabase manages token refresh automatically)
+ * - Provide actual 30-day sessions (Supabase default is typically 7 days)
+ *
+ * To actually extend session duration:
+ * - Configure JWT expiry in Supabase Dashboard > Auth > Settings
+ * - Or implement custom token refresh logic with Supabase's refreshSession()
+ *
+ * Security Note:
+ * The expiry time stored in localStorage could be tampered with by users,
+ * but since this only affects UI state (checkbox pre-fill), there's no
+ * security impact. Actual session validity is enforced by Supabase server.
  */
 
 const REMEMBER_DEVICE_KEY = 'fm_remember_device';

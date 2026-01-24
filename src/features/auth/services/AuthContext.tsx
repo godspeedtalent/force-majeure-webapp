@@ -6,6 +6,7 @@ import { supabase, sessionPersistence, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { debugAccessService } from '@/shared/services/debugAccessService';
 import { initializeSupabaseErrorInterceptor } from '@/integrations/supabase/errorInterceptor';
+import { queryClient } from '@/lib/queryClient';
 import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
@@ -388,20 +389,48 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signOut = async () => {
+    // 1. Clear session persistence when user explicitly logs out
+    sessionPersistence.clearRememberDevice();
+
+    // 2. Clear debug access to prevent privilege leakage
+    debugAccessService.clearDebugAccess();
+
+    // 3. IMMEDIATELY clear React state (don't rely on onAuthStateChange listener)
+    // This ensures the UI updates even if the network call fails
+    setSession(null);
+    setUser(null);
+    setProfile(null);
+
+    // 4. Clear shopping cart (directly from localStorage since app uses context-based cart)
     try {
-      // Clear session persistence when user explicitly logs out
-      sessionPersistence.clearRememberDevice();
+      localStorage.removeItem('fm-shopping-cart');
+    } catch {
+      // Ignore localStorage errors
+    }
 
-      // Clear debug access to prevent privilege leakage
-      debugAccessService.clearDebugAccess();
+    // 5. Clear React Query cache to prevent stale data on re-login
+    queryClient.clear();
 
+    // 6. Try server-side sign out
+    try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        toast.error(getErrorMessage(error, 'Failed to sign out'));
+        // Log warning but don't show toast - user is already "signed out" locally
+        authLogger.warn('Server-side sign out failed', { error: error.message });
       }
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, 'Failed to sign out'));
+      // Fallback: at least clear local Supabase storage
+      authLogger.warn('Sign out error, attempting local cleanup', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => {
+        // Ignore errors during fallback cleanup
+      });
     }
+
+    // 7. Force page reload to trigger route guards
+    // This ensures protected routes redirect unauthenticated users
+    window.location.reload();
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {

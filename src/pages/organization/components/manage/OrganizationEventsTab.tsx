@@ -8,6 +8,7 @@ import {
   Settings,
   Unlink,
   CalendarX,
+  Handshake,
 } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
@@ -110,8 +111,14 @@ export function OrganizationEventsTab({
           venueName={event.venue?.name}
           onClick={handleViewEvent}
         />
-        {/* Status Badge */}
-        <div className='absolute top-3 right-3'>
+        {/* Status and Relationship Badges */}
+        <div className='absolute top-3 right-3 flex items-center gap-2'>
+          {event.relationship === 'partner' && (
+            <div className='flex items-center gap-1 px-2 py-1 bg-fm-navy/80 text-white text-xs font-medium'>
+              <Handshake className='h-3 w-3' />
+              <span>{t('organizationManagement.partnerBadge')}</span>
+            </div>
+          )}
           <EventStatusBadge status={(event.status || 'draft') as EventStatus} />
         </div>
       </div>
@@ -145,17 +152,20 @@ export function OrganizationEventsTab({
             }}
           />
         </FmPortalTooltip>
-        <FmPortalTooltip content={t('organizationManagement.unlinkEvent')}>
-          <FmCommonIconButton
-            icon={Unlink}
-            size='sm'
-            variant='destructive'
-            onClick={(e) => {
-              e.stopPropagation();
-              handleUnlinkEvent(event);
-            }}
-          />
-        </FmPortalTooltip>
+        {/* Only show unlink for organizer events - partner relationships are managed from event side */}
+        {event.relationship === 'organizer' && (
+          <FmPortalTooltip content={t('organizationManagement.unlinkEvent')}>
+            <FmCommonIconButton
+              icon={Unlink}
+              size='sm'
+              variant='destructive'
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUnlinkEvent(event);
+              }}
+            />
+          </FmPortalTooltip>
+        )}
       </div>
     </div>
   );

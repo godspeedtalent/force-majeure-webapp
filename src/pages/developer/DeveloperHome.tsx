@@ -29,7 +29,6 @@ import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection'
 import { UserManagement } from '../admin/UserManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { EventsManagement } from '../admin/EventsManagement';
-import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 
 // Database tabs
@@ -259,12 +258,6 @@ export default function DeveloperHome() {
           <PageErrorBoundary section="Galleries">
             {renderTabHeader('Media Galleries', 'Manage image galleries and media collections for the site.', Images)}
             <GalleryManagementSection />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'db_registrations' && (
-          <PageErrorBoundary section="Artist Registrations">
-            <ArtistRegistrationsManagement />
           </PageErrorBoundary>
         )}
       </div>

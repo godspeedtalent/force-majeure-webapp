@@ -67,6 +67,7 @@
     "apply": "Apply",
     "reset": "Reset",
     "upload": "Upload",
+    "uploading": "Uploading...",
     "download": "Download",
     "share": "Share",
     "send": "Send Message",
@@ -644,6 +645,7 @@
     "unauthorized": "You don't have permission to access this.",
     "sessionExpired": "Your session has expired. Please sign in again.",
     "serverError": "Server error. Please try again later.",
+    "requestTimeout": "The request timed out. Please try again.",
     "somethingWentWrong": "Something went wrong.",
     "debugDetails": "An error occurred in the application. Details are shown below for debugging.",
     "apologize": "We apologize for the inconvenience. Our team has been notified and is working on a fix.",
@@ -1043,7 +1045,8 @@
     "tbaEvent": "TBA Event (To Be Announced)",
     "tbaEventHelp": "Check this for placeholder events. TBA events can still have a venue and date assigned.",
     "noHeadliner": "No event headliner",
-    "noHeadlinerHelp": "All artists will be listed as undercard artists with no featured headliner"
+    "noHeadlinerHelp": "All artists will be listed as undercard artists with no featured headliner",
+    "primary": "Primary"
   },
   "formActions": {
     "addTicketTier": "Add Ticket Tier",
@@ -1915,6 +1918,7 @@
     "pastEvents": "Past Events",
     "viewEvent": "View event",
     "manageEvent": "Manage event",
+    "partnerBadge": "Partner",
     "unlinkEvent": "Unlink from organization",
     "unlinkEventTitle": "Unlink Event",
     "unlinkEventConfirm": "Are you sure you want to unlink \"{{eventName}}\" from {{orgName}}? The event will remain but will no longer be associated with this organization.",
@@ -2962,7 +2966,8 @@
     "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
     "userAlreadyHasArtist": "You already have an artist profile linked to your account. You can manage it from your profile settings.",
     "userHasPendingRegistration": "You already have a pending artist registration. Please wait for it to be reviewed before submitting another.",
-    "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}."
+    "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}.",
+    "validationFailed": "Please check your form and try again. Some fields may be missing or invalid."
   },
   "orders": {
     "cancelSuccess": "Order cancelled successfully",

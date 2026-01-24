@@ -7,6 +7,7 @@ import type { StaffTabCounts } from '../types';
  *
  * Fetches badge counts for staff navigation items.
  * - Pending user requests
+ * - Pending artist registrations
  */
 export function useStaffCounts(): StaffTabCounts {
   // Pending user requests count
@@ -22,7 +23,21 @@ export function useStaffCounts(): StaffTabCounts {
     },
   });
 
+  // Pending artist registrations count
+  const { data: pendingRegistrations = 0 } = useQuery({
+    queryKey: ['artist-registrations-pending-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('artist_registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
   return {
     pendingRequests,
+    pendingRegistrations,
   };
 }

@@ -67,6 +67,7 @@
     "apply": "Aplicar",
     "reset": "Restablecer",
     "upload": "Subir",
+    "uploading": "Subiendo...",
     "download": "Descargar",
     "share": "Compartir",
     "send": "Enviar Mensaje",
@@ -644,6 +645,7 @@
     "unauthorized": "No tienes permiso para acceder a esto.",
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
     "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
+    "requestTimeout": "La solicitud ha excedido el tiempo de espera. Por favor, inténtalo de nuevo.",
     "somethingWentWrong": "Algo salió mal.",
     "debugDetails": "Ocurrió un error en la aplicación. Los detalles se muestran abajo para depuración.",
     "apologize": "Pedimos disculpas por las molestias. Nuestro equipo ha sido notificado y está trabajando en una solución.",
@@ -1042,7 +1044,8 @@
     "tbaEvent": "Evento TBA (Por Anunciar)",
     "tbaEventHelp": "Marca esto para eventos provisionales. Los eventos TBA pueden tener lugar y fecha asignados.",
     "noHeadliner": "Sin artista principal",
-    "noHeadlinerHelp": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado"
+    "noHeadlinerHelp": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado",
+    "primary": "Principal"
   },
   "formActions": {
     "addTicketTier": "Añadir Tipo de Entrada",
@@ -1914,6 +1917,7 @@
     "pastEvents": "Eventos Pasados",
     "viewEvent": "Ver evento",
     "manageEvent": "Gestionar evento",
+    "partnerBadge": "Socio",
     "unlinkEvent": "Desvincular de la organización",
     "unlinkEventTitle": "Desvincular Evento",
     "unlinkEventConfirm": "¿Estás seguro de que deseas desvincular \"{{eventName}}\" de {{orgName}}? El evento permanecerá pero ya no estará asociado con esta organización.",
@@ -2961,7 +2965,8 @@
     "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!",
     "userAlreadyHasArtist": "Ya tienes un perfil de artista vinculado a tu cuenta. Puedes gestionarlo desde la configuración de tu perfil.",
     "userHasPendingRegistration": "Ya tienes un registro de artista pendiente. Por favor espera a que sea revisado antes de enviar otro.",
-    "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}."
+    "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}.",
+    "validationFailed": "Por favor revisa el formulario e intenta de nuevo. Algunos campos pueden faltar o ser inválidos."
   },
   "orders": {
     "cancelSuccess": "Pedido cancelado exitosamente",

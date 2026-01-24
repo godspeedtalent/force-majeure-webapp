@@ -12,11 +12,13 @@ export type StaffTab =
   | 'dash_overview' // Staff Dashboard (placeholder for new dashboard)
 
   // Requests
-  | 'db_user_requests'; // User Requests
+  | 'db_user_requests' // User Requests
+  | 'db_registrations'; // Artist Registrations
 
 /**
  * Tab counts for badge display in navigation
  */
 export interface StaffTabCounts {
   pendingRequests?: number;
+  pendingRegistrations?: number;
 }

@@ -313,14 +313,15 @@ export function IndexMobile({
           className='relative z-10'
         />
 
-        {/* View Toggle */}
-        <MobileViewToggle
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-        />
-
-        {/* Message Banner - artist signup CTA */}
-        <MobileMessageBanner messages={mobileMessages} />
+        {/* Fixed layout container for Banner + View Toggle */}
+        <div className='fixed top-[64px] left-0 right-0 z-40 flex items-stretch'>
+          <MobileMessageBanner messages={mobileMessages} fixed={false} />
+          <MobileViewToggle
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            className='relative flex-shrink-0'
+          />
+        </div>
       </div>
     );
   }
@@ -332,12 +333,6 @@ export function IndexMobile({
       <div className='fixed inset-0 z-0'>
         <TopographicBackground opacity={0.35} parallax={false} />
       </div>
-
-      {/* View Toggle */}
-      <MobileViewToggle
-        viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
-      />
 
       {/* Swipe Container */}
       <MobileEventSwipeContainer
@@ -387,8 +382,15 @@ export function IndexMobile({
         })}
       </MobileEventSwipeContainer>
 
-      {/* Message Banner - past events indicator and artist signup CTA */}
-      <MobileMessageBanner messages={mobileMessages} />
+      {/* Fixed layout container for Banner + View Toggle */}
+      <div className='fixed top-[64px] left-0 right-0 z-40 flex items-stretch'>
+        <MobileMessageBanner messages={mobileMessages} fixed={false} />
+        <MobileViewToggle
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+          className='relative flex-shrink-0'
+        />
+      </div>
 
       {/* Auto-Scroll Progress Bar */}
       <MobileAutoScrollProgress

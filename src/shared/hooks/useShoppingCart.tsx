@@ -31,7 +31,10 @@ const STORAGE_KEY = 'fm-shopping-cart';
  * Provides a basic shopping cart with localStorage persistence
  */
 export function ShoppingCartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useLocalStorage<CartItem[]>(STORAGE_KEY, []);
+  const [rawItems, setItems] = useLocalStorage<CartItem[]>(STORAGE_KEY, []);
+
+  // Defensive: ensure items is always an array (handles corrupted localStorage data)
+  const items = Array.isArray(rawItems) ? rawItems : [];
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     setItems(currentItems => {

@@ -11,6 +11,8 @@ export interface MobileMessageBannerProps {
   messages: MobileMessage[];
   /** Auto-rotation interval in ms (default: 5000) */
   rotationInterval?: number;
+  /** Whether to use fixed positioning (default: true for standalone use) */
+  fixed?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -22,6 +24,7 @@ export interface MobileMessageBannerProps {
 export function MobileMessageBanner({
   messages,
   rotationInterval = 5000,
+  fixed = true,
   className,
 }: MobileMessageBannerProps) {
   const { t } = useTranslation('common');
@@ -120,8 +123,10 @@ export function MobileMessageBanner({
   return (
     <div
       className={cn(
-        // Fixed positioning below navigation bar
-        'fixed top-[64px] left-0 right-0 w-screen z-40',
+        // Fixed positioning below navigation bar (when standalone)
+        fixed && 'fixed top-[64px] left-0 right-0 z-40',
+        // Flex-grow when not fixed (used in layout container)
+        !fixed && 'flex-1',
         // Frosted glass effect (always applied)
         'backdrop-blur-md',
         // Border on bottom

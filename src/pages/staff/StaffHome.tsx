@@ -21,6 +21,7 @@ import { PageErrorBoundary } from '@/components/common/feedback';
 import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
 import { UserMetricsDashboard } from '@/pages/developer/dashboards/userMetrics';
 import { ArtistScreeningDashboard } from '@/features/artist-screening';
+import { ArtistRegistrationsManagement } from '@/pages/admin/ArtistRegistrationsManagement';
 
 // Hooks
 import { useStaffNavigation } from './hooks/useStaffNavigation';
@@ -35,7 +36,7 @@ import { StaffTab } from './types';
 // Valid tabs for URL validation
 // ============================================================================
 
-const VALID_TABS: StaffTab[] = ['dash_overview', 'dash_users', 'db_user_requests'];
+const VALID_TABS: StaffTab[] = ['dash_overview', 'dash_users', 'db_user_requests', 'db_registrations'];
 
 // ============================================================================
 // Component
@@ -95,6 +96,12 @@ export default function StaffHome() {
         )}
 
         {/* ======================== REQUESTS ======================== */}
+
+        {activeTab === 'db_registrations' && (
+          <PageErrorBoundary section="Artist Registrations">
+            <ArtistRegistrationsManagement />
+          </PageErrorBoundary>
+        )}
 
         {activeTab === 'db_user_requests' && (
           <PageErrorBoundary section="User Requests">

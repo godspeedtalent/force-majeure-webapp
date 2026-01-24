@@ -102,6 +102,7 @@ const ArtistRegister = () => {
   const handleSubmit = async () => {
     // Validate all steps - returns the first invalid step or null if all valid
     const invalidStep = validateAllSteps(formData);
+
     if (invalidStep !== null) {
       setCurrentStep(invalidStep);
       return;
