@@ -22,6 +22,7 @@ import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmOrganizationSearchDropdown } from '@/components/common/search/FmOrganizationSearchDropdown';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -413,7 +414,7 @@ const OrganizationTools = () => {
 
         {eventsLoading ? (
           <div className='flex items-center justify-center min-h-[200px]'>
-            <FmCommonLoadingSpinner size='md' />
+            <FmGoldenGridLoader size='md' />
           </div>
         ) : (
           <>
@@ -569,7 +570,7 @@ const OrganizationTools = () => {
 
         {venuesLoading ? (
           <div className='flex items-center justify-center min-h-[200px]'>
-            <FmCommonLoadingSpinner size='md' />
+            <FmGoldenGridLoader size='md' />
           </div>
         ) : venues.length > 0 ? (
           <div className='space-y-2'>

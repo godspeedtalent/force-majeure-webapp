@@ -61,6 +61,7 @@ import type {
   MakeDecisionInput,
   ReviewMetricId,
   ReviewMetricScores,
+  ScreeningReview,
   SubmissionStatus,
 } from '../types';
 import { FmTagMultiSelect } from '@/features/tagging/components/FmTagMultiSelect';
@@ -139,7 +140,7 @@ export function ReviewInterface() {
   const reviewStats = useMemo(() => {
     if (!submission) {
       return {
-        sortedReviews: [] as typeof submission.screening_reviews,
+        sortedReviews: [] as ScreeningReview[],
         mostRecentReviewAt: null as string | null,
       };
     }
@@ -565,7 +566,7 @@ export function ReviewInterface() {
                           reviewLocked && 'pointer-events-none opacity-50 blur-[1px]'
                         )}
                       >
-                        {reviewStats.sortedReviews.map(review => (
+                        {reviewStats.sortedReviews.map((review: ScreeningReview) => (
                           <div
                             key={review.id}
                             className="rounded-2xl border border-white/8 bg-white/[0.03] p-4"
