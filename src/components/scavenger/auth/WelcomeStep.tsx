@@ -5,6 +5,7 @@ import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
 import { MessagePanel } from '@/components/feedback/MessagePanel';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { PromoCodePanel } from './PromoCodePanel';
 import {
   LF_SYSTEM_TICKET_URL,
@@ -112,7 +113,7 @@ export function CheckpointClaimPanel({
           >
             {isLoading ? (
               <>
-                <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                <FmGoldenGridLoader size="sm" className="mr-2" />
                 {t('scavenger.checkpoint.addingToGuestlist')}
               </>
             ) : (

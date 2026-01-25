@@ -68,6 +68,7 @@ export const createForbiddenResponse = (): Response => {
  */
 export const handleCorsPreflightRequest = (requestOrigin?: string | null): Response => {
   return new Response(null, {
+    status: 200,
     headers: getCorsHeaders(requestOrigin)
   });
 };

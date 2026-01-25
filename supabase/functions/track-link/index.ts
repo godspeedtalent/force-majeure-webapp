@@ -38,7 +38,7 @@ function parseUserAgent(userAgent: string): DeviceInfo {
 }
 
 // App domain for redirects - defaults to production domain
-const APP_DOMAIN = Deno.env.get('APP_DOMAIN') || 'https://forcemajeure.vip';
+const DEFAULT_APP_DOMAIN = Deno.env.get('APP_DOMAIN') || 'https://forcemajeure.vip';
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -49,6 +49,13 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const code = url.searchParams.get('code');
+
+    // Allow origin to be passed as param for local development
+    // Falls back to Referer header origin, then default domain
+    const originParam = url.searchParams.get('origin');
+    const referer = req.headers.get('referer');
+    const refererOrigin = referer ? new URL(referer).origin : null;
+    const appDomain = originParam || refererOrigin || DEFAULT_APP_DOMAIN;
 
     if (!code) {
       return new Response(
@@ -72,7 +79,7 @@ Deno.serve(async (req) => {
     if (linkError || !link) {
       console.error('Link not found:', linkError);
       // Redirect to homepage on invalid code
-      return Response.redirect(APP_DOMAIN, 302);
+      return Response.redirect(appDomain, 302);
     }
 
     // Validate link is active
@@ -127,7 +134,7 @@ Deno.serve(async (req) => {
 
     // Build destination URL with UTM parameters
     const baseUrl = link.custom_destination_url ||
-      `${APP_DOMAIN}/event/${link.event_id}`;
+      `${appDomain}/event/${link.event_id}`;
     
     const destinationUrl = new URL(baseUrl);
     destinationUrl.searchParams.set('utm_source', link.utm_source);

@@ -24,6 +24,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 import { supabase } from '@/shared';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { SidebarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
@@ -484,7 +485,8 @@ export default function EventManagement() {
 
   if (isLoading || isAccessLoading) {
     return (
-      <div className='flex items-center justify-center min-h-screen'>
+      <div className='flex flex-col items-center justify-center min-h-screen gap-4'>
+        <FmGoldenGridLoader size='lg' />
         <p className='text-muted-foreground'>{t('eventManagement.loadingEvent')}</p>
       </div>
     );

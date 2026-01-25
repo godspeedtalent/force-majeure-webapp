@@ -47,8 +47,10 @@ export function MobileViewToggle({
         // Frosted glass styling (Level 2)
         'bg-black/70 backdrop-blur-md',
         'border border-white/20',
-        // Size and shape
-        'w-[44px] h-[44px]',
+        // Size and shape - fixed size when floating, stretch height when inline
+        'w-[44px]',
+        !hasCustomPosition && 'h-[44px]',
+        hasCustomPosition && 'self-stretch',
         'rounded-none',
         // Layout
         'flex items-center justify-center',

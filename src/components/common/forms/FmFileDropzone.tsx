@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Upload, FileIcon, X, FileSpreadsheet, FileText, FileImage } from 'lucide-react';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { cn } from '@/shared';
 
 interface FmFileDropzoneProps {
@@ -236,7 +237,7 @@ export const FmFileDropzone = ({
         >
           {isLoading ? (
             <>
-              <div className='mb-4 h-12 w-12 animate-spin rounded-full border-4 border-fm-gold border-b-transparent' />
+              <FmGoldenGridLoader size="lg" className="mb-4" />
               <p className='text-sm text-muted-foreground'>
                 {loadingText || t('fileDropzone.processing', 'Processing...')}
               </p>

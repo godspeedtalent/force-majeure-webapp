@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/common/shadcn/button';
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 /**
  * DetailPageWrapper
@@ -93,7 +93,7 @@ export function DetailPageWrapper<T>({
   if (isLoading) {
     const loadingContent = (
       <div className='flex items-center justify-center min-h-[400px]'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
 

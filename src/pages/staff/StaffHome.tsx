@@ -3,7 +3,6 @@
  *
  * Provides staff and organization administrators with tools for:
  * - User metrics and analytics
- * - Contact form submissions
  * - User account requests
  * - Staff dashboard overview
  *
@@ -20,9 +19,9 @@ import { PageErrorBoundary } from '@/components/common/feedback';
 
 // Staff components
 import { UserRequestsAdmin } from '@/components/admin/UserRequestsAdmin';
-import { ContactSubmissionsTab } from '@/features/contact-submissions';
 import { UserMetricsDashboard } from '@/pages/developer/dashboards/userMetrics';
 import { ArtistScreeningDashboard } from '@/features/artist-screening';
+import { ArtistRegistrationsManagement } from '@/pages/admin/ArtistRegistrationsManagement';
 
 // Hooks
 import { useStaffNavigation } from './hooks/useStaffNavigation';
@@ -37,12 +36,7 @@ import { StaffTab } from './types';
 // Valid tabs for URL validation
 // ============================================================================
 
-const VALID_TABS: StaffTab[] = [
-  'dash_overview',
-  'dash_users',
-  'logs_contact',
-  'db_user_requests',
-];
+const VALID_TABS: StaffTab[] = ['dash_overview', 'dash_users', 'db_user_requests', 'db_registrations'];
 
 // ============================================================================
 // Component
@@ -101,11 +95,11 @@ export default function StaffHome() {
           </PageErrorBoundary>
         )}
 
-        {/* ======================== MESSAGES ======================== */}
+        {/* ======================== REQUESTS ======================== */}
 
-        {activeTab === 'logs_contact' && (
-          <PageErrorBoundary section="Contact Submissions">
-            <ContactSubmissionsTab />
+        {activeTab === 'db_registrations' && (
+          <PageErrorBoundary section="Artist Registrations">
+            <ArtistRegistrationsManagement />
           </PageErrorBoundary>
         )}
 

@@ -21,12 +21,12 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmCommonCard, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection } from '@/pages/profile/sections';
+import { PasswordChangeSection, DeleteAccountSection, NotificationSettingsSection, PrivacySettingsSection } from '@/pages/profile/sections';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { toast } from 'sonner';
@@ -335,7 +335,7 @@ const UserProfileEdit = () => {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );
@@ -392,6 +392,7 @@ const UserProfileEdit = () => {
       defaultOpen={true}
       showBackButton
       onBack={() => navigate(`/users/${id}`)}
+      contentWidth="READABLE"
       backButtonLabel={t('profile.title')}
       backButtonActions={
         <FmCommonButton
@@ -672,6 +673,9 @@ const UserProfileEdit = () => {
 
             {/* Notification Settings */}
             <NotificationSettingsSection disabled={!emailConfirmed} />
+
+            {/* Privacy Settings */}
+            <PrivacySettingsSection disabled={!emailConfirmed} />
 
             {/* Preferences Section */}
             <FmFormSection

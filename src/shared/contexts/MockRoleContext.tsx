@@ -1,7 +1,8 @@
-import { createContext, useContext, useCallback, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useCallback, useMemo, useEffect, useRef, ReactNode } from 'react';
 import { rolesStore } from '@/shared/stores/rolesStore';
 import { useLocalStorage } from '@/shared/hooks/useLocalStorage';
 import { logger } from '@/shared/services/logger';
+import { isProduction } from '@/shared/utils/environment';
 import {
   type Role,
   ROLES,
@@ -226,12 +227,49 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
     DEFAULT_STATE
   );
 
+  // Track if we've already shown the production warning
+  const hasWarnedRef = useRef(false);
+
+  // SECURITY: Clear mock state in production to prevent accidental privilege escalation
+  useEffect(() => {
+    if (isProduction()) {
+      const hadMockState = appliedState.roles.length > 0 || appliedState.isUnauthenticated;
+      const hadPendingState = pendingState.roles.length > 0 || pendingState.isUnauthenticated;
+
+      if ((hadMockState || hadPendingState) && !hasWarnedRef.current) {
+        hasWarnedRef.current = true;
+        logger.warn('Mock role state detected in production - clearing for security', {
+          source: 'MockRoleContext',
+          clearedApplied: hadMockState,
+          clearedPending: hadPendingState,
+        });
+
+        // Clear both applied and pending state
+        setAppliedState(DEFAULT_STATE);
+        setPendingState(DEFAULT_STATE);
+
+        // Also clear from localStorage directly to ensure it's gone
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(`${STORAGE_KEY}-pending`);
+      }
+    }
+  }, [appliedState, pendingState, setAppliedState, setPendingState]);
+
   const clearMockRole = useCallback(() => {
     setAppliedState(DEFAULT_STATE);
     setPendingState(DEFAULT_STATE);
   }, [setAppliedState, setPendingState]);
 
   const togglePendingRole = useCallback((roleName: string) => {
+    // SECURITY: Prevent mock role changes in production
+    if (isProduction()) {
+      logger.warn('Mock role changes blocked in production', {
+        source: 'MockRoleContext.togglePendingRole',
+        attemptedRole: roleName,
+      });
+      return;
+    }
+
     // Validate role name before toggling
     if (!isValidRole(roleName)) {
       logger.warn('Attempted to toggle invalid role', {
@@ -295,6 +333,14 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
   }, []);
 
   const togglePendingUnauthenticated = useCallback(() => {
+    // SECURITY: Prevent mock role changes in production
+    if (isProduction()) {
+      logger.warn('Mock role changes blocked in production', {
+        source: 'MockRoleContext.togglePendingUnauthenticated',
+      });
+      return;
+    }
+
     setPendingState(prev => ({
       // When toggling unauthenticated, clear all roles
       roles: prev.isUnauthenticated ? prev.roles : [],
@@ -303,6 +349,14 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
   }, [setPendingState]);
 
   const applySimulation = useCallback(() => {
+    // SECURITY: Prevent mock role changes in production
+    if (isProduction()) {
+      logger.warn('Mock role changes blocked in production', {
+        source: 'MockRoleContext.applySimulation',
+      });
+      return;
+    }
+
     setAppliedState(pendingState);
   }, [pendingState, setAppliedState]);
 
@@ -371,6 +425,15 @@ export const MockRoleProvider = ({ children }: MockRoleProviderProps) => {
 
   // Legacy compatibility: setMockRole sets a single role (clears others) and applies immediately
   const setMockRole = useCallback((role: string) => {
+    // SECURITY: Prevent mock role changes in production (except clearing)
+    if (isProduction() && role !== 'disabled') {
+      logger.warn('Mock role changes blocked in production', {
+        source: 'MockRoleContext.setMockRole',
+        attemptedRole: role,
+      });
+      return;
+    }
+
     if (role === 'disabled') {
       clearMockRole();
     } else if (role === MOCK_ROLE_UNAUTHENTICATED) {

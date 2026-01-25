@@ -54,6 +54,16 @@ export interface EmailSendResult {
 }
 
 /**
+ * Email confirmation data for account verification emails
+ */
+export interface EmailConfirmationData {
+  userName: string;
+  userEmail: string;
+  confirmationUrl: string;
+  expiresInHours?: number; // Default: 24
+}
+
+/**
  * Order item as stored in the database (snake_case, cents-based amounts)
  * Used for converting database orders to email format
  */

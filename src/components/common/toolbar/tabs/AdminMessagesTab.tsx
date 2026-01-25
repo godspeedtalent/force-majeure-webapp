@@ -17,7 +17,6 @@ import {
 import { supabase, cn, handleError } from '@/shared';
 import { Separator } from '@/components/common/shadcn/separator';
 import { AdminMessagesSection } from '@/components/DevTools/AdminMessagesSection';
-import { Badge } from '@/components/common/shadcn/badge';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { ScrollArea } from '@/components/common/shadcn/scroll-area';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
@@ -27,6 +26,7 @@ import {
   FmCommonTabsList,
   FmCommonTabsTrigger,
 } from '@/components/common/navigation/FmCommonTabs';
+import { UserRequestDetailsModal } from './UserRequestDetailsModal';
 
 interface UserRequest {
   id: string;
@@ -45,6 +45,11 @@ interface UserRequest {
     email: string;
     display_name: string | null;
   };
+  artist?: {
+    id: string;
+    name: string;
+    image_url: string | null;
+  };
 }
 
 const REQUEST_TYPE_ICONS: Record<string, React.ReactNode> = {
@@ -60,6 +65,8 @@ function UserRequestsSection() {
   const { t } = useTranslation('common');
   const [requests, setRequests] = useState<UserRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadRequests = useCallback(async () => {
     setIsLoading(true);
@@ -78,36 +85,60 @@ function UserRequestsSection() {
           context: 'AdminMessagesTab.loadRequests',
           endpoint: 'user_requests',
         });
+        setRequests([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // If no requests, set empty and return early
+      if (!requestsData || requestsData.length === 0) {
+        setRequests([]);
+        setIsLoading(false);
         return;
       }
 
       // Fetch user profiles
-      const userIds = [...new Set((requestsData as UserRequest[])?.map(r => r.user_id) || [])];
+      const userIds = [...new Set((requestsData as UserRequest[]).map(r => r.user_id))];
 
-      if (userIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, display_name, email')
-          .in('user_id', userIds);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, display_name, email')
+        .in('user_id', userIds);
 
-        const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        // Combine data
-        const enrichedRequests = (requestsData || []).map((request: UserRequest) => ({
-          ...request,
-          user: profileMap.get(request.user_id),
-        }));
+      // Fetch artist info for link requests
+      const artistIds = (requestsData as UserRequest[])
+        .filter(r => r.parameters && 'artist_id' in r.parameters)
+        .map(r => (r.parameters as { artist_id?: string })?.artist_id)
+        .filter((id): id is string => !!id);
 
-        setRequests(enrichedRequests);
-      } else {
-        setRequests([]);
+      let artistMap = new Map<string, { id: string; name: string; image_url: string | null }>();
+      if (artistIds.length > 0) {
+        const { data: artists } = await supabase
+          .from('artists')
+          .select('id, name, image_url')
+          .in('id', artistIds);
+        artistMap = new Map(artists?.map(a => [a.id, a]) || []);
       }
+
+      // Combine data
+      const enrichedRequests = requestsData.map((request: UserRequest) => ({
+        ...request,
+        user: profileMap.get(request.user_id),
+        artist: request.parameters && 'artist_id' in request.parameters
+          ? artistMap.get((request.parameters as { artist_id: string }).artist_id)
+          : undefined,
+      }));
+
+      setRequests(enrichedRequests);
     } catch (error: unknown) {
       handleError(error, {
         title: t('adminMessages.loadError'),
         context: 'AdminMessagesTab.loadRequests',
         endpoint: 'user_requests',
       });
+      setRequests([]);
     } finally {
       setIsLoading(false);
     }
@@ -117,14 +148,18 @@ function UserRequestsSection() {
     loadRequests();
   }, [loadRequests]);
 
-  const formatDate = (dateString: string) => {
+  // Relative time format: "2m", "3h", "1d"
+  const formatRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
-    const month = (date.getMonth() + 1).toString();
-    const day = date.getDate().toString();
-    const year = date.getFullYear().toString().slice(-2);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${month}/${day}/${year} ${hours}:${minutes}`;
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}d`;
   };
 
   const REQUEST_TYPE_LABELS: Record<string, string> = {
@@ -173,54 +208,56 @@ function UserRequestsSection() {
             <p>{t('admin.requests.noPendingRequests')}</p>
           </div>
         ) : (
-          <div className='space-y-[2px]'>
+          <div className='divide-y divide-border/30'>
             {requests.map(request => (
-              <div
+              <button
                 key={request.id}
+                onClick={() => {
+                  setSelectedRequest(request);
+                  setIsModalOpen(true);
+                }}
                 className={cn(
-                  'w-full text-left p-3 border border-border transition-all duration-200',
-                  'hover:border-fm-gold/50 hover:bg-white/5',
-                  'bg-fm-gold/5 border-fm-gold/30'
+                  'w-full text-left transition-all duration-150 group',
+                  'border-l-2 hover:bg-white/5',
+                  'border-transparent hover:border-fm-gold/50',
+                  'cursor-pointer focus:outline-none focus:bg-white/5'
                 )}
               >
-                <div className='flex items-start gap-3'>
+                {/* Row 1: Icon + Type + Pending Badge */}
+                <div className='flex items-center gap-1.5 px-1.5 py-1'>
                   {/* Type Icon */}
                   <div className={cn(
-                    'p-1.5 flex-shrink-0',
+                    'w-5 h-5 flex items-center justify-center flex-shrink-0',
                     request.request_type.startsWith('delete')
-                      ? 'bg-fm-danger/10 text-fm-danger'
-                      : 'bg-fm-gold/10 text-fm-gold'
+                      ? 'text-fm-danger'
+                      : 'text-fm-gold'
                   )}>
                     {REQUEST_TYPE_ICONS[request.request_type]}
                   </div>
 
-                  <div className='flex-1 min-w-0'>
-                    {/* Header Row */}
-                    <div className='flex items-center justify-between gap-2'>
-                      <span className='font-medium text-white truncate'>
-                        {REQUEST_TYPE_LABELS[request.request_type]}
-                      </span>
-                      <Badge variant='outline' className='flex-shrink-0'>
-                        <Clock className='h-3 w-3 mr-1' />
-                        {t('status.pending')}
-                      </Badge>
-                    </div>
+                  {/* Request Type Label */}
+                  <span className='flex-1 min-w-0 text-[11px] text-white/90 truncate'>
+                    {REQUEST_TYPE_LABELS[request.request_type]}
+                  </span>
 
-                    {/* User Info */}
-                    <div className='flex items-center gap-2 text-sm text-muted-foreground mt-1'>
-                      <User className='h-3 w-3' />
-                      <span className='truncate'>
-                        {request.user?.display_name || request.user?.email || t('globalSearch.unknownUser')}
-                      </span>
-                    </div>
-
-                    {/* Date */}
-                    <div className='text-xs text-muted-foreground mt-1'>
-                      {formatDate(request.created_at)}
-                    </div>
-                  </div>
+                  {/* Pending Badge - Compact */}
+                  <span className='text-[9px] text-fm-gold/80 flex items-center gap-0.5 flex-shrink-0'>
+                    <Clock className='h-2.5 w-2.5' />
+                    {t('status.pending')}
+                  </span>
                 </div>
-              </div>
+
+                {/* Row 2: User + Time */}
+                <div className='flex items-center gap-1.5 px-1.5 pb-1.5 pl-[26px]'>
+                  <User className='h-2.5 w-2.5 text-muted-foreground flex-shrink-0' />
+                  <span className='text-[10px] text-muted-foreground truncate flex-1'>
+                    {request.user?.display_name || request.user?.email || t('globalSearch.unknownUser')}
+                  </span>
+                  <span className='text-[9px] text-muted-foreground flex-shrink-0'>
+                    {formatRelativeTime(request.created_at)}
+                  </span>
+                </div>
+              </button>
             ))}
           </div>
         )}
@@ -234,6 +271,17 @@ function UserRequestsSection() {
           </span>
         </div>
       )}
+
+      {/* Request Details Modal */}
+      <UserRequestDetailsModal
+        request={selectedRequest}
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          setIsModalOpen(open);
+          if (!open) setSelectedRequest(null);
+        }}
+        onActionComplete={loadRequests}
+      />
     </div>
   );
 }

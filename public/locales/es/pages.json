@@ -268,6 +268,13 @@
     "notificationsEnabled": "Notificaciones por correo activadas.",
     "notificationsDisabled": "Notificaciones por correo desactivadas.",
     "notificationUpdateFailed": "Error al actualizar la configuración de notificaciones. Por favor, inténtalo de nuevo.",
+    "privacy": "Privacidad",
+    "privacyDescription": "Controla tu visibilidad en las listas de invitados",
+    "guestListVisibility": "Mostrarme en las listas de invitados",
+    "guestListVisibilityDescription": "Cuando está activado, tu perfil aparecerá en las listas de invitados de eventos. Desactívalo para navegar por los eventos de forma privada.",
+    "privacyUpdateFailed": "Error al actualizar la configuración de privacidad. Por favor, inténtalo de nuevo.",
+    "profileNowPublic": "Tu perfil ahora es visible en las listas de invitados.",
+    "profileNowPrivate": "Tu perfil ahora está oculto de las listas de invitados.",
     "accessDenied": "No tienes permiso para editar este perfil.",
     "notFound": "Perfil no encontrado.",
     "adminEditingNotice": "Estás editando el perfil de {{name}} como administrador.",
@@ -494,7 +501,9 @@
       "messageLabel": "Mensaje",
       "messagePlaceholder": "Cuéntanos lo que tienes en mente...",
       "requiredFields": "Por favor completa todos los campos requeridos",
-      "successMessage": "¡Mensaje enviado! Te responderemos pronto.",
+      "successMessage": "¡Mensaje enviado!",
+      "successDescription": "Hemos recibido tu mensaje y te responderemos lo antes posible.",
+      "sendAnother": "Enviar otro mensaje",
       "errorMessage": "Error al enviar mensaje. Por favor intenta de nuevo o envíanos un correo directamente."
     }
   },
@@ -521,7 +530,8 @@
   "artistUndercard": {
     "lookingForArtists": "Buscando artistas.",
     "artistDescription": "Buscamos talento local para abrir nuestros eventos. Regístrate para ser considerado.",
-    "signUpAsArtist": "Regístrate como artista"
+    "signUpAsArtist": "Regístrate como artista",
+    "floatingCtaText": "¿Eres DJ local y quieres unirte al undercard?"
   },
   "artistSignup": {
     "seoTitle": "Únete a Nuestro Roster de Artistas",

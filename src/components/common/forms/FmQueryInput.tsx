@@ -1,6 +1,7 @@
 import { useState, forwardRef } from 'react';
 import { Input } from '@/components/common/shadcn/input';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/shared';
 
@@ -58,7 +59,7 @@ export const FmQueryInput = forwardRef<HTMLInputElement, FmQueryInputProps>(
           />
           {isProcessing && (
             <div className='absolute right-2 top-1/2 -translate-y-1/2'>
-              <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+              <FmGoldenGridLoader size="sm" />
             </div>
           )}
         </div>

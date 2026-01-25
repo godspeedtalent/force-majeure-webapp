@@ -134,9 +134,13 @@ export function useEventOverviewForm({
     noHeadliner: boolean;
   } | null>(null);
 
-  // Populate form when initial data loads
+  // Track if form has been initialized to prevent re-initialization on re-renders
+  const hasInitializedRef = useRef(false);
+
+  // Populate form when initial data loads (only once)
   useEffect(() => {
-    if (initialData) {
+    if (initialData && !hasInitializedRef.current) {
+      hasInitializedRef.current = true;
       const initialHeadlinerId = initialData.headliner_id || '';
       const initialVenueId = initialData.venue_id || '';
       const initialIsAfterHours = initialData.is_after_hours || false;

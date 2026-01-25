@@ -67,6 +67,7 @@
     "apply": "Aplicar",
     "reset": "Restablecer",
     "upload": "Subir",
+    "uploading": "Subiendo...",
     "download": "Descargar",
     "share": "Compartir",
     "send": "Enviar Mensaje",
@@ -187,6 +188,7 @@
     "guestListTitle": "Lista de invitados",
     "clickToSeeFullList": "Haz clic para ver la lista completa",
     "logInToSeeFullList": "Inicia sesión para ver la lista completa",
+    "signInToSeeGuestList": "Inicia sesión para ver la lista de invitados",
     "goingLabel": "van",
     "joinTheCrowd": "Únete y descubre quién más asistirá",
     "seeWhosComing": "Ver quién viene",
@@ -214,7 +216,8 @@
     "privateGuests": "Invitados Privados",
     "more": "más",
     "othersCount": "+ {{count}} otros",
-    "pageViews": "{{count}} vistas de página"
+    "pageViews": "{{count}} vistas de página",
+    "privacyFootnote": "¿No quieres aparecer en esta lista? Cambia tu perfil a privado en"
   },
   "contextMenu": {
     "viewProfile": "Ver Perfil"
@@ -315,7 +318,9 @@
     "soundcloud": "SoundCloud",
     "submittedOn": "Enviado el",
     "actions": "Acciones",
-    "tags": "Etiquetas"
+    "tags": "Etiquetas",
+    "requestedBy": "Solicitado por",
+    "whatWillHappen": "Qué sucederá"
   },
   "entities": {
     "venue": "Local",
@@ -640,6 +645,7 @@
     "unauthorized": "No tienes permiso para acceder a esto.",
     "sessionExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
     "serverError": "Error del servidor. Por favor, inténtalo más tarde.",
+    "requestTimeout": "La solicitud ha excedido el tiempo de espera. Por favor, inténtalo de nuevo.",
     "somethingWentWrong": "Algo salió mal.",
     "debugDetails": "Ocurrió un error en la aplicación. Los detalles se muestran abajo para depuración.",
     "apologize": "Pedimos disculpas por las molestias. Nuestro equipo ha sido notificado y está trabajando en una solución.",
@@ -1038,7 +1044,8 @@
     "tbaEvent": "Evento TBA (Por Anunciar)",
     "tbaEventHelp": "Marca esto para eventos provisionales. Los eventos TBA pueden tener lugar y fecha asignados.",
     "noHeadliner": "Sin artista principal",
-    "noHeadlinerHelp": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado"
+    "noHeadlinerHelp": "Todos los artistas se listarán como artistas de apoyo sin un artista principal destacado",
+    "primary": "Principal"
   },
   "formActions": {
     "addTicketTier": "Añadir Tipo de Entrada",
@@ -1910,6 +1917,7 @@
     "pastEvents": "Eventos Pasados",
     "viewEvent": "Ver evento",
     "manageEvent": "Gestionar evento",
+    "partnerBadge": "Socio",
     "unlinkEvent": "Desvincular de la organización",
     "unlinkEventTitle": "Desvincular Evento",
     "unlinkEventConfirm": "¿Estás seguro de que deseas desvincular \"{{eventName}}\" de {{orgName}}? El evento permanecerá pero ya no estará asociado con esta organización.",
@@ -2957,7 +2965,8 @@
     "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!",
     "userAlreadyHasArtist": "Ya tienes un perfil de artista vinculado a tu cuenta. Puedes gestionarlo desde la configuración de tu perfil.",
     "userHasPendingRegistration": "Ya tienes un registro de artista pendiente. Por favor espera a que sea revisado antes de enviar otro.",
-    "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}."
+    "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}.",
+    "validationFailed": "Por favor revisa el formulario e intenta de nuevo. Algunos campos pueden faltar o ser inválidos."
   },
   "orders": {
     "cancelSuccess": "Pedido cancelado exitosamente",
@@ -3156,6 +3165,7 @@
     "createFailed": "Error al crear nota",
     "statusUpdated": "Estado actualizado",
     "statusUpdateFailed": "Error al actualizar estado",
+    "noPermissionToUpdate": "No tienes permiso para actualizar esta nota",
     "updateSuccess": "Nota actualizada",
     "updateFailed": "Error al actualizar nota",
     "deleteSuccess": "Nota eliminada",
@@ -3439,6 +3449,53 @@
     "clearAll": "Limpiar todo",
     "showingLogs": "Mostrando {{showing}} de {{total}} registros"
   },
+  "resendDashboard": {
+    "title": "Panel de emails",
+    "description": "Monitorear el estado de entrega de emails y analíticas de Resend",
+    "stats": {
+      "totalEmails": "Total de Emails",
+      "delivered": "Entregados",
+      "bounced": "Rebotados",
+      "opened": "Abiertos",
+      "clicked": "Clicados",
+      "complained": "Con Quejas",
+      "pending": "Pendientes",
+      "deliveryRate": "Tasa de Entrega"
+    },
+    "domains": {
+      "title": "Dominios configurados",
+      "noDomainsFound": "No hay dominios configurados",
+      "addDomainHint": "Añade un dominio en el panel de Resend para comenzar",
+      "status": {
+        "verified": "Verificado",
+        "pending": "Pendiente",
+        "failed": "Fallido",
+        "notStarted": "No Iniciado",
+        "temporaryFailure": "Fallo Temporal"
+      }
+    },
+    "emails": {
+      "title": "Emails recientes",
+      "noEmailsFound": "No se encontraron emails",
+      "sendFirstEmail": "Envía tu primer email para verlo aquí",
+      "showing": "Mostrando {{count}} emails",
+      "columns": {
+        "recipient": "Destinatario",
+        "subject": "Asunto",
+        "status": "Estado",
+        "sentAt": "Enviado"
+      },
+      "status": {
+        "sent": "Enviado",
+        "delivered": "Entregado",
+        "bounced": "Rebotado",
+        "opened": "Abierto",
+        "clicked": "Clicado",
+        "complained": "Con Queja",
+        "deliveryDelayed": "Retrasado"
+      }
+    }
+  },
   "statisticsPage": {
     "title": "Estadísticas",
     "description": "Métricas y análisis de la aplicación",
@@ -3483,6 +3540,8 @@
     "ticketFlowTestsDescription": "Suite completa de pruebas de humo para el flujo de venta de entradas incluyendo gestión de cola, selección, pago, tiempos de espera y entrega",
     "orderCsvImport": "Importar CSV de Pedidos",
     "orderCsvImportDescription": "Importar pedidos históricos desde archivos CSV, vinculando automáticamente a usuarios existentes por email y creando registros de pedidos, entradas e ítems",
+    "resendDashboard": "Panel de Resend",
+    "resendDashboardDescription": "Monitorear el estado de entrega de emails y analíticas de Resend",
     "categoryDatabase": "Base de Datos",
     "categoryTesting": "Pruebas",
     "categoryDocumentation": "Documentación",
@@ -3501,7 +3560,10 @@
     "artistSignupDescription": "Probar el flujo de registro de artista con datos pre-poblados de Spotify o SoundCloud, opciones configurables y pre-llenado de formulario",
     "storyDesigner": "Diseñador de Stories",
     "storyDesignerDescription": "Diseñar y previsualizar plantillas de Instagram Stories para eventos, artistas, venues y organizaciones con renderizado Canvas en vivo",
+    "squareSpinners": "Spinners Cuadrados",
+    "squareSpinnersDescription": "Comparar 5 animaciones de carga únicas basadas en cuadrados con variantes de tamaño y soporte para movimiento reducido",
     "categoryEcommerce": "E-Commerce",
+    "categoryDesign": "Diseño",
     "categoryCommunication": "Comunicación",
     "categoryArtistManagement": "Gestión de Artistas",
     "categorySocial": "Compartir Social",

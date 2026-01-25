@@ -33,8 +33,8 @@ export default function OrderTickets() {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className='flex items-center justify-center min-h-[400px]'>
+      <Layout hideFooter>
+        <div className='h-[calc(100dvh-64px)] w-full'>
           <FmCommonLoadingState />
         </div>
       </Layout>

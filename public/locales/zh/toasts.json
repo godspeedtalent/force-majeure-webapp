@@ -38,7 +38,11 @@
     "emailVerificationSent": "验证邮件已发送",
     "sessionExpired": "您的会话已过期，请重新登录。",
     "loginRequired": "您必须登录才能执行此操作",
-    "unexpectedError": "发生意外错误"
+    "unexpectedError": "发生意外错误",
+    "signUpSuccessDescription": "如果您没有收到，请检查垃圾邮件文件夹。",
+    "authenticationSuccessful": "认证成功",
+    "authSuccess": "登录成功！",
+    "accountCreatedSuccessfully": "账户创建成功！"
   },
   "profile": {
     "updateSuccess": "资料更新成功",
@@ -121,7 +125,7 @@
     "artistUpdateFailedDescription": "无法保存艺术家更改",
     "rsvpSettingsUpdated": "预约设置已更新",
     "rsvpSettingsUpdateFailed": "更新预约设置失败",
-    "rsvpConfirmed": "您已在{{eventTitle}}的宾客名单上！请查收邮件获取您的门票。",
+    "rsvpConfirmed": "您已在{{eventTitle}}的宾客名单上！请在钱包中查看您的门票。",
     "rsvpCancelled": "您对{{eventTitle}}的预约已取消。",
     "rsvpAtCapacity": "此活动已满员。您可以加入候补名单。",
     "rsvpFailed": "预约失败，请重试。",
@@ -269,11 +273,6 @@
     "requestApproveFailed": "批准请求失败",
     "requestDenied": "请求已拒绝",
     "requestDenyFailed": "拒绝请求失败"
-  },
-  "auth": {
-    "authenticationSuccessful": "认证成功",
-    "authSuccess": "登录成功！",
-    "accountCreatedSuccessfully": "账户创建成功！"
   },
   "share": {
     "copyFailed": "复制链接失败"

@@ -122,14 +122,17 @@ export function useEventPartners(eventId: string | undefined) {
       }
 
       // Transform the data to match our interface
-      return (data || []).map((item: any) => ({
-        id: item.id,
-        organization_id: item.organization_id,
-        display_order: item.display_order,
-        is_hidden: item.is_hidden,
-        importance: item.importance ?? 1,
-        organization: item.organization,
-      }));
+      // Filter out partners where organization is null (RLS may block the join for anon users)
+      return (data || [])
+        .filter((item: any) => item.organization !== null)
+        .map((item: any) => ({
+          id: item.id,
+          organization_id: item.organization_id,
+          display_order: item.display_order,
+          is_hidden: item.is_hidden,
+          importance: item.importance ?? 1,
+          organization: item.organization,
+        }));
     },
     enabled: Boolean(eventId),
   });

@@ -4,10 +4,10 @@ export type MobileDevToolId =
   // Staff tools
   | 'navigation'
   | 'notes'
+  | 'demoMode'
   // Developer tools
   | 'pageInfo'
   | 'roles'
-  | 'demoMode'
   // Data & Config tools
   | 'database'
   | 'features'
@@ -57,10 +57,10 @@ export function useMobileDevTools(): UseMobileDevToolsReturn {
     // Staff tools
     navigation: 0,
     notes: 0,
+    demoMode: 0,
     // Developer tools
     pageInfo: 0,
     roles: 0,
-    demoMode: 0,
     // Data & Config tools
     database: 0,
     features: 0,

@@ -84,7 +84,6 @@ interface Recording {
   name: string;
   url: string;
   platform: 'spotify' | 'soundcloud' | 'youtube';
-  duration_seconds: number | null;
 }
 
 // ============================================================================
@@ -121,7 +120,7 @@ export function SubmissionModal({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data, error } = await (supabase as any)
           .from('artist_recordings')
-          .select('id, name, url, platform, duration_seconds')
+          .select('id, name, url, platform')
           .eq('artist_id', artistId)
           .eq('recording_type', 'dj_set')
           .order('is_primary_dj_set', { ascending: false })

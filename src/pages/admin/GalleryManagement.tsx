@@ -212,7 +212,7 @@ export default function GalleryManagement() {
   };
 
   if (galleryLoading) {
-    return <FmCommonLoadingState />;
+    return <FmCommonLoadingState fullScreen />;
   }
 
   if (galleryError || !gallery) {

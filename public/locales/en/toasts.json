@@ -39,7 +39,10 @@
     "emailVerificationSent": "Verification email sent",
     "sessionExpired": "Your session has expired. Please sign in again.",
     "loginRequired": "You must be logged in to perform this action",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "authenticationSuccessful": "Authentication successful",
+    "authSuccess": "Signed in successfully!",
+    "accountCreatedSuccessfully": "Account created successfully!"
   },
   "profile": {
     "updateSuccess": "Profile updated successfully",
@@ -122,7 +125,7 @@
     "artistUpdateFailedDescription": "Could not save artist changes",
     "rsvpSettingsUpdated": "RSVP settings updated",
     "rsvpSettingsUpdateFailed": "Failed to update RSVP settings",
-    "rsvpConfirmed": "You're on the list for {{eventTitle}}! Check your email for your ticket.",
+    "rsvpConfirmed": "You're on the list for {{eventTitle}}! Check your wallet for your ticket.",
     "rsvpCancelled": "Your RSVP for {{eventTitle}} has been cancelled.",
     "rsvpAtCapacity": "This event has reached capacity. You can join the waitlist.",
     "rsvpFailed": "Failed to RSVP. Please try again.",
@@ -270,11 +273,6 @@
     "requestApproveFailed": "Failed to approve request",
     "requestDenied": "Request denied",
     "requestDenyFailed": "Failed to deny request"
-  },
-  "auth": {
-    "authenticationSuccessful": "Authentication successful",
-    "authSuccess": "Signed in successfully!",
-    "accountCreatedSuccessfully": "Account created successfully!"
   },
   "share": {
     "copyFailed": "Failed to copy link"

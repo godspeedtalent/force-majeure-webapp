@@ -237,7 +237,7 @@ export const EventDetailsContent = ({
             defaultExpanded={true}
             className='lg:col-span-2'
           >
-            <p className='text-muted-foreground leading-relaxed text-sm'>
+            <p className='text-muted-foreground leading-relaxed text-sm whitespace-pre-line'>
               {event.description}
             </p>
           </FmCommonCollapsibleSection>

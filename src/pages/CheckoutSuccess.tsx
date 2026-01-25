@@ -9,6 +9,7 @@ import {
   FmCommonCardTitle,
 } from '@/components/common/display/FmCommonCard';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { Layout } from '@/components/layout/Layout';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { useAnalytics } from '@/features/analytics';
@@ -97,7 +98,7 @@ export default function CheckoutSuccess() {
     return (
       <Layout>
         <div className='min-h-[60vh] flex items-center justify-center'>
-          <div className='h-8 w-8 animate-spin rounded-full border-[3px] border-fm-gold border-b-transparent' />
+          <FmGoldenGridLoader size="md" />
         </div>
       </Layout>
     );
@@ -123,7 +124,7 @@ export default function CheckoutSuccess() {
             <div className='flex items-center justify-center gap-2 text-sm'>
               {emailStatus === 'pending' && (
                 <>
-                  <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                   <span className='text-muted-foreground'>
                     <FmI18nCommon i18nKey='checkoutResult.success.sendingEmail' />
                   </span>

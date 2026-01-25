@@ -10,11 +10,10 @@ import { useTranslation } from 'react-i18next';
 import {
   // Developer Tools icons
   Database,
-  FileText,
   FlaskConical,
   Code,
   FileSpreadsheet,
-  Palette,
+  Mail,
   // Admin icons
   Shield,
   Sliders,
@@ -37,7 +36,6 @@ import {
   HardDrive,
   Images,
   MessageSquare,
-  UserPlus,
 } from 'lucide-react';
 import {
   FmCommonSideNavGroup,
@@ -52,7 +50,6 @@ interface UseDeveloperNavigationProps {
   isAdmin: boolean;
   isRecordingRatingsEnabled: boolean;
   counts: {
-    pendingRegistrationsCount: number;
     venuesCount: number;
     organizationsCount: number;
     usersCount: number;
@@ -76,7 +73,6 @@ export function useDeveloperNavigation({
   const { t } = useTranslation('common');
 
   const {
-    pendingRegistrationsCount,
     venuesCount,
     organizationsCount,
     usersCount,
@@ -96,28 +92,10 @@ export function useDeveloperNavigation({
         description: t('developerIndex.demoToolsDescription'),
       },
       {
-        id: 'dev_docs',
-        label: t('developerIndex.documentationViewer'),
-        icon: FileText,
-        description: t('developerIndex.documentationViewerDescription'),
-      },
-      {
         id: 'dev_order_import',
         label: t('developerIndex.orderCsvImport'),
         icon: FileSpreadsheet,
         description: t('developerIndex.orderCsvImportDescription'),
-      },
-      {
-        id: 'dev_role_diagnostics',
-        label: 'Role Diagnostics',
-        icon: Shield,
-        description: 'Debug role fetching and permission issues',
-      },
-      {
-        id: 'dev_template_designer',
-        label: t('developerIndex.templateDesigner', 'Template Designer'),
-        icon: Palette,
-        description: t('developerIndex.templateDesignerDescription', 'Customize email and PDF templates'),
       },
     ];
 
@@ -145,6 +123,12 @@ export function useDeveloperNavigation({
 
     // Dashboards group - conditionally include Recording Ratings based on feature flag
     const dashboardItems: FmCommonSideNavItem<DeveloperTab>[] = [
+      {
+        id: 'dash_email_traffic',
+        label: t('developerIndex.emailTraffic', 'Email Traffic'),
+        icon: Mail,
+        description: t('developerIndex.emailTrafficDescription', 'Monitor email delivery and statistics'),
+      },
       ...(isRecordingRatingsEnabled
         ? [
             {
@@ -275,29 +259,15 @@ export function useDeveloperNavigation({
       ],
     };
 
-    // Messages subgroup (admin only)
+    // Messages subgroup (admin only - activity logs)
     const messagesItems: FmCommonSideNavItem<DeveloperTab>[] = [];
     if (isAdmin) {
-      messagesItems.push(
-        {
-          id: 'logs_all',
-          label: t('activityLogsPage.activityLogs'),
-          icon: Activity,
-          description: t('activityLogsPage.allLogsDescription'),
-        },
-        {
-          id: 'db_registrations',
-          label: t('artistRegistrations.navLabel'),
-          icon: UserPlus,
-          description: t('artistRegistrations.navDescription'),
-          badge:
-            pendingRegistrationsCount > 0 ? (
-              <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
-                {pendingRegistrationsCount}
-              </span>
-            ) : undefined,
-        }
-      );
+      messagesItems.push({
+        id: 'logs_all',
+        label: t('activityLogsPage.activityLogs'),
+        icon: Activity,
+        description: t('activityLogsPage.allLogsDescription'),
+      });
     }
 
     // Build the groups array
@@ -361,7 +331,6 @@ export function useDeveloperNavigation({
     isAdmin,
     isRecordingRatingsEnabled,
     t,
-    pendingRegistrationsCount,
     artistsCount,
     eventsCount,
     guestsCount,

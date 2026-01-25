@@ -9,7 +9,7 @@ import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader
 import { FmInstagramStoryButton } from '@/components/common/sharing';
 
 import { Separator } from '@/components/common/shadcn/separator';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { Layout } from '@/components/layout/Layout';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -53,7 +53,7 @@ export default function OrganizationDetails() {
     return (
       <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='flex items-center justify-center min-h-[400px]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );

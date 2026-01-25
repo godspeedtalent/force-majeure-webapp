@@ -5,12 +5,15 @@ import {
   OrderForEmailConversion,
   OrderItemForEmail,
   OrderEventForEmail,
+  EmailConfirmationData,
 } from '@/types/email';
 import { generateOrderReceiptEmailHTML } from './templates/OrderReceiptEmail';
 import {
   generateRsvpConfirmationEmailHTML,
   RsvpConfirmationEmailData,
 } from './templates/RsvpConfirmationEmail';
+import { generateEmailConfirmationHTML } from './templates/EmailConfirmationEmail';
+import { generateFmTicketReceiptEmailHTML } from './templates/FmTicketReceiptEmail';
 import { logger } from '@/shared';
 import { TicketPDFService } from './TicketPDFService';
 import type { EmailTemplateConfig } from '@/features/template-designer/types';
@@ -389,5 +392,147 @@ export class EmailService {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
+  }
+
+  /**
+   * Send email confirmation for account verification
+   * Uses the FM-branded dark template
+   */
+  static async sendEmailConfirmation(
+    data: EmailConfirmationData
+  ): Promise<EmailSendResult> {
+    try {
+      const htmlContent = generateEmailConfirmationHTML(data);
+
+      const { data: response, error } = await supabase.functions.invoke(
+        'send-email',
+        {
+          body: {
+            to: [data.userEmail],
+            subject: 'Verify Your Email - Force Majeure',
+            html: htmlContent,
+          },
+        }
+      );
+
+      if (error) {
+        logger.error('Error sending email confirmation:', error);
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+
+      logger.info('Email confirmation sent', {
+        email: data.userEmail,
+        userName: data.userName,
+      });
+
+      return {
+        success: true,
+        messageId: response?.messageId,
+      };
+    } catch (error) {
+      logger.error('Unexpected error sending email confirmation:', { error });
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Send FM-branded ticket receipt email
+   * Uses the sleek dark template with ticket card design
+   */
+  static async sendFmTicketReceipt(
+    data: OrderReceiptEmailData
+  ): Promise<EmailSendResult> {
+    try {
+      // Generate PDF ticket
+      let pdfAttachment: string | undefined;
+      if (data.pdfTicketAttachment) {
+        pdfAttachment = data.pdfTicketAttachment;
+      } else {
+        try {
+          pdfAttachment = await TicketPDFService.generateTicketPDF(data);
+          if (pdfAttachment) {
+            logger.info('PDF ticket generated for FM receipt', {
+              orderId: data.orderId,
+            });
+          }
+        } catch (pdfError) {
+          logger.warn(
+            'Failed to generate PDF ticket for FM receipt, sending without attachment',
+            {
+              orderId: data.orderId,
+              error: pdfError instanceof Error ? pdfError.message : 'Unknown',
+            }
+          );
+        }
+      }
+
+      // Generate FM-branded HTML email
+      const htmlContent = generateFmTicketReceiptEmailHTML(data);
+
+      const { data: response, error } = await supabase.functions.invoke(
+        'send-email',
+        {
+          body: {
+            to: [data.purchaser.email],
+            subject: `Your Tickets - ${data.event.title}`,
+            html: htmlContent,
+            attachments: pdfAttachment
+              ? [
+                  {
+                    filename: `tickets-${data.orderId}.pdf`,
+                    content: pdfAttachment,
+                    contentType: 'application/pdf',
+                  },
+                ]
+              : undefined,
+          },
+        }
+      );
+
+      if (error) {
+        logger.error('Error sending FM ticket receipt:', error);
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+
+      logger.info('FM ticket receipt sent', {
+        orderId: data.orderId,
+        email: data.purchaser.email,
+        eventTitle: data.event.title,
+      });
+
+      return {
+        success: true,
+        messageId: response?.messageId,
+      };
+    } catch (error) {
+      logger.error('Unexpected error sending FM ticket receipt:', { error });
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Preview FM-branded ticket receipt HTML
+   */
+  static previewFmTicketReceiptEmail(data: OrderReceiptEmailData): string {
+    return generateFmTicketReceiptEmailHTML(data);
+  }
+
+  /**
+   * Preview email confirmation HTML
+   */
+  static previewEmailConfirmation(data: EmailConfirmationData): string {
+    return generateEmailConfirmationHTML(data);
   }
 }

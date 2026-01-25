@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { logger } from '@/shared';
 import { Clock } from 'lucide-react';
 import { toast as sonnerToast } from 'sonner';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 interface FmTimerToastProps {
   duration: number; // in seconds
@@ -103,7 +104,7 @@ export const FmTimerToast = ({
             >
               {isExecuting ? (
                 <>
-                  <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                   <span>{t('labels.loading')}</span>
                 </>
               ) : (

@@ -3,6 +3,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
 import { LucideIcon } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 // Helper to check if something is a renderable React component (function or forwardRef)
 // - Function components: typeof === 'function'
@@ -124,7 +125,7 @@ export const FmCommonButton = forwardRef<
         {...props}
       >
         <>
-          {loading && <div className='w-4 h-4 mr-2 animate-spin rounded-full border-2 border-fm-gold border-b-transparent flex-shrink-0' />}
+          {loading && <FmGoldenGridLoader size="sm" className="mr-2 flex-shrink-0" />}
           {!loading && Icon && iconPosition === 'left' && (
             isReactComponent(Icon) ? (
               <Icon className='w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110 flex-shrink-0' />

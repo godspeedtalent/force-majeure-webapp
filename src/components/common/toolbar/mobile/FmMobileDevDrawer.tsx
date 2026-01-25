@@ -310,6 +310,12 @@ export function FmMobileDevDrawer({
           icon: <ClipboardList className="h-[24px] w-[24px]" strokeWidth={2} />,
           devOnly: false, // Staff can access
         },
+        {
+          id: 'demoMode',
+          label: t('mobileDevTools.tools.demoMode'),
+          icon: <Video className="h-[24px] w-[24px]" strokeWidth={2} />,
+          devOnly: false, // Staff can access
+        },
       ],
     },
     // Developer tools
@@ -328,12 +334,6 @@ export function FmMobileDevDrawer({
           id: 'roles',
           label: t('mobileDevTools.tools.roles'),
           icon: <UserCog className="h-[24px] w-[24px]" strokeWidth={2} />,
-          devOnly: true,
-        },
-        {
-          id: 'demoMode',
-          label: t('mobileDevTools.tools.demoMode'),
-          icon: <Video className="h-[24px] w-[24px]" strokeWidth={2} />,
           devOnly: true,
         },
       ],

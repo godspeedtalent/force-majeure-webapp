@@ -1,8 +1,9 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -22,6 +23,7 @@ const EventCheckout = lazy(() => import('./pages/demo/EventCheckout'));
 const EventCheckoutConfirmation = lazy(() => import('./pages/demo/EventCheckoutConfirmation'));
 const EmailTemplateDemo = lazy(() => import('./pages/demo/EmailTemplateDemo'));
 const StoryDesigner = lazy(() => import('./pages/demo/StoryDesigner'));
+const SquareSpinnersDemo = lazy(() => import('./pages/demo/SquareSpinnersDemo'));
 
 // Lazy load developer pages
 const DeveloperHome = lazy(() => import('./pages/developer/DeveloperHome'));
@@ -109,30 +111,12 @@ import ArtistSignup from './pages/artists/ArtistSignup';
 import ArtistRegister from './pages/artists/ArtistRegister';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Disable automatic retries for 403/401 errors
-      retry: (failureCount, error) => {
-        if (
-          error &&
-          typeof error === 'object' &&
-          'code' in error &&
-          (error.code === '403' || error.code === '401' || error.code === '42501')
-        ) {
-          return false; // Don't retry permission errors
-        }
-        return failureCount < 3;
-      },
-    },
-  },
-});
+import { queryClient } from '@/lib/queryClient';
 
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
   <div className='min-h-screen flex items-center justify-center bg-background'>
-    <FmCommonLoadingSpinner size='lg' />
+    <FmCommonLoadingState centered={false} size='lg' />
   </div>
 );
 
@@ -143,11 +127,17 @@ const GlobalSearchWrapper = () => {
 
 const AppRoutes = () => {
   const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
+  const location = useLocation();
+  const isFlaggedRoute =
+    location.pathname.startsWith('/merch') ||
+    location.pathname.startsWith('/sonic-gauntlet');
 
-  if (isLoading) {
+  // Only block on feature flags when the current route depends on them.
+  // This avoids a global startup stall if the flags request hangs.
+  if (isLoading && isFlaggedRoute) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmGoldenGridLoader size='lg' />
       </div>
     );
   }
@@ -323,6 +313,16 @@ const AppRoutes = () => {
           </DemoProtectedRoute>
         }
       />
+      <Route
+        path='/developer/demo/square-spinners'
+        element={
+          <DemoProtectedRoute>
+            <Suspense fallback={<LazyLoadFallback />}>
+              <SquareSpinnersDemo />
+            </Suspense>
+          </DemoProtectedRoute>
+        }
+      />
 
       {/* Testing Routes - Protected by developer/admin roles */}
       <Route
@@ -467,11 +467,11 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Artist Management Routes - Protected by admin/developer roles */}
+      {/* Artist Management Routes - Protected by authentication, ownership checked in component */}
       <Route
         path='/artists/:id/manage'
         element={
-          <ProtectedRoute role={[ROLES.ADMIN, ROLES.DEVELOPER]}>
+          <ProtectedRoute>
             <Suspense fallback={<LazyLoadFallback />}>
               <ArtistManagement />
             </Suspense>

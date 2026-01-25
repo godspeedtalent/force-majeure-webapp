@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
-import { Check } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { cn } from '@/shared';
 
 export interface FmCommonCheckboxProps {
@@ -8,6 +8,11 @@ export interface FmCommonCheckboxProps {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
+  /**
+   * Shows a loading spinner instead of the checkbox.
+   * Useful when persisting checkbox state to the server.
+   */
+  loading?: boolean;
   className?: string;
   'aria-label'?: string;
 }
@@ -34,7 +39,7 @@ export interface FmCommonCheckboxProps {
 export const FmCommonCheckbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   FmCommonCheckboxProps
->(({ className, checked, onCheckedChange, ...props }, ref) => {
+>(({ className, checked, onCheckedChange, loading, disabled, ...props }, ref) => {
   const [isAnimating, setIsAnimating] = React.useState(false);
 
   const handleCheckedChange = (newChecked: boolean | 'indeterminate') => {
@@ -46,11 +51,28 @@ export const FmCommonCheckbox = React.forwardRef<
     onCheckedChange?.(newChecked);
   };
 
+  // Loading state - show spinner
+  if (loading) {
+    return (
+      <div
+        className={cn(
+          'h-5 w-5 shrink-0 flex items-center justify-center',
+          'border-2 border-fm-gold/40 bg-fm-gold/10',
+          className
+        )}
+        aria-label="Loading"
+      >
+        <Loader2 className="h-3 w-3 text-fm-gold animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <CheckboxPrimitive.Root
       ref={ref}
       checked={checked}
       onCheckedChange={handleCheckedChange}
+      disabled={disabled}
       className={cn(
         'peer h-5 w-5 shrink-0 rounded border-2 transition-all duration-200',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fm-gold focus-visible:ring-offset-2',

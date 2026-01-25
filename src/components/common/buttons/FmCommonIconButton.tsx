@@ -3,6 +3,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { cn } from '@/shared';
 import { LucideIcon, Plus } from 'lucide-react';
 import { useRipple } from '@/hooks/useRipple';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import {
   Tooltip,
   TooltipContent,
@@ -185,7 +186,7 @@ export const FmCommonIconButton = forwardRef<
       >
         <>
           {loading ? (
-            <div className={cn('animate-spin rounded-full border-2 border-fm-gold border-b-transparent', iconSizeClasses[size])} />
+            <FmGoldenGridLoader size="sm" />
           ) : (
             <div className='relative flex items-center justify-center w-full h-full'>
               <Icon

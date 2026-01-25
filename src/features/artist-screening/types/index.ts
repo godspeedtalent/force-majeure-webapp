@@ -14,6 +14,25 @@ import type { SubmissionTagWithDetails } from '@/features/tagging/types';
 export type SubmissionContext = 'general' | 'event' | 'venue';
 export type SubmissionStatus = 'pending' | 'approved' | 'rejected';
 
+export type ReviewMetricId =
+  | 'trackSelection'
+  | 'flowEnergy'
+  | 'technicalExecution';
+export type QualitativeScore = 0 | 1 | 2 | 3 | 4;
+
+export interface ReviewMetricScores {
+  trackSelection: QualitativeScore;
+  flowEnergy: QualitativeScore;
+  technicalExecution: QualitativeScore;
+}
+
+export interface ReviewMetricConfig {
+  id: ReviewMetricId;
+  title: string;
+  descriptor: string;
+  tooltips: Record<QualitativeScore, string>;
+}
+
 // ============================================================================
 // Database Tables
 // ============================================================================
@@ -61,7 +80,7 @@ export interface ScreeningSubmissionWithDetails extends ScreeningSubmission {
     name: string;
     url: string;
     platform: 'spotify' | 'soundcloud' | 'youtube';
-    duration_seconds: number | null;
+    cover_art?: string | null;
   };
   venues?: {
     id: string;
@@ -89,11 +108,14 @@ export interface ScreeningReview {
   id: string;
   submission_id: string;
   reviewer_id: string;
-  rating: number; // 1-10
+  rating: number; // Raw total score (0-12)
   internal_notes: string | null;
   listen_duration_seconds: number;
   created_at: string;
   updated_at: string;
+  track_selection_score?: QualitativeScore | null;
+  flow_energy_score?: QualitativeScore | null;
+  technical_execution_score?: QualitativeScore | null;
   profiles?: {
     id: string;
     display_name: string | null;
@@ -164,9 +186,10 @@ export interface CreateSubmissionInput {
  */
 export interface CreateReviewInput {
   submission_id: string;
-  rating: number; // 1-10
+  rating: number; // 0-12 (sum of three qualitative metrics)
   internal_notes?: string;
   listen_duration_seconds: number;
+  metric_scores?: ReviewMetricScores;
 }
 
 /**
@@ -227,6 +250,8 @@ export interface SubmissionStats {
  */
 export interface ReviewTimerState {
   submissionId: string;
+  submissionTitle: string; // For display in widget
+  recordingUrl: string; // For relaunching the recording
   startTime: number; // Unix timestamp
   duration: number; // Total duration in seconds (1200 = 20 minutes)
   isActive: boolean;

@@ -4,6 +4,7 @@ import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadi
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonEmptyState } from '@/components/common/display/FmCommonEmptyState';
 import { FmArtistUndercardCard } from '@/components/common/display/FmArtistUndercardCard';
+import { FmFloatingUndercardCta } from '@/components/common/display/FmFloatingUndercardCta';
 import { FmSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { FmListSortFilter, SortDirection, DateRange } from '@/components/common/filters/FmListSortFilter';
 import { DecorativeDivider } from '@/components/primitives/DecorativeDivider';
@@ -102,6 +103,9 @@ export function IndexDesktop({
   if (isSingleRow) {
     return (
       <div className='flex flex-col justify-between pt-8 pb-[60px] px-4 relative z-10'>
+        {/* Floating Undercard CTA */}
+        <FmFloatingUndercardCta />
+
         {/* Logo Section - Top Row */}
         <div className='flex items-center justify-center'>
           <div className='max-w-4xl mx-auto'>
@@ -394,6 +398,9 @@ export function IndexDesktop({
 
   return (
     <div className='relative z-10'>
+      {/* Floating Undercard CTA */}
+      <FmFloatingUndercardCta />
+
       {heroContent}
       {eventsContent}
     </div>

@@ -49,6 +49,15 @@ const TICK_INTERVAL_MS = 1000; // Update every second
 // ============================================================================
 
 /**
+ * Pending timer request (when user tries to start while one is active)
+ */
+export interface PendingTimerRequest {
+  submissionId: string;
+  submissionTitle: string;
+  recordingUrl: string;
+}
+
+/**
  * Load timer state from localStorage
  */
 function loadTimerState(): ReviewTimerState | null {
@@ -69,6 +78,14 @@ function loadTimerState(): ReviewTimerState | null {
       });
       localStorage.removeItem(STORAGE_KEY);
       return null;
+    }
+
+    // Migrate old timer states that don't have title/url
+    if (!state.submissionTitle) {
+      state.submissionTitle = 'Unknown';
+    }
+    if (!state.recordingUrl) {
+      state.recordingUrl = '';
     }
 
     return state;
@@ -181,13 +198,31 @@ interface UseReviewTimerReturn {
   isTimerActive: boolean;
 
   /**
-   * Start a new timer for a submission
-   * Opens recording URL in new tab and starts countdown
-   * @param submissionId - Submission ID
-   * @param recordingUrl - URL to open in new tab
-   * @returns Success boolean
+   * Pending timer request (when trying to start while active)
    */
-  startTimer: (submissionId: string, recordingUrl: string) => boolean;
+  pendingRequest: PendingTimerRequest | null;
+
+  /**
+   * Request to start a new timer for a submission
+   * If a timer is active, sets pendingRequest for confirmation
+   * Otherwise starts immediately
+   * @param submissionId - Submission ID
+   * @param submissionTitle - Title for display
+   * @param recordingUrl - URL to open in new tab
+   * @returns 'started' | 'pending' | 'completed' | 'failed'
+   */
+  requestTimer: (submissionId: string, submissionTitle: string, recordingUrl: string) => 'started' | 'pending' | 'completed' | 'failed';
+
+  /**
+   * Confirm the pending timer switch
+   * Cancels current timer and starts the pending one
+   */
+  confirmPendingTimer: () => void;
+
+  /**
+   * Cancel the pending timer request
+   */
+  cancelPendingRequest: () => void;
 
   /**
    * Cancel the active timer
@@ -202,11 +237,22 @@ interface UseReviewTimerReturn {
   completeTimer: () => void;
 
   /**
+   * Relaunch the recording URL in a new tab
+   */
+  relaunchRecording: () => void;
+
+  /**
    * Check if a specific submission's timer has been completed
    * @param submissionId - Submission ID to check
    * @returns True if timer has been completed for this submission
    */
   isTimerCompleted: (submissionId: string) => boolean;
+
+  /**
+   * Override the active timer (admin only)
+   * Marks the timer as complete immediately without waiting for the full duration
+   */
+  overrideTimer: () => void;
 }
 
 export function useReviewTimer(): UseReviewTimerReturn {
@@ -215,6 +261,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
     loadTimerState()
   );
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
+  const [pendingRequest, setPendingRequest] = useState<PendingTimerRequest | null>(null);
 
   // Calculate remaining time based on start time and duration
   const calculateRemaining = useCallback((state: ReviewTimerState): number => {
@@ -223,23 +270,9 @@ export function useReviewTimer(): UseReviewTimerReturn {
     return Math.floor(remaining);
   }, []);
 
-  // Start a new timer
-  const startTimer = useCallback(
-    (submissionId: string, recordingUrl: string): boolean => {
-      // Block if timer already active
-      if (timerState?.isActive) {
-        toast.error('Timer already active', {
-          description: 'Please cancel or complete the current timer first.',
-        });
-        return false;
-      }
-
-      // Check if already completed
-      if (isSubmissionTimerCompleted(submissionId)) {
-        toast.info('Timer already completed for this submission');
-        return false;
-      }
-
+  // Internal function to actually start a timer
+  const doStartTimer = useCallback(
+    (submissionId: string, submissionTitle: string, recordingUrl: string): boolean => {
       try {
         // Open recording in new tab
         window.open(recordingUrl, '_blank', 'noopener,noreferrer');
@@ -247,6 +280,8 @@ export function useReviewTimer(): UseReviewTimerReturn {
         // Create new timer state
         const newState: ReviewTimerState = {
           submissionId,
+          submissionTitle,
+          recordingUrl,
           startTime: Date.now(),
           duration: TIMER_DURATION_SECONDS,
           isActive: true,
@@ -278,8 +313,56 @@ export function useReviewTimer(): UseReviewTimerReturn {
         return false;
       }
     },
-    [timerState]
+    []
   );
+
+  // Request to start a timer - handles confirmation flow
+  const requestTimer = useCallback(
+    (submissionId: string, submissionTitle: string, recordingUrl: string): 'started' | 'pending' | 'completed' | 'failed' => {
+      // Check if already completed
+      if (isSubmissionTimerCompleted(submissionId)) {
+        toast.info('Timer already completed for this submission');
+        return 'completed';
+      }
+
+      // If timer already active for a different submission, queue for confirmation
+      if (timerState?.isActive && timerState.submissionId !== submissionId) {
+        setPendingRequest({ submissionId, submissionTitle, recordingUrl });
+        return 'pending';
+      }
+
+      // If timer already active for the same submission, just relaunch the recording
+      if (timerState?.isActive && timerState.submissionId === submissionId) {
+        window.open(recordingUrl, '_blank', 'noopener,noreferrer');
+        toast.info('Recording opened', { description: 'Timer continues running.' });
+        return 'started';
+      }
+
+      // Start immediately
+      const success = doStartTimer(submissionId, submissionTitle, recordingUrl);
+      return success ? 'started' : 'failed';
+    },
+    [timerState, doStartTimer]
+  );
+
+  // Confirm pending timer switch
+  const confirmPendingTimer = useCallback(() => {
+    if (!pendingRequest) return;
+
+    // Clear current timer state (don't mark as completed)
+    setTimerState(null);
+    setRemainingSeconds(0);
+    clearTimerState();
+
+    // Start the pending timer
+    doStartTimer(pendingRequest.submissionId, pendingRequest.submissionTitle, pendingRequest.recordingUrl);
+    setPendingRequest(null);
+  }, [pendingRequest, doStartTimer]);
+
+  // Cancel pending request
+  const cancelPendingRequest = useCallback(() => {
+    setPendingRequest(null);
+  }, []);
 
   // Cancel the active timer
   const cancelTimer = useCallback(() => {
@@ -297,6 +380,15 @@ export function useReviewTimer(): UseReviewTimerReturn {
     toast.info('Timer cancelled', {
       description: 'You can start a new timer now.',
     });
+  }, [timerState]);
+
+  // Relaunch the recording URL
+  const relaunchRecording = useCallback(() => {
+    if (!timerState?.recordingUrl) {
+      toast.error('No recording URL available');
+      return;
+    }
+    window.open(timerState.recordingUrl, '_blank', 'noopener,noreferrer');
   }, [timerState]);
 
   // Complete the active timer
@@ -325,6 +417,29 @@ export function useReviewTimer(): UseReviewTimerReturn {
   const isTimerCompleted = useCallback((submissionId: string): boolean => {
     return isSubmissionTimerCompleted(submissionId);
   }, []);
+
+  // Override the active timer (admin only) - marks as complete immediately
+  const overrideTimer = useCallback(() => {
+    if (!timerState) return;
+
+    logger.info('Review timer overridden by admin', {
+      submissionId: timerState.submissionId,
+      remainingSeconds,
+      source: 'useReviewTimer.overrideTimer',
+    });
+
+    // Mark as completed
+    markTimerCompleted(timerState.submissionId);
+
+    // Clear active timer
+    setTimerState(null);
+    setRemainingSeconds(0);
+    clearTimerState();
+
+    toast.success('Timer overridden', {
+      description: 'You can now submit your review.',
+    });
+  }, [timerState, remainingSeconds]);
 
   // Ticker effect - runs every second when timer is active
   useEffect(() => {
@@ -374,9 +489,14 @@ export function useReviewTimer(): UseReviewTimerReturn {
     timerState,
     remainingSeconds,
     isTimerActive: timerState?.isActive ?? false,
-    startTimer,
+    pendingRequest,
+    requestTimer,
+    confirmPendingTimer,
+    cancelPendingRequest,
     cancelTimer,
     completeTimer,
+    relaunchRecording,
     isTimerCompleted,
+    overrideTimer,
   };
 }

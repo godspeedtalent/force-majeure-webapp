@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/common/shadcn/dialog';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { DataGridColumn } from './FmDataGrid';
 import { FmBulkEditField } from './bulk-edit/FmBulkEditField';
 import { FmBulkEditSummary } from './bulk-edit/FmBulkEditSummary';
@@ -147,7 +148,7 @@ export function FmBulkEditDialog<T = any>({
           <Button onClick={handleApply} disabled={!canApply}>
             {isApplying ? (
               <>
-                <div className='h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                <FmGoldenGridLoader size="sm" className="mr-2" />
                 {t('dialogs.applying')}
               </>
             ) : (

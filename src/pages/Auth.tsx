@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ForceMajeureRootLayout } from '@/components/layout/ForceMajeureRootLayout';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { AuthPanel } from '@/features/auth/components/AuthPanel';
 
@@ -28,7 +28,7 @@ const Auth = () => {
     return (
       <ForceMajeureRootLayout>
         <div className='flex items-center justify-center min-h-full'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </ForceMajeureRootLayout>
     );

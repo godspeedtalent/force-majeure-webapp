@@ -1,7 +1,7 @@
 import { type ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, Settings, X } from 'lucide-react';
+import { ArrowRight, Settings } from 'lucide-react';
 
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
 import { FmCommonIconButton } from '@/components/common/buttons/FmCommonIconButton';
@@ -120,14 +120,6 @@ export const FmArtistDetailsModal = ({
                 />
               )
             )}
-            <FmCommonIconButton
-              icon={X}
-              onClick={() => onOpenChange(false)}
-              variant='secondary'
-              size='sm'
-              aria-label={t('common.close')}
-              className='bg-white/10 text-white hover:bg-white/20 hover:text-fm-gold hover:shadow-[0_0_12px_rgba(207,173,118,0.3)]'
-            />
           </div>
         </div>
 

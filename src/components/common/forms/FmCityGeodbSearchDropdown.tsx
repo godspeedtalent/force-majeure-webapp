@@ -26,6 +26,7 @@ import {
   PopoverTrigger,
 } from '@/components/common/shadcn/popover';
 import { Button } from '@/components/common/shadcn/button';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { cn } from '@/shared';
 import { Label } from '@/components/common/shadcn/label';
 
@@ -167,7 +168,7 @@ export const FmCityGeodbSearchDropdown = ({
             <CommandList>
               {isLoading ? (
                 <div className='flex items-center justify-center py-6'>
-                  <div className='h-4 w-4 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                 </div>
               ) : cities.length === 0 && searchQuery.length >= 2 ? (
                 <CommandEmpty>{t('citySearch.noCitiesFound')}</CommandEmpty>

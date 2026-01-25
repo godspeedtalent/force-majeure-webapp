@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArtistRegistrationLayout } from '@/components/layout/ArtistRegistrationLayout';
 import { useIsMobile } from '@/shared';
 import { CarouselApi } from '@/components/common/shadcn/carousel';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 // Import centralized types and layout components
 import { DEFAULT_FORM_DATA } from './types/registration';
@@ -102,6 +102,7 @@ const ArtistRegister = () => {
   const handleSubmit = async () => {
     // Validate all steps - returns the first invalid step or null if all valid
     const invalidStep = validateAllSteps(formData);
+
     if (invalidStep !== null) {
       setCurrentStep(invalidStep);
       return;
@@ -170,7 +171,7 @@ const ArtistRegister = () => {
     return (
       <ArtistRegistrationLayout>
         <div className='flex items-center justify-center min-h-[50vh]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </ArtistRegistrationLayout>
     );

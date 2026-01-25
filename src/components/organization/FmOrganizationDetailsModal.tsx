@@ -121,12 +121,12 @@ export const FmOrganizationDetailsModal = ({
               {/* Organization content */}
               <div className='flex gap-6'>
                 {/* Profile picture */}
-                <div className='w-24 h-24 flex-shrink-0 overflow-hidden border border-white/15 bg-white/5'>
+                <div className='w-24 h-24 flex-shrink-0 overflow-hidden border border-white/15 bg-white/5 p-2'>
                   {profilePicture ? (
                     <img
                       src={profilePicture}
                       alt={displayData.name}
-                      className='w-full h-full object-cover'
+                      className='w-full h-full object-contain'
                     />
                   ) : (
                     <div className='w-full h-full flex items-center justify-center bg-white/5'>

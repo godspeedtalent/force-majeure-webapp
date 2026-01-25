@@ -200,3 +200,107 @@ export async function isSubmissionIgnored(submissionId: string): Promise<boolean
     return false;
   }
 }
+
+// ============================================================================
+// Approve/Reject Operations
+// ============================================================================
+
+/**
+ * Approve a submission
+ * Updates submission status to 'approved'
+ *
+ * @param submissionId - ID of the submission to approve
+ * @param note - Optional decision note
+ * @throws Error if operation fails or user lacks permission
+ */
+export async function approveSubmission(
+  submissionId: string,
+  note?: string
+): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const { error } = await supabase
+      .from('screening_submissions')
+      .update({
+        status: 'approved',
+        decided_by: user.id,
+        decided_at: new Date().toISOString(),
+        decision_note: note || null,
+      })
+      .eq('id', submissionId);
+
+    if (error) {
+      logger.error('Failed to approve submission', {
+        error: error.message,
+        context: 'submissionService.approveSubmission',
+        details: { submissionId },
+      });
+      throw error;
+    }
+
+    logger.info('Submission approved successfully', {
+      context: 'submissionService.approveSubmission',
+      details: { submissionId },
+    });
+  } catch (error) {
+    handleError(error, {
+      title: 'Failed to approve submission',
+      context: 'submissionService.approveSubmission',
+    });
+    throw error;
+  }
+}
+
+/**
+ * Reject a submission
+ * Updates submission status to 'rejected'
+ *
+ * @param submissionId - ID of the submission to reject
+ * @param note - Optional decision note
+ * @throws Error if operation fails or user lacks permission
+ */
+export async function rejectSubmission(
+  submissionId: string,
+  note?: string
+): Promise<void> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const { error } = await supabase
+      .from('screening_submissions')
+      .update({
+        status: 'rejected',
+        decided_by: user.id,
+        decided_at: new Date().toISOString(),
+        decision_note: note || null,
+      })
+      .eq('id', submissionId);
+
+    if (error) {
+      logger.error('Failed to reject submission', {
+        error: error.message,
+        context: 'submissionService.rejectSubmission',
+        details: { submissionId },
+      });
+      throw error;
+    }
+
+    logger.info('Submission rejected successfully', {
+      context: 'submissionService.rejectSubmission',
+      details: { submissionId },
+    });
+  } catch (error) {
+    handleError(error, {
+      title: 'Failed to reject submission',
+      context: 'submissionService.rejectSubmission',
+    });
+    throw error;
+  }
+}

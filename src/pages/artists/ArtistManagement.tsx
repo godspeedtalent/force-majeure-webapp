@@ -5,7 +5,7 @@
  * Uses extracted hook for state management and tab components for content.
  */
 
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   FileText,
@@ -18,12 +18,15 @@ import {
 import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
 import { PageErrorBoundary } from '@/components/common/feedback';
 import { useUnsavedChanges } from '@/shared/hooks';
+import { useAuth } from '@/features/auth/services/AuthContext';
+import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared';
 import { useArtistManagement, type ArtistTab } from './hooks';
 import {
   ArtistOverviewTab,
@@ -35,6 +38,8 @@ import {
 export default function ArtistManagement() {
   const { t } = useTranslation('common');
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const { isAdmin, hasRole } = useUserPermissions();
 
   const {
     // Artist data
@@ -162,9 +167,17 @@ export default function ArtistManagement() {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
+  }
+
+  // Check if user has access to manage this artist (after loading completes)
+  const canManageArtist = isAdmin() || hasRole(ROLES.DEVELOPER) || (hasRole(ROLES.ARTIST) && artist?.user_id && artist.user_id === user?.id);
+
+  // Redirect if user doesn't have permission to manage this artist
+  if (!canManageArtist) {
+    return <Navigate to='/' replace />;
   }
 
   return (

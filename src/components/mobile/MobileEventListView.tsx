@@ -103,6 +103,12 @@ export function MobileEventListView({
     }
 
     // Sort
+    // For past events sorted by date, invert direction so "asc" shows most recent first
+    // (This is the expected behavior - users want to see recent past events first)
+    const effectiveDirection = isPast && sortField === 'date'
+      ? (sortDirection === 'asc' ? 'desc' : 'asc')
+      : sortDirection;
+
     result.sort((a, b) => {
       let comparison = 0;
       if (sortField === 'date') {
@@ -112,7 +118,7 @@ export function MobileEventListView({
         const bName = b.title || b.headliner.name;
         comparison = aName.localeCompare(bName);
       }
-      return sortDirection === 'asc' ? comparison : -comparison;
+      return effectiveDirection === 'asc' ? comparison : -comparison;
     });
 
     return result;

@@ -67,6 +67,7 @@
     "apply": "Apply",
     "reset": "Reset",
     "upload": "Upload",
+    "uploading": "Uploading...",
     "download": "Download",
     "share": "Share",
     "send": "Send Message",
@@ -187,6 +188,7 @@
     "guestListTitle": "Guest list",
     "clickToSeeFullList": "Click to see full list",
     "logInToSeeFullList": "Log in to see full list",
+    "signInToSeeGuestList": "Sign in to see guest list",
     "goingLabel": "going",
     "joinTheCrowd": "Join the crowd and see who else is going",
     "seeWhosComing": "See who's coming",
@@ -214,7 +216,8 @@
     "privateGuests": "Private Guests",
     "more": "more",
     "othersCount": "+ {{count}} others",
-    "pageViews": "{{count}} page views"
+    "pageViews": "{{count}} page views",
+    "privacyFootnote": "Don't want to appear on this list? Change your profile to private in"
   },
   "contextMenu": {
     "viewProfile": "View Profile"
@@ -315,7 +318,9 @@
     "soundcloud": "SoundCloud",
     "submittedOn": "Submitted on",
     "actions": "Actions",
-    "tags": "Tags"
+    "tags": "Tags",
+    "requestedBy": "Requested by",
+    "whatWillHappen": "What will happen"
   },
   "entities": {
     "venue": "Venue",
@@ -640,6 +645,7 @@
     "unauthorized": "You don't have permission to access this.",
     "sessionExpired": "Your session has expired. Please sign in again.",
     "serverError": "Server error. Please try again later.",
+    "requestTimeout": "The request timed out. Please try again.",
     "somethingWentWrong": "Something went wrong.",
     "debugDetails": "An error occurred in the application. Details are shown below for debugging.",
     "apologize": "We apologize for the inconvenience. Our team has been notified and is working on a fix.",
@@ -1039,7 +1045,8 @@
     "tbaEvent": "TBA Event (To Be Announced)",
     "tbaEventHelp": "Check this for placeholder events. TBA events can still have a venue and date assigned.",
     "noHeadliner": "No event headliner",
-    "noHeadlinerHelp": "All artists will be listed as undercard artists with no featured headliner"
+    "noHeadlinerHelp": "All artists will be listed as undercard artists with no featured headliner",
+    "primary": "Primary"
   },
   "formActions": {
     "addTicketTier": "Add Ticket Tier",
@@ -1911,6 +1918,7 @@
     "pastEvents": "Past Events",
     "viewEvent": "View event",
     "manageEvent": "Manage event",
+    "partnerBadge": "Partner",
     "unlinkEvent": "Unlink from organization",
     "unlinkEventTitle": "Unlink Event",
     "unlinkEventConfirm": "Are you sure you want to unlink \"{{eventName}}\" from {{orgName}}? The event will remain but will no longer be associated with this organization.",
@@ -2958,7 +2966,8 @@
     "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
     "userAlreadyHasArtist": "You already have an artist profile linked to your account. You can manage it from your profile settings.",
     "userHasPendingRegistration": "You already have a pending artist registration. Please wait for it to be reviewed before submitting another.",
-    "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}."
+    "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}.",
+    "validationFailed": "Please check your form and try again. Some fields may be missing or invalid."
   },
   "orders": {
     "cancelSuccess": "Order cancelled successfully",
@@ -3166,6 +3175,7 @@
     "createFailed": "Failed to create note",
     "statusUpdated": "Status updated",
     "statusUpdateFailed": "Failed to update status",
+    "noPermissionToUpdate": "You don't have permission to update this note",
     "updateSuccess": "Note updated",
     "updateFailed": "Failed to update note",
     "deleteSuccess": "Note deleted",
@@ -3449,6 +3459,53 @@
     "clearAll": "Clear all",
     "showingLogs": "Showing {{showing}} of {{total}} logs"
   },
+  "resendDashboard": {
+    "title": "Email dashboard",
+    "description": "Monitor email delivery status and analytics from Resend",
+    "stats": {
+      "totalEmails": "Total Emails",
+      "delivered": "Delivered",
+      "bounced": "Bounced",
+      "opened": "Opened",
+      "clicked": "Clicked",
+      "complained": "Complained",
+      "pending": "Pending",
+      "deliveryRate": "Delivery Rate"
+    },
+    "domains": {
+      "title": "Configured domains",
+      "noDomainsFound": "No domains configured",
+      "addDomainHint": "Add a domain in the Resend dashboard to get started",
+      "status": {
+        "verified": "Verified",
+        "pending": "Pending",
+        "failed": "Failed",
+        "notStarted": "Not Started",
+        "temporaryFailure": "Temporary Failure"
+      }
+    },
+    "emails": {
+      "title": "Recent emails",
+      "noEmailsFound": "No emails found",
+      "sendFirstEmail": "Send your first email to see it here",
+      "showing": "Showing {{count}} emails",
+      "columns": {
+        "recipient": "Recipient",
+        "subject": "Subject",
+        "status": "Status",
+        "sentAt": "Sent At"
+      },
+      "status": {
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "bounced": "Bounced",
+        "opened": "Opened",
+        "clicked": "Clicked",
+        "complained": "Complained",
+        "deliveryDelayed": "Delayed"
+      }
+    }
+  },
   "statisticsPage": {
     "title": "Statistics",
     "description": "Application metrics and analytics",
@@ -3493,6 +3550,8 @@
     "ticketFlowTestsDescription": "Comprehensive smoke testing suite for the complete ticketing flow including queue management, selection, payment, timeouts, and delivery",
     "orderCsvImport": "Order CSV Import",
     "orderCsvImportDescription": "Import historical orders from CSV files, automatically linking to existing users by email and creating order, ticket, and order item records",
+    "resendDashboard": "Resend Dashboard",
+    "resendDashboardDescription": "Monitor email delivery status and analytics from Resend",
     "categoryDatabase": "Database",
     "categoryTesting": "Testing",
     "categoryDocumentation": "Documentation",
@@ -3511,7 +3570,10 @@
     "artistSignupDescription": "Test the artist registration flow with auto-populated Spotify or SoundCloud data, configurable options, and form pre-filling",
     "storyDesigner": "Story Designer",
     "storyDesignerDescription": "Design and preview Instagram Story templates for events, artists, venues, and organizations with live Canvas rendering",
+    "squareSpinners": "Square Spinners",
+    "squareSpinnersDescription": "Compare 5 unique square-based loading animations with size variants and reduced-motion support",
     "categoryEcommerce": "E-Commerce",
+    "categoryDesign": "Design",
     "categoryCommunication": "Communication",
     "categoryArtistManagement": "Artist Management",
     "categorySocial": "Social Sharing",

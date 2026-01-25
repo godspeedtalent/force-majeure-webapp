@@ -10,6 +10,7 @@ import { FmCommonPageLayout } from '@/components/common/layout';
 import { Input } from '@/components/common/shadcn/input';
 import { Label } from '@/components/common/shadcn/label';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { useAuth } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 import { PERMISSIONS } from '@/shared';
 import { formatHeader } from '@/shared';
@@ -43,13 +44,14 @@ interface ScanResult {
  */
 const TicketScanning = () => {
   const { t } = useTranslation('pages');
-  const { hasPermission, roles } = useUserPermissions();
+  const { hasPermission, rolesLoading } = useUserPermissions();
+  const { loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [ticketCode, setTicketCode] = useState('');
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<ScanResult | null>(null);
   const [showCamera, setShowCamera] = useState(false);
-  const isLoading = !roles;
+  const isLoading = authLoading || rolesLoading;
 
   // Check for scanning permission
   const hasAccess = hasPermission(PERMISSIONS.SCAN_TICKETS);

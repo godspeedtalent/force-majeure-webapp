@@ -177,7 +177,7 @@ export function UserRoleMatrixTab() {
               id={`${row.id}-${role.name}`}
               checked={hasRole}
               onCheckedChange={(checked) => handleToggleRole(row.id, role.name, row.email, checked)}
-              disabled={isToggling}
+              loading={isToggling}
             />
           </div>
         );

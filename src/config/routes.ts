@@ -266,6 +266,45 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
     label: 'Edit',
   },
 
+  // Staff Routes
+  '/staff': {
+    label: 'Staff',
+    showInBreadcrumb: false,
+  },
+  '/staff/screening': {
+    label: 'Screening',
+    showInBreadcrumb: false,
+  },
+  '/staff/screening/review': {
+    label: 'Review',
+  },
+  '/staff/screening/review/:id': {
+    label: '',
+    async: true,
+    resolver: async params => {
+      if (!isUuid(params.id)) return 'Submission';
+
+      try {
+        const { data, error } = await supabase
+          .from('screening_submissions')
+          .select(`
+            artist_recordings (name),
+            artists (name)
+          `)
+          .eq('id', params.id)
+          .maybeSingle();
+
+        if (error || !data) {
+          return 'Submission';
+        }
+        // Return mix name or fallback
+        return (data as any)?.artist_recordings?.name || 'Submission';
+      } catch {
+        return 'Submission';
+      }
+    },
+  },
+
   // Admin Routes
   '/admin/controls': {
     label: 'Admin Controls',

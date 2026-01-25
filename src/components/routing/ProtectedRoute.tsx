@@ -68,12 +68,12 @@ export const ProtectedRoute = ({
   redirectTo,
 }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const { hasAllPermissions, hasAnyPermission, hasAnyRole, roles } =
+  const { hasAllPermissions, hasAnyPermission, hasAnyRole, rolesLoading } =
     useUserPermissions();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isLoading = authLoading || (user && !roles);
+  const isLoading = authLoading || (user && rolesLoading);
 
   useEffect(() => {
     if (isLoading) return;
@@ -126,7 +126,7 @@ export const ProtectedRoute = ({
   ]);
 
   if (isLoading) {
-    return <FmCommonLoadingState />;
+    return <FmCommonLoadingState fullScreen />;
   }
 
   if (!user) {

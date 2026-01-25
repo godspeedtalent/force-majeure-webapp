@@ -29,7 +29,6 @@ import { AdminTicketingSection } from '@/components/admin/AdminTicketingSection'
 import { UserManagement } from '../admin/UserManagement';
 import { OrganizationsManagement } from '../admin/OrganizationsManagement';
 import { EventsManagement } from '../admin/EventsManagement';
-import { ArtistRegistrationsManagement } from '../admin/ArtistRegistrationsManagement';
 import { GalleryManagementSection } from '@/components/DevTools/GalleryManagementSection';
 
 // Database tabs
@@ -41,9 +40,8 @@ import {
   DeveloperDatabaseRecordingsTab,
   ActivityLogsTab,
   DemoToolsTab,
-  DocumentationViewerTab,
   UserRoleMatrixTab,
-  RoleDiagnosticsTab,
+  ResendDashboardTab,
 } from './tabs';
 
 // Data and navigation hooks
@@ -56,7 +54,6 @@ import { AnalyticsDashboardContent } from './dashboards/AnalyticsDashboardConten
 
 // Developer Tools components
 import { OrderCsvImportContent } from './orderImport';
-import { TemplateDesignerContent } from '@/features/template-designer';
 
 // Types
 import { DeveloperTab, VALID_TABS, EXTERNAL_ROUTES } from './types';
@@ -181,25 +178,14 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
-        {activeTab === 'dev_docs' && (
-          <PageErrorBoundary section="Documentation Viewer">
-            <DocumentationViewerTab />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'dev_template_designer' && (
-          <PageErrorBoundary section="Template Designer">
-            <TemplateDesignerContent />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'dev_role_diagnostics' && (
-          <PageErrorBoundary section="Role Diagnostics">
-            <RoleDiagnosticsTab />
-          </PageErrorBoundary>
-        )}
 
         {/* ======================== DASHBOARDS ======================== */}
+        {activeTab === 'dash_email_traffic' && (
+          <PageErrorBoundary section="Email Traffic">
+            <ResendDashboardTab />
+          </PageErrorBoundary>
+        )}
+
         {activeTab === 'dash_recordings' && (
           <PageErrorBoundary section="Recording Ratings">
             <RecordingRatingsDashboard />
@@ -272,12 +258,6 @@ export default function DeveloperHome() {
           <PageErrorBoundary section="Galleries">
             {renderTabHeader('Media Galleries', 'Manage image galleries and media collections for the site.', Images)}
             <GalleryManagementSection />
-          </PageErrorBoundary>
-        )}
-
-        {activeTab === 'db_registrations' && (
-          <PageErrorBoundary section="Artist Registrations">
-            <ArtistRegistrationsManagement />
           </PageErrorBoundary>
         )}
       </div>

@@ -2,6 +2,7 @@ import { forwardRef, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/shared';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 
 interface FmBigButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -205,7 +206,23 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         }}
         {...props}
       >
-        {/* Animated border shimmer */}
+        {/* Traveling border shimmer - always visible for primary variant */}
+        {!isDisabledState && !disableAnimations && isPrimary && (
+          <div
+            className='absolute inset-0 pointer-events-none'
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, transparent 25%, rgba(223,186,125,0.5) 50%, transparent 75%, transparent 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'border-shimmer-gold 6s linear infinite',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'exclude',
+              WebkitMaskComposite: 'xor',
+              padding: '2px',
+            }}
+          />
+        )}
+
+        {/* Additional border glow on hover */}
         {!isDisabledState && !disableAnimations && (
           <div
             className={cn(
@@ -313,12 +330,7 @@ export const FmBigButton = forwardRef<HTMLButtonElement, FmBigButtonProps>(
         <span className='relative z-10 flex items-center justify-center gap-2'>
           {isLoading ? (
             <>
-              <div
-                className={cn(
-                  'h-4 w-4 animate-spin rounded-full border-2 border-b-transparent',
-                  isPrimary ? 'border-fm-gold' : 'border-foreground'
-                )}
-              />
+              <FmGoldenGridLoader size="sm" />
               <span>{t('buttons.processing')}</span>
             </>
           ) : (

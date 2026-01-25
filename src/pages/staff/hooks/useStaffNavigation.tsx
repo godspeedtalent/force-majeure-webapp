@@ -1,12 +1,6 @@
 import { useMemo } from 'react';
-import {
-  BarChart3,
-  MessageSquare,
-  Users,
-  Mail,
-  UserCircle,
-  LayoutDashboard,
-} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { BarChart3, Users, UserCircle, LayoutDashboard, UserPlus } from 'lucide-react';
 import type { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import type { StaffTab, StaffTabCounts } from '../types';
 
@@ -32,6 +26,8 @@ interface UseStaffNavigationReturn {
 export function useStaffNavigation({
   counts,
 }: UseStaffNavigationProps = {}): UseStaffNavigationReturn {
+  const { t } = useTranslation('common');
+
   const navigationGroups = useMemo<FmCommonSideNavGroup<StaffTab>[]>(
     () => [
       // Dashboards Group
@@ -53,21 +49,22 @@ export function useStaffNavigation({
           },
         ],
       },
-      // Messages Group
+      // Requests Group
       {
-        label: 'Messages',
-        icon: MessageSquare,
+        label: 'Requests',
+        icon: UserCircle,
         items: [
           {
-            id: 'logs_contact',
-            label: 'Contact Submissions',
-            icon: Mail,
-            description: 'Contact form submissions',
-            badge: counts?.pendingContacts ? (
-              <span className='text-xs font-medium text-fm-gold'>
-                {counts.pendingContacts}
-              </span>
-            ) : undefined,
+            id: 'db_registrations',
+            label: t('artistRegistrations.navLabel'),
+            icon: UserPlus,
+            description: t('artistRegistrations.navDescription'),
+            badge:
+              counts?.pendingRegistrations && counts.pendingRegistrations > 0 ? (
+                <span className="px-1.5 py-0.5 text-[10px] bg-fm-gold text-black font-bold">
+                  {counts.pendingRegistrations}
+                </span>
+              ) : undefined,
           },
           {
             id: 'db_user_requests',
@@ -75,7 +72,7 @@ export function useStaffNavigation({
             icon: UserCircle,
             description: 'User account requests',
             badge: counts?.pendingRequests ? (
-              <span className='text-xs font-medium text-fm-gold'>
+              <span className="text-xs font-medium text-fm-gold">
                 {counts.pendingRequests}
               </span>
             ) : undefined,
@@ -83,7 +80,7 @@ export function useStaffNavigation({
         ],
       },
     ],
-    [counts]
+    [counts, t]
   );
 
   const mobileTabs = useMemo(
@@ -99,9 +96,9 @@ export function useStaffNavigation({
         icon: Users,
       },
       {
-        id: 'logs_contact' as StaffTab,
-        label: 'Contact',
-        icon: Mail,
+        id: 'db_registrations' as StaffTab,
+        label: 'Registrations',
+        icon: UserPlus,
       },
       {
         id: 'db_user_requests' as StaffTab,

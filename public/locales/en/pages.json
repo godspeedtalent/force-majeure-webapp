@@ -268,6 +268,13 @@
     "notificationsEnabled": "Email notifications enabled.",
     "notificationsDisabled": "Email notifications disabled.",
     "notificationUpdateFailed": "Failed to update notification settings. Please try again.",
+    "privacy": "Privacy",
+    "privacyDescription": "Control your visibility on guest lists",
+    "guestListVisibility": "Show me on guest lists",
+    "guestListVisibilityDescription": "When enabled, your profile will appear on event guest lists. Disable to browse events privately.",
+    "privacyUpdateFailed": "Failed to update privacy settings. Please try again.",
+    "profileNowPublic": "Your profile is now visible on guest lists.",
+    "profileNowPrivate": "Your profile is now hidden from guest lists.",
     "accessDenied": "You don't have permission to edit this profile.",
     "notFound": "Profile not found.",
     "adminEditingNotice": "You are editing {{name}}'s profile as an administrator.",
@@ -494,7 +501,9 @@
       "messageLabel": "Message",
       "messagePlaceholder": "Tell us what's on your mind...",
       "requiredFields": "Please fill in all required fields",
-      "successMessage": "Message sent! We'll get back to you soon.",
+      "successMessage": "Message sent!",
+      "successDescription": "We've received your message and will get back to you as soon as possible.",
+      "sendAnother": "Send another message",
       "errorMessage": "Failed to send message. Please try again or email us directly."
     }
   },
@@ -521,7 +530,8 @@
   "artistUndercard": {
     "lookingForArtists": "Looking for artists.",
     "artistDescription": "We're looking for local talent to open for our events. Register to be considered.",
-    "signUpAsArtist": "Sign up as an artist"
+    "signUpAsArtist": "Sign up as an artist",
+    "floatingCtaText": "Are you a local DJ looking to join the undercard?"
   },
   "artistSignup": {
     "seoTitle": "Join Our Artist Roster",

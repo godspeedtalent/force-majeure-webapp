@@ -86,7 +86,7 @@ export async function getSubmission(
         name,
         url,
         platform,
-        duration_seconds
+        cover_art
       ),
       screening_reviews (
         id,

@@ -268,6 +268,13 @@
     "notificationsEnabled": "邮件通知已启用。",
     "notificationsDisabled": "邮件通知已禁用。",
     "notificationUpdateFailed": "更新通知设置失败。请重试。",
+    "privacy": "隐私",
+    "privacyDescription": "控制您在宾客名单上的可见性",
+    "guestListVisibility": "在宾客名单中显示我",
+    "guestListVisibilityDescription": "启用后，您的个人资料将显示在活动宾客名单中。禁用后可私密浏览活动。",
+    "privacyUpdateFailed": "更新隐私设置失败。请重试。",
+    "profileNowPublic": "您的个人资料现在在宾客名单中可见。",
+    "profileNowPrivate": "您的个人资料现在已从宾客名单中隐藏。",
     "accessDenied": "您没有权限编辑此资料。",
     "notFound": "未找到资料。",
     "adminEditingNotice": "您正在以管理员身份编辑 {{name}} 的资料。",
@@ -460,7 +467,9 @@
       "messageLabel": "留言",
       "messagePlaceholder": "告诉我们您的想法...",
       "requiredFields": "请填写所有必填项",
-      "successMessage": "消息已发送！我们会尽快回复您。",
+      "successMessage": "消息已发送！",
+      "successDescription": "我们已收到您的留言，会尽快回复您。",
+      "sendAnother": "发送另一条消息",
       "errorMessage": "发送失败，请重试或直接发送邮件给我们。"
     }
   },
@@ -487,7 +496,8 @@
   "artistUndercard": {
     "lookingForArtists": "招募艺人。",
     "artistDescription": "我们正在寻找本地艺人为活动暖场。注册以获得考虑机会。",
-    "signUpAsArtist": "注册成为艺人"
+    "signUpAsArtist": "注册成为艺人",
+    "floatingCtaText": "你是本地DJ吗？想加入暖场阵容？"
   },
   "artistSignup": {
     "seoTitle": "加入我们的艺术家阵容",

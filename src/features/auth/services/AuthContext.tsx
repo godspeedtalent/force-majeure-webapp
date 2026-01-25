@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
@@ -6,9 +6,80 @@ import { supabase, sessionPersistence, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { debugAccessService } from '@/shared/services/debugAccessService';
 import { initializeSupabaseErrorInterceptor } from '@/integrations/supabase/errorInterceptor';
+import { queryClient } from '@/lib/queryClient';
 import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
+const SESSION_REFRESH_BUFFER_MS = 30 * 1000; // Refresh if expiring within 30 seconds
+
+const shouldRefreshSession = (session: Session | null): boolean => {
+  if (!session?.expires_at) return false;
+  const expiresAtMs = session.expires_at * 1000;
+  return Number.isFinite(expiresAtMs) && expiresAtMs <= Date.now() + SESSION_REFRESH_BUFFER_MS;
+};
+
+/**
+ * Safely extract error message from various error types
+ * Ensures a string is always returned for toast display
+ */
+function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred'): string {
+  if (!error) return fallback;
+
+  // Handle standard Error objects
+  if (error instanceof Error) {
+    // Check for specific error types that indicate server issues
+    if (error.name === 'AuthRetryableFetchError') {
+      // This typically means a timeout or network issue with Supabase
+      return 'Server connection timed out. Please try again in a moment.';
+    }
+
+    // Check for empty or useless error messages
+    const message = error.message;
+    if (!message || message === '{}' || message === '""' || message === 'null') {
+      return fallback;
+    }
+
+    return message;
+  }
+
+  // Handle Supabase AuthError format
+  if (typeof error === 'object' && error !== null) {
+    const err = error as Record<string, unknown>;
+
+    // Check for specific error names that indicate server issues
+    if (err.name === 'AuthRetryableFetchError') {
+      return 'Server connection timed out. Please try again in a moment.';
+    }
+
+    // Check for message property (most common)
+    if (typeof err.message === 'string' && err.message && err.message !== '{}') {
+      return err.message;
+    }
+
+    // Check for error property (some APIs use this)
+    if (typeof err.error === 'string' && err.error) {
+      return err.error;
+    }
+
+    // Check for error_description (OAuth errors)
+    if (typeof err.error_description === 'string' && err.error_description) {
+      return err.error_description;
+    }
+
+    // Last resort: stringify the object (but only if it's not empty)
+    const stringified = JSON.stringify(error);
+    if (stringified !== '{}') {
+      return stringified;
+    }
+  }
+
+  // Handle string errors
+  if (typeof error === 'string' && error && error !== '{}') {
+    return error;
+  }
+
+  return fallback;
+}
 
 interface Profile {
   id: string;
@@ -29,6 +100,7 @@ interface Profile {
   spotify_token_expires_at?: string | null;
   spotify_connected: boolean | null;
   preferred_locale?: string | null;
+  guest_list_visible?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notification_settings?: any;
   created_at: string;
@@ -91,6 +163,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const isBootstrappingRef = useRef(true);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -131,6 +204,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       authLogger.debug('Auth state change', { event, hasSession: !!session });
 
+      // Avoid racing initial session bootstrap (handled below)
+      if (isBootstrappingRef.current && event === 'INITIAL_SESSION') {
+        authLogger.debug('Skipping INITIAL_SESSION during bootstrap');
+        return;
+      }
+
       // Handle token refresh errors - clear invalid session
       if (event === 'TOKEN_REFRESHED' && !session) {
         authLogger.warn('Token refresh failed, clearing session');
@@ -168,38 +247,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Initialize global Supabase error interceptor (for unhandled errors)
     initializeSupabaseErrorInterceptor();
 
-    // THEN check for existing session
-    supabase.auth
-      .getSession()
-      .then(({ data: { session }, error }) => {
+    const bootstrapSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
         // Handle case where stored session has invalid refresh token
         if (error) {
           authLogger.warn('Session retrieval error, clearing invalid session', {
             error: error.message,
           });
           // Clear the invalid session from storage
-          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+          await supabase.auth.signOut({ scope: 'local' }).catch(() => {
             // Ignore signOut errors during cleanup
           });
           setSession(null);
           setUser(null);
           setProfile(null);
-          setLoading(false);
           return;
         }
 
-        setSession(session);
-        setUser(session?.user ?? null);
+        let activeSession = session;
 
-        if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
+        // Ensure session is fresh before exposing it to the app
+        if (shouldRefreshSession(session)) {
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+
+          if (refreshError || !refreshData.session) {
+            authLogger.warn('Session refresh failed during bootstrap', {
+              error: refreshError?.message || 'No session returned',
+            });
+            await supabase.auth.signOut({ scope: 'local' }).catch(() => {
+              // Ignore signOut errors during cleanup
+            });
+            activeSession = null;
+          } else {
+            activeSession = refreshData.session;
+          }
         }
 
-        setLoading(false);
-      })
-      .catch(error => {
+        setSession(activeSession);
+        setUser(activeSession?.user ?? null);
+
+        if (activeSession?.user) {
+          setTimeout(() => {
+            fetchProfile(activeSession.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+      } catch (error) {
         // Handle AuthApiError for invalid refresh tokens
         const errorMessage = error instanceof Error ? error.message : String(error);
         const isRefreshTokenError = errorMessage.includes('Refresh Token');
@@ -209,7 +305,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             error: errorMessage,
           });
           // Clear the corrupted session from localStorage
-          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+          await supabase.auth.signOut({ scope: 'local' }).catch(() => {
             // Ignore signOut errors during cleanup
           });
         } else {
@@ -222,8 +318,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(null);
         setUser(null);
         setProfile(null);
+      } finally {
         setLoading(false);
-      });
+        isBootstrappingRef.current = false;
+      }
+    };
+
+    // THEN check for existing session
+    bootstrapSession();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -254,12 +356,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        const errorMessage = getErrorMessage(error, i18n.t('auth.signUpError', { ns: 'toasts' }));
         logger.error('Sign up error:', {
-          error: error.message,
+          error: errorMessage,
+          errorObject: error,
           email,
           source: 'AuthContext.signUp',
         });
-        toast.error(error.message);
+        toast.error(errorMessage);
       } else {
         authLogger.info('Sign up successful', { userId: data.user?.id });
 
@@ -301,7 +405,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.signInError', { ns: 'toasts' })));
       } else {
         // Set remember device preference
         sessionPersistence.setRememberDevice(rememberMe);
@@ -322,21 +426,48 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signOut = async () => {
+    // 1. Clear session persistence when user explicitly logs out
+    sessionPersistence.clearRememberDevice();
+
+    // 2. Clear debug access to prevent privilege leakage
+    debugAccessService.clearDebugAccess();
+
+    // 3. IMMEDIATELY clear React state (don't rely on onAuthStateChange listener)
+    // This ensures the UI updates even if the network call fails
+    setSession(null);
+    setUser(null);
+    setProfile(null);
+
+    // 4. Clear shopping cart (directly from localStorage since app uses context-based cart)
     try {
-      // Clear session persistence when user explicitly logs out
-      sessionPersistence.clearRememberDevice();
+      localStorage.removeItem('fm-shopping-cart');
+    } catch {
+      // Ignore localStorage errors
+    }
 
-      // Clear debug access to prevent privilege leakage
-      debugAccessService.clearDebugAccess();
+    // 5. Clear React Query cache to prevent stale data on re-login
+    queryClient.clear();
 
+    // 6. Try server-side sign out
+    try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        toast.error(error.message);
+        // Log warning but don't show toast - user is already "signed out" locally
+        authLogger.warn('Server-side sign out failed', { error: error.message });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(message);
+      // Fallback: at least clear local Supabase storage
+      authLogger.warn('Sign out error, attempting local cleanup', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => {
+        // Ignore errors during fallback cleanup
+      });
     }
+
+    // 7. Force page reload to trigger route guards
+    // This ensures protected routes redirect unauthenticated users
+    window.location.reload();
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {
@@ -377,7 +508,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           details: error.details,
           hint: error.hint,
         });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' })));
       } else if (!data) {
         // No data returned means no rows were updated (possibly RLS blocking)
         authLogger.error('Profile update returned no data - possible RLS issue', {
@@ -398,7 +529,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMsg = getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' }));
       authLogger.error('Profile update exception', {
         userId: user.id,
         error: errorMsg,
@@ -423,15 +554,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, 'Failed to resend verification email'));
       } else {
         toast.success(i18n.t('auth.emailVerificationSent', { ns: 'toasts' }));
       }
 
       return { error };
     } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
-      toast.error(errorMsg);
+      toast.error(getErrorMessage(error, 'Failed to resend verification email'));
       return { error };
     }
   };
@@ -446,7 +576,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         authLogger.error('Password reset request error', { error: error.message });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.passwordResetError', { ns: 'toasts' })));
       } else {
         authLogger.info('Password reset email sent', { email });
         toast.success(i18n.t('auth.passwordResetEmailSent', { ns: 'toasts' }));
@@ -474,7 +604,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         authLogger.error('Password update error', { error: error.message });
-        toast.error(error.message);
+        toast.error(getErrorMessage(error, i18n.t('auth.passwordUpdateError', { ns: 'toasts' })));
       } else {
         authLogger.info('Password updated successfully');
         toast.success(i18n.t('auth.passwordUpdateSuccess', { ns: 'toasts' }));

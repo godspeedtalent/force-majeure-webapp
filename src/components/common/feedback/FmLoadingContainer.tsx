@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { FmCommonLoadingSpinner } from './FmCommonLoadingSpinner';
+import { FmLoadingIndicator } from './FmLoadingIndicator';
 import { cn } from '@/shared';
 
 export interface FmLoadingContainerProps {
@@ -9,6 +9,10 @@ export interface FmLoadingContainerProps {
   children: ReactNode;
   /** Size of the loading spinner */
   size?: 'sm' | 'md' | 'lg';
+  /** Show progress bar */
+  showProgress?: boolean;
+  /** Progress bar size */
+  progressSize?: 'sm' | 'md' | 'lg';
   /** Minimum height for the loading state container */
   minHeight?: string;
   /** Additional class names for the container */
@@ -34,6 +38,8 @@ export const FmLoadingContainer = ({
   isLoading,
   children,
   size = 'md',
+  showProgress = true,
+  progressSize,
   minHeight = '200px',
   className,
   showBackground = false,
@@ -48,7 +54,7 @@ export const FmLoadingContainer = ({
         )}
         style={{ minHeight }}
       >
-        <FmCommonLoadingSpinner size={size} />
+        <FmLoadingIndicator size={size} showProgress={showProgress} progressSize={progressSize} />
       </div>
     );
   }

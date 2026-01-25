@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/common/shadcn/breadcrumb';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { useBreadcrumbs } from '@/shared/hooks/useBreadcrumbs';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
@@ -83,7 +84,7 @@ export const Breadcrumbs = () => {
                     <BreadcrumbPage>
                       {isLoading ? (
                         <span className='flex items-center gap-1'>
-                          <div className='h-3 w-3 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                          <FmGoldenGridLoader size="sm" />
                           {item.label}
                         </span>
                       ) : (

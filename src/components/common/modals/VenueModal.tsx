@@ -4,6 +4,7 @@ import { logger } from '@/shared';
 import { MapPin, Users } from 'lucide-react';
 import { FmCommonModal } from '@/components/common/modals/FmCommonModal';
 import { FmInfoChip } from '@/components/common/data/FmInfoChip';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { venueService } from '@/features/venues/services/venueService';
 import type { Venue } from '@/features/events/types';
 
@@ -55,7 +56,7 @@ export const VenueModal = ({
     return (
       <FmCommonModal open={open} onOpenChange={onOpenChange} title={t('status.loading')}>
         <div className='flex items-center justify-center py-8'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-fm-gold'></div>
+          <FmGoldenGridLoader size="md" />
         </div>
       </FmCommonModal>
     );

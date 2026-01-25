@@ -12,7 +12,7 @@ import {
   FmCommonCardTitle,
   FmCommonCardDescription,
 } from '@/components/common/display/FmCommonCard';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useClaimCompTicket } from '@/features/ticketing/hooks/useCompTickets';
 import { cn } from '@/shared';
@@ -76,7 +76,7 @@ export default function ClaimTicketPage() {
       <Layout>
         <div className='min-h-[60vh] flex items-center justify-center'>
           <div className='flex flex-col items-center gap-[20px]'>
-            <FmCommonLoadingSpinner size='lg' />
+            <FmCommonLoadingState centered={false} size='lg' />
             <p className='text-muted-foreground font-canela'>
               {t('compTickets.loadingTicket')}
             </p>
@@ -91,7 +91,7 @@ export default function ClaimTicketPage() {
     return (
       <Layout>
         <div className='min-h-[60vh] flex items-center justify-center'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );

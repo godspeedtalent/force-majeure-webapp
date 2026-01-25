@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   ArrowLeft,
-  Instagram,
   Search,
   ShoppingCart,
   User,
@@ -24,7 +23,6 @@ import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn, useIsMobile, FEATURE_FLAGS } from '@/shared';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { SOCIAL_LINKS } from '@/shared';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 import { useGlobalSearch } from '@/contexts/GlobalSearchContext';
 
@@ -117,26 +115,6 @@ export const Navigation = () => {
 
           {/* Desktop Actions */}
           <div className='hidden md:flex items-center space-x-4'>
-            {/* Social and Shopping Icons */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a
-                    href={SOCIAL_LINKS.instagram}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-foreground hover:text-fm-gold transition-colors duration-200'
-                    aria-label={t('nav.followOnInstagram')}
-                  >
-                    <Instagram className='h-5 w-5' />
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{SOCIAL_LINKS.instagramHandle}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
             {/* Global Search Button */}
             <TooltipProvider>
               <Tooltip>

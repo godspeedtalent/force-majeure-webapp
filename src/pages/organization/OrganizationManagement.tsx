@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,7 +24,8 @@ import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { OrganizationSocialTab } from './components/manage/OrganizationSocialTab';
 import { OrganizationEventsTab } from './components/manage/OrganizationEventsTab';
@@ -71,8 +72,8 @@ export default function OrganizationManagement() {
 
   const { data: organization, isLoading, error } = useOrganizationById(id);
 
-  // Track initial values for dirty state detection
-  const initialValuesRef = useRef<{
+  // Track initial values for dirty state detection (using state so changes trigger re-render)
+  const [initialValues, setInitialValues] = useState<{
     name: string;
     profilePicture: string;
     socialEmail: string;
@@ -86,7 +87,7 @@ export default function OrganizationManagement() {
 
   useEffect(() => {
     if (organization) {
-      const initialValues = {
+      const initValues = {
         name: organization.name || '',
         profilePicture: organization.profile_picture || '',
         socialEmail: organization.social_email || '',
@@ -98,36 +99,35 @@ export default function OrganizationManagement() {
         youtube: organization.youtube_url || '',
       };
 
-      setName(initialValues.name);
-      setProfilePicture(initialValues.profilePicture);
-      setSocialEmail(initialValues.socialEmail);
-      setWebsite(initialValues.website);
-      setInstagram(initialValues.instagram);
-      setTwitter(initialValues.twitter);
-      setTiktok(initialValues.tiktok);
-      setFacebook(initialValues.facebook);
-      setYoutube(initialValues.youtube);
+      setName(initValues.name);
+      setProfilePicture(initValues.profilePicture);
+      setSocialEmail(initValues.socialEmail);
+      setWebsite(initValues.website);
+      setInstagram(initValues.instagram);
+      setTwitter(initValues.twitter);
+      setTiktok(initValues.tiktok);
+      setFacebook(initValues.facebook);
+      setYoutube(initValues.youtube);
 
-      initialValuesRef.current = initialValues;
+      setInitialValues(initValues);
     }
   }, [organization]);
 
   // Calculate if form has unsaved changes
   const isDirty = useMemo(() => {
-    if (!initialValuesRef.current) return false;
-    const initial = initialValuesRef.current;
+    if (!initialValues) return false;
     return (
-      name !== initial.name ||
-      profilePicture !== initial.profilePicture ||
-      socialEmail !== initial.socialEmail ||
-      website !== initial.website ||
-      instagram !== initial.instagram ||
-      twitter !== initial.twitter ||
-      tiktok !== initial.tiktok ||
-      facebook !== initial.facebook ||
-      youtube !== initial.youtube
+      name !== initialValues.name ||
+      profilePicture !== initialValues.profilePicture ||
+      socialEmail !== initialValues.socialEmail ||
+      website !== initialValues.website ||
+      instagram !== initialValues.instagram ||
+      twitter !== initialValues.twitter ||
+      tiktok !== initialValues.tiktok ||
+      facebook !== initialValues.facebook ||
+      youtube !== initialValues.youtube
     );
-  }, [name, profilePicture, socialEmail, website, instagram, twitter, tiktok, facebook, youtube]);
+  }, [name, profilePicture, socialEmail, website, instagram, twitter, tiktok, facebook, youtube, initialValues]);
 
   // Unsaved changes warning
   const unsavedChanges = useUnsavedChanges({ isDirty });
@@ -238,19 +238,17 @@ export default function OrganizationManagement() {
       if (updateError) throw updateError;
 
       // Update initial values to reset dirty state
-      if (initialValuesRef.current) {
-        initialValuesRef.current = {
-          name,
-          profilePicture,
-          socialEmail,
-          website,
-          instagram,
-          twitter,
-          tiktok,
-          facebook,
-          youtube,
-        };
-      }
+      setInitialValues({
+        name,
+        profilePicture,
+        socialEmail,
+        website,
+        instagram,
+        twitter,
+        tiktok,
+        facebook,
+        youtube,
+      });
 
       toast.success(tToast('organizations.updated'));
       queryClient.invalidateQueries({ queryKey: organizationKeys.detail(id) });
@@ -372,7 +370,7 @@ export default function OrganizationManagement() {
               )}
               {isImageUploading && (
                 <div className='absolute inset-0 flex items-center justify-center bg-black/60'>
-                  <div className='h-6 w-6 animate-spin rounded-full border-2 border-fm-gold border-b-transparent' />
+                  <FmGoldenGridLoader size="sm" />
                 </div>
               )}
             </div>
@@ -485,7 +483,7 @@ export default function OrganizationManagement() {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }

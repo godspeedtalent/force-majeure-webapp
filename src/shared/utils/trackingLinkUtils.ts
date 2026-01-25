@@ -49,5 +49,8 @@ export function getTrackingLinkDisplayPath(code: string): string {
  * @returns The edge function URL
  */
 export function getTrackingLinkEdgeFunctionUrl(code: string): string {
-  return `${SUPABASE_URL}/functions/v1/track-link?code=${code}`;
+  // Pass the origin so the edge function knows where to redirect back to
+  // This is essential for local development where we want to stay on localhost
+  const origin = encodeURIComponent(getAppBaseUrl());
+  return `${SUPABASE_URL}/functions/v1/track-link?code=${code}&origin=${origin}`;
 }
