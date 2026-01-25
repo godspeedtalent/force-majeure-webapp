@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import type {
   CreateSubmissionInput,
   CreateReviewInput,
+  UpdateReviewInput,
   MakeDecisionInput,
   UpdateConfigInput,
 } from '../types';
@@ -114,6 +115,54 @@ export function useCreateReview() {
         details,
       });
       toast.error('Failed to submit review', { description: message });
+    },
+  });
+}
+
+/**
+ * Update an existing review (staff editing their own review)
+ * Uses edge function for server-side validation and score recalculation
+ */
+export function useUpdateReview() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: UpdateReviewInput) => {
+      const { data, error } = await supabase.functions.invoke('screening', {
+        body: {
+          operation: 'updateReview',
+          review_id: input.review_id,
+          rating: input.rating,
+          metric_scores: input.metric_scores,
+          internal_notes: input.internal_notes,
+          listen_duration_seconds: input.listen_duration_seconds,
+        },
+      });
+
+      if (error) throw error;
+      return data.data;
+    },
+    onSuccess: (data) => {
+      toast.success('Review updated successfully');
+      // Invalidate the submission query to refresh the review list
+      queryClient.invalidateQueries({
+        queryKey: screeningQueryKeys.submission(data.submission_id),
+      });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.submissions() });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.reviewerStats() });
+    },
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to update review'
+      );
+      logger.error('Error updating review', {
+        error: message,
+        source: 'useUpdateReview',
+        details,
+      });
+      toast.error('Failed to update review', { description: message });
     },
   });
 }

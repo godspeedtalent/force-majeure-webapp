@@ -11,6 +11,7 @@
  * - getRankings: Get top-ranked approved submissions
  * - getReviewerStats: Get reviewer leaderboard
  * - createReview: Submit a new review
+ * - updateReview: Update an existing review
  * - makeDecision: Approve/reject a submission
  * - updateConfig: Update scoring configuration
  */
@@ -34,6 +35,7 @@ import { getSubmissions, getSubmission } from './handlers/getSubmissions.ts';
 import { getStats } from './handlers/getStats.ts';
 import { getRankings, getReviewerStats } from './handlers/getRankings.ts';
 import { createReview } from './handlers/createReview.ts';
+import { updateReview } from './handlers/updateReview.ts';
 import { makeDecision } from './handlers/makeDecision.ts';
 import { updateConfig } from './handlers/updateConfig.ts';
 
@@ -92,6 +94,10 @@ serve(async (req) => {
         result = await createReview(supabase, user, params);
         break;
 
+      case 'updateReview':
+        result = await updateReview(supabase, user, params);
+        break;
+
       case 'makeDecision':
         result = await makeDecision(supabase, user, params);
         break;
@@ -102,7 +108,7 @@ serve(async (req) => {
 
       default:
         return createErrorResponse(
-          `Invalid operation: ${operation}. Valid operations: getSubmissions, getSubmission, getStats, getRankings, getReviewerStats, createReview, makeDecision, updateConfig`,
+          `Invalid operation: ${operation}. Valid operations: getSubmissions, getSubmission, getStats, getRankings, getReviewerStats, createReview, updateReview, makeDecision, updateConfig`,
           400,
           corsHeaders
         );

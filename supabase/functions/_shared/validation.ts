@@ -96,6 +96,7 @@ export type SubmissionFilters = z.infer<typeof SubmissionFiltersSchema>;
 export const CreateReviewSchema = z.object({
   submission_id: UuidSchema,
   rating: z.number().int().min(1).max(10),
+  metric_scores: z.record(z.string(), z.number()).optional(),
   internal_notes: z.string().max(2000).optional(),
   listen_duration_seconds: z.number().int().nonnegative(),
 });

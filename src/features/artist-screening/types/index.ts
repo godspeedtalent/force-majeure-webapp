@@ -193,6 +193,17 @@ export interface CreateReviewInput {
 }
 
 /**
+ * Input for updating a review
+ */
+export interface UpdateReviewInput {
+  review_id: string;
+  rating?: number; // 0-12 (sum of three qualitative metrics)
+  internal_notes?: string;
+  listen_duration_seconds?: number;
+  metric_scores?: ReviewMetricScores;
+}
+
+/**
  * Input for making a final decision
  */
 export interface MakeDecisionInput {

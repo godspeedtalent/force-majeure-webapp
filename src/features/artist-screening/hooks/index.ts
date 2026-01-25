@@ -17,6 +17,7 @@ export {
 export {
   useCreateSubmission,
   useCreateReview,
+  useUpdateReview,
   useMakeDecision,
   useUpdateConfig,
 } from './useScreeningMutations';

@@ -15,6 +15,16 @@ import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared';
 import { cn } from '@/shared';
 
+const MAX_BREADCRUMB_LENGTH = 20;
+
+/**
+ * Truncates text to a maximum length with ellipsis
+ */
+const truncateLabel = (label: string, maxLength: number = MAX_BREADCRUMB_LENGTH): string => {
+  if (label.length <= maxLength) return label;
+  return `${label.slice(0, maxLength)}...`;
+};
+
 /**
  * Comprehensive breadcrumb navigation component
  * Automatically generates breadcrumbs based on current route
@@ -85,10 +95,10 @@ export const Breadcrumbs = () => {
                       {isLoading ? (
                         <span className='flex items-center gap-1'>
                           <FmGoldenGridLoader size="sm" />
-                          {item.label}
+                          {truncateLabel(item.label)}
                         </span>
                       ) : (
-                        item.label
+                        truncateLabel(item.label)
                       )}
                     </BreadcrumbPage>
                   ) : (
@@ -100,7 +110,7 @@ export const Breadcrumbs = () => {
                         }}
                         className='hover:underline cursor-pointer'
                       >
-                        {item.label}
+                        {truncateLabel(item.label)}
                       </button>
                     </BreadcrumbLink>
                   )}
