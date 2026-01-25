@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase, logger } from '@/shared';
 import { toast } from 'sonner';
 import type {
@@ -55,12 +56,17 @@ export function useCreateSubmission() {
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.submissions() });
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.stats() });
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to submit'
+      );
       logger.error('Error creating submission', {
-        error: error.message,
+        error: message,
         source: 'useCreateSubmission',
+        details,
       });
-      toast.error('Failed to submit', { description: error.message });
+      toast.error('Failed to submit', { description: message });
     },
   });
 }
@@ -79,6 +85,7 @@ export function useCreateReview() {
           operation: 'createReview',
           submission_id: input.submission_id,
           rating: input.rating,
+          metric_scores: input.metric_scores,
           internal_notes: input.internal_notes,
           listen_duration_seconds: input.listen_duration_seconds,
         },
@@ -96,12 +103,17 @@ export function useCreateReview() {
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.stats() });
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.reviewerStats() });
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to submit review'
+      );
       logger.error('Error creating review', {
-        error: error.message,
+        error: message,
         source: 'useCreateReview',
+        details,
       });
-      toast.error('Failed to submit review', { description: error.message });
+      toast.error('Failed to submit review', { description: message });
     },
   });
 }
@@ -142,12 +154,17 @@ export function useMakeDecision() {
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.rankings('all-time') });
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.rankings('hot') });
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to make decision'
+      );
       logger.error('Error making decision', {
-        error: error.message,
+        error: message,
         source: 'useMakeDecision',
+        details,
       });
-      toast.error('Failed to make decision', { description: error.message });
+      toast.error('Failed to make decision', { description: message });
     },
   });
 }
@@ -179,12 +196,77 @@ export function useUpdateConfig() {
       toast.success('Configuration updated');
       queryClient.invalidateQueries({ queryKey: screeningQueryKeys.all });
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to update configuration'
+      );
       logger.error('Error updating config', {
-        error: error.message,
+        error: message,
         source: 'useUpdateConfig',
+        details,
       });
-      toast.error('Failed to update configuration', { description: error.message });
+      toast.error('Failed to update configuration', { description: message });
     },
   });
+}
+
+// ============================================================================
+// Error Parsing Helpers
+// ============================================================================
+
+interface EdgeFunctionErrorResponse {
+  success?: boolean;
+  error?: string;
+  message?: string;
+  requestId?: string;
+  errors?: Array<{ field: string; message: string }>;
+}
+
+async function extractSupabaseError(
+  error: unknown,
+  fallbackMessage: string
+): Promise<{ message: string; details: Record<string, unknown> }> {
+  const details: Record<string, unknown> = {
+    errorType: error instanceof Error ? error.name : typeof error,
+  };
+
+  if (error instanceof Error) {
+    details.originalMessage = error.message;
+    details.stack = error.stack;
+  }
+
+  if (error instanceof FunctionsHttpError) {
+    details.status = error.context?.status;
+    try {
+      const body: EdgeFunctionErrorResponse = await error.context.json();
+      details.response = body;
+      const message = body?.error || body?.message || fallbackMessage;
+      return { message, details };
+    } catch (parseError) {
+      details.parseError = parseError instanceof Error ? parseError.message : parseError;
+      return { message: error.message || fallbackMessage, details };
+    }
+  }
+
+  if (error && typeof error === 'object') {
+    const err = error as Record<string, unknown>;
+    if (err.code) details.code = err.code;
+    if (err.hint) details.hint = err.hint;
+    if (err.details) details.details = err.details;
+    if (err.status) details.status = err.status;
+    if (err.statusText) details.statusText = err.statusText;
+
+    const message =
+      (typeof err.message === 'string' && err.message) ||
+      (typeof err.error === 'string' && err.error) ||
+      fallbackMessage;
+    return { message, details };
+  }
+
+  if (typeof error === 'string') {
+    return { message: error, details };
+  }
+
+  return { message: fallbackMessage, details };
 }

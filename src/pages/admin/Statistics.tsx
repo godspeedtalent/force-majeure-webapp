@@ -33,7 +33,7 @@ export default function Statistics() {
   }, []);
 
   if (isLoading) {
-    return <FmCommonLoadingState />;
+    return <FmCommonLoadingState fullScreen />;
   }
 
   return (

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
@@ -10,6 +10,13 @@ import { queryClient } from '@/lib/queryClient';
 import i18n from '@/i18n';
 
 const authLogger = logger.createNamespace('Auth');
+const SESSION_REFRESH_BUFFER_MS = 30 * 1000; // Refresh if expiring within 30 seconds
+
+const shouldRefreshSession = (session: Session | null): boolean => {
+  if (!session?.expires_at) return false;
+  const expiresAtMs = session.expires_at * 1000;
+  return Number.isFinite(expiresAtMs) && expiresAtMs <= Date.now() + SESSION_REFRESH_BUFFER_MS;
+};
 
 /**
  * Safely extract error message from various error types
@@ -156,6 +163,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const isBootstrappingRef = useRef(true);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -196,6 +204,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       authLogger.debug('Auth state change', { event, hasSession: !!session });
 
+      // Avoid racing initial session bootstrap (handled below)
+      if (isBootstrappingRef.current && event === 'INITIAL_SESSION') {
+        authLogger.debug('Skipping INITIAL_SESSION during bootstrap');
+        return;
+      }
+
       // Handle token refresh errors - clear invalid session
       if (event === 'TOKEN_REFRESHED' && !session) {
         authLogger.warn('Token refresh failed, clearing session');
@@ -233,38 +247,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Initialize global Supabase error interceptor (for unhandled errors)
     initializeSupabaseErrorInterceptor();
 
-    // THEN check for existing session
-    supabase.auth
-      .getSession()
-      .then(({ data: { session }, error }) => {
+    const bootstrapSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
         // Handle case where stored session has invalid refresh token
         if (error) {
           authLogger.warn('Session retrieval error, clearing invalid session', {
             error: error.message,
           });
           // Clear the invalid session from storage
-          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+          await supabase.auth.signOut({ scope: 'local' }).catch(() => {
             // Ignore signOut errors during cleanup
           });
           setSession(null);
           setUser(null);
           setProfile(null);
-          setLoading(false);
           return;
         }
 
-        setSession(session);
-        setUser(session?.user ?? null);
+        let activeSession = session;
 
-        if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
+        // Ensure session is fresh before exposing it to the app
+        if (shouldRefreshSession(session)) {
+          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+
+          if (refreshError || !refreshData.session) {
+            authLogger.warn('Session refresh failed during bootstrap', {
+              error: refreshError?.message || 'No session returned',
+            });
+            await supabase.auth.signOut({ scope: 'local' }).catch(() => {
+              // Ignore signOut errors during cleanup
+            });
+            activeSession = null;
+          } else {
+            activeSession = refreshData.session;
+          }
         }
 
-        setLoading(false);
-      })
-      .catch(error => {
+        setSession(activeSession);
+        setUser(activeSession?.user ?? null);
+
+        if (activeSession?.user) {
+          setTimeout(() => {
+            fetchProfile(activeSession.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+      } catch (error) {
         // Handle AuthApiError for invalid refresh tokens
         const errorMessage = error instanceof Error ? error.message : String(error);
         const isRefreshTokenError = errorMessage.includes('Refresh Token');
@@ -274,7 +305,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             error: errorMessage,
           });
           // Clear the corrupted session from localStorage
-          supabase.auth.signOut({ scope: 'local' }).catch(() => {
+          await supabase.auth.signOut({ scope: 'local' }).catch(() => {
             // Ignore signOut errors during cleanup
           });
         } else {
@@ -287,8 +318,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setSession(null);
         setUser(null);
         setProfile(null);
+      } finally {
         setLoading(false);
-      });
+        isBootstrappingRef.current = false;
+      }
+    };
+
+    // THEN check for existing session
+    bootstrapSession();
 
     return () => subscription.unsubscribe();
   }, []);

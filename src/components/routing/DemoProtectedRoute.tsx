@@ -16,11 +16,11 @@ interface DemoProtectedRouteProps {
  */
 export const DemoProtectedRoute = ({ children }: DemoProtectedRouteProps) => {
   const { user, loading } = useAuth();
-  const { hasAnyRole, roles } = useUserPermissions();
+  const { hasAnyRole, rolesLoading } = useUserPermissions();
 
   // Still loading
-  if (loading || roles === undefined) {
-    return <FmCommonLoadingState />;
+  if (loading || (user && rolesLoading)) {
+    return <FmCommonLoadingState fullScreen />;
   }
 
   // Check if user is authenticated

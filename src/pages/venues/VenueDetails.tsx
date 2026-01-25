@@ -8,7 +8,7 @@ import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmCommonSlidingIconButton } from '@/components/common/buttons/FmCommonSlidingIconButton';
 import { FmInstagramStoryButton } from '@/components/common/sharing';
 import { Layout } from '@/components/layout/Layout';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmEventRow } from '@/components/common/display/FmEventRow';
 import { FmSocialLinks } from '@/components/common/display/FmSocialLinks';
 import { FmVenueMap } from '@/components/common/display/FmVenueMap';
@@ -117,7 +117,7 @@ export default function VenueDetails() {
     return (
       <Layout showBackButton onBack={handleBack} backButtonLabel={t('buttons.back')}>
         <div className='flex items-center justify-center min-h-[400px]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );

@@ -26,7 +26,7 @@ import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { FmCommonSelect } from '@/components/common/forms/FmCommonSelect';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
 import { FmCommonUserPhoto } from '@/components/common/display/FmCommonUserPhoto';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { toast } from 'sonner';
@@ -335,7 +335,7 @@ const UserProfileEdit = () => {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );

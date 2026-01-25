@@ -24,7 +24,7 @@ import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Label } from '@/components/common/shadcn/label';
 import { FmFormSection } from '@/components/common/forms/FmFormSection';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import { OrganizationStaffManagement } from '@/components/organizations/OrganizationStaffManagement';
 import { OrganizationSocialTab } from './components/manage/OrganizationSocialTab';
@@ -483,7 +483,7 @@ export default function OrganizationManagement() {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }

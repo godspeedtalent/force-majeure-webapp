@@ -18,7 +18,7 @@ import {
 import { SideNavbarLayout } from '@/components/layout/SidebarLayout';
 import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSideNav';
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonConfirmDialog } from '@/components/common/modals/FmCommonConfirmDialog';
 import { UnsavedChangesDialog } from '@/components/common/modals/UnsavedChangesDialog';
 import { FmStickyFormFooter } from '@/components/common/forms/FmStickyFormFooter';
@@ -166,7 +166,7 @@ export default function ArtistManagement() {
   if (isLoading) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 
 /**
  * Redirects /profile to /users/:currentUserId
@@ -12,7 +12,7 @@ export const ProfileRedirect = () => {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }
@@ -34,7 +34,7 @@ export const ProfileEditRedirect = () => {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }

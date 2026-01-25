@@ -39,8 +39,8 @@ export default function Orders() {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className='container mx-auto py-8 px-4'>
+      <Layout hideFooter>
+        <div className='h-[calc(100dvh-64px)] w-full'>
           <FmCommonLoadingState />
         </div>
       </Layout>

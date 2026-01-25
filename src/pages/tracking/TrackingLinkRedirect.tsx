@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { getTrackingLinkEdgeFunctionUrl } from '@/shared/utils/trackingLinkUtils';
 
 /**
@@ -31,7 +31,7 @@ export default function TrackingLinkRedirect() {
   // Show loading state while redirecting
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-      <FmCommonLoadingSpinner size="lg" />
+      <FmCommonLoadingState centered={false} size='lg' />
       <p className="text-muted-foreground text-sm">Redirecting...</p>
     </div>
   );

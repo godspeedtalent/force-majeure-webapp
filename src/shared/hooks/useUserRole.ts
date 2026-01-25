@@ -19,6 +19,24 @@ export interface UserRole {
   permission_names: string[];
 }
 
+const isAuthError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false;
+  const err = error as Record<string, unknown>;
+  const status = err.status;
+  const code = err.code;
+  const message =
+    typeof err.message === 'string' ? err.message.toLowerCase() : '';
+
+  return (
+    status === 401 ||
+    code === 401 ||
+    code === '401' ||
+    message.includes('jwt') ||
+    message.includes('token') ||
+    message.includes('not authenticated')
+  );
+};
+
 export const useUserRole = () => {
   const auth = useAuthSafe();
   const user = auth?.user ?? null;
@@ -26,26 +44,53 @@ export const useUserRole = () => {
   const query = useQuery({
     queryKey: ['user-role', user?.id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user) return [];
 
-      // Use the new helper function
-      const { data, error } = await supabase.rpc('get_user_roles', {
-        user_id_param: user.id,
-      });
+      try {
+        // Use the new helper function
+        const { data, error } = await supabase.rpc('get_user_roles', {
+          user_id_param: user.id,
+        });
 
-      if (error) {
-        logger.error('Error fetching user roles:', { error });
-        return null;
+        if (error) {
+          // Attempt a one-time session refresh if auth appears stale
+          if (isAuthError(error)) {
+            const { data: refreshData, error: refreshError } =
+              await supabase.auth.refreshSession();
+
+            if (!refreshError && refreshData.session) {
+              const retry = await supabase.rpc('get_user_roles', {
+                user_id_param: user.id,
+              });
+
+              if (!retry.error) {
+                return (retry.data || []).map(role => ({
+                  role_name: role.role_name,
+                  display_name: role.display_name,
+                  permission_names: Array.isArray(role.permission_names)
+                    ? role.permission_names
+                    : [],
+                })) as UserRole[];
+              }
+            }
+          }
+
+          logger.error('Error fetching user roles:', { error });
+          return [];
+        }
+
+        // Map database response to UserRole interface
+        return (data || []).map(role => ({
+          role_name: role.role_name,
+          display_name: role.display_name,
+          permission_names: Array.isArray(role.permission_names)
+            ? role.permission_names
+            : [],
+        })) as UserRole[];
+      } catch (error) {
+        logger.error('Unexpected error fetching user roles:', { error });
+        return [];
       }
-
-      // Map database response to UserRole interface
-      return (data || []).map(role => ({
-        role_name: role.role_name,
-        display_name: role.display_name,
-        permission_names: Array.isArray(role.permission_names)
-          ? role.permission_names
-          : [],
-      })) as UserRole[];
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -55,20 +100,24 @@ export const useUserRole = () => {
   // This allows the logger and error components to check role-based access
   // even outside of React context (e.g., error boundaries)
   useEffect(() => {
-    if (query.data) {
-      const isDevOrAdmin = query.data.some(
-        role => role.role_name === 'admin' || role.role_name === 'developer'
-      );
-      debugAccessService.setDebugAccess(isDevOrAdmin);
-    } else if (!user) {
+    if (!user) {
       // User is anonymous or logged out - mark auth as resolved with no access
       // Note: We use setDebugAccess(false) instead of clearDebugAccess() because:
       // - clearDebugAccess() is called during signOut() to clear any buffered logs
       // - Here we just need to mark auth as resolved so buffered logs are discarded
       // - Using setDebugAccess(false) properly triggers the buffer flush/discard
       debugAccessService.setDebugAccess(false);
+      return;
     }
-  }, [query.data, user]);
+
+    if (query.isFetched) {
+      const roles = query.data || [];
+      const isDevOrAdmin = roles.some(
+        role => role.role_name === 'admin' || role.role_name === 'developer'
+      );
+      debugAccessService.setDebugAccess(isDevOrAdmin);
+    }
+  }, [query.data, query.isFetched, user]);
 
   return query;
 };
@@ -84,7 +133,8 @@ export const useUserRole = () => {
  * - Use `isMockActive` to check if simulation is enabled
  */
 export const useUserPermissions = () => {
-  const { data: roles } = useUserRole();
+  const roleQuery = useUserRole();
+  const roles = roleQuery.data;
   const {
     isMockActive,
     isUnauthenticated,
@@ -247,6 +297,9 @@ export const useUserPermissions = () => {
     getRoles,
     getPermissions,
     roles,
+    rolesLoading: roleQuery.isLoading,
+    rolesLoaded: roleQuery.isFetched && !roleQuery.isLoading,
+    rolesError: roleQuery.isError,
     // Mock role utilities
     isMockActive,
     mockRole,

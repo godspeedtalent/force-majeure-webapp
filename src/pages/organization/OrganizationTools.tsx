@@ -21,7 +21,7 @@ import { FmCommonSideNavGroup } from '@/components/common/navigation/FmCommonSid
 import { MobileBottomTabBar, MobileBottomTab } from '@/components/mobile';
 import { FmFormSectionHeader } from '@/components/common/display/FmSectionHeader';
 import { FmCommonCard } from '@/components/common/display/FmCommonCard';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
 import { FmOrganizationSearchDropdown } from '@/components/common/search/FmOrganizationSearchDropdown';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
@@ -50,14 +50,14 @@ type OrganizationToolsTab = 'overview' | 'events' | 'sales' | 'venues' | 'staff'
  */
 const OrganizationTools = () => {
   const { t } = useTranslation('common');
-  const { hasAnyPermission, roles } = useUserPermissions();
-  const { user } = useAuth();
+  const { hasAnyPermission, rolesLoading } = useUserPermissions();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   const [activeTab, setActiveTab] = useState<OrganizationToolsTab>('overview');
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
-  const isLoading = !roles;
+  const isLoading = authLoading || rolesLoading;
 
   // Check for organization access permission
   const hasAccess = hasAnyPermission(
@@ -212,7 +212,7 @@ const OrganizationTools = () => {
         onBack={() => navigate('/')}
       >
         <div className='flex items-center justify-center min-h-[400px]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </SidebarLayout>
     );

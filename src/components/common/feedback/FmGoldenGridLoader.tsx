@@ -7,10 +7,10 @@ interface FmGoldenGridLoaderProps {
 }
 
 const sizeConfig = {
-  sm: { container: 'w-4 h-4', gridSize: 2, gap: 1 },
-  md: { container: 'w-6 h-6', gridSize: 3, gap: 2 },
-  lg: { container: 'w-10 h-10', gridSize: 4, gap: 2 },
-  xl: { container: 'w-16 h-16', gridSize: 5, gap: 3 },
+  sm: { container: 'w-4 h-4', gridSize: 2, gap: 2 },
+  md: { container: 'w-6 h-6', gridSize: 3, gap: 4 },
+  lg: { container: 'w-10 h-10', gridSize: 4, gap: 4 },
+  xl: { container: 'w-16 h-16', gridSize: 5, gap: 6 },
 };
 
 // Seeded random number generator for consistent but random-looking delays

@@ -671,6 +671,25 @@ All colors MUST be HSL.
   }
 }
 
+@keyframes fm-loading-progress {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(260%);
+    opacity: 0.4;
+  }
+}
+
+.fm-loading-progress {
+  animation: fm-loading-progress 1.6s ease-in-out infinite;
+  will-change: transform;
+}
+
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { supabase, logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
 import { useAuth } from '@/features/auth/services/AuthContext';
@@ -152,7 +152,7 @@ const PublicUserProfile = () => {
     return (
       <Layout>
         <div className='flex items-center justify-center min-h-[60vh]'>
-          <FmCommonLoadingSpinner size='lg' />
+          <FmCommonLoadingState centered={false} size='lg' />
         </div>
       </Layout>
     );

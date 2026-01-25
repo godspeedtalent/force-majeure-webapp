@@ -1,8 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 
-import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -115,7 +115,7 @@ import { queryClient } from '@/lib/queryClient';
 // Loading fallback for lazy-loaded components
 const LazyLoadFallback = () => (
   <div className='min-h-screen flex items-center justify-center bg-background'>
-    <FmCommonLoadingSpinner size='lg' />
+    <FmCommonLoadingState centered={false} size='lg' />
   </div>
 );
 
@@ -126,8 +126,14 @@ const GlobalSearchWrapper = () => {
 
 const AppRoutes = () => {
   const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
+  const location = useLocation();
+  const isFlaggedRoute =
+    location.pathname.startsWith('/merch') ||
+    location.pathname.startsWith('/sonic-gauntlet');
 
-  if (isLoading) {
+  // Only block on feature flags when the current route depends on them.
+  // This avoids a global startup stall if the flags request hangs.
+  if (isLoading && isFlaggedRoute) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
         <FmCommonLoadingSpinner size='lg' />
