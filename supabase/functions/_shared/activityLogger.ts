@@ -93,7 +93,8 @@ export interface LogActivityParams {
  * ```
  */
 export async function logActivity(
-  supabase: SupabaseClient,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   params: LogActivityParams
 ): Promise<string | null> {
   try {
