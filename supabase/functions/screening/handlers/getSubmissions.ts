@@ -27,6 +27,8 @@ export async function getSubmissions(
     p_end_date: filters.endDate || null,
     p_genre_mismatch: filters.genreMismatch || null,
     p_min_reviews: filters.minReviews || null,
+    p_exclude_ignored: filters.excludeIgnored ?? true,
+    p_user_id: _user.id,
   });
 
   console.log('[getSubmissions] RPC result:', {

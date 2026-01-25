@@ -31,3 +31,6 @@ export * from './artistQueries';
 
 // Product queries
 export * from './productQueries';
+
+// User queries
+export * from './userQueries';

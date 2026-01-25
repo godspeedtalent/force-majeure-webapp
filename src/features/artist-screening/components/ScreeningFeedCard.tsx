@@ -39,17 +39,17 @@ interface ScreeningFeedCardProps {
 // ============================================================================
 
 /**
- * Get status badge color
+ * Get status badge color using design system colors
  */
 function getStatusColor(status: SubmissionStatus | undefined): string {
   switch (status) {
     case 'approved':
-      return 'bg-green-500/20 text-green-400 border-green-500/40';
+      return 'bg-fm-success/20 text-fm-success border-fm-success/40';
     case 'rejected':
-      return 'bg-red-500/20 text-red-400 border-red-500/40';
+      return 'bg-fm-danger/20 text-fm-danger border-fm-danger/40';
     case 'pending':
     default:
-      return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40';
+      return 'bg-fm-gold/20 text-fm-gold border-fm-gold/40';
   }
 }
 

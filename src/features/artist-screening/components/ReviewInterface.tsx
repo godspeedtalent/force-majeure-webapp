@@ -204,10 +204,10 @@ export function ReviewInterface() {
             className={cn(
               'rounded-none text-xs font-medium border w-fit',
               submission.status === 'approved'
-                ? 'bg-green-500/20 text-green-400 border-green-500/40'
+                ? 'bg-fm-success/20 text-fm-success border-fm-success/40'
                 : submission.status === 'rejected'
-                ? 'bg-red-500/20 text-red-400 border-red-500/40'
-                : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40'
+                ? 'bg-fm-danger/20 text-fm-danger border-fm-danger/40'
+                : 'bg-fm-gold/20 text-fm-gold border-fm-gold/40'
             )}
           >
             {submission.status.toUpperCase()}

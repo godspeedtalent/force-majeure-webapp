@@ -106,6 +106,7 @@ export function useScreeningSubmissions(filters?: SubmissionFilters) {
           endDate: filters?.dateTo?.toISOString(),
           genreMismatch: filters?.genreMismatch,
           minReviews: filters?.minReviews,
+          excludeIgnored: filters?.excludeIgnored ?? true,
         },
       });
 

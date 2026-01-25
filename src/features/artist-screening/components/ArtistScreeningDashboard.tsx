@@ -53,7 +53,7 @@ export function ArtistScreeningDashboard() {
   const [activeQueue, setActiveQueue] = useState<QueueTab>('all');
 
   return (
-    <div className="space-y-[20px] md:space-y-[40px]">
+    <div className="space-y-[20px] md:space-y-[40px] max-w-7xl mx-auto px-4 md:px-6">
       {/* Header - Hidden on mobile, shown on desktop */}
       <div className="hidden md:block">
         <FmFormSectionHeader
