@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { lazy, Suspense } from 'react';
 
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
+import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
 import Auth from './pages/Auth';
 import CheckoutCancel from './pages/CheckoutCancel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
@@ -136,7 +137,7 @@ const AppRoutes = () => {
   if (isLoading && isFlaggedRoute) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingState centered={false} size='lg' />
+        <FmGoldenGridLoader size='lg' />
       </div>
     );
   }

@@ -133,7 +133,8 @@ function createRegistrationErrorResponse(
  * Check if user can register (no existing artist, no pending registration, not in cooldown)
  */
 async function checkUserCanRegister(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   userId: string,
   corsHeaders: Record<string, string>
 ): Promise<{ canRegister: true } | { canRegister: false; response: Response }> {
@@ -211,7 +212,8 @@ async function checkUserCanRegister(
  * Check for duplicate artist name or platform IDs
  */
 async function checkDuplicates(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   input: ArtistRegistrationInput,
   corsHeaders: Record<string, string>
 ): Promise<{ isDuplicate: false } | { isDuplicate: true; response: Response }> {

@@ -148,7 +148,8 @@ Deno.serve(async (req: Request) => {
 });
 
 async function handleEnter(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   eventId: string,
   sessionId: string,
   maxConcurrent: number
@@ -227,7 +228,8 @@ async function handleEnter(
 }
 
 async function handleExit(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   eventId: string,
   sessionId: string
 ): Promise<SessionResponse> {
@@ -266,7 +268,8 @@ async function handleExit(
 }
 
 async function handleStatus(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   eventId: string,
   sessionId: string,
   maxConcurrent: number
@@ -340,7 +343,8 @@ async function handleStatus(
 }
 
 async function handleCleanup(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   eventId: string
 ): Promise<SessionResponse> {
   const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
