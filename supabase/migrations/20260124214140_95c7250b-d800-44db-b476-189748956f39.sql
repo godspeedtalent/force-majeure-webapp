@@ -9,6 +9,7 @@
 DROP POLICY IF EXISTS "Anyone can view ticketing sessions" ON public.ticketing_sessions;
 DROP POLICY IF EXISTS "Anyone can create ticketing sessions" ON public.ticketing_sessions;
 DROP POLICY IF EXISTS "Users can update their own sessions" ON public.ticketing_sessions;
+DROP POLICY IF EXISTS "Only admins can view ticketing sessions directly" ON public.ticketing_sessions;
 
 -- Revoke all permissions from anon and authenticated roles
 REVOKE ALL ON public.ticketing_sessions FROM anon;

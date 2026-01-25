@@ -8,6 +8,7 @@ import { useArtistById, useArtistAllEvents, type ArtistEventData } from '@/share
 import { DetailPageWrapper } from '@/components/layout/DetailPageWrapper';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared';
 
 export default function ArtistDetails() {
   const { id } = useParams<{ id: string }>();
@@ -29,7 +30,7 @@ export default function ArtistDetails() {
   };
 
   // Check if current user can edit this artist
-  const canEdit = isAdmin() || hasRole('developer') || (artist?.user_id && artist.user_id === user?.id);
+  const canEdit = isAdmin() || hasRole(ROLES.DEVELOPER) || (hasRole(ROLES.ARTIST) && artist?.user_id && artist.user_id === user?.id);
 
   return (
     <DetailPageWrapper

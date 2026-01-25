@@ -136,7 +136,7 @@ const AppRoutes = () => {
   if (isLoading && isFlaggedRoute) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
-        <FmCommonLoadingSpinner size='lg' />
+        <FmCommonLoadingState centered={false} size='lg' />
       </div>
     );
   }

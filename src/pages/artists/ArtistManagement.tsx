@@ -26,6 +26,7 @@ import { PageErrorBoundary } from '@/components/common/feedback';
 import { useUnsavedChanges } from '@/shared/hooks';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
+import { ROLES } from '@/shared';
 import { useArtistManagement, type ArtistTab } from './hooks';
 import {
   ArtistOverviewTab,
@@ -172,7 +173,7 @@ export default function ArtistManagement() {
   }
 
   // Check if user has access to manage this artist (after loading completes)
-  const canManageArtist = isAdmin() || hasRole('developer') || (artist?.user_id && artist.user_id === user?.id);
+  const canManageArtist = isAdmin() || hasRole(ROLES.DEVELOPER) || (hasRole(ROLES.ARTIST) && artist?.user_id && artist.user_id === user?.id);
 
   // Redirect if user doesn't have permission to manage this artist
   if (!canManageArtist) {

@@ -413,7 +413,7 @@ const OrganizationTools = () => {
 
         {eventsLoading ? (
           <div className='flex items-center justify-center min-h-[200px]'>
-            <FmCommonLoadingSpinner size='md' />
+            <FmCommonLoadingState centered={false} size='md' />
           </div>
         ) : (
           <>
@@ -569,7 +569,7 @@ const OrganizationTools = () => {
 
         {venuesLoading ? (
           <div className='flex items-center justify-center min-h-[200px]'>
-            <FmCommonLoadingSpinner size='md' />
+            <FmCommonLoadingState centered={false} size='md' />
           </div>
         ) : venues.length > 0 ? (
           <div className='space-y-2'>

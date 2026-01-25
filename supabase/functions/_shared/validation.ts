@@ -79,12 +79,13 @@ export const StatusSchema = z.enum(['active', 'inactive', 'pending', 'archived']
  * Screening submission filters
  */
 export const SubmissionFiltersSchema = z.object({
-  context: z.enum(['venue', 'standalone']).optional(),
+  context: z.enum(['general', 'event', 'venue']).optional(),
   status: z.enum(['pending', 'approved', 'rejected']).optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   genreMismatch: z.boolean().optional(),
   minReviews: z.number().int().nonnegative().optional(),
+  excludeIgnored: z.boolean().optional(),
 });
 
 export type SubmissionFilters = z.infer<typeof SubmissionFiltersSchema>;
