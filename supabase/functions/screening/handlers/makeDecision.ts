@@ -35,7 +35,7 @@ export async function makeDecision(
       )
     `)
     .eq('id', decision.submission_id)
-    .single();
+    .single() as { data: { id: string; status: string; artist: { id: string; name: string; user_id: string; user: { email: string; display_name: string } } } | null; error: any };
 
   if (submissionError || !submission) {
     throw new Error('Submission not found');

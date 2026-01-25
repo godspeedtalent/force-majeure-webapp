@@ -352,7 +352,7 @@ Deno.serve(async req => {
           attendee_email: ticket.attendee_email,
           event_name: ticketEvent?.title || 'Unknown Event',
           event_start_time: ticketEvent?.start_time || '',
-          venue_name: ticketEvent?.venues?.name || 'Unknown Venue',
+          venue_name: ticketVenue?.name || 'Unknown Venue',
           checked_in_at: now,
         },
       } as ValidateTicketResponse),
