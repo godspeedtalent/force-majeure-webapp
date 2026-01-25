@@ -286,7 +286,7 @@ export const ROUTE_CONFIG: Record<string, RouteConfig> = {
 
       try {
         const { data, error } = await supabase
-          .from('artist_submissions')
+          .from('screening_submissions')
           .select(`
             artist_recordings (name),
             artists (name)

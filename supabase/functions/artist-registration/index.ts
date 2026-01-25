@@ -142,7 +142,7 @@ async function checkUserCanRegister(
     .from('artists')
     .select('id, name')
     .eq('user_id', userId)
-    .maybeSingle();
+    .maybeSingle() as { data: { id: string; name: string } | null };
 
   if (existingArtist) {
     return {
@@ -165,7 +165,7 @@ async function checkUserCanRegister(
     .in('status', ['pending', 'denied'])
     .order('submitted_at', { ascending: false })
     .limit(1)
-    .maybeSingle();
+    .maybeSingle() as { data: { id: string; status: string; reviewed_at: string | null } | null };
 
   if (existingRegistration) {
     if (existingRegistration.status === 'pending') {
@@ -221,7 +221,7 @@ async function checkDuplicates(
     .select('id, name')
     .ilike('name', input.stageName.trim())
     .limit(1)
-    .maybeSingle();
+    .maybeSingle() as { data: { id: string; name: string } | null };
 
   if (existingArtist) {
     return {
@@ -264,7 +264,7 @@ async function checkDuplicates(
       .select('id, name')
       .eq('spotify_id', input.spotifyArtistId)
       .limit(1)
-      .maybeSingle();
+      .maybeSingle() as { data: { id: string; name: string } | null };
 
     if (existingSpotify) {
       return {
@@ -287,7 +287,7 @@ async function checkDuplicates(
       .select('id, name')
       .eq('soundcloud_id', input.soundcloudUsername)
       .limit(1)
-      .maybeSingle();
+      .maybeSingle() as { data: { id: string; name: string } | null };
 
     if (existingSoundcloud) {
       return {
