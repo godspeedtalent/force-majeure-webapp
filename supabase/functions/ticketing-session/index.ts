@@ -160,7 +160,7 @@ async function handleEnter(
     .eq('event_id', eventId)
     .eq('user_session_id', sessionId)
     .in('status', ['active', 'waiting'])
-    .single();
+    .single() as { data: { id: string; status: string; created_at: string } | null };
 
   if (existingSession) {
     if (existingSession.status === 'active') {
@@ -249,7 +249,7 @@ async function handleExit(
     .eq('status', 'waiting')
     .order('created_at', { ascending: true })
     .limit(1)
-    .single();
+    .single() as { data: { id: string } | null };
 
   if (nextWaiting) {
     await supabase
@@ -278,7 +278,7 @@ async function handleStatus(
     .eq('event_id', eventId)
     .eq('user_session_id', sessionId)
     .in('status', ['active', 'waiting'])
-    .single();
+    .single() as { data: { id: string; status: string; created_at: string } | null };
 
   // Count active sessions
   const { count: activeCount } = await supabase
@@ -346,7 +346,7 @@ async function handleCleanup(
   const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
 
   // Mark old sessions as completed
-  const { count } = await supabase
+  const { data: updated } = await supabase
     .from('ticketing_sessions')
     .update({ 
       status: 'completed',
@@ -355,9 +355,9 @@ async function handleCleanup(
     .eq('event_id', eventId)
     .in('status', ['active', 'waiting'])
     .lt('created_at', thirtyMinutesAgo)
-    .select('*', { count: 'exact', head: true });
+    .select('id') as { data: { id: string }[] | null };
 
-  console.log(`Cleaned up ${count ?? 0} old sessions for event ${eventId}`);
+  console.log(`Cleaned up ${updated?.length ?? 0} old sessions for event ${eventId}`);
 
   return { success: true };
 }

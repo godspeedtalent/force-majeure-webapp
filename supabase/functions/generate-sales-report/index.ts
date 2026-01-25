@@ -49,7 +49,7 @@ serve(async (req) => {
         .from('events')
         .select('organization_id, organizations!inner(owner_id)')
         .eq('id', eventId)
-        .single();
+        .single() as { data: { organization_id: string; organizations: { owner_id: string } } | null };
 
       const isEventOwner = event?.organizations?.owner_id === user.id;
 
