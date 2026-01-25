@@ -48,6 +48,13 @@ interface ErrorHandlerOptions {
 
   /** User role (if not provided, will be auto-detected) */
   userRole?: string;
+
+  /**
+   * Silent mode - only logs, no toast or backend logging.
+   * Use for background operations where user feedback isn't needed.
+   * Equivalent to setting showToast: false and logError: false.
+   */
+  silent?: boolean;
 }
 
 /**
@@ -214,7 +221,12 @@ export async function handleError(
     showToast = true,
     logError = true,
     userRole,
+    silent = false,
   } = options;
+
+  // Silent mode: only console log, skip toast and backend logging
+  const shouldShowToast = !silent && showToast;
+  const shouldLogToBackend = !silent && logError;
 
   const isDev = isDeveloperOrAdmin(userRole);
   const errorDetails = extractErrorDetails(error);
@@ -226,7 +238,7 @@ export async function handleError(
   }
 
   // Log to backend if enabled (skip if network error to prevent cascade)
-  if (logError && !errorDetails.isNetworkError) {
+  if (shouldLogToBackend && !errorDetails.isNetworkError) {
     try {
       await logApiError({
         level: 'error',
@@ -249,7 +261,7 @@ export async function handleError(
   }
 
   // Show toast notification if enabled
-  if (showToast) {
+  if (shouldShowToast) {
     const errorObject = new Error(errorDetails.message);
     if (errorDetails.stack) {
       errorObject.stack = errorDetails.stack;
