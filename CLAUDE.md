@@ -575,6 +575,93 @@ npm run lint          # Lint all files
 - camelCase in TypeScript interfaces (after fetching)
 - Use centralized types for consistency
 
+### RLS Policy Optimization (CRITICAL)
+
+**MANDATORY: All RLS policies MUST use optimized auth function calls from the start.**
+
+Supabase flags policies that call `auth.uid()`, `auth.jwt()`, `has_role()`, or `is_dev_admin()` per-row as performance issues. This causes sequential scans instead of index usage, resulting in 10-100x slower queries.
+
+#### ❌ NEVER Write Policies Like This
+
+```sql
+-- BAD - auth.uid() evaluated per row
+CREATE POLICY "Users can view own data" ON table_name
+  FOR SELECT USING (user_id = auth.uid());
+
+-- BAD - has_role() evaluated per row
+CREATE POLICY "Admins can manage" ON table_name
+  FOR ALL USING (has_role(auth.uid(), 'admin'));
+```
+
+#### ✅ ALWAYS Write Policies Like This
+
+```sql
+-- GOOD - auth.uid() evaluated once per query
+CREATE POLICY "Users can view own data" ON table_name
+  FOR SELECT USING (user_id = (SELECT auth.uid()));
+
+-- GOOD - has_role() evaluated once per query
+CREATE POLICY "Admins can manage" ON table_name
+  FOR ALL USING (has_role((SELECT auth.uid()), 'admin'));
+
+-- GOOD - Multiple auth calls wrapped
+CREATE POLICY "Admins and developers" ON table_name
+  FOR ALL USING (
+    has_role((SELECT auth.uid()), 'admin') OR
+    has_role((SELECT auth.uid()), 'developer') OR
+    is_dev_admin((SELECT auth.uid()))
+  );
+
+-- GOOD - Subquery pattern for role checks
+CREATE POLICY "Admin access" ON table_name
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON ur.role_id = r.id
+      WHERE ur.user_id = (SELECT auth.uid())
+      AND r.name IN ('admin', 'developer')
+    )
+  );
+```
+
+#### Key Rules
+
+1. **Wrap ALL auth function calls** in `(SELECT ...)` subqueries
+2. **Apply to both USING and WITH CHECK** clauses
+3. **This is required** even for simple equality checks
+4. **Always use this pattern** when creating new tables/policies
+5. **Never skip this optimization** - it's not optional
+
+#### Performance Impact
+
+- **Before optimization**: O(n) - Sequential scan, auth call per row
+- **After optimization**: O(log n) - Index scan, auth call once per query
+- **Result**: 10-100x performance improvement on user-specific queries
+
+#### Verification Query
+
+After creating policies, verify they're optimized:
+
+```sql
+SELECT
+  schemaname,
+  tablename,
+  policyname,
+  pg_get_expr(qual, (schemaname || '.' || tablename)::regclass) as using_clause
+FROM pg_policies
+WHERE schemaname = 'public'
+  AND tablename = 'your_table_name'
+  AND (
+    pg_get_expr(qual, (schemaname || '.' || tablename)::regclass) LIKE '%auth.uid()%'
+    OR pg_get_expr(qual, (schemaname || '.' || tablename)::regclass) LIKE '%has_role(auth%'
+  )
+  AND pg_get_expr(qual, (schemaname || '.' || tablename)::regclass) NOT LIKE '%(SELECT auth.uid())%';
+
+-- Should return ZERO rows (no unoptimized policies)
+```
+
+**See also:** `docs/backend/RLS_AND_GRANTS_GUIDE.md` for complete RLS setup guide.
+
 ## Common Tasks
 
 ### Adding a New Feature
