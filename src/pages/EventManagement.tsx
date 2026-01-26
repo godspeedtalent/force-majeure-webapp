@@ -391,7 +391,7 @@ export default function EventManagement() {
 
       // Navigate back to admin or home
       navigate('/admin');
-    } catch (error) {
+    } catch (error: unknown) {
       await handleError(error, {
         title: tToast('events.deleteFailed'),
         description: tToast('events.deleteFailedDescription'),
@@ -420,7 +420,7 @@ export default function EventManagement() {
 
       toast.success(tToast('events.uxSettingsUpdated'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
+    } catch (error: unknown) {
       await handleError(error, {
         title: tToast('events.uxDisplayUpdateFailed'),
         description: tToast('events.uxDisplayUpdateFailedDescription'),
@@ -457,7 +457,7 @@ export default function EventManagement() {
       await eventService.updateEventStatus(id, 'published');
       toast.success(tToast('events.published'));
       queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
+    } catch (error: unknown) {
       await handleError(error, {
         title: tToast('events.publishFailed'),
         description: tToast('events.publishFailedDescription'),
@@ -473,7 +473,7 @@ export default function EventManagement() {
     try {
       await eventService.updateEventStatus(id, 'invisible');
       queryClient.invalidateQueries({ queryKey: ['event', id] });
-    } catch (error) {
+    } catch (error: unknown) {
       await handleError(error, {
         title: tToast('events.hideFailed'),
         description: tToast('events.hideFailedDescription'),
@@ -609,7 +609,7 @@ export default function EventManagement() {
 
                     toast.success(checked ? t('eventManagement.noHeadlinerEnabled') : t('eventManagement.noHeadlinerDisabled'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
-                  } catch (error) {
+                  } catch (error: unknown) {
                     await handleError(error, {
                       title: tToast('events.updateSettingFailed'),
                       description: tToast('events.updateNoHeadlinerSettingFailedDescription'),
@@ -639,7 +639,7 @@ export default function EventManagement() {
 
                     toast.success(checked ? t('eventManagement.lookingForUndercardEnabled') : t('eventManagement.lookingForUndercardDisabled'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
-                  } catch (error) {
+                  } catch (error: unknown) {
                     await handleError(error, {
                       title: tToast('events.updateSettingFailed'),
                       description: tToast('events.updateUndercardSettingFailedDescription'),
@@ -702,7 +702,7 @@ export default function EventManagement() {
                     toast.success(tToast('events.artistsUpdated'));
                     queryClient.invalidateQueries({ queryKey: ['event', id] });
                     queryClient.invalidateQueries({ queryKey: ['event-artists', id] });
-                  } catch (error) {
+                  } catch (error: unknown) {
                     await handleError(error, {
                       title: tToast('events.artistUpdateFailed'),
                       description: tToast('events.artistUpdateFailedDescription'),

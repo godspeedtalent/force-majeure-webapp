@@ -346,13 +346,15 @@
     "mockModeActive": "Mock payment mode - No real charges will be made",
     "validation": {
       "fullNameRequired": "Full name is required",
+      "nameTooLong": "Name must be 100 characters or less",
       "validEmailRequired": "Valid email is required",
       "addressRequired": "Address is required",
       "cityRequired": "City is required",
       "stateRequired": "State is required",
       "validZipRequired": "Valid ZIP code is required",
       "paymentLoading": "Please wait for payment system to load",
-      "mustAcceptTerms": "You must accept the terms to continue"
+      "mustAcceptTerms": "You must accept the terms to continue",
+      "maxTicketsExceeded": "Maximum {{max}} tickets per order"
     },
     "toast": {
       "addressNotSaved": "Address not saved",
@@ -363,7 +365,9 @@
       "paymentFailed": "Payment failed",
       "paymentError": "An error occurred processing your payment",
       "emailFailed": "Email delivery failed",
-      "emailFailedDescription": "Your order was successful, but we couldn't send the confirmation email. You can view your tickets in your wallet."
+      "emailFailedDescription": "Your order was successful, but we couldn't send the confirmation email. You can view your tickets in your wallet.",
+      "tooManyTickets": "Too many tickets selected",
+      "tooManyTicketsDescription": "This event allows a maximum of {{max}} tickets per order. You selected {{total}} tickets. Please reduce your selection."
     }
   },
   "tickets": {

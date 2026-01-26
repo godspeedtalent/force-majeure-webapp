@@ -21,6 +21,9 @@ interface FmCommonBackButtonProps {
 /**
  * A reusable back button component with consistent styling
  * Can navigate to a specific path or use browser history
+ *
+ * @deprecated Use FmBackButton from '@/components/common/buttons/FmBackButton' instead.
+ * FmBackButton has a more modern API with variant ("icon" | "text") and position ("floating" | "inline") props.
  */
 export function FmCommonBackButton({
   text,

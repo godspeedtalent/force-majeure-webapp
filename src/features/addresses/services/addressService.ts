@@ -3,10 +3,6 @@
  *
  * Centralized service for address CRUD operations.
  * Uses the normalized addresses table with polymorphic ownership.
- *
- * NOTE: Type assertions (as any) are used because the addresses table
- * types are not yet in the generated Supabase types file. After running
- * migrations and regenerating types, these can be removed.
  */
 
 import { supabase } from '@/shared';
@@ -18,8 +14,7 @@ export const addressService = {
    * Get all addresses for a profile
    */
   async getProfileAddresses(profileId: string): Promise<Address[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .select('*')
       .eq('profile_id', profileId)
@@ -42,8 +37,7 @@ export const addressService = {
    * Get all addresses for a guest
    */
   async getGuestAddresses(guestId: string): Promise<Address[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .select('*')
       .eq('guest_id', guestId)
@@ -66,8 +60,7 @@ export const addressService = {
    * Get default billing address for a profile
    */
   async getProfileBillingAddress(profileId: string): Promise<Address | null> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .select('*')
       .eq('profile_id', profileId)
@@ -91,8 +84,7 @@ export const addressService = {
    * Get default billing address for a guest
    */
   async getGuestBillingAddress(guestId: string): Promise<Address | null> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .select('*')
       .eq('guest_id', guestId)
@@ -119,14 +111,13 @@ export const addressService = {
     profileId: string,
     address: AddressFormData
   ): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any).rpc('upsert_profile_billing_address', {
+    const { data, error } = await supabase.rpc('upsert_profile_billing_address', {
       p_profile_id: profileId,
-      p_line_1: address.line_1 || null,
-      p_line_2: address.line_2 || null,
-      p_city: address.city || null,
-      p_state: address.state || null,
-      p_zip_code: address.zip_code || null,
+      p_line_1: address.line_1 || undefined,
+      p_line_2: address.line_2 || undefined,
+      p_city: address.city || undefined,
+      p_state: address.state || undefined,
+      p_zip_code: address.zip_code || undefined,
       p_country: address.country || 'US',
     });
 
@@ -149,14 +140,13 @@ export const addressService = {
     guestId: string,
     address: AddressFormData
   ): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any).rpc('upsert_guest_billing_address', {
+    const { data, error } = await supabase.rpc('upsert_guest_billing_address', {
       p_guest_id: guestId,
-      p_line_1: address.line_1 || null,
-      p_line_2: address.line_2 || null,
-      p_city: address.city || null,
-      p_state: address.state || null,
-      p_zip_code: address.zip_code || null,
+      p_line_1: address.line_1 || undefined,
+      p_line_2: address.line_2 || undefined,
+      p_city: address.city || undefined,
+      p_state: address.state || undefined,
+      p_zip_code: address.zip_code || undefined,
       p_country: address.country || 'US',
     });
 
@@ -184,8 +174,7 @@ export const addressService = {
   ): Promise<Address> {
     const ownerField = `${ownerType}_id`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .insert({
         [ownerField]: ownerId,
@@ -232,8 +221,7 @@ export const addressService = {
     if (address.zip_code !== undefined) updateData.zip_code = address.zip_code || null;
     if (address.country !== undefined) updateData.country = address.country || 'US';
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('addresses')
       .update(updateData)
       .eq('id', addressId)
@@ -256,8 +244,7 @@ export const addressService = {
    * Delete an address
    */
   async deleteAddress(addressId: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('addresses')
       .delete()
       .eq('id', addressId);
@@ -279,8 +266,7 @@ export const addressService = {
     const ownerField = `${ownerType}_id`;
 
     // First, get the address type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: address, error: fetchError } = await (supabase as any)
+    const { data: address, error: fetchError } = await supabase
       .from('addresses')
       .select('address_type')
       .eq('id', addressId)
@@ -296,8 +282,7 @@ export const addressService = {
     }
 
     // Unset any existing default for this type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: unsetError } = await (supabase as any)
+    const { error: unsetError } = await supabase
       .from('addresses')
       .update({ is_default: false })
       .eq(ownerField, ownerId)
@@ -315,8 +300,7 @@ export const addressService = {
     }
 
     // Set the new default
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: setError } = await (supabase as any)
+    const { error: setError } = await supabase
       .from('addresses')
       .update({ is_default: true })
       .eq('id', addressId);

@@ -420,7 +420,7 @@ export const TestEventConfigSection = ({
       queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
       queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
-    } catch (error) {
+    } catch (error: unknown) {
       await handleError(error, {
         title: tToast('events.updateStatusFailed'),
         context: 'TestEventConfigSection.toggleTestMode',
@@ -542,7 +542,7 @@ export const TestEventConfigSection = ({
       queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
       queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error generating mock data:', {
         error: error instanceof Error ? error.message : 'Unknown',
         eventId,
@@ -586,7 +586,7 @@ export const TestEventConfigSection = ({
       queryClient.invalidateQueries({ queryKey: ['test-order-count', eventId] });
       queryClient.invalidateQueries({ queryKey: ['mock-data-summary', eventId] });
       onStatusChange?.();
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error purging mock data:', {
         error: error instanceof Error ? error.message : 'Unknown',
         eventId,

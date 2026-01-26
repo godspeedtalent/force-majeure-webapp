@@ -8,77 +8,76 @@ import { debugAccessService } from '@/shared/services/debugAccessService';
 import { initializeSupabaseErrorInterceptor } from '@/integrations/supabase/errorInterceptor';
 import { queryClient } from '@/lib/queryClient';
 import i18n from '@/i18n';
+import { diagStart, diagComplete, diagError, diagInfo, diagWarn } from '@/shared/services/initDiagnostics';
 
 const authLogger = logger.createNamespace('Auth');
-const SESSION_REFRESH_BUFFER_MS = 30 * 1000; // Refresh if expiring within 30 seconds
+const AUTH_OPERATION_TIMEOUT_MS = 10 * 1000; // 10 second timeout for auth operations
 
-const shouldRefreshSession = (session: Session | null): boolean => {
-  if (!session?.expires_at) return false;
-  const expiresAtMs = session.expires_at * 1000;
-  return Number.isFinite(expiresAtMs) && expiresAtMs <= Date.now() + SESSION_REFRESH_BUFFER_MS;
-};
+// Storage key must match the one in supabase/client.ts
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://orgxcrnnecblhuxjfruy.supabase.co';
+const PROJECT_REF = SUPABASE_URL.match(/https:\/\/([^.]+)/)?.[1] || 'force-majeure';
+const AUTH_STORAGE_KEY = `sb-${PROJECT_REF}-auth-token`;
+
+interface StoredSession {
+  access_token: string;
+  refresh_token: string;
+  expires_at?: number;
+  expires_in?: number;
+  token_type?: string;
+  user?: User;
+}
 
 /**
- * Safely extract error message from various error types
- * Ensures a string is always returned for toast display
+ * Read session directly from localStorage, bypassing Supabase's internal state.
+ * This avoids potential hangs from stuck internal promises/locks.
  */
-function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred'): string {
-  if (!error) return fallback;
+function getStoredSession(): StoredSession | null {
+  try {
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!stored) return null;
 
-  // Handle standard Error objects
-  if (error instanceof Error) {
-    // Check for specific error types that indicate server issues
-    if (error.name === 'AuthRetryableFetchError') {
-      // This typically means a timeout or network issue with Supabase
-      return 'Server connection timed out. Please try again in a moment.';
+    const parsed = JSON.parse(stored);
+    if (!parsed.access_token || !parsed.refresh_token) {
+      authLogger.warn('Stored session missing required tokens');
+      return null;
     }
 
-    // Check for empty or useless error messages
-    const message = error.message;
-    if (!message || message === '{}' || message === '""' || message === 'null') {
-      return fallback;
-    }
-
-    return message;
+    return parsed as StoredSession;
+  } catch (error) {
+    authLogger.warn('Failed to parse stored session', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
   }
+}
 
-  // Handle Supabase AuthError format
-  if (typeof error === 'object' && error !== null) {
-    const err = error as Record<string, unknown>;
+/**
+ * Wraps a promise with a timeout. If the promise doesn't resolve within
+ * the timeout, returns null and logs a warning.
+ */
+async function withAuthTimeout<T>(
+  promise: Promise<T>,
+  operationName: string,
+  timeoutMs: number = AUTH_OPERATION_TIMEOUT_MS
+): Promise<T | null> {
+  let timeoutId: ReturnType<typeof setTimeout>;
 
-    // Check for specific error names that indicate server issues
-    if (err.name === 'AuthRetryableFetchError') {
-      return 'Server connection timed out. Please try again in a moment.';
-    }
+  const timeoutPromise = new Promise<null>((resolve) => {
+    timeoutId = setTimeout(() => {
+      authLogger.warn(`${operationName} timed out after ${timeoutMs}ms`);
+      diagWarn(operationName, `Timed out after ${timeoutMs}ms - treating as no session`);
+      resolve(null);
+    }, timeoutMs);
+  });
 
-    // Check for message property (most common)
-    if (typeof err.message === 'string' && err.message && err.message !== '{}') {
-      return err.message;
-    }
-
-    // Check for error property (some APIs use this)
-    if (typeof err.error === 'string' && err.error) {
-      return err.error;
-    }
-
-    // Check for error_description (OAuth errors)
-    if (typeof err.error_description === 'string' && err.error_description) {
-      return err.error_description;
-    }
-
-    // Last resort: stringify the object (but only if it's not empty)
-    const stringified = JSON.stringify(error);
-    if (stringified !== '{}') {
-      return stringified;
-    }
+  try {
+    const result = await Promise.race([promise, timeoutPromise]);
+    clearTimeout(timeoutId!);
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutId!);
+    throw error;
   }
-
-  // Handle string errors
-  if (typeof error === 'string' && error && error !== '{}') {
-    return error;
-  }
-
-  return fallback;
 }
 
 interface Profile {
@@ -183,7 +182,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       setProfile(data ? { ...data, spotify_connected: false } : null);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error fetching profile:', {
         error: error instanceof Error ? error.message : String(error),
         source: 'AuthContext.fetchProfile.catch',
@@ -198,10 +197,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
+    diagInfo('auth.provider.mounted');
+
     // Set up auth state listener FIRST
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      diagInfo('auth.stateChange', { event, hasSession: !!session });
       authLogger.debug('Auth state change', { event, hasSession: !!session });
 
       // Avoid racing initial session bootstrap (handled below)
@@ -244,16 +246,69 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLoading(false);
     });
 
-    // Initialize global Supabase error interceptor (for unhandled errors)
-    initializeSupabaseErrorInterceptor();
+    // NOTE: Error interceptor is initialized AFTER bootstrap completes (in finally block)
+    // to avoid its onAuthStateChange listener competing with bootstrap
 
     const bootstrapSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+      diagStart('auth.bootstrap');
 
-        // Handle case where stored session has invalid refresh token
+      try {
+        diagStart('auth.initSession');
+
+        // Read session directly from localStorage to bypass any stuck internal state
+        // in the Supabase client. This avoids the hang that getSession() can cause.
+        const storedSession = getStoredSession();
+
+        if (!storedSession) {
+          // No stored session - user needs to log in
+          diagComplete('auth.initSession', { hasSession: false, reason: 'no_stored_session' });
+          authLogger.debug('No stored session found');
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          return;
+        }
+
+        // Check if token is expired before even trying to use it
+        const isExpired = storedSession.expires_at
+          ? storedSession.expires_at * 1000 < Date.now()
+          : false;
+
+        if (isExpired) {
+          diagInfo('auth.session.expired', { expires_at: storedSession.expires_at });
+          authLogger.debug('Stored session is expired, will attempt refresh via setSession');
+        }
+
+        // Use setSession to initialize the Supabase client with fresh state
+        // This bypasses getSession() which can hang on stuck internal promises
+        const setSessionResult = await withAuthTimeout(
+          supabase.auth.setSession({
+            access_token: storedSession.access_token,
+            refresh_token: storedSession.refresh_token,
+          }),
+          'auth.setSession'
+        );
+
+        // Handle timeout - setSession hung, reload to recover
+        if (setSessionResult === null) {
+          diagComplete('auth.initSession', { hasSession: false, timedOut: true });
+          authLogger.warn('setSession timed out, reloading page to recover');
+          window.location.reload();
+          return;
+        }
+
+        const { data, error } = setSessionResult;
+        const session = data?.session ?? null;
+
+        diagComplete('auth.initSession', {
+          hasSession: !!session,
+          error: error?.message,
+          refreshed: session?.access_token !== storedSession.access_token,
+        });
+
+        // Handle setSession errors (invalid tokens, etc.)
         if (error) {
-          authLogger.warn('Session retrieval error, clearing invalid session', {
+          authLogger.warn('setSession error, clearing invalid session', {
             error: error.message,
           });
           // Clear the invalid session from storage
@@ -266,36 +321,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return;
         }
 
-        let activeSession = session;
+        // Successfully initialized session
+        setSession(session);
+        setUser(session?.user ?? null);
 
-        // Ensure session is fresh before exposing it to the app
-        if (shouldRefreshSession(session)) {
-          const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-
-          if (refreshError || !refreshData.session) {
-            authLogger.warn('Session refresh failed during bootstrap', {
-              error: refreshError?.message || 'No session returned',
-            });
-            await supabase.auth.signOut({ scope: 'local' }).catch(() => {
-              // Ignore signOut errors during cleanup
-            });
-            activeSession = null;
-          } else {
-            activeSession = refreshData.session;
-          }
-        }
-
-        setSession(activeSession);
-        setUser(activeSession?.user ?? null);
-
-        if (activeSession?.user) {
+        if (session?.user) {
           setTimeout(() => {
-            fetchProfile(activeSession.user.id);
+            fetchProfile(session.user.id);
           }, 0);
         } else {
           setProfile(null);
         }
       } catch (error) {
+        diagError('auth.bootstrap', error);
         // Handle AuthApiError for invalid refresh tokens
         const errorMessage = error instanceof Error ? error.message : String(error);
         const isRefreshTokenError = errorMessage.includes('Refresh Token');
@@ -319,8 +357,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(null);
         setProfile(null);
       } finally {
+        diagComplete('auth.bootstrap');
         setLoading(false);
         isBootstrappingRef.current = false;
+
+        // Initialize error interceptor AFTER bootstrap completes
+        // This prevents its onAuthStateChange listener from competing with bootstrap
+        initializeSupabaseErrorInterceptor();
+        diagInfo('auth.errorInterceptor.initialized');
       }
     };
 
@@ -356,14 +400,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        const errorMessage = getErrorMessage(error, i18n.t('auth.signUpError', { ns: 'toasts' }));
-        logger.error('Sign up error:', {
-          error: errorMessage,
-          errorObject: error,
-          email,
-          source: 'AuthContext.signUp',
+        handleError(error, {
+          title: i18n.t('auth.signUpError', { ns: 'toasts' }),
+          context: 'AuthContext.signUp',
+          endpoint: '/auth/signup',
+          method: 'POST',
         });
-        toast.error(errorMessage);
       } else {
         authLogger.info('Sign up successful', { userId: data.user?.id });
 
@@ -405,7 +447,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(getErrorMessage(error, i18n.t('auth.signInError', { ns: 'toasts' })));
+        handleError(error, {
+          title: i18n.t('auth.signInError', { ns: 'toasts' }),
+          context: 'AuthContext.signIn',
+          endpoint: '/auth/signin',
+          method: 'POST',
+        });
       } else {
         // Set remember device preference
         sessionPersistence.setRememberDevice(rememberMe);
@@ -501,23 +548,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        authLogger.error('Profile update failed', {
-          userId: user.id,
-          error: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
+        handleError(error, {
+          title: i18n.t('profile.updateError', { ns: 'toasts' }),
+          context: 'AuthContext.updateProfile',
+          endpoint: '/profiles',
+          method: 'UPDATE',
         });
-        toast.error(getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' })));
       } else if (!data) {
         // No data returned means no rows were updated (possibly RLS blocking)
-        authLogger.error('Profile update returned no data - possible RLS issue', {
-          userId: user.id,
-          updates: Object.keys(updates),
+        const noRowsError = new Error('Profile update failed - no rows affected. Please contact support.');
+        handleError(noRowsError, {
+          title: i18n.t('profile.updateError', { ns: 'toasts' }),
+          context: 'AuthContext.updateProfile.noRowsAffected',
+          endpoint: '/profiles',
+          method: 'UPDATE',
         });
-        const noRowsError = { message: 'Profile update failed - no rows affected. Please contact support.' };
-        toast.error(noRowsError.message);
-        return { error: noRowsError };
+        return { error: { message: noRowsError.message } };
       } else {
         authLogger.info('Profile update successful', {
           userId: user.id,
@@ -529,12 +575,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       return { error };
     } catch (error: unknown) {
-      const errorMsg = getErrorMessage(error, i18n.t('profile.updateError', { ns: 'toasts' }));
       authLogger.error('Profile update exception', {
         userId: user.id,
-        error: errorMsg,
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
-      toast.error(errorMsg);
+      await handleError(error, {
+        title: i18n.t('profile.updateError', { ns: 'toasts' }),
+        context: 'Profile update',
+        endpoint: '/profiles',
+        method: 'UPDATE',
+      });
       return { error };
     }
   };
@@ -554,14 +604,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        toast.error(getErrorMessage(error, 'Failed to resend verification email'));
+        handleError(error, {
+          title: i18n.t('auth.emailVerificationError', { ns: 'toasts' }),
+          context: 'AuthContext.resendVerificationEmail',
+          endpoint: '/auth/resend',
+          method: 'POST',
+        });
       } else {
         toast.success(i18n.t('auth.emailVerificationSent', { ns: 'toasts' }));
       }
 
       return { error };
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, 'Failed to resend verification email'));
+      await handleError(error, {
+        title: i18n.t('auth.emailVerificationError', { ns: 'toasts' }),
+        context: 'Resend verification email',
+        endpoint: '/auth/resend',
+        method: 'POST',
+      });
       return { error };
     }
   };
@@ -575,8 +635,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        authLogger.error('Password reset request error', { error: error.message });
-        toast.error(getErrorMessage(error, i18n.t('auth.passwordResetError', { ns: 'toasts' })));
+        handleError(error, {
+          title: i18n.t('auth.passwordResetError', { ns: 'toasts' }),
+          context: 'AuthContext.resetPasswordRequest',
+          endpoint: '/auth/reset-password',
+          method: 'POST',
+        });
       } else {
         authLogger.info('Password reset email sent', { email });
         toast.success(i18n.t('auth.passwordResetEmailSent', { ns: 'toasts' }));
@@ -603,8 +667,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
-        authLogger.error('Password update error', { error: error.message });
-        toast.error(getErrorMessage(error, i18n.t('auth.passwordUpdateError', { ns: 'toasts' })));
+        handleError(error, {
+          title: i18n.t('auth.passwordUpdateError', { ns: 'toasts' }),
+          context: 'AuthContext.updatePassword',
+          endpoint: '/auth/update-password',
+          method: 'POST',
+        });
       } else {
         authLogger.info('Password updated successfully');
         toast.success(i18n.t('auth.passwordUpdateSuccess', { ns: 'toasts' }));

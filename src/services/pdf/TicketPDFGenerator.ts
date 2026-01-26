@@ -80,7 +80,7 @@ export class TicketPDFGenerator {
       }
 
       return await response.arrayBuffer();
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.warn('Error loading font', {
         fontPath,
         error: error instanceof Error ? error.message : 'Unknown',
@@ -126,7 +126,7 @@ export class TicketPDFGenerator {
       }
 
       return !!fontCache.regular;
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.warn('Error registering Canela fonts', {
         error: error instanceof Error ? error.message : 'Unknown',
       });
@@ -173,7 +173,7 @@ export class TicketPDFGenerator {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.warn('Error loading image', {
         imageUrl,
         error: error instanceof Error ? error.message : 'Unknown',
@@ -470,7 +470,7 @@ export class TicketPDFGenerator {
       });
 
       return pdfBase64;
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.error('Error generating PDF', {
         error: error instanceof Error ? error.message : 'Unknown',
         ticketId: ticketData.ticketId,
@@ -536,7 +536,7 @@ export class TicketPDFGenerator {
       });
 
       return pdfBase64;
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.error('Error generating multiple tickets PDF', {
         error: error instanceof Error ? error.message : 'Unknown',
         ticketCount: tickets.length,
@@ -602,7 +602,7 @@ export class TicketPDFGenerator {
       }));
 
       return await this.generateMultipleTickets(ticketData);
-    } catch (error) {
+    } catch (error: unknown) {
       pdfLogger.error('Error generating order tickets PDF', {
         error: error instanceof Error ? error.message : 'Unknown',
         orderId: orderData.order_id,

@@ -11,6 +11,7 @@ import { EventFeeSettings } from './EventFeeSettings';
 import { useEventTicketTiers } from './hooks/useEventTicketTiers';
 import { useEventRsvpSettings } from '@/features/events/hooks/useEventRsvpSettings';
 import { useEventFeeSettings } from '@/features/events/hooks/useEventFeeSettings';
+import { useEventMaxTicketsPerOrder } from '@/features/events/hooks';
 import { useTicketFees } from '@/components/ticketing/hooks/useTicketFees';
 import { CompTicketManager } from '@/features/events/components/CompTicketManager';
 import type { TicketGroup } from './ticket-group-manager/types';
@@ -48,6 +49,14 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
     updateSettings: updateFeeSettings,
   } = useEventFeeSettings(eventId);
 
+  // Max tickets per order setting
+  const {
+    maxTicketsPerOrder,
+    isLoading: isMaxTicketsLoading,
+    isSaving: isMaxTicketsSaving,
+    updateMaxTicketsPerOrder,
+  } = useEventMaxTicketsPerOrder(eventId);
+
   // Global fees for display when using defaults
   const { fees: globalFees } = useTicketFees();
 
@@ -58,6 +67,10 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
   // Local state for subtitle input
   const [localSubtitle, setLocalSubtitle] = useState<string>('');
   const [subtitleDirty, setSubtitleDirty] = useState(false);
+
+  // Local state for max tickets per order input
+  const [localMaxTickets, setLocalMaxTickets] = useState<string>('');
+  const [maxTicketsDirty, setMaxTicketsDirty] = useState(false);
 
   // Track initial groups for dirty state detection
   const initialGroupsRef = useRef<string | null>(null);
@@ -70,6 +83,11 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
   // Sync subtitle from server
   if (rsvpButtonSubtitle !== null && !subtitleDirty && localSubtitle === '') {
     setLocalSubtitle(rsvpButtonSubtitle);
+  }
+
+  // Sync max tickets from server
+  if (maxTicketsPerOrder && !maxTicketsDirty && localMaxTickets === '') {
+    setLocalMaxTickets(maxTicketsPerOrder.toString());
   }
 
   // Update local groups when data loads
@@ -130,7 +148,22 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
     setSubtitleDirty(false);
   };
 
-  if (isLoading || isRsvpLoading || isFeeLoading) {
+  const handleMaxTicketsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalMaxTickets(e.target.value);
+    setMaxTicketsDirty(true);
+  };
+
+  const handleMaxTicketsBlur = () => {
+    if (!maxTicketsDirty) return;
+
+    const numValue = parseInt(localMaxTickets, 10);
+    if (!isNaN(numValue) && numValue !== maxTicketsPerOrder) {
+      updateMaxTicketsPerOrder(numValue);
+    }
+    setMaxTicketsDirty(false);
+  };
+
+  if (isLoading || isRsvpLoading || isFeeLoading || isMaxTicketsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-muted-foreground">{t('eventManagement.loadingTicketTiers')}</div>
@@ -275,6 +308,46 @@ export const EventTicketTierManagement = ({ eventId }: EventTicketTierManagement
           )}
         </div>
       </FmFormSection>
+
+      {/* Max Tickets Per Order Section - hidden for RSVP-only events */}
+      {!isRsvpOnlyEvent && (
+        <FmFormSection
+          title={t('ticketing.maxTicketsPerOrder')}
+          description={t('ticketing.maxTicketsPerOrderHint')}
+          icon={Ticket}
+        >
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-4 border border-border bg-card">
+              <Info className="h-5 w-5 text-fm-gold mt-0.5" />
+              <div className="flex-1 space-y-3">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    {t('ticketing.maxTicketsPerOrderDescription')}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="max-tickets-per-order" className="text-xs uppercase tracking-wider text-muted-foreground">
+                    {t('ticketing.maxTicketsPerOrderLabel')}
+                  </Label>
+                  <FmCommonTextField
+                    id="max-tickets-per-order"
+                    type="number"
+                    min={1}
+                    max={10_000}
+                    value={localMaxTickets}
+                    onChange={handleMaxTicketsChange}
+                    onBlur={handleMaxTicketsBlur}
+                    disabled={isMaxTicketsSaving}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('ticketing.maxTicketsPerOrderRange')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </FmFormSection>
+      )}
 
       {/* Ticket Tiers Section - hidden for RSVP-only events */}
       {!isRsvpOnlyEvent && (

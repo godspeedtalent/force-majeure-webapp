@@ -7,6 +7,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { addressService } from '../services/addressService';
+import { handleError } from '@/shared/services/errorHandler';
 import type { AddressFormData, AddressType, AddressOwnerType } from '@/shared/types/address';
 
 // ============================================================================
@@ -62,8 +63,11 @@ export function useUpsertProfileBillingAddress() {
       queryClient.invalidateQueries({ queryKey: addressQueryKeys.profileAddresses(profileId) });
       toast.success('Address updated successfully');
     },
-    onError: (error) => {
-      toast.error(`Failed to update address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to update address',
+        context: 'useUpsertProfileBillingAddress',
+      });
     },
   });
 }
@@ -107,8 +111,11 @@ export function useUpsertGuestBillingAddress() {
       queryClient.invalidateQueries({ queryKey: addressQueryKeys.guestBilling(guestId) });
       queryClient.invalidateQueries({ queryKey: addressQueryKeys.guestAddresses(guestId) });
     },
-    onError: (error) => {
-      toast.error(`Failed to update address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to update address',
+        context: 'useUpsertGuestBillingAddress',
+      });
     },
   });
 }
@@ -147,8 +154,11 @@ export function useCreateAddress() {
       }
       toast.success('Address created successfully');
     },
-    onError: (error) => {
-      toast.error(`Failed to create address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to create address',
+        context: 'useCreateAddress',
+      });
     },
   });
 }
@@ -181,8 +191,11 @@ export function useUpdateAddress() {
       }
       toast.success('Address updated successfully');
     },
-    onError: (error) => {
-      toast.error(`Failed to update address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to update address',
+        context: 'useUpdateAddress',
+      });
     },
   });
 }
@@ -212,8 +225,11 @@ export function useDeleteAddress() {
       }
       toast.success('Address deleted successfully');
     },
-    onError: (error) => {
-      toast.error(`Failed to delete address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to delete address',
+        context: 'useDeleteAddress',
+      });
     },
   });
 }
@@ -244,8 +260,11 @@ export function useSetDefaultAddress() {
       }
       toast.success('Default address updated');
     },
-    onError: (error) => {
-      toast.error(`Failed to set default address: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: 'Failed to set default address',
+        context: 'useSetDefaultAddress',
+      });
     },
   });
 }

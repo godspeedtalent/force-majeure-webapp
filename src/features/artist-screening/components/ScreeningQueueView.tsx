@@ -24,6 +24,7 @@ import { FmGenreMultiSelect } from '@/features/artists/components/FmGenreMultiSe
 import { cn } from '@/shared';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
+import { useAuthSafe } from '@/features/auth/services/AuthContext';
 import { toast } from 'sonner';
 import { useScreeningSubmissions, useScreeningConfig } from '../hooks';
 import {
@@ -56,6 +57,8 @@ import type { Genre } from '@/features/artists/types';
 export function ScreeningQueueView() {
   const navigate = useNavigate();
   const { t: tToast } = useTranslation('toasts');
+  const auth = useAuthSafe();
+  const currentUserId = auth?.user?.id ?? null;
   const { isAdmin, hasRole } = useUserPermissions();
   const isDeveloper = hasRole(ROLES.DEVELOPER);
   const isFmStaff = hasRole(ROLES.FM_STAFF);
@@ -130,11 +133,41 @@ export function ScreeningQueueView() {
 
   // Fetch submissions
   const {
-    data: submissions = [],
+    data: allSubmissions = [],
     isLoading,
     error,
     refetch,
   } = useScreeningSubmissions(filters);
+
+  // Filter submissions based on user's review status
+  const { submissions, soloReviews } = useMemo(() => {
+    if (!currentUserId) {
+      return { submissions: allSubmissions, soloReviews: [] };
+    }
+
+    const reviewable: ScreeningSubmissionWithDetails[] = [];
+    const solo: ScreeningSubmissionWithDetails[] = [];
+
+    for (const submission of allSubmissions) {
+      const reviews = submission.screening_reviews || [];
+      const userReview = reviews.find(r => r.reviewer_id === currentUserId);
+
+      if (userReview) {
+        // User has reviewed this submission
+        if (reviews.length === 1) {
+          // Only the user has reviewed - this is a "solo review"
+          solo.push(submission);
+        }
+        // If there are multiple reviews (including user's), it should be in analysis
+        // Don't show it in either queue
+      } else {
+        // User hasn't reviewed - show in main queue
+        reviewable.push(submission);
+      }
+    }
+
+    return { submissions: reviewable, soloReviews: solo };
+  }, [allSubmissions, currentUserId]);
 
   // Ignore/unignore handler
   const handleIgnoreToggle = async (submission: ScreeningSubmissionWithDetails) => {
@@ -197,6 +230,46 @@ export function ScreeningQueueView() {
     );
   };
 
+  // State for solo reviews section collapse
+  const [showSoloReviews, setShowSoloReviews] = useState(true);
+
+  // Render a submission card
+  const renderSubmissionCard = (submission: ScreeningSubmissionWithDetails) => (
+    <ScreeningFeedCard
+      key={submission.id}
+      submission={submission}
+      showIgnored={showIgnored}
+      canApproveReject={isEligibleForDecision(submission)}
+      onReview={() => navigate(`/staff/screening/review/${submission.id}`)}
+      onOpenRecording={() => {
+        const url = submission.artist_recordings?.url;
+        if (url) {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+      }}
+      onViewArtist={() => navigate(`/artists/${submission.artist_id}`)}
+      onIgnore={() => handleIgnoreToggle(submission)}
+      onApprove={
+        isEligibleForDecision(submission)
+          ? () => handleApprove(submission)
+          : undefined
+      }
+      onReject={
+        isEligibleForDecision(submission)
+          ? () => handleReject(submission)
+          : undefined
+      }
+      onDelete={
+        canDelete
+          ? () => {
+              setSubmissionToDelete(submission);
+              setDeleteModalOpen(true);
+            }
+          : undefined
+      }
+    />
+  );
+
   // Content component for different states
   const renderContent = () => {
     // Loading state
@@ -216,8 +289,11 @@ export function ScreeningQueueView() {
       );
     }
 
-    // Empty state
-    if (submissions.length === 0) {
+    const hasSubmissions = submissions.length > 0;
+    const hasSoloReviews = soloReviews.length > 0;
+
+    // Complete empty state
+    if (!hasSubmissions && !hasSoloReviews) {
       return (
         <FmCommonCard variant="frosted" className="p-[40px] text-center">
           <Music className="h-12 w-12 md:h-16 md:w-16 mx-auto text-fm-gold/40 mb-[15px] md:mb-[20px]" />
@@ -233,44 +309,53 @@ export function ScreeningQueueView() {
       );
     }
 
-    // Feed cards
     return (
-      <div className="space-y-[10px] md:space-y-[15px]">
-        {submissions.map(submission => (
-          <ScreeningFeedCard
-            key={submission.id}
-            submission={submission}
-            showIgnored={showIgnored}
-            canApproveReject={isEligibleForDecision(submission)}
-            onReview={() => navigate(`/staff/screening/review/${submission.id}`)}
-            onOpenRecording={() => {
-              const url = submission.artist_recordings?.url;
-              if (url) {
-                window.open(url, '_blank', 'noopener,noreferrer');
-              }
-            }}
-            onViewArtist={() => navigate(`/artists/${submission.artist_id}`)}
-            onIgnore={() => handleIgnoreToggle(submission)}
-            onApprove={
-              isEligibleForDecision(submission)
-                ? () => handleApprove(submission)
-                : undefined
-            }
-            onReject={
-              isEligibleForDecision(submission)
-                ? () => handleReject(submission)
-                : undefined
-            }
-            onDelete={
-              canDelete
-                ? () => {
-                    setSubmissionToDelete(submission);
-                    setDeleteModalOpen(true);
-                  }
-                : undefined
-            }
-          />
-        ))}
+      <div className="space-y-[20px]">
+        {/* Main Queue */}
+        {hasSubmissions && (
+          <div className="space-y-[10px] md:space-y-[15px]">
+            {submissions.map(renderSubmissionCard)}
+          </div>
+        )}
+
+        {/* Empty main queue but has solo reviews */}
+        {!hasSubmissions && hasSoloReviews && (
+          <FmCommonCard variant="frosted" className="p-[20px] text-center">
+            <p className="text-sm text-white/60">
+              No new submissions to review. Your solo reviews are below.
+            </p>
+          </FmCommonCard>
+        )}
+
+        {/* Solo Reviews Section */}
+        {hasSoloReviews && (
+          <div className="border-t border-white/10 pt-[20px]">
+            <button
+              onClick={() => setShowSoloReviews(!showSoloReviews)}
+              className="flex items-center gap-[10px] w-full text-left mb-[15px] group"
+            >
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-fm-gold uppercase tracking-wider">
+                  Awaiting Second Review
+                </h3>
+                <p className="text-xs text-white/50 mt-[5px]">
+                  {soloReviews.length} submission{soloReviews.length !== 1 ? 's' : ''} you reviewed, waiting for another reviewer
+                </p>
+              </div>
+              {showSoloReviews ? (
+                <ChevronUp className="h-4 w-4 text-white/50 group-hover:text-white" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-white/50 group-hover:text-white" />
+              )}
+            </button>
+
+            {showSoloReviews && (
+              <div className="space-y-[10px] md:space-y-[15px]">
+                {soloReviews.map(renderSubmissionCard)}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -393,8 +478,13 @@ export function ScreeningQueueView() {
       </FmCommonButton>
 
       {/* Submission Count */}
-      <div className="text-xs text-muted-foreground pt-[10px] border-t border-white/10">
-        {submissions.length} submission{submissions.length !== 1 ? 's' : ''}
+      <div className="text-xs text-muted-foreground pt-[10px] border-t border-white/10 space-y-1">
+        <div>{submissions.length} to review</div>
+        {soloReviews.length > 0 && (
+          <div className="text-fm-gold/70">
+            {soloReviews.length} awaiting 2nd review
+          </div>
+        )}
       </div>
     </div>
   );

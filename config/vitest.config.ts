@@ -14,7 +14,7 @@ export default defineConfig({
     root: rootDir,
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
-    setupFiles: [],
+    setupFiles: [path.resolve(__dirname, 'vitest.setup.ts')],
   },
   resolve: {
     alias: {

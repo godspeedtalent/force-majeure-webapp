@@ -168,6 +168,50 @@ export function useUpdateReview() {
 }
 
 /**
+ * Delete a review (staff deleting their own review)
+ * Uses edge function for server-side validation and score recalculation
+ */
+export function useDeleteReview() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: { review_id: string; submission_id: string }) => {
+      const { error } = await supabase.functions.invoke('screening', {
+        body: {
+          operation: 'deleteReview',
+          review_id: input.review_id,
+        },
+      });
+
+      if (error) throw error;
+      return { submissionId: input.submission_id };
+    },
+    onSuccess: (data) => {
+      toast.success('Review deleted successfully');
+      // Invalidate the submission query to refresh the review list
+      queryClient.invalidateQueries({
+        queryKey: screeningQueryKeys.submission(data.submissionId),
+      });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.submissions() });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: screeningQueryKeys.reviewerStats() });
+    },
+    onError: async (error: Error) => {
+      const { message, details } = await extractSupabaseError(
+        error,
+        'Failed to delete review'
+      );
+      logger.error('Error deleting review', {
+        error: message,
+        source: 'useDeleteReview',
+        details,
+      });
+      toast.error('Failed to delete review', { description: message });
+    },
+  });
+}
+
+/**
  * Make final decision (approve/reject) on submission
  * Uses edge function for server-side validation and email notification
  */

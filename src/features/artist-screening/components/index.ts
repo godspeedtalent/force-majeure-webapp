@@ -13,6 +13,7 @@ export {
 } from './ScreeningFeedCardSkeleton';
 export { AnalyticsTab } from './AnalyticsTab';
 export { ReviewInterface } from './ReviewInterface';
+export { ReviewInterfaceMobile } from './ReviewInterfaceMobile';
 export { ReviewTimer } from './ReviewTimer';
 export { SubmissionModal } from './SubmissionModal';
 export { SubmitToVenueButton } from './SubmitToVenueButton';

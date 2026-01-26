@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
+import { diagStart, diagComplete, diagError, diagWarn } from '@/shared/services/initDiagnostics';
 
 export const SUPPORTED_LOCALES = ['en', 'es', 'zh'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -40,6 +41,8 @@ export function getBestMatchingLocale(locale: string): SupportedLocale {
   return DEFAULT_LOCALE;
 }
 
+diagStart('i18n.init');
+
 i18n
   .use(HttpBackend)
   .use(LanguageDetector)
@@ -63,6 +66,21 @@ i18n
     react: {
       useSuspense: true,
     },
+  })
+  .then(() => {
+    diagComplete('i18n.init');
+  })
+  .catch((err) => {
+    diagError('i18n.init', err);
   });
+
+// Log when resources are loaded
+i18n.on('loaded', (loaded) => {
+  diagComplete('i18n.resources', { locales: Object.keys(loaded) });
+});
+
+i18n.on('failedLoading', (lng, ns, msg) => {
+  diagWarn('i18n.load', `Failed to load ${lng}/${ns}: ${msg}`);
+});
 
 export default i18n;

@@ -440,6 +440,14 @@
       "funnel": "转化漏斗",
       "performance": "性能",
       "sessions": "会话"
+    },
+    "exportHealth": {
+      "button": "导出健康报告",
+      "loading": "生成中...",
+      "success": "健康报告已复制到剪贴板",
+      "error": "生成报告失败",
+      "copied": "已复制！",
+      "copyFailed": "无法自动复制。报告已成功生成。"
     }
   },
   "time": {
@@ -485,6 +493,8 @@
     "adminMessagesTitle": "管理员收件箱",
     "errorLogs": "错误日志",
     "errorLogsTitle": "错误监控",
+    "diagnostics": "诊断",
+    "diagnosticsTitle": "系统诊断",
     "mockData": "测试数据",
     "mockDataTitle": "模拟订单生成器",
     "collapseGroup": "折叠分组",
@@ -494,6 +504,8 @@
     "showTab": "显示",
     "showAllTabs": "显示所有隐藏的标签",
     "hiddenTabs": "隐藏的标签",
+    "screeningReview": "DJ评审",
+    "screeningReviewTitle": "评审计时器",
     "groups": {
       "organization": "组织",
       "staff": "FM员工",
@@ -503,6 +515,59 @@
       "dataConfig": "数据与配置",
       "admin": "管理员"
     }
+  },
+  "screeningToolbar": {
+    "noActiveTimers": "没有活跃的评审计时器",
+    "startListening": "从筛选列表启动计时器来评审DJ作品。",
+    "viewAllScreenings": "查看所有筛选",
+    "nowPlaying": "正在播放",
+    "readyToReview": "就绪！",
+    "cancelTimer": "取消计时器",
+    "openRecording": "打开录音",
+    "goToReview": "前往评审",
+    "pendingReviews": "待评审",
+    "reviewNow": "评审",
+    "dismiss": "忽略",
+    "delete": "删除",
+    "goToSubmission": "前往提交",
+    "submitReview": "提交评审",
+    "reviewSubmitted": "评审提交成功",
+    "reviewFailed": "提交评审失败",
+    "internalNotes": "内部备注",
+    "notesDescription": "只有其他评审员可以看到这些备注。",
+    "notesPlaceholder": "分享亮点、问题或需要记住的背景信息...",
+    "totalScore": "总分",
+    "submitting": "提交中..."
+  },
+  "diagnostics": {
+    "status": {
+      "healthy": "正常",
+      "warning": "检测到警告",
+      "error": "检测到错误",
+      "incomplete": "初始化未完成"
+    },
+    "sections": {
+      "timeline": "初始化时间线",
+      "metrics": "关键指标",
+      "issues": "活跃问题"
+    },
+    "metrics": {
+      "imports": "导入",
+      "authSession": "认证会话",
+      "i18nInit": "i18n初始化",
+      "authBootstrap": "认证引导",
+      "totalInit": "总初始化时间"
+    },
+    "actions": {
+      "copyReport": "复制报告",
+      "refresh": "刷新",
+      "clear": "清除"
+    },
+    "copied": "已复制！",
+    "noIssues": "未检测到问题",
+    "errors": "个错误",
+    "warnings": "个警告",
+    "stuckOperations": "卡住的操作"
   },
   "adminMessages": {
     "loadError": "加载消息失败",
@@ -2980,6 +3045,13 @@
     "tierDeleted": "层级删除成功",
     "tierDeleteFailed": "删除层级失败：{{error}}",
     "tierToggleFailed": "切换层级状态失败：{{error}}",
+    "maxTicketsPerOrder": "每单最多门票数",
+    "maxTicketsPerOrderHint": "单次订单可购买的最大门票数量（默认：100）",
+    "maxTicketsPerOrderDescription": "控制单次交易中可购买的门票数量，以防止批量购买并确保公平分配。",
+    "maxTicketsPerOrderLabel": "最大数量",
+    "maxTicketsPerOrderRange": "必须在1到10,000张门票之间",
+    "rsvpsAvailable": "可预约",
+    "rsvpsAvailableDescription": "允许用户预约此活动",
     "rsvpSettings": "预约设置",
     "rsvpSettingsDescription": "配置此活动的预约功能",
     "rsvpsEnabled": "启用预约",

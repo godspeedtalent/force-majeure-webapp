@@ -12,14 +12,15 @@ export interface MediaGallery {
   slug: string;
   name: string;
   description: string | null;
-  allowed_types: MediaType[];
-  is_active: boolean;
+  allowed_types: MediaType[] | null;
+  is_active: boolean | null;
+  cover_required: boolean;
   /** The venue that owns this gallery. NULL for global galleries. */
   venue_id: string | null;
   /** Whether this is the default gallery for the venue. */
-  is_default: boolean;
-  created_at: string;
-  updated_at: string;
+  is_default: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface MediaItem {

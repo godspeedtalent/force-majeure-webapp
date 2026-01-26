@@ -124,6 +124,7 @@ export function useEventFormSubmit(options: UseEventFormSubmitOptions) {
         is_tba: state.isTba,
         is_free_event: state.isRsvpEnabled,
         rsvp_capacity: state.rsvpCapacity,
+        max_tickets_per_order: state.maxTicketsPerOrder,
         test_data: false,
         organization_id: profile?.organization_id || null,
       } as const;

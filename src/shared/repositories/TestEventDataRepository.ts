@@ -126,7 +126,7 @@ export class TestEventDataRepository implements IEventDataRepository {
 
       if (error) throw error;
       return count ?? 0;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to get test RSVP count', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getRsvpCount',
@@ -166,7 +166,7 @@ export class TestEventDataRepository implements IEventDataRepository {
           userId: `test-${rsvp.test_profile.id}`,
           profile: mapTestProfileToProfileData(rsvp.test_profile),
         }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.debug('Failed to fetch test RSVPs', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getRsvpHolders',
@@ -186,7 +186,7 @@ export class TestEventDataRepository implements IEventDataRepository {
 
       if (error) throw error;
       return count ?? 0;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to get test interest count', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getInterestCount',
@@ -225,7 +225,7 @@ export class TestEventDataRepository implements IEventDataRepository {
           userId: `test-${interest.test_profile.id}`,
           profile: mapTestProfileToProfileData(interest.test_profile),
         }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch test interested users', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getInterestedUsers',
@@ -272,7 +272,7 @@ export class TestEventDataRepository implements IEventDataRepository {
           userId: `test-${order.test_profile.id}`,
           profile: mapTestProfileToProfileData(order.test_profile),
         }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch test ticket holders', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getTicketHolders',
@@ -318,7 +318,7 @@ export class TestEventDataRepository implements IEventDataRepository {
           guest: order.guests as GuestData | null,
         }))
         .filter((holder: { guestId: string; guest: GuestData | null }) => holder.guest !== null);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch test guest ticket holders', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'TestEventDataRepository.getGuestTicketHolders',

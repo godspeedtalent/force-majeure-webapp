@@ -38,6 +38,7 @@ export interface EventFormState {
   heroImage: string;
   isRsvpEnabled: boolean;
   rsvpCapacity: number | null;
+  maxTicketsPerOrder: number;
 }
 
 export interface EventFormActions {
@@ -56,6 +57,7 @@ export interface EventFormActions {
   setHeroImage: (image: string) => void;
   setIsRsvpEnabled: (enabled: boolean) => void;
   setRsvpCapacity: (capacity: number | null) => void;
+  setMaxTicketsPerOrder: (max: number) => void;
   resetForm: () => void;
 }
 
@@ -86,6 +88,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   const [heroImage, setHeroImage] = useState<string>(initialState?.heroImage || '');
   const [isRsvpEnabled, setIsRsvpEnabled] = useState<boolean>(initialState?.isRsvpEnabled || false);
   const [rsvpCapacity, setRsvpCapacity] = useState<number | null>(initialState?.rsvpCapacity ?? null);
+  const [maxTicketsPerOrder, setMaxTicketsPerOrder] = useState<number>(initialState?.maxTicketsPerOrder || 100);
 
   // Fetch venue capacity when venue changes
   useEffect(() => {
@@ -144,6 +147,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setHeroImage('');
     setIsRsvpEnabled(false);
     setRsvpCapacity(null);
+    setMaxTicketsPerOrder(100);
   }, []);
 
   const state: EventFormState = {
@@ -162,6 +166,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     heroImage,
     isRsvpEnabled,
     rsvpCapacity,
+    maxTicketsPerOrder,
   };
 
   const actions: EventFormActions = {
@@ -180,6 +185,7 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
     setHeroImage,
     setIsRsvpEnabled,
     setRsvpCapacity,
+    setMaxTicketsPerOrder,
     resetForm,
   };
 

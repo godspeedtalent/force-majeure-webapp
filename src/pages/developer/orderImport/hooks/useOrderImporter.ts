@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/shared';
 import { logger } from '@/shared/services/logger';
 import { toast } from 'sonner';
+import type { Json } from '@/integrations/supabase/types';
 
 import type {
   ParsedOrder,
@@ -105,8 +106,7 @@ async function importSingleOrder(
       if (userData && Object.keys(userData).length > 0) {
         const profileUpdate = translateUserDataToProfile(userData);
         if (Object.keys(profileUpdate).length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error: profileError } = await (supabase as any)
+          const { error: profileError } = await supabase
             .from('profiles')
             .update(profileUpdate)
             .eq('id', order.existingUserId);
@@ -123,8 +123,7 @@ async function importSingleOrder(
       }
     } else {
       // No existing user - create or find a guest record
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: existingGuest } = await (supabase as any)
+      const { data: existingGuest } = await supabase
         .from('guests')
         .select('id, full_name')
         .eq('email', order.customerEmail.toLowerCase())
@@ -140,8 +139,7 @@ async function importSingleOrder(
 
         // Update guest name if provided and guest doesn't have one
         if (guestFullName && !existingGuest.full_name) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any)
+          await supabase
             .from('guests')
             .update({ full_name: guestFullName })
             .eq('id', existingGuest.id);
@@ -156,8 +154,7 @@ async function importSingleOrder(
           full_name: guestFullName || null,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: newGuest, error: guestError } = await (supabase as any)
+        const { data: newGuest, error: guestError } = await supabase
           .from('guests')
           .insert(guestInsert)
           .select('id')
@@ -173,14 +170,13 @@ async function importSingleOrder(
       // Create address in normalized addresses table if we have address data
       if (guestId && userData && Object.keys(userData).length > 0) {
         // Use the upsert function to create/update the guest's billing address
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: addressId, error: addressError } = await (supabase as any).rpc('upsert_guest_billing_address', {
+        const { data: addressId, error: addressError } = await supabase.rpc('upsert_guest_billing_address', {
           p_guest_id: guestId,
-          p_line_1: userData.billing_address_line_1 || null,
-          p_line_2: userData.billing_address_line_2 || null,
-          p_city: userData.billing_city || null,
-          p_state: userData.billing_state || null,
-          p_zip_code: userData.billing_zip_code || null,
+          p_line_1: userData.billing_address_line_1 || undefined,
+          p_line_2: userData.billing_address_line_2 || undefined,
+          p_city: userData.billing_city || undefined,
+          p_state: userData.billing_state || undefined,
+          p_zip_code: userData.billing_zip_code || undefined,
           p_country: userData.billing_country || 'US',
         });
 
@@ -213,8 +209,7 @@ async function importSingleOrder(
 
     const { data: newOrder, error: orderError } = await supabase
       .from('orders')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .insert(orderInsert as any)
+      .insert(orderInsert)
       .select()
       .single();
 
@@ -239,8 +234,7 @@ async function importSingleOrder(
 
       const { data: orderItem, error: itemError } = await supabase
         .from('order_items')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .insert(orderItemInsert as any)
+        .insert(orderItemInsert)
         .select()
         .single();
 
@@ -329,8 +323,7 @@ async function importSingleOrder(
 
         const { data: subOrderItem, error: subItemError } = await supabase
           .from('order_items')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .insert(subItemInsert as any)
+          .insert(subItemInsert)
           .select()
           .single();
 
@@ -472,8 +465,7 @@ export function useOrderImporter({
         },
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: newProcess, error: processError } = await (supabase as any)
+      const { data: newProcess, error: processError } = await supabase
         .from('processes')
         .insert({
           process_type: 'order_import',
@@ -484,7 +476,7 @@ export function useOrderImporter({
           processed_items: 0,
           successful_items: 0,
           failed_items: 0,
-          metadata: processMetadata,
+          metadata: processMetadata as unknown as Json,
           rollback_data: {},
           created_by: userData.user.id,
         })
@@ -584,8 +576,7 @@ export function useOrderImporter({
 
         // Update process progress after each batch
         if (processId) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any)
+          await supabase
             .from('processes')
             .update({
               processed_items: processedCount,
@@ -621,8 +612,7 @@ export function useOrderImporter({
           errors: importErrors,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: updatedProcess } = await (supabase as any)
+        const { data: updatedProcess } = await supabase
           .from('processes')
           .update({
             status: failedCount === validOrders.length ? 'failed' : 'completed',
@@ -630,8 +620,8 @@ export function useOrderImporter({
             processed_items: validOrders.length,
             successful_items: successCount,
             failed_items: failedCount,
-            metadata: processMetadataWithErrors,
-            rollback_data: rollbackData,
+            metadata: processMetadataWithErrors as unknown as Json,
+            rollback_data: rollbackData as unknown as Json,
             error_message: importErrors.length > 0
               ? `${importErrors.length} error(s) during import`
               : null,
@@ -663,8 +653,7 @@ export function useOrderImporter({
       });
 
       if (processId) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any)
+        await supabase
           .from('processes')
           .update({
             status: 'failed',

@@ -6,7 +6,7 @@ import {
   CompTicketWithDetails,
   IssueCompTicketParams,
 } from '../services/compTicketService';
-import { logger } from '@/shared';
+import { handleError } from '@/shared/services/errorHandler';
 
 /**
  * Hook for managing comp tickets for an event (admin use)
@@ -38,13 +38,10 @@ export function useCompTickets(eventId: string) {
         toast.error(result.error || t('compTickets.issueFailed'));
       }
     },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(t('compTickets.issueFailed'));
-      logger.error('Failed to issue comp ticket', {
-        error: message,
-        source: 'useCompTickets.issueCompTicket',
-        event_id: eventId,
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: t('compTickets.issueFailed'),
+        context: 'useCompTickets.issueCompTicket',
       });
     },
   });
@@ -61,13 +58,10 @@ export function useCompTickets(eventId: string) {
         toast.error(result.error || t('compTickets.revokeFailed'));
       }
     },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(t('compTickets.revokeFailed'));
-      logger.error('Failed to revoke comp ticket', {
-        error: message,
-        source: 'useCompTickets.revokeCompTicket',
-        event_id: eventId,
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: t('compTickets.revokeFailed'),
+        context: 'useCompTickets.revokeCompTicket',
       });
     },
   });
@@ -124,12 +118,10 @@ export function useClaimCompTicket() {
         toast.error(result.error || t('compTickets.claimFailed'));
       }
     },
-    onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(t('compTickets.claimFailed'));
-      logger.error('Failed to claim comp ticket', {
-        error: message,
-        source: 'useClaimCompTicket.claim',
+    onError: (error: unknown) => {
+      handleError(error, {
+        title: t('compTickets.claimFailed'),
+        context: 'useClaimCompTicket.claim',
       });
     },
   });

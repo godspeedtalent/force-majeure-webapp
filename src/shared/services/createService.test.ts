@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createService, createFilteredQuery } from './createService';
 
 // Mock Supabase client
-vi.mock('@/shared/api/supabase/client', () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn(),
   },
@@ -12,11 +12,17 @@ vi.mock('@/shared/api/supabase/client', () => ({
 vi.mock('@/shared/services/logger', () => ({
   logger: {
     error: vi.fn(),
+    createNamespace: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }),
   },
 }));
 
-import { supabase } from '@/shared';
-import { logger } from '@/shared';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 // Test types
 interface TestEntity {

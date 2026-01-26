@@ -15,12 +15,12 @@ import {
 describe('getListItemClasses', () => {
   it('returns even classes for even indices', () => {
     const result = getListItemClasses(0);
-    expect(result).toContain('bg-background/40');
+    expect(result).toContain('bg-white/5');
   });
 
   it('returns odd classes for odd indices', () => {
     const result = getListItemClasses(1);
-    expect(result).toContain('bg-background/60');
+    expect(result).toContain('bg-black/30');
   });
 
   it('alternates between even and odd classes', () => {

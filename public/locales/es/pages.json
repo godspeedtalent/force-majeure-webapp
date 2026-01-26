@@ -346,13 +346,15 @@
     "mockModeActive": "Modo de pago simulado - No se realizarán cargos reales",
     "validation": {
       "fullNameRequired": "El nombre completo es obligatorio",
+      "nameTooLong": "El nombre debe tener 100 caracteres o menos",
       "validEmailRequired": "Se requiere un correo electrónico válido",
       "addressRequired": "La dirección es obligatoria",
       "cityRequired": "La ciudad es obligatoria",
       "stateRequired": "El estado es obligatorio",
       "validZipRequired": "Se requiere un código postal válido",
       "paymentLoading": "Por favor espera a que cargue el sistema de pago",
-      "mustAcceptTerms": "Debes aceptar los términos para continuar"
+      "mustAcceptTerms": "Debes aceptar los términos para continuar",
+      "maxTicketsExceeded": "Máximo {{max}} entradas por pedido"
     },
     "toast": {
       "addressNotSaved": "Dirección no guardada",
@@ -363,7 +365,9 @@
       "paymentFailed": "Pago fallido",
       "paymentError": "Ocurrió un error al procesar tu pago",
       "emailFailed": "Error al enviar el correo",
-      "emailFailedDescription": "Tu pedido fue exitoso, pero no pudimos enviar el correo de confirmación. Puedes ver tus entradas en tu billetera."
+      "emailFailedDescription": "Tu pedido fue exitoso, pero no pudimos enviar el correo de confirmación. Puedes ver tus entradas en tu billetera.",
+      "tooManyTickets": "Demasiadas entradas seleccionadas",
+      "tooManyTicketsDescription": "Este evento permite un máximo de {{max}} entradas por pedido. Seleccionaste {{total}} entradas. Por favor reduce tu selección."
     }
   },
   "tickets": {

@@ -78,7 +78,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
 
       if (error) throw error;
       return data ?? 0;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to get RSVP count', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getRsvpCount',
@@ -146,7 +146,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
         userId: rsvp.user_id,
         profile: profileMap.get(rsvp.user_id) as ProfileData | null ?? null,
       }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch RSVPs for guest list', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getRsvpHolders',
@@ -164,7 +164,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
 
       if (error) throw error;
       return (data as number) || 0;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to get interest count', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getInterestCount',
@@ -201,7 +201,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
         userId: interest.user_id,
         profile: (profileMap.get(interest.user_id) as ProfileData | undefined) ?? null,
       }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch interested users', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getInterestedUsers',
@@ -243,7 +243,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
           userId: order.user_id as string,
           profile: order.profiles as unknown as ProfileData | null,
         }));
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch ticket holders', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getTicketHolders',
@@ -284,7 +284,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
           guest: order.guests as unknown as GuestData | null,
         }))
         .filter(holder => holder.guest !== null);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch guest ticket holders', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getGuestTicketHolders',
@@ -319,7 +319,7 @@ export class ProductionEventDataRepository implements IEventDataRepository {
         interested_users: [],
         guest_holders: [],
       };
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Failed to fetch all attendees', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'ProductionEventDataRepository.getAllAttendees',

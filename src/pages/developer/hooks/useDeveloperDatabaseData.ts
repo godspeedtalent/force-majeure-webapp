@@ -1,9 +1,15 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { supabase, logger } from '@/shared';
+import { supabase, handleError } from '@/shared';
 import { extractSpotifyTrackId, getSpotifyTrack } from '@/services/spotify/spotifyApiService';
 import { getSoundCloudTrackFromUrl } from '@/services/soundcloud/soundcloudApiService';
+import type { Database } from '@/integrations/supabase/types';
+
+// Type aliases for Supabase tables
+type ArtistRecordingRow = Database['public']['Tables']['artist_recordings']['Row'];
+type GuestRow = Database['public']['Tables']['guests']['Row'];
+type VenueRow = Database['public']['Tables']['venues']['Row'];
 
 // ============================================================================
 // Types
@@ -182,8 +188,7 @@ export function useDatabaseCounts() {
   const { data: recordingsCount = 0, isLoading: isLoadingRecordings } = useQuery({
     queryKey: ['recordings-count'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { count, error } = await (supabase as any)
+      const { count, error } = await supabase
         .from('artist_recordings')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;
@@ -194,8 +199,7 @@ export function useDatabaseCounts() {
   const { data: guestsCount = 0, isLoading: isLoadingGuests } = useQuery({
     queryKey: ['guests-count'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { count, error } = await (supabase as any)
+      const { count, error } = await supabase
         .from('guests')
         .select('*', { count: 'exact', head: true });
       if (error) throw error;
@@ -325,12 +329,11 @@ export function useArtistsData() {
       );
 
       toast.success(t('devTools.database.artistUpdated'));
-    } catch (error) {
-      logger.error('Error updating artist:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.artistUpdateFailed'),
+        context: 'useDeveloperDatabaseData.handleUpdate',
       });
-      toast.error(t('devTools.database.artistUpdateFailed'));
       throw error;
     }
   };
@@ -379,12 +382,11 @@ export function useArtistsData() {
 
       toast.success(t('devTools.database.artistCreated'));
       await queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
-    } catch (error) {
-      logger.error('Error creating artist:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.artistCreateFailed'),
+        context: 'useDeveloperDatabaseData.handleCreate',
       });
-      toast.error(t('devTools.database.artistCreateFailed'));
       throw error;
     }
   };
@@ -400,12 +402,11 @@ export function useArtistsData() {
 
       toast.success(t('devTools.database.artistDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
-    } catch (error) {
-      logger.error('Error deleting artist:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.artistDeleteFailed'),
+        context: 'useDeveloperDatabaseData.handleDelete',
       });
-      toast.error(t('devTools.database.artistDeleteFailed'));
       throw error;
     }
   };
@@ -430,8 +431,7 @@ export function useVenuesData() {
   const { data: venues = [], isLoading } = useQuery({
     queryKey: ['admin-venues'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('venues')
         .select(
           `
@@ -445,8 +445,8 @@ export function useVenuesData() {
       if (error) throw error;
 
       // Flatten the city data for easier access
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return data.map((venue: any) => ({
+      type VenueWithCity = VenueRow & { cities: { name: string; state: string } | null };
+      return (data as VenueWithCity[]).map((venue) => ({
         ...venue,
         city: venue.cities
           ? `${venue.cities.name}, ${venue.cities.state}`
@@ -460,8 +460,7 @@ export function useVenuesData() {
     columnKey: string,
     newValue: unknown
   ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
 
     // Convert capacity to integer if updating that field
     if (columnKey === 'capacity') {
@@ -474,8 +473,7 @@ export function useVenuesData() {
       updateData[columnKey] = newValue;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('venues')
       .update(updateData)
       .eq('id', row.id);
@@ -495,8 +493,7 @@ export function useVenuesData() {
 
   const handleDelete = async (venue: VenueRecord) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('venues')
         .delete()
         .eq('id', venue.id);
@@ -505,12 +502,11 @@ export function useVenuesData() {
 
       toast.success(t('devTools.database.venueDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
-    } catch (error) {
-      logger.error('Error deleting venue:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.venueDeleteFailed'),
+        context: 'useDeveloperDatabaseData.handleDelete',
       });
-      toast.error(t('devTools.database.venueDeleteFailed'));
       throw error;
     }
   };
@@ -534,8 +530,7 @@ export function useRecordingsData() {
   const { data: recordings = [], isLoading } = useQuery({
     queryKey: ['admin-recordings'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('artist_recordings')
         .select(`
           id, artist_id, name, duration, url, cover_art, platform, is_primary_dj_set, created_at, updated_at,
@@ -546,8 +541,8 @@ export function useRecordingsData() {
       if (error) throw error;
 
       // Flatten artist data for easier access
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (data ?? []).map((recording: any) => ({
+      type RecordingWithArtist = ArtistRecordingRow & { artists: { name: string; image_url: string | null } | null };
+      return (data as RecordingWithArtist[]).map((recording) => ({
         ...recording,
         artist_name: recording.artists?.name || null,
         artist_image_url: recording.artists?.image_url || null,
@@ -573,8 +568,7 @@ export function useRecordingsData() {
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('artist_recordings')
         .update(updateData)
         .eq('id', row.id);
@@ -598,20 +592,18 @@ export function useRecordingsData() {
       );
 
       toast.success(t('devTools.database.recordingUpdated'));
-    } catch (error) {
-      logger.error('Error updating recording:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.recordingUpdateFailed'),
+        context: 'useDeveloperDatabaseData.handleUpdate',
       });
-      toast.error(t('devTools.database.recordingUpdateFailed'));
       throw error;
     }
   };
 
   const handleDelete = async (recording: RecordingRecord) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('artist_recordings')
         .delete()
         .eq('id', recording.id);
@@ -620,12 +612,11 @@ export function useRecordingsData() {
 
       toast.success(t('devTools.database.recordingDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-recordings'] });
-    } catch (error) {
-      logger.error('Error deleting recording:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.recordingDeleteFailed'),
+        context: 'useDeveloperDatabaseData.handleDelete',
       });
-      toast.error(t('devTools.database.recordingDeleteFailed'));
       throw error;
     }
   };
@@ -675,8 +666,7 @@ export function useRecordingsData() {
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('artist_recordings')
         .update(updateData)
         .eq('id', recording.id);
@@ -694,13 +684,12 @@ export function useRecordingsData() {
 
       toast.dismiss(loadingToast);
       toast.success(`Updated "${updateData.name}" successfully`);
-    } catch (error) {
+    } catch (error: unknown) {
       toast.dismiss(loadingToast);
-      logger.error('Error refreshing recording details:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+      handleError(error, {
+        title: 'Failed to refresh recording details',
+        context: 'useDeveloperDatabaseData.handleRefreshDetails',
       });
-      toast.error('Failed to refresh recording details');
     }
   };
 
@@ -724,8 +713,7 @@ export function useGuestsData() {
   const { data: guests = [], isLoading } = useQuery({
     queryKey: ['admin-guests'],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('guests')
         .select(`
           id, email, full_name, phone,
@@ -736,7 +724,7 @@ export function useGuestsData() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as GuestRow[];
     },
   });
 
@@ -752,8 +740,7 @@ export function useGuestsData() {
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('guests')
         .update(updateData)
         .eq('id', row.id);
@@ -777,20 +764,18 @@ export function useGuestsData() {
       );
 
       toast.success(t('devTools.database.guestUpdated'));
-    } catch (error) {
-      logger.error('Error updating guest:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.guestUpdateFailed'),
+        context: 'useDeveloperDatabaseData.handleUpdate',
       });
-      toast.error(t('devTools.database.guestUpdateFailed'));
       throw error;
     }
   };
 
   const handleDelete = async (guest: GuestRecord) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('guests')
         .delete()
         .eq('id', guest.id);
@@ -799,12 +784,11 @@ export function useGuestsData() {
 
       toast.success(t('devTools.database.guestDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-guests'] });
-    } catch (error) {
-      logger.error('Error deleting guest:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.guestDeleteFailed'),
+        context: 'useDeveloperDatabaseData.handleDelete',
       });
-      toast.error(t('devTools.database.guestDeleteFailed'));
       throw error;
     }
   };
@@ -830,8 +814,7 @@ export function useGuestsData() {
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('guests')
         .update(updateData)
         .eq('id', guest.id);
@@ -855,12 +838,11 @@ export function useGuestsData() {
       );
 
       toast.success(t('devTools.database.guestUpdated'));
-    } catch (error) {
-      logger.error('Error updating guest address:', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        source: 'useDeveloperDatabaseData',
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('devTools.database.guestUpdateFailed'),
+        context: 'useDeveloperDatabaseData.handleAddressUpdate',
       });
-      toast.error(t('devTools.database.guestUpdateFailed'));
       throw error;
     }
   };

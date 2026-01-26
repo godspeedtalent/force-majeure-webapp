@@ -93,7 +93,7 @@ export default function Merch() {
     return (
       <Layout hideFooter>
         <div className='h-[calc(100dvh-64px)] w-full'>
-          <FmCommonLoadingState message={t('merch.loading')} />
+          <FmCommonLoadingState />
         </div>
       </Layout>
     );

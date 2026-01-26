@@ -62,6 +62,7 @@ interface TicketCheckoutFormProps {
   onBack: () => void;
   onComplete: () => void;
   showSecureCheckoutHeader?: boolean;
+  maxTicketsPerOrder?: number; // Maximum tickets allowed per order (default: 100)
 }
 
 export const TicketCheckoutForm = ({
@@ -72,6 +73,7 @@ export const TicketCheckoutForm = ({
   onBack,
   onComplete,
   showSecureCheckoutHeader = true,
+  maxTicketsPerOrder = 100,
 }: TicketCheckoutFormProps) => {
   const { t } = useTranslation('pages');
   const { user, updateProfile } = useAuth();
@@ -137,12 +139,16 @@ export const TicketCheckoutForm = ({
     // Always required: name and email (for ticket delivery)
     if (!formData.fullName.trim()) {
       nextErrors.fullName = t('checkout.validation.fullNameRequired');
+    } else if (formData.fullName.length > 100) {
+      nextErrors.fullName = t('checkout.validation.nameTooLong');
     }
 
-    if (
-      !formData.email.trim() ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-    ) {
+    // Email validation with injection protection
+    // Block: newlines (\n, \r), null bytes (\0), commas, semicolons
+    const emailRegex = /^[^\s@\n\r\0,;]+@[^\s@\n\r\0,;]+\.[^\s@\n\r\0,;]+$/;
+    if (!formData.email.trim()) {
+      nextErrors.email = t('checkout.validation.validEmailRequired');
+    } else if (!emailRegex.test(formData.email)) {
       nextErrors.email = t('checkout.validation.validEmailRequired');
     }
 
@@ -197,6 +203,27 @@ export const TicketCheckoutForm = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!validate()) return;
+
+    // Validate total ticket quantity against event's maximum
+    const totalTickets = summary.tickets.reduce(
+      (sum, ticket) => sum + ticket.quantity,
+      0
+    );
+    if (totalTickets > maxTicketsPerOrder) {
+      toast.error(t('checkout.toast.tooManyTickets'), {
+        description: t('checkout.toast.tooManyTicketsDescription', {
+          max: maxTicketsPerOrder,
+          total: totalTickets,
+        }),
+      });
+      setErrors(prev => ({
+        ...prev,
+        quantity: t('checkout.errors.maxTicketsExceeded', {
+          max: maxTicketsPerOrder,
+        }),
+      }));
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -326,9 +353,13 @@ export const TicketCheckoutForm = ({
   };
 
   const ticketProtectionFee = 4.99;
-  const totalWithProtection = formData.ticketProtection
-    ? summary.total + ticketProtectionFee
-    : summary.total;
+  // Protect against negative totals from over-discounting
+  const totalWithProtection = Math.max(
+    0,
+    formData.ticketProtection
+      ? summary.total + ticketProtectionFee
+      : summary.total
+  );
 
   return (
     <div className='space-y-6'>

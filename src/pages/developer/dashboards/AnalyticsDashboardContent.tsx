@@ -17,7 +17,8 @@ import {
   FmCommonTabsList,
   FmCommonTabsTrigger,
 } from '@/components/common/navigation/FmCommonTabs';
-import { formatHeader } from '@/shared';
+import { formatHeader, useFeatureFlagHelpers } from '@/shared';
+import { FEATURE_FLAGS } from '@/shared/config/featureFlags';
 import { SupabaseAnalyticsAdapter } from '@/features/analytics';
 import { AnalyticsOverview } from '../../admin/analytics/components/AnalyticsOverview';
 import { PageViewsChart } from '../../admin/analytics/components/PageViewsChart';
@@ -26,9 +27,12 @@ import { PerformanceMetrics } from '../../admin/analytics/components/Performance
 import { TopPagesTable } from '../../admin/analytics/components/TopPagesTable';
 import { SessionsTable } from '../../admin/analytics/components/SessionsTable';
 import { DATE_RANGE_OPTIONS, type AnalyticsDateRange } from '../../admin/analytics/AnalyticsDashboard';
+import { SiteHealthExportButton } from '../../admin/analytics/components/SiteHealthExportButton';
 
 export function AnalyticsDashboardContent() {
   const { t } = useTranslation('common');
+  const { isFeatureEnabled } = useFeatureFlagHelpers();
+  const showFunnel = isFeatureEnabled(FEATURE_FLAGS.CONVERSION_FUNNEL);
 
   const [selectedRange, setSelectedRange] = useState<AnalyticsDateRange>('7d');
 
@@ -66,13 +70,14 @@ export function AnalyticsDashboardContent() {
     },
   });
 
-  // Fetch funnel summary
+  // Fetch funnel summary (only when feature is enabled)
   const { data: funnelData, isLoading: loadingFunnel } = useQuery({
     queryKey: ['analytics-funnel-summary'],
     queryFn: async () => {
       const result = await adapter.getFunnelSummary();
       return result.success ? result.data : [];
     },
+    enabled: showFunnel,
   });
 
   // Fetch performance summary
@@ -112,12 +117,15 @@ export function AnalyticsDashboardContent() {
             <LineChart className="h-6 w-6 text-fm-gold" />
             <h1 className="text-3xl font-canela">{formatHeader(t('admin.analytics.title', 'Site Analytics'))}</h1>
           </div>
-          <FmCommonSelect
-            value={selectedRange}
-            onChange={(v) => setSelectedRange(v as AnalyticsDateRange)}
-            options={DATE_RANGE_OPTIONS}
-            className="w-[160px]"
-          />
+          <div className="flex items-center gap-[10px]">
+            <SiteHealthExportButton dateRange={dateRange} />
+            <FmCommonSelect
+              value={selectedRange}
+              onChange={(v) => setSelectedRange(v as AnalyticsDateRange)}
+              options={DATE_RANGE_OPTIONS}
+              className="w-[160px]"
+            />
+          </div>
         </div>
         <p className="text-muted-foreground text-sm mt-2">
           {t('admin.analytics.description', 'View page analytics, conversion funnel, and performance metrics.')}
@@ -136,9 +144,11 @@ export function AnalyticsDashboardContent() {
             <FmCommonTabsTrigger value="traffic">
               {t('analytics.tabs.traffic')}
             </FmCommonTabsTrigger>
-            <FmCommonTabsTrigger value="funnel">
-              {t('analytics.tabs.funnel')}
-            </FmCommonTabsTrigger>
+            {showFunnel && (
+              <FmCommonTabsTrigger value="funnel">
+                {t('analytics.tabs.funnel')}
+              </FmCommonTabsTrigger>
+            )}
             <FmCommonTabsTrigger value="performance">
               {t('analytics.tabs.performance')}
             </FmCommonTabsTrigger>
@@ -158,9 +168,11 @@ export function AnalyticsDashboardContent() {
           <TopPagesTable data={dailyPageViews || []} isLoading={loadingPageViews} />
         </FmCommonTabsContent>
 
-        <FmCommonTabsContent value="funnel" className="mt-6">
-          <FunnelVisualization data={funnelData || []} isLoading={loadingFunnel} />
-        </FmCommonTabsContent>
+        {showFunnel && (
+          <FmCommonTabsContent value="funnel" className="mt-6">
+            <FunnelVisualization data={funnelData || []} isLoading={loadingFunnel} />
+          </FmCommonTabsContent>
+        )}
 
         <FmCommonTabsContent value="performance" className="mt-6">
           <PerformanceMetrics data={performanceData || []} isLoading={loadingPerformance} />

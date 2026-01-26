@@ -46,8 +46,8 @@ export async function getAllGenres(): Promise<Genre[]> {
 
     logApi({ message: `Fetched ${genres.length} genres`, source: 'getAllGenres' });
     return genres;
-  } catch (error) {
-    logger.error('Failed to fetch genres', { error });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genres', { error: error instanceof Error ? error.message : 'Unknown error' });
     throw error;
   }
 }
@@ -80,8 +80,8 @@ export async function getGenreById(id: string): Promise<Genre | null> {
       createdAt: data.created_at ?? null,
       updatedAt: data.updated_at ?? null,
     };
-  } catch (error) {
-    logger.error('Failed to fetch genre', { error, id });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre', { error: error instanceof Error ? error.message : 'Unknown error', id });
     throw error;
   }
 }
@@ -114,8 +114,8 @@ export async function getGenreByName(name: string): Promise<Genre | null> {
       createdAt: data.created_at ?? null,
       updatedAt: data.updated_at ?? null,
     };
-  } catch (error) {
-    logger.error('Failed to fetch genre by name', { error, name });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre by name', { error: error instanceof Error ? error.message : 'Unknown error', name });
     throw error;
   }
 }
@@ -149,8 +149,8 @@ export async function getTopLevelGenres(): Promise<Genre[]> {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));
-  } catch (error) {
-    logger.error('Failed to fetch top-level genres', { error });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch top-level genres', { error: error instanceof Error ? error.message : 'Unknown error' });
     throw error;
   }
 }
@@ -180,8 +180,8 @@ export async function getChildGenres(parentId: string): Promise<Genre[]> {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));
-  } catch (error) {
-    logger.error('Failed to fetch child genres', { error, parentId });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch child genres', { error: error instanceof Error ? error.message : 'Unknown error', parentId });
     throw error;
   }
 }
@@ -228,8 +228,8 @@ export async function getGenreWithParent(id: string): Promise<GenreWithParent | 
       updatedAt: data.updated_at ?? null,
       parent,
     };
-  } catch (error) {
-    logger.error('Failed to fetch genre with parent', { error, id });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre with parent', { error: error instanceof Error ? error.message : 'Unknown error', id });
     throw error;
   }
 }
@@ -252,8 +252,8 @@ export async function getGenreWithChildren(id: string): Promise<GenreWithChildre
       ...genre,
       children,
     };
-  } catch (error) {
-    logger.error('Failed to fetch genre with children', { error, id });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre with children', { error: error instanceof Error ? error.message : 'Unknown error', id });
     throw error;
   }
 }
@@ -279,7 +279,7 @@ export async function getGenreHierarchy(genreId: string): Promise<GenreHierarchy
     const allGenres = await getAllGenres();
     const genreMap = new Map(allGenres.map(g => [g.id, g]));
 
-    return data.map((row: any) => {
+    return data.map((row: { id: string; name: string; level: number }) => {
       const genre = genreMap.get(row.id);
       if (!genre) {
         throw new Error(`Genre ${row.id} not found in genre map`);
@@ -293,8 +293,8 @@ export async function getGenreHierarchy(genreId: string): Promise<GenreHierarchy
         children: [],
       };
     });
-  } catch (error) {
-    logger.error('Failed to fetch genre hierarchy', { error, genreId });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre hierarchy', { error: error instanceof Error ? error.message : 'Unknown error', genreId });
     throw error;
   }
 }
@@ -316,8 +316,8 @@ export async function getGenrePath(genreId: string): Promise<string> {
     }
 
     return data || '';
-  } catch (error) {
-    logger.error('Failed to fetch genre path', { error, genreId });
+  } catch (error: unknown) {
+    logger.error('Failed to fetch genre path', { error: error instanceof Error ? error.message : 'Unknown error', genreId });
     throw error;
   }
 }
@@ -385,8 +385,8 @@ export async function getGenreTree(): Promise<GenreTree> {
 
     logApi({ message: `Built tree with ${genres.length} genres, ${tree.topLevel.length} top-level`, source: 'getGenreTree' });
     return tree;
-  } catch (error) {
-    logger.error('Failed to build genre tree', { error });
+  } catch (error: unknown) {
+    logger.error('Failed to build genre tree', { error: error instanceof Error ? error.message : 'Unknown error' });
     throw error;
   }
 }
@@ -463,8 +463,8 @@ export async function searchGenres(query: string, limit: number = 20): Promise<G
       updatedAt: row.updated_at ?? null,
       selectionCount,
     }));
-  } catch (error) {
-    logger.error('Failed to search genres', { error, query });
+  } catch (error: unknown) {
+    logger.error('Failed to search genres', { error: error instanceof Error ? error.message : 'Unknown error', query });
     throw error;
   }
 }
@@ -476,8 +476,7 @@ export async function searchGenres(query: string, limit: number = 20): Promise<G
 export async function trackGenreSelection(genreId: string): Promise<void> {
   try {
     // Note: RPC function created by migration 20260106200000_add_selection_count_to_genres.sql
-    // Using type assertion until types are regenerated after migration
-    const { error } = await (supabase as any).rpc('increment_genre_selection_count', {
+    const { error } = await supabase.rpc('increment_genre_selection_count', {
       genre_id: genreId,
     });
 
@@ -488,7 +487,7 @@ export async function trackGenreSelection(genreId: string): Promise<void> {
         details: { genreId, error: error.message },
       });
     }
-  } catch (error) {
+  } catch (error: unknown) {
     // Silently fail - tracking shouldn't break the main flow
     logger.warn('Exception tracking genre selection', {
       source: 'trackGenreSelection',
@@ -529,8 +528,8 @@ export async function createGenre(name: string, parentId: string | null = null):
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };
-  } catch (error) {
-    logger.error('Failed to create genre', { error, name, parentId });
+  } catch (error: unknown) {
+    logger.error('Failed to create genre', { error: error instanceof Error ? error.message : 'Unknown error', name, parentId });
     throw error;
   }
 }
@@ -545,7 +544,7 @@ export async function updateGenre(
   try {
     logApi({ message: 'Updating genre', source: 'updateGenre', details: { id, updates } });
 
-    const updateData: any = {};
+    const updateData: { name?: string; parent_id?: string | null } = {};
     if (updates.name !== undefined) updateData.name = updates.name;
     if (updates.parentId !== undefined) updateData.parent_id = updates.parentId;
 
@@ -568,8 +567,8 @@ export async function updateGenre(
       createdAt: data.created_at ?? null,
       updatedAt: data.updated_at ?? null,
     };
-  } catch (error) {
-    logger.error('Failed to update genre', { error, id, updates });
+  } catch (error: unknown) {
+    logger.error('Failed to update genre', { error: error instanceof Error ? error.message : 'Unknown error', id, updates });
     throw error;
   }
 }
@@ -589,8 +588,8 @@ export async function deleteGenre(id: string): Promise<void> {
     }
 
     logApi({ message: 'Genre deleted successfully', source: 'deleteGenre' });
-  } catch (error) {
-    logger.error('Failed to delete genre', { error, id });
+  } catch (error: unknown) {
+    logger.error('Failed to delete genre', { error: error instanceof Error ? error.message : 'Unknown error', id });
     throw error;
   }
 }

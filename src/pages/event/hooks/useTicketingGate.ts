@@ -100,8 +100,8 @@ export const useTicketingGate = (
       }
 
       return data as SessionResponse;
-    } catch (error) {
-      logger.error('Failed to call ticketing session API', { error, action, eventId });
+    } catch (error: unknown) {
+      logger.error('Failed to call ticketing session API', { error: error instanceof Error ? error.message : 'Unknown error', action, eventId });
       return null;
     }
   }, [eventId, getSessionId, maxConcurrent]);
@@ -196,8 +196,8 @@ export const useTicketingGate = (
         isChecking: false,
         estimatedWaitMinutes: 0,
       });
-    } catch (error) {
-      logger.error('Failed to check gate status', { error, eventId });
+    } catch (error: unknown) {
+      logger.error('Failed to check gate status', { error: error instanceof Error ? error.message : 'Unknown error', eventId });
       setState(prev => ({ ...prev, isChecking: false }));
     }
   }, [eventId, callSessionApi, onQueueEvent, maxConcurrent]);
@@ -219,8 +219,8 @@ export const useTicketingGate = (
 
       await checkGateStatus();
       return response.canAccess ?? false;
-    } catch (error) {
-      logger.error('Failed to enter gate', { error, eventId });
+    } catch (error: unknown) {
+      logger.error('Failed to enter gate', { error: error instanceof Error ? error.message : 'Unknown error', eventId });
       setState(prev => ({ ...prev, isChecking: false }));
       return false;
     }
@@ -235,8 +235,8 @@ export const useTicketingGate = (
     try {
       await callSessionApi('exit');
       logger.info('Exited ticketing gate', { eventId, sessionId: getSessionId() });
-    } catch (error) {
-      logger.error('Failed to exit gate', { error, eventId });
+    } catch (error: unknown) {
+      logger.error('Failed to exit gate', { error: error instanceof Error ? error.message : 'Unknown error', eventId });
     }
   }, [eventId, callSessionApi, getSessionId]);
 
@@ -287,8 +287,8 @@ export const useTicketingGate = (
               pollingIntervalRef.current = null;
             }
           };
-        } catch (error) {
-          logger.error('Failed to setup real-time subscription', { error });
+        } catch (error: unknown) {
+          logger.error('Failed to setup real-time subscription', { error: error instanceof Error ? error.message : 'Unknown error' });
           // Fallback to polling
         }
       }
@@ -317,8 +317,8 @@ export const useTicketingGate = (
     const cleanupOldSessions = async () => {
       try {
         await callSessionApi('cleanup');
-      } catch (error) {
-        logger.error('Failed to cleanup old sessions', { error });
+      } catch (error: unknown) {
+        logger.error('Failed to cleanup old sessions', { error: error instanceof Error ? error.message : 'Unknown error' });
       }
     };
 

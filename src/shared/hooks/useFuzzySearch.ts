@@ -450,8 +450,12 @@ async function searchArtists(
       ...item,
       similarity_score: 0.5,
     })) as ArtistSearchResult[];
-  } catch (error) {
-    logger.error('Error searching artists', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching artists', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchArtists',
+      query,
+    });
     return [];
   }
 }
@@ -562,8 +566,12 @@ async function searchEvents(
     }
 
     return mergedResults.slice(0, limit);
-  } catch (error) {
-    logger.error('Error searching events', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching events', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchEvents',
+      query,
+    });
     return [];
   }
 }
@@ -598,8 +606,12 @@ async function searchVenues(
       ...item,
       similarity_score: 0.5,
     })) as VenueSearchResult[];
-  } catch (error) {
-    logger.error('Error searching venues', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching venues', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchVenues',
+      query,
+    });
     return [];
   }
 }
@@ -634,8 +646,12 @@ async function searchProfiles(
       ...item,
       similarity_score: 0.5,
     })) as ProfileSearchResult[];
-  } catch (error) {
-    logger.error('Error searching profiles', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching profiles', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchProfiles',
+      query,
+    });
     return [];
   }
 }
@@ -677,8 +693,12 @@ async function searchOrganizations(
       // Organizations table might not exist
       return [];
     }
-  } catch (error) {
-    logger.error('Error searching organizations', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching organizations', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchOrganizations',
+      query,
+    });
     return [];
   }
 }
@@ -748,8 +768,12 @@ async function searchRecordings(
     }
 
     return mergedResults.slice(0, limit);
-  } catch (error) {
-    logger.error('Error searching recordings', { error, query });
+  } catch (error: unknown) {
+    logger.error('Error searching recordings', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      source: 'useFuzzySearch.searchRecordings',
+      query,
+    });
     return [];
   }
 }

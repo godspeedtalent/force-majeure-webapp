@@ -1,5 +1,5 @@
-import { supabase } from '@/shared';
-import { logger } from '@/shared';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/shared/services/logger';
 import type { Database } from '@/integrations/supabase/types';
 
 // Type for all valid table names in the database

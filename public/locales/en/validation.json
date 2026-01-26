@@ -56,6 +56,17 @@
     "expired": "This promo code has expired",
     "alreadyUsed": "This promo code has already been used"
   },
+  "promoCodeRequired": "Promo code is required",
+  "promoCodeAlphanumeric": "Promo code must contain only letters and numbers",
+  "discountRequired": "Discount value is required",
+  "discountPositive": "Discount must be greater than 0",
+  "percentageMin": "Percentage discount must be at least 1%",
+  "percentageMax": "Percentage discount cannot exceed 100%",
+  "flatDiscountMin": "Flat discount must be at least ${{min}}",
+  "flatDiscountMax": "Flat discount cannot exceed ${{max}}",
+  "expirationPast": "Expiration date cannot be in the past",
+  "selectAtLeastOneGroup": "Please select at least one ticket group",
+  "selectAtLeastOneTier": "Please select at least one ticket tier",
   "terms": {
     "required": "You must accept the terms and conditions"
   },

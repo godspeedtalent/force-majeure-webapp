@@ -40,6 +40,7 @@ interface EventRow {
   is_rsvp_only_event?: boolean | null;
   rsvp_button_subtitle?: string | null;
   mobile_full_hero_height?: boolean | null;
+  max_tickets_per_order?: number | null;
   venue?: VenueRow | null;
   headliner_artist: {
     id: string;
@@ -164,6 +165,7 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
     isRsvpOnlyEvent: row.is_rsvp_only_event ?? false,
     rsvpButtonSubtitle: row.rsvp_button_subtitle ?? null,
     mobileFullHeroHeight: row.mobile_full_hero_height ?? false,
+    maxTicketsPerOrder: row.max_tickets_per_order ?? 100, // Default to 100 if not set
   };
 };
 
@@ -190,6 +192,7 @@ const fetchEventDetails = async (
       is_rsvp_only_event,
       rsvp_button_subtitle,
       mobile_full_hero_height,
+      max_tickets_per_order,
       venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
       headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
       event_artists!left(

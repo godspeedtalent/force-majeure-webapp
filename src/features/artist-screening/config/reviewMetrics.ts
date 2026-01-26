@@ -8,7 +8,7 @@ export const QUALITATIVE_RATING_OPTIONS: Array<{
   value: QualitativeScore;
   label: string;
 }> = [
-  { value: 0, label: 'Very strongly disliked' },
+  { value: 0, label: 'Strongly disliked' },
   { value: 1, label: 'Disliked' },
   { value: 2, label: 'Neutral' },
   { value: 3, label: 'Liked' },

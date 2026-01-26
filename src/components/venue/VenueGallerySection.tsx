@@ -40,6 +40,7 @@ import { EditMediaDialog } from './dialogs/EditMediaDialog';
 import { CreateGalleryDialog } from './dialogs/CreateGalleryDialog';
 import type { ResolvedMediaItem } from '@/features/media/types';
 import { toast } from 'sonner';
+import { handleError } from '@/shared/services/errorHandler';
 
 interface VenueGallerySectionProps {
   venueId: string;
@@ -90,8 +91,11 @@ export const VenueGallerySection = ({
     try {
       await actions.updateGalleryName(editedGalleryName);
       setIsEditingGalleryName(false);
-    } catch {
-      toast.error(t('venueGallery.updateFailed', 'Failed to update gallery'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.updateFailed', 'Failed to update gallery'),
+        context: 'VenueGallerySection.updateGalleryName',
+      });
     } finally {
       setIsSavingGalleryName(false);
     }
@@ -105,8 +109,11 @@ export const VenueGallerySection = ({
   const handleCreateGallery = async (name: string) => {
     try {
       await actions.createGallery(name);
-    } catch {
-      toast.error(t('venueGallery.createFailed', 'Failed to create gallery'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.createFailed', 'Failed to create gallery'),
+        context: 'VenueGallerySection.createGallery',
+      });
     }
   };
 
@@ -114,8 +121,11 @@ export const VenueGallerySection = ({
     if (!deleteConfirm || deleteConfirm.type !== 'gallery') return;
     try {
       await actions.deleteGallery(deleteConfirm.id);
-    } catch {
-      toast.error(t('venueGallery.deleteFailed', 'Failed to delete gallery'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.deleteFailed', 'Failed to delete gallery'),
+        context: 'VenueGallerySection.deleteGallery',
+      });
     } finally {
       setDeleteConfirm(null);
     }
@@ -125,8 +135,11 @@ export const VenueGallerySection = ({
     if (!deleteConfirm || deleteConfirm.type !== 'item') return;
     try {
       await actions.deleteMediaItem(deleteConfirm.id);
-    } catch {
-      toast.error(t('venueGallery.deleteMediaFailed', 'Failed to delete media'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.deleteMediaFailed', 'Failed to delete media'),
+        context: 'VenueGallerySection.deleteMediaItem',
+      });
     } finally {
       setDeleteConfirm(null);
     }
@@ -143,16 +156,22 @@ export const VenueGallerySection = ({
     try {
       await actions.updateMediaItem(editingItem.id, data);
       setEditingItem(null);
-    } catch {
-      toast.error(t('venueGallery.updateMediaFailed', 'Failed to update media'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.updateMediaFailed', 'Failed to update media'),
+        context: 'VenueGallerySection.updateMediaItem',
+      });
     }
   };
 
   const handleSetCover = async (itemId: string) => {
     try {
       await actions.setCoverImage(itemId);
-    } catch {
-      toast.error(t('venueGallery.setCoverFailed', 'Failed to set cover image'));
+    } catch (error: unknown) {
+      handleError(error, {
+        title: t('venueGallery.setCoverFailed', 'Failed to set cover image'),
+        context: 'VenueGallerySection.setCoverImage',
+      });
     }
   };
 
@@ -222,7 +241,7 @@ export const VenueGallerySection = ({
                 type: 'gallery',
                 id: state.selectedGallery!.id,
                 name: state.selectedGallery!.name,
-                isDefault: state.selectedGallery!.is_default,
+                isDefault: state.selectedGallery!.is_default ?? undefined,
               })
             }
             className='flex-shrink-0'

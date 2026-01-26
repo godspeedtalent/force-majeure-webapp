@@ -56,6 +56,17 @@
     "expired": "此优惠码已过期",
     "alreadyUsed": "此优惠码已被使用"
   },
+  "promoCodeRequired": "优惠码为必填项",
+  "promoCodeAlphanumeric": "优惠码只能包含字母和数字",
+  "discountRequired": "折扣值为必填项",
+  "discountPositive": "折扣必须大于0",
+  "percentageMin": "百分比折扣至少为1%",
+  "percentageMax": "百分比折扣不能超过100%",
+  "flatDiscountMin": "固定折扣至少为${{min}}",
+  "flatDiscountMax": "固定折扣不能超过${{max}}",
+  "expirationPast": "到期日期不能是过去的日期",
+  "selectAtLeastOneGroup": "请至少选择一个票组",
+  "selectAtLeastOneTier": "请至少选择一个票档",
   "terms": {
     "required": "您必须接受条款和条件"
   },

@@ -18,3 +18,5 @@ export type {
   UseEventManagementStateOptions,
   UseEventManagementStateReturn,
 } from './useEventManagementState';
+
+export { useEventMaxTicketsPerOrder } from './useEventMaxTicketsPerOrder';

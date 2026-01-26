@@ -12,6 +12,12 @@ vi.mock('@/shared/services/logger', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),
+    createNamespace: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }),
   },
 }));
 

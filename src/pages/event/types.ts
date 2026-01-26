@@ -53,4 +53,6 @@ export interface EventDetailsRecord {
   noHeadliner: boolean;
   /** Whether to display the hero image at full height on mobile */
   mobileFullHeroHeight: boolean;
+  /** Maximum number of tickets that can be purchased in a single order (default: 100) */
+  maxTicketsPerOrder: number;
 }

@@ -94,7 +94,7 @@ export function IndexDesktop({
   if (!contentReady) {
     return (
       <div className='flex items-center justify-center min-h-screen relative z-10'>
-        <FmCommonLoadingState message={t('home.loading')} />
+        <FmCommonLoadingState />
       </div>
     );
   }

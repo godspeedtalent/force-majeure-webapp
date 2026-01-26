@@ -22,6 +22,7 @@ export const FEATURE_FLAGS = {
 
   // Dashboard features
   RECORDING_RATINGS: 'recording_ratings',
+  CONVERSION_FUNNEL: 'conversion_funnel',
 
   // Sharing features
   INSTAGRAM_SHARING: 'instagram_sharing',
@@ -67,6 +68,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.RECORDING_RATINGS]: {
     displayName: 'Recording Ratings',
     description: 'Enables the recording ratings dashboard for rating artist tracks',
+  },
+  [FEATURE_FLAGS.CONVERSION_FUNNEL]: {
+    displayName: 'Conversion Funnel',
+    description: 'Enables the conversion funnel analytics tab in site analytics',
   },
   [FEATURE_FLAGS.INSTAGRAM_SHARING]: {
     displayName: 'Instagram Sharing',

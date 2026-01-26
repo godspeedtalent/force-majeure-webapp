@@ -12,23 +12,26 @@ import {
   Play,
   Star,
   User,
-  Calendar,
   AlertTriangle,
-  CheckCircle,
-  XCircle,
   Music,
   ArrowLeft,
   MoreHorizontal,
   EyeOff,
   Trash,
-  Layers,
-  Clock3,
   Tags,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  ChevronsDown,
+  Minus,
+  ChevronsUp,
+  Pencil,
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { FmCommonLoadingSpinner } from '@/components/common/feedback/FmCommonLoadingSpinner';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { ReviewInterfaceMobile } from './ReviewInterfaceMobile';
 import { FmCommonButton } from '@/components/common/buttons/FmCommonButton';
-import { FmCommonCard } from '@/components/common/display/FmCommonCard';
 import { FmCommonTextField } from '@/components/common/forms/FmCommonTextField';
 import { Badge } from '@/components/common/shadcn/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/common/shadcn/avatar';
@@ -44,21 +47,21 @@ import { cn, handleError } from '@/shared';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { ROLES } from '@/shared/auth/permissions';
 import { useAuthSafe } from '@/features/auth/services/AuthContext';
+import { useFmToolbarSafe } from '@/shared/contexts/FmToolbarContext';
 import { toast } from 'sonner';
 import {
   useSubmission,
   useCreateReview,
-  useMakeDecision,
+  useDeleteReview,
   useReviewTimer,
 } from '../hooks';
 import { ignoreSubmission, deleteSubmission } from '../services/submissionService';
 import { REVIEW_METRIC_CONFIGS } from '../config/reviewMetrics';
 import { calculateTotalScore, createDefaultMetricScores } from '../utils/reviewScoring';
-import { ReviewTimer, TimerSwitchConfirm } from './ReviewTimer';
+import { TimerSwitchConfirm } from './ReviewTimer';
 import { QualitativeMetricSelector } from './QualitativeMetricSelector';
 import type {
   CreateReviewInput,
-  MakeDecisionInput,
   ReviewMetricId,
   ReviewMetricScores,
   ScreeningReview,
@@ -67,6 +70,10 @@ import type {
 import { FmTagMultiSelect } from '@/features/tagging/components/FmTagMultiSelect';
 import { applyTagToSubmission, removeTagFromSubmission } from '@/features/tagging/services/tagService';
 import type { Tag } from '@/features/tagging/types';
+import {
+  FmCommonContextMenu,
+  type ContextMenuAction,
+} from '@/components/common/modals/FmCommonContextMenu';
 
 const STATUS_THEMES: Record<SubmissionStatus, string> = {
   pending: 'bg-amber-500/15 text-amber-200 border-amber-500/30',
@@ -82,13 +89,20 @@ const PLATFORM_LABELS: Record<string, string> = {
 export function ReviewInterface() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const auth = useAuthSafe();
   const currentUserId = auth?.user?.id ?? null;
   const { isAdmin, hasRole } = useUserPermissions();
   const isDeveloper = hasRole(ROLES.DEVELOPER);
   const canDelete = isAdmin() || isDeveloper;
+  const { openTab } = useFmToolbarSafe();
 
   const { data: submission, isLoading, error } = useSubmission(id!);
+
+  // Render mobile version on mobile devices
+  if (isMobile && id) {
+    return <ReviewInterfaceMobile submissionId={id} />;
+  }
 
   const {
     timerState,
@@ -101,17 +115,20 @@ export function ReviewInterface() {
     cancelTimer,
     relaunchRecording,
     isTimerCompleted,
-    overrideTimer,
+    clearCompletedTimer,
   } = useReviewTimer();
 
   const createReview = useCreateReview();
-  const makeDecision = useMakeDecision();
+  const deleteReview = useDeleteReview();
 
+  // UI state
+  const [showDetails, setShowDetails] = useState(true);
+
+  // Form state
   const [metricScores, setMetricScores] = useState<ReviewMetricScores>(() =>
     createDefaultMetricScores()
   );
   const [internalNotes, setInternalNotes] = useState<string>('');
-  const [decisionNote, setDecisionNote] = useState<string>('');
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const totalMetricScore = useMemo(
     () => calculateTotalScore(metricScores),
@@ -119,7 +136,7 @@ export function ReviewInterface() {
   );
 
   const coverArt =
-    submission?.artist_recordings.cover_art || submission?.artists.image_url || null;
+    submission?.artist_recordings?.cover_art || submission?.artists?.image_url || null;
 
   const heroStyles: CSSProperties | undefined = coverArt
     ? {
@@ -130,12 +147,12 @@ export function ReviewInterface() {
     : undefined;
 
   const hasReviewed = currentUserId
-    ? submission?.screening_reviews.some(review => review.reviewer_id === currentUserId)
+    ? submission?.screening_reviews?.some(review => review.reviewer_id === currentUserId)
     : false;
 
   const reviewCount = submission?.submission_scores?.review_count ?? 0;
-  const canMakeDecision = reviewCount >= 2;
   const canReview = id ? isTimerCompleted(id) : false;
+  const indexedScore = submission?.submission_scores?.indexed_score;
 
   const reviewStats = useMemo(() => {
     if (!submission) {
@@ -187,21 +204,29 @@ export function ReviewInterface() {
     : null;
 
   const artistGenres =
-    submission?.artists.artist_genres?.map(entry => entry.genre.name) ?? [];
+    submission?.artists?.artist_genres?.map(entry => entry.genre?.name).filter(Boolean) ?? [];
 
   const submissionTags = submission?.submission_tags ?? [];
 
   useEffect(() => {
     setMetricScores(createDefaultMetricScores());
     setInternalNotes('');
-    setDecisionNote('');
     setSelectedTags(submissionTags.map(entry => entry.tag));
   }, [submission?.id]);
 
   const handleStartReview = () => {
     if (!submission) return;
-    const submissionTitle = `${submission.artists.name} - ${submission.artist_recordings.name}`;
-    requestTimer(submission.id, submissionTitle, submission.artist_recordings.url);
+    const result = requestTimer(
+      submission.id,
+      submission.artist_recordings.name,
+      submission.artists.name,
+      coverArt,
+      submission.artist_recordings.url
+    );
+    // Open the toolbar to show timer status
+    if (result === 'started') {
+      openTab('screening-review');
+    }
   };
 
   const handleMetricChange = (
@@ -255,36 +280,17 @@ export function ReviewInterface() {
       };
 
       await createReview.mutateAsync(input);
+
+      // Clear the completed timer entry now that review is submitted
+      clearCompletedTimer(submission.id);
+
+      // Reset form state
       setMetricScores(createDefaultMetricScores());
       setInternalNotes('');
-
-      toast.success('Review submitted successfully');
     } catch (err) {
       handleError(err, {
         title: 'Failed to submit review',
         context: 'ReviewInterface.handleSubmitReview',
-      });
-    }
-  };
-
-  const handleMakeDecision = async (decision: 'approved' | 'rejected') => {
-    if (!submission || !canMakeDecision) return;
-
-    try {
-      const input: MakeDecisionInput = {
-        submission_id: submission.id,
-        decision,
-        decision_note: decisionNote || undefined,
-      };
-
-      await makeDecision.mutateAsync(input);
-
-      toast.success(decision === 'approved' ? 'Submission approved' : 'Submission rejected');
-      navigate('/staff?tab=dash_overview');
-    } catch (err) {
-      handleError(err, {
-        title: 'Failed to make decision',
-        context: 'ReviewInterface.handleMakeDecision',
       });
     }
   };
@@ -311,6 +317,45 @@ export function ReviewInterface() {
     } catch {
       // handled downstream
     }
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!submission) return;
+
+    try {
+      await deleteReview.mutateAsync({
+        review_id: reviewId,
+        submission_id: submission.id,
+      });
+    } catch {
+      // handled downstream
+    }
+  };
+
+  const handleEditReview = (_reviewId: string) => {
+    toast.info('Edit functionality coming soon');
+    // TODO: Implement edit review modal
+  };
+
+  const getReviewContextActions = (
+    review: ScreeningReview
+  ): ContextMenuAction<ScreeningReview>[] => {
+    // Only show context menu if this is the current user's review
+    if (review.reviewer_id !== currentUserId) return [];
+
+    return [
+      {
+        label: 'Edit',
+        icon: <Pencil className="h-4 w-4" />,
+        onClick: r => handleEditReview(r.id),
+      },
+      {
+        label: 'Delete',
+        icon: <Trash className="h-4 w-4" />,
+        onClick: r => handleDeleteReview(r.id),
+        variant: 'destructive',
+      },
+    ];
   };
 
   if (isLoading) {
@@ -345,7 +390,8 @@ export function ReviewInterface() {
   return (
     <Layout>
       <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(214,193,141,0.08),_transparent_60%)] pb-16">
-        <div className="container mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        {/* Header Row - Less Side Margin */}
+        <div className="px-4 py-6 sm:px-8 lg:px-12">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-3">
               <FmCommonButton
@@ -410,292 +456,124 @@ export function ReviewInterface() {
               </DropdownMenu>
             </div>
           </div>
+        </div>
 
-          <FmCommonCard
-            variant="frosted"
-            className="overflow-hidden rounded-[32px] border-white/15 p-0"
-          >
+        {/* Single Column Layout - Centered Content */}
+        <div className="mx-auto max-w-2xl space-y-6 px-4">
+            {/* Hero Section */}
             <div
-              className={cn(
-                'relative isolate p-6 sm:p-10',
-                'bg-gradient-to-br from-[#0f0f13] via-[#060608] to-[#050505]'
-              )}
+              className="border border-white/15 bg-black/60 backdrop-blur-sm p-6"
               style={heroStyles}
             >
-              <div className="flex flex-col gap-8 lg:flex-row lg:items-center">
-                <div className="flex items-center gap-5">
-                  <div className="relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-2xl border border-white/15 bg-white/5">
-                    {coverArt ? (
-                      <img
-                        src={coverArt}
-                        alt={submission.artist_recordings.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-white/40">
-                        <Music className="h-8 w-8" />
-                      </div>
-                    )}
-                    <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/15" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="text-xs uppercase tracking-widest text-white/50">
-                      Recording
-                    </div>
-                    <div className="text-3xl font-semibold text-white">
-                      {submission.artist_recordings.name}
-                    </div>
-                    <div className="flex items-center gap-3 text-white/70">
-                      <Avatar className="h-8 w-8 border border-white/10">
-                        <AvatarImage
-                          src={submission.artists.image_url || ''}
-                          alt={submission.artists.name}
-                        />
-                        <AvatarFallback className="bg-white/10 text-xs font-semibold text-white/70">
-                          {submission.artists.name.slice(0, 1).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-base font-medium">{submission.artists.name}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {artistGenres.slice(0, 3).map(genre => (
-                        <span
-                          key={genre}
-                          className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-xs uppercase tracking-wide text-white/70"
-                        >
-                          {genre}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-1 flex-wrap items-center gap-4">
-                  <div className="flex flex-1 items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 min-w-[220px]">
-                    <Layers className="h-8 w-8 text-fm-gold" />
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-white/50">
-                        Reviews Logged
-                      </p>
-                      <p className="text-xl font-semibold text-white">{reviewCount}</p>
-                      <p className="text-xs text-white/60">2 needed to decide</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-1 items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 min-w-[220px]">
-                    <Clock3 className="h-8 w-8 text-fm-gold" />
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-white/50">
-                        Decision Status
-                      </p>
-                      <p className="text-xl font-semibold text-white">
-                        {canMakeDecision ? 'Eligible' : 'Waiting'}
-                      </p>
-                      <p className="text-xs text-white/60">
-                        {canMakeDecision ? 'You can decide now' : 'More reviews needed'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/50">Submitted</p>
-                  <p className="text-base text-white">{submissionDateLabel}</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/50">
-                    Most Recent Review
-                  </p>
-                  <p className="text-base text-white">{mostRecentReviewDisplay}</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/50">Context</p>
-                  <p className="text-base text-white">{contextDescriptor?.value ?? 'N/A'}</p>
-                  {contextDescriptor?.extra && (
-                    <p className="text-xs text-white/60">{contextDescriptor.extra}</p>
-                  )}
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-xs uppercase tracking-widest text-white/50">Queue</p>
-                  <p className="text-base text-white">
-                    {submission.context_type === 'general'
-                      ? 'Discovery backlog'
-                      : submission.context_type === 'event'
-                      ? 'Event-specific'
-                      : 'Venue request'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </FmCommonCard>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="space-y-6">
-              <FmCommonCard
-                variant="frosted"
-                className="overflow-hidden border-white/10 p-0"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 px-6 py-5">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                      Peer Feedback
-                    </p>
-                    <h3 className="text-2xl font-semibold text-white">Review History</h3>
-                  </div>
-                  {reviewLocked && (
-                    <Badge className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[11px] uppercase tracking-wide text-white/70">
-                      Locked until you submit
-                    </Badge>
-                  )}
-                </div>
-                <div className="relative space-y-6 px-6 py-6">
-                  {reviewCount === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-white/15 p-8 text-center text-sm text-white/60">
-                      No reviews yet. Start the process to set the tone.
-                    </div>
+              <div className="flex items-start gap-5">
+                {/* Cover Art */}
+                <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden border border-white/15 bg-white/5">
+                  {coverArt ? (
+                    <img
+                      src={coverArt}
+                      alt={submission.artist_recordings.name}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
-                    <>
-                      {reviewLocked && (
-                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-black/70 text-center text-sm text-white/70 backdrop-blur-sm">
-                          Submit your review to reveal peer notes and ratings.
-                        </div>
-                      )}
-                      <div
-                        className={cn(
-                          'space-y-4',
-                          reviewLocked && 'pointer-events-none opacity-50 blur-[1px]'
-                        )}
-                      >
-                        {reviewStats.sortedReviews.map((review: ScreeningReview) => (
-                          <div
-                            key={review.id}
-                            className="rounded-2xl border border-white/8 bg-white/[0.03] p-4"
-                          >
-                            <div className="flex flex-wrap items-center justify-between gap-3">
-                              <div className="flex min-w-0 items-center gap-3">
-                                <Avatar className="h-10 w-10 border border-white/10">
-                                  <AvatarImage
-                                    src={review.profiles?.avatar_url || ''}
-                                    alt={review.profiles?.display_name || 'Reviewer'}
-                                  />
-                                  <AvatarFallback className="bg-black/40 text-xs font-semibold text-white/70">
-                                    {review.profiles?.display_name
-                                      ? review.profiles.display_name.slice(0, 1).toUpperCase()
-                                      : <User className="h-4 w-4 text-white/50" />}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0">
-                                  <p className="text-sm font-medium text-white">
-                                    {review.profiles?.display_name || 'Anonymous reviewer'}
-                                  </p>
-                                  <p className="text-xs text-white/60">
-                                    {formatDistanceToNow(new Date(review.created_at), {
-                                      addSuffix: true,
-                                    })}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            {review.internal_notes && (
-                              <p className="mt-3 text-sm text-white/80">{review.internal_notes}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </>
+                    <div className="flex h-full w-full items-center justify-center text-white/40">
+                      <Music className="h-6 w-6" />
+                    </div>
                   )}
                 </div>
-              </FmCommonCard>
 
-              <FmCommonCard
-                variant="frosted"
-                className="overflow-hidden border-white/10 p-0"
-              >
-                <div className="border-b border-white/5 px-6 py-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                    Submission Snapshot
-                  </p>
-                  <h3 className="text-2xl font-semibold text-white">Context & Signals</h3>
-                </div>
-                <div className="space-y-6 px-6 py-6">
-                  <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/30 p-5 sm:flex-row sm:items-center">
-                    {submission.artists.image_url ? (
-                      <img
-                        src={submission.artists.image_url}
+                {/* Info */}
+                <div className="flex-1 min-w-0 space-y-2">
+                  <p className="text-xs uppercase tracking-widest text-white/50">Recording</p>
+                  <h2 className="text-xl font-semibold text-white truncate">
+                    {submission.artist_recordings.name}
+                  </h2>
+                  <button
+                    onClick={() => navigate(`/artists/${submission.artist_id}`)}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
+                    <Avatar className="h-6 w-6 border border-white/10">
+                      <AvatarImage
+                        src={submission.artists.image_url || ''}
                         alt={submission.artists.name}
-                        className="h-16 w-16 rounded-full border border-white/10 object-cover"
                       />
-                    ) : (
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-black/40">
-                        <User className="h-6 w-6 text-white/50" />
-                      </div>
-                    )}
-                    <div className="space-y-1">
-                      <p className="text-xs uppercase tracking-widest text-white/50">Artist</p>
-                      <p className="text-xl font-semibold text-white">{submission.artists.name}</p>
-                      <p className="text-xs text-white/50">
-                        {artistGenres.length > 0 ? artistGenres.join(' / ') : 'No genres listed'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-widest text-white/50">Recording</p>
-                        <p className="text-lg text-white">{submission.artist_recordings.name}</p>
-                        <p className="text-xs text-white/50">{platformLabel}</p>
-                      </div>
-                      <a
-                        href={submission.artist_recordings.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center text-sm font-semibold text-fm-gold hover:text-fm-gold/80"
+                      <AvatarFallback className="bg-white/10 text-[10px] font-semibold text-white/70">
+                        {submission.artists.name.slice(0, 1).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-fm-gold hover:underline">{submission.artists.name}</span>
+                  </button>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {artistGenres.slice(0, 3).map(genre => (
+                      <span
+                        key={genre}
+                        className="border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/60"
                       >
-                        <Play className="mr-2 h-4 w-4" />
-                        Open Recording
-                      </a>
-                    </div>
+                        {genre}
+                      </span>
+                    ))}
                   </div>
+                </div>
 
-                  {submission.has_genre_mismatch && (
-                    <div className="rounded-2xl border border-fm-danger/30 bg-fm-danger/10 p-5">
-                      <div className="flex items-center gap-3">
-                        <AlertTriangle className="h-5 w-5 text-fm-danger" />
-                        <div>
-                          <p className="text-sm font-medium text-fm-danger">Genre mismatch</p>
-                          <p className="text-xs text-white/70">
-                            Artist genres do not align with venue requirements.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                {/* Indexed Score */}
+                <div
+                  className={cn(
+                    'flex flex-col items-center justify-center border p-4 min-w-[100px] text-center',
+                    indexedScore !== null && indexedScore !== undefined
+                      ? 'border-fm-gold/30 bg-fm-gold/10'
+                      : 'border-white/10 bg-white/5'
                   )}
+                >
+                  <p className="text-[10px] uppercase tracking-widest text-white/50 mb-1">Score</p>
+                  {indexedScore !== null && indexedScore !== undefined ? (
+                    <p className="text-3xl font-bold text-fm-gold">{Math.round(indexedScore)}</p>
+                  ) : (
+                    <p className="text-sm text-white/40">--</p>
+                  )}
+                  <p className="text-[10px] text-white/40">{reviewCount} review{reviewCount !== 1 ? 's' : ''}</p>
+                </div>
+              </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
-                      <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-white/50">
-                        <Calendar className="h-4 w-4" />
-                        Submitted
-                      </div>
-                      <p className="text-sm text-white">{submissionDateLabel}</p>
+              {/* Genre Mismatch Warning */}
+              {submission.has_genre_mismatch && (
+                <div className="mt-4 flex items-center gap-2 border border-fm-danger/30 bg-fm-danger/10 p-3">
+                  <AlertTriangle className="h-4 w-4 text-fm-danger flex-shrink-0" />
+                  <p className="text-xs text-fm-danger">Genre mismatch with venue requirements</p>
+                </div>
+              )}
+
+              {/* Show Details Toggle */}
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="mt-4 flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
+              >
+                {showDetails ? 'Hide' : 'Show'} details
+                {showDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              </button>
+
+              {/* Expandable Details */}
+              {showDetails && (
+                <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <p className="text-white/50 uppercase tracking-wider">Submitted</p>
+                      <p className="text-white">{submissionDateLabel}</p>
                     </div>
-
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
-                      <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-white/50">
-                        <Clock3 className="h-4 w-4" />
-                        Minimum Reviews
-                      </div>
-                      <p className="text-sm text-white">
-                        Requires {submission.submission_scores?.review_count ?? 0}/2 reviews
-                      </p>
-                      <p className="text-xs text-white/60">Needed for final decision</p>
+                    <div>
+                      <p className="text-white/50 uppercase tracking-wider">Last Review</p>
+                      <p className="text-white">{mostRecentReviewDisplay}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/50 uppercase tracking-wider">Context</p>
+                      <p className="text-white">{contextDescriptor?.value ?? 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/50 uppercase tracking-wider">Platform</p>
+                      <p className="text-white">{platformLabel}</p>
                     </div>
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/50">
-                      <Tags className="h-4 w-4" />
+                  <div>
+                    <div className="flex items-center gap-1.5 text-xs text-white/50 uppercase tracking-wider mb-2">
+                      <Tags className="h-3 w-3" />
                       Tags
                     </div>
                     <FmTagMultiSelect
@@ -706,186 +584,265 @@ export function ReviewInterface() {
                     />
                   </div>
                 </div>
-              </FmCommonCard>
-            </div>
-            <div className="h-fit space-y-6 lg:sticky lg:top-8">
-              <FmCommonCard
-                variant="frosted"
-                className="overflow-hidden border-white/10 p-0 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-              >
-                <div className="border-b border-white/5 px-6 py-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                    Your Session
-                  </p>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="text-2xl font-semibold text-white">Review Controls</h3>
-                    {isTimerActive && (
-                      <span className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-xs uppercase tracking-wide text-white/70">
-                        Timer {timerMinutesRemaining}:{timerSecondsRemaining.toString().padStart(2, '0')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-5 px-6 py-6">
-                  {!canReview && !hasReviewed && (
-                    <div className="rounded-2xl border border-dashed border-white/20 bg-black/30 p-5 text-sm text-white/70">
-                      <p className="mb-4 text-base text-white">
-                        Start the review timer to unlock scoring controls.
-                      </p>
-                      <FmCommonButton
-                        variant="gold"
-                        size="lg"
-                        onClick={handleStartReview}
-                        disabled={isTimerActive}
-                        className="w-full"
-                      >
-                        <Play className="mr-2 h-5 w-5" />
-                        {isTimerActive ? 'Timer Active' : 'Start Review Timer'}
-                      </FmCommonButton>
-                      {isTimerActive && timerState && (
-                        <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-white/60">
-                          <button
-                            type="button"
-                            onClick={relaunchRecording}
-                            className="text-fm-gold hover:text-fm-gold/80"
-                          >
-                            Relaunch recording
-                          </button>
-                          <button
-                            type="button"
-                            onClick={cancelTimer}
-                            className="text-white/60 hover:text-white"
-                          >
-                            Cancel timer
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {hasReviewed && (
-                    <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-5 text-sm text-emerald-100">
-                      <p>You have already logged a review for this submission.</p>
-                    </div>
-                  )}
-
-                  {canReview && !hasReviewed && (
-                    <>
-                      <div className="space-y-4">
-                        {REVIEW_METRIC_CONFIGS.map(metric => (
-                          <QualitativeMetricSelector
-                            key={metric.id}
-                            metric={metric}
-                            value={metricScores[metric.id]}
-                            onChange={score => handleMetricChange(metric.id, score)}
-                          />
-                        ))}
-                      </div>
-
-                      <FmCommonTextField
-                        label="Internal Notes"
-                        description="Only other reviewers can see these notes."
-                        value={internalNotes}
-                        onChange={event => setInternalNotes(event.target.value)}
-                        placeholder="Share what stood out, deal-breakers, or context to remember..."
-                        multiline
-                        rows={4}
-                      />
-
-                      <FmCommonButton
-                        variant="gold"
-                        size="lg"
-                        onClick={handleSubmitReview}
-                        disabled={createReview.isPending}
-                        className="w-full"
-                      >
-                        <Star className="mr-2 h-5 w-5" />
-                        {createReview.isPending ? 'Submitting...' : 'Submit Review'}
-                      </FmCommonButton>
-                    </>
-                  )}
-                </div>
-              </FmCommonCard>
-
-              {canMakeDecision && (
-                <FmCommonCard variant="frosted" className="border-white/10">
-                  <div className="space-y-5">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                        Final Call
-                      </p>
-                      <h3 className="text-2xl font-semibold text-white">Decision Panel</h3>
-                    </div>
-
-                    <div className="rounded-2xl border border-fm-gold/30 bg-black/30 p-5 text-center">
-                      <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                        Indexed Score
-                      </p>
-                      <p className="text-4xl font-semibold text-fm-gold">
-                        {submission.submission_scores?.indexed_score !== null &&
-                        submission.submission_scores?.indexed_score !== undefined
-                          ? Math.round(submission.submission_scores.indexed_score)
-                          : '-'}
-                      </p>
-                      <p className="text-xs text-white/60">
-                        Based on {reviewCount} reviews
-                      </p>
-                    </div>
-
-                    <FmCommonTextField
-                      label="Decision Note (Optional)"
-                      description="Visible to the artist after approval or rejection."
-                      value={decisionNote}
-                      onChange={event => setDecisionNote(event.target.value)}
-                      placeholder="Give the artist a personal note..."
-                      multiline
-                      rows={3}
-                    />
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <FmCommonButton
-                        variant="default"
-                        onClick={() => handleMakeDecision('approved')}
-                        disabled={makeDecision.isPending}
-                        className="border border-emerald-400/40 hover:bg-emerald-500/20"
-                      >
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Approve
-                      </FmCommonButton>
-                      <FmCommonButton
-                        variant="destructive-outline"
-                        onClick={() => handleMakeDecision('rejected')}
-                        disabled={makeDecision.isPending}
-                      >
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Reject
-                      </FmCommonButton>
-                    </div>
-                  </div>
-                </FmCommonCard>
               )}
             </div>
-          </div>
+
+            {/* Timer / Review Controls Section - Toolbar Style */}
+            <div
+              className={cn(
+                'border p-4',
+                isTimerActive
+                  ? 'border-fm-gold/30 bg-fm-gold/10'
+                  : canReview && !hasReviewed
+                  ? 'border-green-400/30 bg-green-500/10'
+                  : hasReviewed
+                  ? 'border-emerald-400/30 bg-emerald-500/10'
+                  : 'border-white/10 bg-black/40'
+              )}
+            >
+              {/* Timer Active State */}
+              {isTimerActive && timerState && !canReview && (
+                <>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Play className="h-3.5 w-3.5 text-fm-gold" fill="currentColor" />
+                    <span className="text-[10px] font-medium text-fm-gold uppercase tracking-wider">
+                      Now Playing
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span
+                      className={cn(
+                        'text-2xl font-bold font-mono',
+                        remainingSeconds < 60 ? 'text-fm-danger animate-pulse' : 'text-white'
+                      )}
+                    >
+                      {timerMinutesRemaining}:{timerSecondsRemaining.toString().padStart(2, '0')}
+                    </span>
+                    <span className="text-xs text-white/40">
+                      {Math.round(((1200 - remainingSeconds) / 1200) * 100)}% complete
+                    </span>
+                  </div>
+                  {/* Progress Bar */}
+                  <div className="w-full h-1 bg-white/10 mb-4">
+                    <div
+                      className="h-full bg-fm-gold transition-all duration-1000 ease-linear"
+                      style={{ width: `${Math.round(((1200 - remainingSeconds) / 1200) * 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FmCommonButton
+                      variant="default"
+                      size="sm"
+                      onClick={relaunchRecording}
+                      className="flex-1"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                      Open Recording
+                    </FmCommonButton>
+                    <FmCommonButton
+                      variant="default"
+                      size="sm"
+                      onClick={cancelTimer}
+                      className="text-white/60"
+                    >
+                      Cancel
+                    </FmCommonButton>
+                  </div>
+                </>
+              )}
+
+              {/* Ready to Review State */}
+              {canReview && !hasReviewed && (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Star className="h-3.5 w-3.5 text-green-400" />
+                    <span className="text-[10px] font-medium text-green-400 uppercase tracking-wider">
+                      Ready to Review
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {REVIEW_METRIC_CONFIGS.map(metric => (
+                      <QualitativeMetricSelector
+                        key={metric.id}
+                        metric={metric}
+                        value={metricScores[metric.id]}
+                        onChange={score => handleMetricChange(metric.id, score)}
+                      />
+                    ))}
+                  </div>
+
+                  <FmCommonTextField
+                    label="Internal Notes"
+                    description="Only reviewers can see"
+                    value={internalNotes}
+                    onChange={event => setInternalNotes(event.target.value)}
+                    placeholder="What stood out, deal-breakers, context..."
+                    multiline
+                    rows={3}
+                    className="mt-4"
+                  />
+
+                  <FmCommonButton
+                    variant="gold"
+                    size="lg"
+                    onClick={handleSubmitReview}
+                    disabled={createReview.isPending}
+                    className="w-full mt-4"
+                  >
+                    <Star className="mr-2 h-4 w-4" />
+                    {createReview.isPending ? 'Submitting...' : 'Submit Review'}
+                  </FmCommonButton>
+                </>
+              )}
+
+              {/* Already Reviewed State */}
+              {hasReviewed && (
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-emerald-400" />
+                  <p className="text-sm text-emerald-200">You have already reviewed this submission.</p>
+                </div>
+              )}
+
+              {/* Not Started State */}
+              {!isTimerActive && !canReview && !hasReviewed && (
+                <>
+                  <p className="text-sm text-white/70 mb-4">
+                    Start the review timer to unlock scoring controls.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <FmCommonButton
+                      variant="gold"
+                      size="lg"
+                      onClick={handleStartReview}
+                      className="flex-1"
+                    >
+                      <Play className="mr-2 h-4 w-4" />
+                      Start Review Timer
+                    </FmCommonButton>
+                    <a
+                      href={submission.artist_recordings.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 border border-white/20 bg-white/5 px-4 py-2.5 text-sm text-white/70 hover:bg-white/10 transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Preview
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Review History */}
+            <div className="border border-white/10 bg-black/40">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-white uppercase tracking-wider">
+                    Review History
+                  </span>
+                  <span className="text-xs text-white/40">({reviewCount})</span>
+                </div>
+                {reviewLocked && (
+                  <Badge className="border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/50">
+                    Locked
+                  </Badge>
+                )}
+              </div>
+              <div className="relative p-4">
+                {reviewCount === 0 ? (
+                  <p className="text-center text-sm text-white/50 py-4">
+                    No reviews yet. Be the first.
+                  </p>
+                ) : (
+                  <>
+                    {reviewLocked && (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                        <p className="text-sm text-white/70">Submit your review to unlock</p>
+                      </div>
+                    )}
+                    <div className={cn('space-y-3', reviewLocked && 'opacity-30 blur-[1px]')}>
+                      {reviewStats.sortedReviews.map((review: ScreeningReview) => {
+                        const contextActions = getReviewContextActions(review);
+                        const reviewContent = (
+                          <div className="border border-white/5 bg-white/[0.02] p-3">
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-7 w-7 border border-white/10">
+                                <AvatarImage
+                                  src={review.profiles?.avatar_url || ''}
+                                  alt={review.profiles?.display_name || 'Reviewer'}
+                                />
+                                <AvatarFallback className="bg-black/40 text-[10px] text-white/70">
+                                  {review.profiles?.display_name
+                                    ? review.profiles.display_name.slice(0, 1).toUpperCase()
+                                    : <User className="h-3 w-3 text-white/50" />}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm text-white truncate">
+                                  {review.profiles?.display_name || 'Anonymous'}
+                                </p>
+                                <p className="text-[10px] text-white/50">
+                                  {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Metric Scores Display */}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {review.track_selection_score !== null && review.track_selection_score !== undefined && (
+                                <div className="flex items-center gap-1.5 border border-white/10 bg-white/5 px-2 py-1">
+                                  {review.track_selection_score === 0 && <ChevronsDown className="h-3 w-3 text-red-400" />}
+                                  {review.track_selection_score === 1 && <ChevronDown className="h-3 w-3 text-orange-400" />}
+                                  {review.track_selection_score === 2 && <Minus className="h-3 w-3 text-white/50" />}
+                                  {review.track_selection_score === 3 && <ChevronUp className="h-3 w-3 text-green-400" />}
+                                  {review.track_selection_score === 4 && <ChevronsUp className="h-3 w-3 text-emerald-400" />}
+                                  <span className="text-[10px] text-white/60 uppercase tracking-wide">Track</span>
+                                </div>
+                              )}
+                              {review.flow_energy_score !== null && review.flow_energy_score !== undefined && (
+                                <div className="flex items-center gap-1.5 border border-white/10 bg-white/5 px-2 py-1">
+                                  {review.flow_energy_score === 0 && <ChevronsDown className="h-3 w-3 text-red-400" />}
+                                  {review.flow_energy_score === 1 && <ChevronDown className="h-3 w-3 text-orange-400" />}
+                                  {review.flow_energy_score === 2 && <Minus className="h-3 w-3 text-white/50" />}
+                                  {review.flow_energy_score === 3 && <ChevronUp className="h-3 w-3 text-green-400" />}
+                                  {review.flow_energy_score === 4 && <ChevronsUp className="h-3 w-3 text-emerald-400" />}
+                                  <span className="text-[10px] text-white/60 uppercase tracking-wide">Flow</span>
+                                </div>
+                              )}
+                              {review.technical_execution_score !== null && review.technical_execution_score !== undefined && (
+                                <div className="flex items-center gap-1.5 border border-white/10 bg-white/5 px-2 py-1">
+                                  {review.technical_execution_score === 0 && <ChevronsDown className="h-3 w-3 text-red-400" />}
+                                  {review.technical_execution_score === 1 && <ChevronDown className="h-3 w-3 text-orange-400" />}
+                                  {review.technical_execution_score === 2 && <Minus className="h-3 w-3 text-white/50" />}
+                                  {review.technical_execution_score === 3 && <ChevronUp className="h-3 w-3 text-green-400" />}
+                                  {review.technical_execution_score === 4 && <ChevronsUp className="h-3 w-3 text-emerald-400" />}
+                                  <span className="text-[10px] text-white/60 uppercase tracking-wide">Technical</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {review.internal_notes && (
+                              <p className="mt-3 text-xs text-white/70">{review.internal_notes}</p>
+                            )}
+                          </div>
+                        );
+
+                        return contextActions.length > 0 ? (
+                          <FmCommonContextMenu key={review.id} actions={contextActions} data={review}>
+                            {reviewContent}
+                          </FmCommonContextMenu>
+                        ) : (
+                          <div key={review.id}>{reviewContent}</div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
         </div>
       </div>
-
-      {isTimerActive && timerState && (
-        <ReviewTimer
-          submissionId={timerState.submissionId}
-          submissionTitle={timerState.submissionTitle}
-          recordingUrl={timerState.recordingUrl}
-          remainingSeconds={remainingSeconds}
-          isAdmin={isAdmin()}
-          onReturnToSubmission={() => {
-            if (timerState.submissionId !== id) {
-              navigate(`/staff/screening/review/${timerState.submissionId}`);
-            }
-          }}
-          onRelaunchRecording={relaunchRecording}
-          onCancel={cancelTimer}
-          onOverrideTimer={overrideTimer}
-        />
-      )}
 
       {pendingRequest && timerState && (
         <TimerSwitchConfirm

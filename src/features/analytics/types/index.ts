@@ -346,3 +346,6 @@ export interface ChartLabelInput {
  * Chart label as a key-value map (for FmLineChart compatibility)
  */
 export type ChartLabelsMap = Record<string, string>;
+
+// Site Health Report Types
+export * from './siteHealth';

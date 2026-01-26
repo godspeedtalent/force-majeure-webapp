@@ -191,8 +191,29 @@ export function EventDetailsFormSection({
         />
       </div>
 
-      {/* RSVP Settings Section */}
+      {/* Ticketing Settings Section */}
       <div className='space-y-4 pt-4 border-t border-white/10'>
+        <div className='space-y-1.5'>
+          <Label className='text-xs text-white/50 uppercase tracking-wider'>
+            {t('ticketing.maxTicketsPerOrder')}
+          </Label>
+          <FmCommonTextField
+            value={state.maxTicketsPerOrder.toString()}
+            onChange={e => {
+              const val = parseInt(e.target.value, 10);
+              if (!isNaN(val) && val > 0 && val <= 10000) {
+                actions.setMaxTicketsPerOrder(val);
+              }
+            }}
+            type='number'
+            min={1}
+            max={10000}
+          />
+          <p className='text-xs text-white/50'>
+            {t('ticketing.maxTicketsPerOrderHint')}
+          </p>
+        </div>
+
         <div className='flex items-center gap-3 p-4 border border-white/20 bg-white/5'>
           <Users className='h-5 w-5 text-fm-gold' />
           <div className='flex-1'>

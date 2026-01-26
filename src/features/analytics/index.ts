@@ -62,12 +62,14 @@ export { SupabaseAnalyticsAdapter } from './adapters/SupabaseAnalyticsAdapter';
 
 // Services
 export { AnalyticsService } from './services/AnalyticsService';
+export { SiteHealthService } from './services/SiteHealthService';
 
 // Hooks
 export { useAnalytics } from './hooks/useAnalytics';
 export { usePageTracking } from './hooks/usePageTracking';
 export { usePerformanceTracking } from './hooks/usePerformanceTracking';
 export { useScrollDepth } from './hooks/useScrollDepth';
+export { useSiteHealthExport } from './hooks/useSiteHealthExport';
 
 // Components
 export { AnalyticsProvider, AnalyticsContext } from './components/AnalyticsProvider';
@@ -90,3 +92,14 @@ export {
   getCurrentOrigin,
 } from './utils';
 export type { DeviceInfo } from './utils';
+export { formatSiteHealthReport } from './utils/siteHealthFormatter';
+
+// Site Health Types
+export type {
+  SiteHealthReport,
+  SiteHealthOverview,
+  PerformanceHealthSection,
+  ErrorHealthSection,
+  FunnelHealthSection,
+  ConfigurationSection,
+} from './types/siteHealth';

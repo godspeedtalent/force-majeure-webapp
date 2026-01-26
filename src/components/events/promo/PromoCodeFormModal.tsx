@@ -83,6 +83,7 @@ export const PromoCodeFormModal = ({
   ticketTiers = [],
 }: PromoCodeFormModalProps) => {
   const { t } = useTranslation('common');
+  const { t: tValidation } = useTranslation('validation');
 
   // Form state
   const [code, setCode] = useState('');
@@ -93,6 +94,15 @@ export const PromoCodeFormModal = ({
   const [appliesToOrder, setAppliesToOrder] = useState(false);
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [selectedTierIds, setSelectedTierIds] = useState<string[]>([]);
+
+  // Validation error messages
+  const [validationErrors, setValidationErrors] = useState<{
+    code?: string;
+    discountValue?: string;
+    expiresAt?: string;
+    groups?: string;
+    tiers?: string;
+  }>({});
 
   // Reset form when modal opens/closes or editing code changes
   useEffect(() => {
@@ -154,12 +164,70 @@ export const PromoCodeFormModal = ({
     );
   };
 
+  // Validation logic
+  const validateForm = (): boolean => {
+    const errors: typeof validationErrors = {};
+
+    // Code validation
+    if (!code.trim()) {
+      errors.code = tValidation('promoCodeRequired');
+    } else if (!/^[A-Z0-9]+$/.test(code.trim())) {
+      // Business rule: Alphanumeric only (no special characters)
+      errors.code = tValidation('promoCodeAlphanumeric');
+    }
+
+    // Discount value validation
+    const numericValue = parseFloat(discountValue);
+    if (!discountValue) {
+      errors.discountValue = tValidation('discountRequired');
+    } else if (isNaN(numericValue) || numericValue <= 0) {
+      errors.discountValue = tValidation('discountPositive');
+    } else if (discountType === 'percentage') {
+      // Business rule: Min 1%, Max 100%
+      if (numericValue < 1) {
+        errors.discountValue = tValidation('percentageMin');
+      } else if (numericValue > 100) {
+        errors.discountValue = tValidation('percentageMax');
+      }
+    } else if (discountType === 'flat') {
+      // Business rule: Min $1, Max $10,000
+      const minFlatDiscount = 1;
+      const maxFlatDiscount = 10_000;
+      if (numericValue < minFlatDiscount) {
+        errors.discountValue = tValidation('flatDiscountMin', { min: minFlatDiscount });
+      } else if (numericValue > maxFlatDiscount) {
+        errors.discountValue = tValidation('flatDiscountMax', { max: maxFlatDiscount });
+      }
+    }
+
+    // Expiration date validation
+    if (expiresAt) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0); // Start of today
+      const expiresAtStartOfDay = new Date(expiresAt);
+      expiresAtStartOfDay.setHours(0, 0, 0, 0);
+
+      if (expiresAtStartOfDay < now) {
+        errors.expiresAt = tValidation('expirationPast');
+      }
+    }
+
+    // Scope validation
+    if (applicationScope === 'specific_groups' && selectedGroupIds.length === 0) {
+      errors.groups = tValidation('selectAtLeastOneGroup');
+    }
+    if (applicationScope === 'specific_tiers' && selectedTierIds.length === 0) {
+      errors.tiers = tValidation('selectAtLeastOneTier');
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = () => {
-    if (!code.trim() || !discountValue) return;
+    if (!validateForm()) return;
 
     const numericValue = parseFloat(discountValue);
-    if (isNaN(numericValue) || numericValue <= 0) return;
-
     // Convert flat amount to cents
     const finalValue = discountType === 'flat' ? Math.round(numericValue * 100) : numericValue;
 
@@ -167,7 +235,7 @@ export const PromoCodeFormModal = ({
       // Update existing code
       const updateData: UpdatePromoCodeInput = {
         id: editingCode.id,
-        code: code.toUpperCase(),
+        code: code.trim().toUpperCase(),
         discount_type: discountType,
         discount_value: finalValue,
         expires_at: expiresAt?.toISOString() || null,
@@ -180,7 +248,7 @@ export const PromoCodeFormModal = ({
     } else {
       // Create new code
       const createData: CreatePromoCodeInput = {
-        code: code.toUpperCase(),
+        code: code.trim().toUpperCase(),
         discount_type: discountType,
         discount_value: finalValue,
         expires_at: expiresAt?.toISOString() || null,
@@ -194,12 +262,59 @@ export const PromoCodeFormModal = ({
     }
   };
 
-  const isValid =
-    code.trim() &&
-    discountValue &&
-    parseFloat(discountValue) > 0 &&
-    (applicationScope !== 'specific_groups' || selectedGroupIds.length > 0) &&
-    (applicationScope !== 'specific_tiers' || selectedTierIds.length > 0);
+  // Clear validation errors when fields change
+  useEffect(() => {
+    if (code) setValidationErrors(prev => ({ ...prev, code: undefined }));
+  }, [code]);
+
+  useEffect(() => {
+    if (discountValue) setValidationErrors(prev => ({ ...prev, discountValue: undefined }));
+  }, [discountValue]);
+
+  useEffect(() => {
+    if (expiresAt) setValidationErrors(prev => ({ ...prev, expiresAt: undefined }));
+  }, [expiresAt]);
+
+  useEffect(() => {
+    if (selectedGroupIds.length > 0) setValidationErrors(prev => ({ ...prev, groups: undefined }));
+  }, [selectedGroupIds]);
+
+  useEffect(() => {
+    if (selectedTierIds.length > 0) setValidationErrors(prev => ({ ...prev, tiers: undefined }));
+  }, [selectedTierIds]);
+
+  // Validation for button state using business rules
+  const isValid = (() => {
+    // Code validation
+    if (!code.trim()) return false;
+    if (!/^[A-Z0-9]+$/.test(code.trim())) return false; // Alphanumeric only
+
+    // Discount value validation
+    const numericValue = parseFloat(discountValue);
+    if (!discountValue || isNaN(numericValue) || numericValue <= 0) return false;
+
+    // Business rules for minimum/maximum thresholds
+    if (discountType === 'percentage') {
+      if (numericValue < 1 || numericValue > 100) return false; // Min 1%, Max 100%
+    } else if (discountType === 'flat') {
+      if (numericValue < 1 || numericValue > 10_000) return false; // Min $1, Max $10,000
+    }
+
+    // Expiration date validation (no past dates)
+    if (expiresAt) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const expiresAtStartOfDay = new Date(expiresAt);
+      expiresAtStartOfDay.setHours(0, 0, 0, 0);
+      if (expiresAtStartOfDay < now) return false;
+    }
+
+    // Scope validation
+    if (applicationScope === 'specific_groups' && selectedGroupIds.length === 0) return false;
+    if (applicationScope === 'specific_tiers' && selectedTierIds.length === 0) return false;
+
+    return true;
+  })();
 
   return (
     <FmCommonModal
@@ -232,6 +347,9 @@ export const PromoCodeFormModal = ({
             placeholder='SUMMER2025'
             maxLength={20}
           />
+          {validationErrors.code && (
+            <p className='text-xs text-fm-danger mt-1'>{validationErrors.code}</p>
+          )}
         </div>
 
         {/* Discount Type Selector */}
@@ -280,14 +398,18 @@ export const PromoCodeFormModal = ({
             onChange={e => setDiscountValue(e.target.value)}
             placeholder={discountType === 'percentage' ? '10' : '5.00'}
             min={0}
-            max={discountType === 'percentage' ? 100 : undefined}
+            max={discountType === 'percentage' ? 100 : 10_000}
             step={discountType === 'percentage' ? 1 : 0.01}
           />
-          <p className='text-xs text-muted-foreground'>
-            {discountType === 'percentage'
-              ? t('promoCodes.percentageHint')
-              : t('promoCodes.flatHint')}
-          </p>
+          {validationErrors.discountValue ? (
+            <p className='text-xs text-fm-danger mt-1'>{validationErrors.discountValue}</p>
+          ) : (
+            <p className='text-xs text-muted-foreground'>
+              {discountType === 'percentage'
+                ? t('promoCodes.percentageHint')
+                : t('promoCodes.flatHint')}
+            </p>
+          )}
         </div>
 
         {/* Application Scope Selector */}
@@ -347,10 +469,8 @@ export const PromoCodeFormModal = ({
                 </label>
               ))}
             </div>
-            {selectedGroupIds.length === 0 && (
-              <p className='text-xs text-fm-danger'>
-                {t('promoCodes.selectAtLeastOneGroup')}
-              </p>
+            {validationErrors.groups && (
+              <p className='text-xs text-fm-danger mt-1'>{validationErrors.groups}</p>
             )}
           </div>
         )}
@@ -380,10 +500,8 @@ export const PromoCodeFormModal = ({
                 </label>
               ))}
             </div>
-            {selectedTierIds.length === 0 && (
-              <p className='text-xs text-fm-danger'>
-                {t('promoCodes.selectAtLeastOneTier')}
-              </p>
+            {validationErrors.tiers && (
+              <p className='text-xs text-fm-danger mt-1'>{validationErrors.tiers}</p>
             )}
           </div>
         )}
@@ -432,9 +550,13 @@ export const PromoCodeFormModal = ({
             onChange={setExpiresAt}
             placeholder={t('promoCodes.noExpiration')}
           />
-          <p className='text-xs text-muted-foreground'>
-            {t('promoCodes.expirationHint')}
-          </p>
+          {validationErrors.expiresAt ? (
+            <p className='text-xs text-fm-danger mt-1'>{validationErrors.expiresAt}</p>
+          ) : (
+            <p className='text-xs text-muted-foreground'>
+              {t('promoCodes.expirationHint')}
+            </p>
+          )}
         </div>
 
         {/* Actions */}

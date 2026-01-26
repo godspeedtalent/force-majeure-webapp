@@ -241,6 +241,7 @@ export const EventCheckoutWizard = ({
           eventName={displayTitle}
           eventDate={eventDateLabel}
           summary={orderSummary}
+          maxTicketsPerOrder={event.maxTicketsPerOrder}
           onBack={() => setStep('selection')}
           onComplete={handleCheckoutComplete}
           showSecureCheckoutHeader={false}

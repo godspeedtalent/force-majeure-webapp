@@ -56,6 +56,17 @@
     "expired": "Este código promocional ha expirado",
     "alreadyUsed": "Este código promocional ya ha sido usado"
   },
+  "promoCodeRequired": "Se requiere código promocional",
+  "promoCodeAlphanumeric": "El código promocional solo puede contener letras y números",
+  "discountRequired": "Se requiere valor de descuento",
+  "discountPositive": "El descuento debe ser mayor que 0",
+  "percentageMin": "El descuento porcentual debe ser al menos 1%",
+  "percentageMax": "El descuento porcentual no puede exceder el 100%",
+  "flatDiscountMin": "El descuento fijo debe ser al menos ${{min}}",
+  "flatDiscountMax": "El descuento fijo no puede exceder ${{max}}",
+  "expirationPast": "La fecha de vencimiento no puede estar en el pasado",
+  "selectAtLeastOneGroup": "Por favor selecciona al menos un grupo de entradas",
+  "selectAtLeastOneTier": "Por favor selecciona al menos un nivel de entradas",
   "terms": {
     "required": "Debes aceptar los términos y condiciones"
   },

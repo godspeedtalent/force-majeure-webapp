@@ -19,6 +19,8 @@ import {
   Info,
   Inbox,
   AlertTriangle,
+  Activity,
+  Music,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +52,9 @@ import { MockRoleTabContent } from './tabs/MockRoleTab';
 import { PageInfoTabContent, PageInfoTabFooter } from './tabs/PageInfoTab';
 import { AdminMessagesTabContent } from './tabs/AdminMessagesTab';
 import { ErrorLogTabContent, ErrorLogTabFooter } from './tabs/ErrorLogTab';
+import { DiagnosticsTabContent, DiagnosticsTabFooter } from './tabs/DiagnosticsTab';
+import { ScreeningReviewTabContent } from './tabs/ScreeningReviewTab';
+import { useReviewTimer } from '@/features/artist-screening/hooks';
 
 export interface ToolbarTab {
   id: string;
@@ -108,6 +113,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
   const { hasAnyRole } = useUserPermissions();
   const { getTotalItems } = useShoppingCart();
   const navigate = useNavigate();
+
+  // Screening review timer state for badge
+  const { isTimerActive, completedTimers } = useReviewTimer();
+  const pendingScreeningReviewCount = completedTimers.length + (isTimerActive ? 1 : 0);
 
   const startYRef = useRef<number>(0);
   const startXRef = useRef<number>(0);
@@ -235,6 +244,19 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         resizable: true,
         maxWidth: Math.floor(window.innerWidth * 0.4), // 40vw
       },
+      {
+        id: 'screening-review',
+        label: t('toolbar.screeningReview'),
+        icon: Music,
+        content: <ScreeningReviewTabContent onNavigate={handleNavigate} />,
+        title: t('toolbar.screeningReviewTitle'),
+        visible: canAccessStaffTools,
+        group: 'staff',
+        groupOrder: 2.5, // Staff group
+        alignment: 'bottom',
+        groupLabel: t('toolbar.groups.staff'),
+        badge: pendingScreeningReviewCount > 0 ? pendingScreeningReviewCount : undefined,
+      },
       // Developer Tools group - inspection tools (admin/developer only)
       {
         id: 'page-info',
@@ -261,7 +283,22 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         alignment: 'bottom',
         groupLabel: t('toolbar.groups.developer'),
       },
-      // Data & Config group - data management and configuration tools (admin/developer only)
+      {
+        id: 'diagnostics',
+        label: t('toolbar.diagnostics'),
+        icon: Activity,
+        content: <DiagnosticsTabContent />,
+        footer: <DiagnosticsTabFooter />,
+        title: t('toolbar.diagnosticsTitle'),
+        visible: isDeveloperOrAdmin,
+        group: 'developer',
+        groupOrder: 3,
+        alignment: 'bottom',
+        groupLabel: t('toolbar.groups.developer'),
+        resizable: true,
+        maxWidth: Math.floor(window.innerWidth * 0.5),
+      },
+      // Data & Config tools (merged into developer group)
       {
         id: 'database',
         label: t('toolbar.database'),
@@ -270,10 +307,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         footer: <DatabaseTabFooter onNavigate={handleNavigate} />,
         title: t('toolbar.databaseManager'),
         visible: isDeveloperOrAdmin,
-        group: 'dataConfig',
-        groupOrder: 4,
+        group: 'developer',
+        groupOrder: 3,
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.dataConfig'),
+        groupLabel: t('toolbar.groups.developer'),
         resizable: true,
       },
       {
@@ -283,10 +320,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         content: <FeatureTogglesTabContent />,
         title: t('toolbar.featureToggles'),
         visible: isDeveloperOrAdmin,
-        group: 'dataConfig',
-        groupOrder: 4,
+        group: 'developer',
+        groupOrder: 3,
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.dataConfig'),
+        groupLabel: t('toolbar.groups.developer'),
       },
       {
         id: 'error-logs',
@@ -296,10 +333,10 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         footer: <ErrorLogTabFooter />,
         title: t('toolbar.errorLogsTitle'),
         visible: isDeveloperOrAdmin,
-        group: 'dataConfig',
-        groupOrder: 4,
+        group: 'developer',
+        groupOrder: 3,
         alignment: 'bottom',
-        groupLabel: t('toolbar.groups.dataConfig'),
+        groupLabel: t('toolbar.groups.developer'),
       },
       {
         id: 'admin-messages',
@@ -315,7 +352,7 @@ export const FmToolbar = ({ className, anchorOffset = 96 }: FmToolbarProps) => {
         badge: pendingRequestsCount,
       },
     ],
-    [isDeveloperOrAdmin, isAdmin, canAccessStaffTools, user, profile, hasOrganizationAccess, navigate, t, pendingRequestsCount, hasCartItems]
+    [isDeveloperOrAdmin, isAdmin, canAccessStaffTools, user, profile, hasOrganizationAccess, navigate, t, pendingRequestsCount, hasCartItems, pendingScreeningReviewCount, handleNavigate]
   );
 
   const visibleTabs = useMemo(() => {

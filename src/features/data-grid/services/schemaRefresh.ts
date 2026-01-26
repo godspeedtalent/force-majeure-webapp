@@ -28,7 +28,7 @@ export async function refreshTableSchema(
   try {
     logger.info(`Refreshing schema for table: ${tableName}`);
 
-    const { error } = await (supabase as any).rpc('refresh_table_metadata', {
+    const { error } = await supabase.rpc('refresh_table_metadata', {
       p_table_name: tableName,
     });
 
@@ -53,7 +53,7 @@ export async function refreshTableSchema(
       tableName,
       timestamp: new Date().toISOString(),
     };
-  } catch (error) {
+  } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown error';
     logger.error('Exception refreshing table', {
@@ -78,7 +78,7 @@ export async function refreshAllTableSchemas(): Promise<RefreshResult> {
   try {
     logger.info('Refreshing schema for all tables');
 
-    const { data, error } = await (supabase as any).rpc('refresh_all_table_metadata');
+    const { data, error } = await supabase.rpc('refresh_all_table_metadata');
 
     if (error) {
       logger.error('Failed to refresh all tables', {
@@ -105,7 +105,7 @@ export async function refreshAllTableSchemas(): Promise<RefreshResult> {
       tablesRefreshed: result.tables_refreshed,
       timestamp: result.timestamp,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown error';
     logger.error('Exception refreshing all tables', {
@@ -135,7 +135,7 @@ export async function getAvailableTables(): Promise<{
   error?: string;
 }> {
   try {
-    const { data, error } = await (supabase as any).rpc('get_table_list');
+    const { data, error } = await supabase.rpc('get_table_list');
 
     if (error) {
       logger.error('Failed to get table list', {
@@ -157,7 +157,7 @@ export async function getAvailableTables(): Promise<{
         table_size: string;
       }>,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown error';
     logger.error('Exception getting table list', {
@@ -178,7 +178,7 @@ export async function getAvailableTables(): Promise<{
  */
 export async function hasTableMetadata(tableName: string): Promise<boolean> {
   try {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('table_metadata')
       .select('table_name')
       .eq('table_name', tableName)
@@ -198,7 +198,7 @@ export async function hasTableMetadata(tableName: string): Promise<boolean> {
     }
 
     return Boolean(data);
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Exception checking metadata', {
       error: error instanceof Error ? error.message : 'Unknown error',
       source: 'hasTableMetadata',
@@ -220,7 +220,7 @@ export async function getMissingMetadataTables(): Promise<string[]> {
     }
 
     // Get tables with metadata
-    const { data: cachedTables, error } = await (supabase as any)
+    const { data: cachedTables, error } = await supabase
       .from('table_metadata')
       .select('table_name');
 
@@ -233,7 +233,7 @@ export async function getMissingMetadataTables(): Promise<string[]> {
       return [];
     }
 
-    const cachedSet = new Set(cachedTables.map((t: any) => t.table_name));
+    const cachedSet = new Set((cachedTables || []).map((t) => t.table_name));
 
     // Find tables without metadata
     const missing = availableTablesResult.tables
@@ -241,7 +241,7 @@ export async function getMissingMetadataTables(): Promise<string[]> {
       .map(t => t.table_name);
 
     return missing;
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Exception getting missing metadata tables', {
       error: error instanceof Error ? error.message : 'Unknown error',
       source: 'getMissingMetadataTables',
@@ -291,7 +291,7 @@ export async function refreshMissingMetadata(): Promise<RefreshResult> {
           ? `Failed to refresh ${failedTables.length} tables`
           : undefined,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : 'Unknown error';
     logger.error('Exception refreshing missing metadata', {
@@ -320,7 +320,7 @@ export async function getMetadataCacheStatus(): Promise<{
   try {
     const [availableResult, cachedResult, missingTables] = await Promise.all([
       getAvailableTables(),
-      (supabase as any).from('table_metadata').select('table_name, updated_at'),
+      supabase.from('table_metadata').select('table_name, updated_at'),
       getMissingMetadataTables(),
     ]);
 
@@ -331,8 +331,8 @@ export async function getMetadataCacheStatus(): Promise<{
     let lastUpdated: string | undefined;
     if (cachedResult.data && cachedResult.data.length > 0) {
       const timestamps = cachedResult.data
-        .map((t: any) => new Date(t.updated_at).getTime())
-        .sort((a: number, b: number) => b - a);
+        .map((t) => new Date(t.updated_at || 0).getTime())
+        .sort((a, b) => b - a);
       lastUpdated = new Date(timestamps[0]).toISOString();
     }
 
@@ -342,10 +342,10 @@ export async function getMetadataCacheStatus(): Promise<{
       missingTables: missingTables.length,
       lastUpdated,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Exception getting cache status', {
       error: error instanceof Error ? error.message : 'Unknown error',
-      source: 'getRefreshMissingMetadata',
+      source: 'getMetadataCacheStatus',
       details: {}
     });
     return {

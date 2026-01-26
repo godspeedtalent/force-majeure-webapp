@@ -261,11 +261,26 @@ export interface SubmissionStats {
  */
 export interface ReviewTimerState {
   submissionId: string;
-  submissionTitle: string; // For display in widget
+  submissionTitle: string; // Recording name for display in widget
+  artistName: string; // Artist name for display
+  coverArtUrl: string | null; // Recording cover art URL
   recordingUrl: string; // For relaunching the recording
   startTime: number; // Unix timestamp
   duration: number; // Total duration in seconds (1200 = 20 minutes)
   isActive: boolean;
+}
+
+/**
+ * Completed timer entry with timestamp for staleness tracking
+ * Stored in localStorage, allows review within 3 days of completion
+ */
+export interface CompletedTimerEntry {
+  submissionId: string;
+  submissionTitle: string; // Recording name (for title display)
+  artistName: string; // Artist name (for subtitle display)
+  coverArtUrl: string | null; // Recording cover art URL
+  recordingUrl: string;
+  completedAt: number; // Unix timestamp when timer finished
 }
 
 // ============================================================================

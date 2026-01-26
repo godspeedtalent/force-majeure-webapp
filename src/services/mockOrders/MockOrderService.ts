@@ -250,7 +250,7 @@ export class MockOrderService extends TestDataService {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       result.errors.push(errorMessage);
       result.executionTimeMs = Date.now() - startTime;
@@ -420,8 +420,7 @@ export class MockOrderService extends TestDataService {
           const guestListVisible = this.randomBoolean(0.8);
 
           // Use test_profiles table instead of profiles (no FK to auth.users)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: profile, error } = await (supabase as any)
+          const { data: profile, error } = await supabase
             .from('test_profiles')
             .insert({
               email,
@@ -598,7 +597,7 @@ export class MockOrderService extends TestDataService {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       result.errors.push(errorMessage);
       result.executionTimeMs = Date.now() - startTime;
@@ -628,9 +627,7 @@ export class MockOrderService extends TestDataService {
   async deleteMockOrdersByEvent(eventId: string): Promise<MockOrderDeletionResult> {
     try {
       // Use the database function for atomic deletion
-      // Type assertion needed until database types are regenerated
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)('delete_mock_orders_by_event', {
+      const { data, error } = await supabase.rpc('delete_mock_orders_by_event', {
         p_event_id: eventId,
       });
 
@@ -676,7 +673,7 @@ export class MockOrderService extends TestDataService {
         deletedTestOrderItems: deletionResult.deleted_test_order_items ?? 0,
         deletedTestTickets: deletionResult.deleted_test_tickets ?? 0,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
       logger.error('Error deleting mock orders', {
@@ -735,8 +732,7 @@ export class MockOrderService extends TestDataService {
     }
 
     // Query test_orders table (dedicated test data table)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: orderCounts } = await (supabase as any)
+    const { data: orderCounts } = await supabase
       .from('test_orders')
       .select('event_id')
       .in('event_id', eventIds);
@@ -779,8 +775,7 @@ export class MockOrderService extends TestDataService {
     }
 
     // Get mock order count from test_orders table
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { count } = await (supabase as any)
+    const { count } = await supabase
       .from('test_orders')
       .select('*', { count: 'exact', head: true })
       .eq('event_id', eventId);
@@ -940,8 +935,7 @@ export class MockOrderService extends TestDataService {
 
         // Create test order in test_orders table (not production orders)
         // Uses test_profile_id instead of user_id to avoid auth.users FK constraint
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: order, error: orderError } = await (supabase as any)
+        const { data: order, error: orderError } = await supabase
           .from('test_orders')
           .insert({
             event_id: config.eventId,
@@ -988,8 +982,7 @@ export class MockOrderService extends TestDataService {
           });
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: createdItems, error: itemsError } = await (supabase as any)
+        const { data: createdItems, error: itemsError } = await supabase
           .from('test_order_items')
           .insert(orderItems)
           .select('id');
@@ -1015,8 +1008,7 @@ export class MockOrderService extends TestDataService {
           has_protection: orderData.hasProtection,
         }));
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: createdTickets, error: ticketsError } = await (supabase as any)
+        const { data: createdTickets, error: ticketsError } = await supabase
           .from('test_tickets')
           .insert(tickets)
           .select('id');
@@ -1027,7 +1019,7 @@ export class MockOrderService extends TestDataService {
         }
 
         result.ticketsCreated += createdTickets?.length || 0;
-      } catch (error) {
+      } catch (error: unknown) {
         result.errors.push(error instanceof Error ? error.message : 'Unknown error');
       }
     }
@@ -1053,8 +1045,7 @@ export class MockOrderService extends TestDataService {
 
       // Create a test profile in the dedicated test_profiles table
       // This table has no FK constraint to auth.users
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: profile, error } = await (supabase as any)
+      const { data: profile, error } = await supabase
         .from('test_profiles')
         .insert({
           email,
@@ -1119,8 +1110,7 @@ export class MockOrderService extends TestDataService {
       }));
 
       // Use test_event_rsvps table instead of event_rsvps
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('test_event_rsvps')
         .insert(rsvps)
         .select('id');
@@ -1136,7 +1126,7 @@ export class MockOrderService extends TestDataService {
       });
 
       return { created: data?.length ?? 0 };
-    } catch (error) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Failed to generate mock RSVPs', {
         error: message,
@@ -1169,8 +1159,7 @@ export class MockOrderService extends TestDataService {
       }));
 
       // Use test_event_interests table instead of user_event_interests
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('test_event_interests')
         .insert(interests)
         .select('id');
@@ -1186,7 +1175,7 @@ export class MockOrderService extends TestDataService {
       });
 
       return { created: data?.length ?? 0 };
-    } catch (error) {
+    } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Failed to generate mock interests', {
         error: message,
@@ -1294,7 +1283,7 @@ export class MockOrderService extends TestDataService {
       });
 
       return (data || []) as TicketingFee[];
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error('Error fetching ticketing fees', {
         error: error instanceof Error ? error.message : 'Unknown',
         source: 'MockOrderService.fetchTicketingFees',

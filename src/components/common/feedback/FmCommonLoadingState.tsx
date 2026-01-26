@@ -1,7 +1,7 @@
 /**
  * FmCommonLoadingState
  *
- * Standardized loading state component with spinner and optional message.
+ * Standardized loading state component with spinner.
  * Can be centered in container or inline.
  */
 
@@ -9,8 +9,6 @@ import { cn } from '@/shared';
 import { FmLoadingIndicator } from '@/components/common/feedback/FmLoadingIndicator';
 
 interface FmCommonLoadingStateProps {
-  /** Loading message */
-  message?: string;
   /** Spinner size */
   size?: 'sm' | 'md' | 'lg';
   /** Show progress bar */
@@ -28,7 +26,6 @@ interface FmCommonLoadingStateProps {
 }
 
 export const FmCommonLoadingState = ({
-  message,
   size = 'md',
   showProgress = true,
   progressSize,
@@ -39,7 +36,6 @@ export const FmCommonLoadingState = ({
 }: FmCommonLoadingStateProps) => {
   const content = (
     <FmLoadingIndicator
-      message={message}
       size={size}
       showProgress={showProgress}
       progressSize={progressSize}

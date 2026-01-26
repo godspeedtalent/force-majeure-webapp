@@ -440,6 +440,14 @@
       "funnel": "Embudo de conversión",
       "performance": "Rendimiento",
       "sessions": "Sesiones"
+    },
+    "exportHealth": {
+      "button": "Exportar informe de salud",
+      "loading": "Generando...",
+      "success": "Informe de salud copiado al portapapeles",
+      "error": "Error al generar el informe",
+      "copied": "¡Copiado!",
+      "copyFailed": "No se pudo copiar automáticamente. Informe generado correctamente."
     }
   },
   "time": {
@@ -485,6 +493,8 @@
     "adminMessagesTitle": "Bandeja de Admin",
     "errorLogs": "Registro de Errores",
     "errorLogsTitle": "Monitoreo de Errores",
+    "diagnostics": "Diagnósticos",
+    "diagnosticsTitle": "Diagnósticos del Sistema",
     "mockData": "Datos de Prueba",
     "mockDataTitle": "Generador de Órdenes de Prueba",
     "collapseGroup": "Contraer grupo",
@@ -494,6 +504,8 @@
     "showTab": "Mostrar",
     "showAllTabs": "Mostrar todas las pestañas ocultas",
     "hiddenTabs": "Pestañas ocultas",
+    "screeningReview": "Reseña DJ",
+    "screeningReviewTitle": "Temporizador de Reseña",
     "groups": {
       "organization": "Organización",
       "staff": "Personal FM",
@@ -503,6 +515,59 @@
       "dataConfig": "Datos y Config",
       "admin": "Admin"
     }
+  },
+  "screeningToolbar": {
+    "noActiveTimers": "Sin temporizadores de reseña activos",
+    "startListening": "Inicia un temporizador desde el feed para revisar sets de DJ.",
+    "viewAllScreenings": "Ver Todas las Evaluaciones",
+    "nowPlaying": "Reproduciendo",
+    "readyToReview": "¡Listo!",
+    "cancelTimer": "Cancelar Temporizador",
+    "openRecording": "Abrir Grabación",
+    "goToReview": "Ir a Reseña",
+    "pendingReviews": "Reseñas Pendientes",
+    "reviewNow": "Reseñar",
+    "dismiss": "Descartar",
+    "delete": "Eliminar",
+    "goToSubmission": "Ir a la Presentación",
+    "submitReview": "Enviar Reseña",
+    "reviewSubmitted": "Reseña enviada exitosamente",
+    "reviewFailed": "Error al enviar la reseña",
+    "internalNotes": "Notas Internas",
+    "notesDescription": "Solo otros revisores pueden ver estas notas.",
+    "notesPlaceholder": "Comparte lo que destacó, puntos negativos o contexto para recordar...",
+    "totalScore": "Puntuación Total",
+    "submitting": "Enviando..."
+  },
+  "diagnostics": {
+    "status": {
+      "healthy": "Saludable",
+      "warning": "Advertencias Detectadas",
+      "error": "Errores Detectados",
+      "incomplete": "Inicialización Incompleta"
+    },
+    "sections": {
+      "timeline": "Línea de Tiempo de Inicialización",
+      "metrics": "Métricas Clave",
+      "issues": "Problemas Activos"
+    },
+    "metrics": {
+      "imports": "Importaciones",
+      "authSession": "Sesión Auth",
+      "i18nInit": "Init i18n",
+      "authBootstrap": "Bootstrap Auth",
+      "totalInit": "Tiempo Total Init"
+    },
+    "actions": {
+      "copyReport": "Copiar Reporte",
+      "refresh": "Actualizar",
+      "clear": "Limpiar"
+    },
+    "copied": "¡Copiado!",
+    "noIssues": "Sin problemas detectados",
+    "errors": "error(es)",
+    "warnings": "advertencia(s)",
+    "stuckOperations": "Operaciones Atascadas"
   },
   "adminMessages": {
     "loadError": "Error al cargar mensajes",
@@ -2980,6 +3045,13 @@
     "tierDeleted": "Nivel eliminado exitosamente",
     "tierDeleteFailed": "Error al eliminar nivel: {{error}}",
     "tierToggleFailed": "Error al cambiar estado del nivel: {{error}}",
+    "maxTicketsPerOrder": "Máximo de Entradas por Pedido",
+    "maxTicketsPerOrderHint": "Número máximo de entradas que se pueden comprar en un solo pedido (predeterminado: 100)",
+    "maxTicketsPerOrderDescription": "Controla cuántas entradas se pueden comprar en una sola transacción para evitar compras masivas y garantizar una distribución justa.",
+    "maxTicketsPerOrderLabel": "Cantidad Máxima",
+    "maxTicketsPerOrderRange": "Debe estar entre 1 y 10,000 entradas",
+    "rsvpsAvailable": "RSVPs Disponibles",
+    "rsvpsAvailableDescription": "Permitir que los usuarios confirmen asistencia a este evento",
     "rsvpSettings": "Configuración de RSVP",
     "rsvpSettingsDescription": "Configurar la disponibilidad de RSVP para este evento",
     "rsvpsEnabled": "RSVPs Habilitados",

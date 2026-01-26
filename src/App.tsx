@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { initDiagnostics, diagInfo } from '@/shared/services/initDiagnostics';
 
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
@@ -126,8 +127,10 @@ const GlobalSearchWrapper = () => {
 };
 
 const AppRoutes = () => {
+  diagInfo('routes.rendering');
   const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
   const location = useLocation();
+  diagInfo('routes.featureFlags', { loading: isLoading, path: location.pathname });
   const isFlaggedRoute =
     location.pathname.startsWith('/merch') ||
     location.pathname.startsWith('/sonic-gauntlet');
@@ -135,6 +138,7 @@ const AppRoutes = () => {
   // Only block on feature flags when the current route depends on them.
   // This avoids a global startup stall if the flags request hangs.
   if (isLoading && isFlaggedRoute) {
+    diagInfo('routes.waitingForFlags', { path: location.pathname });
     return (
       <div className='min-h-screen flex items-center justify-center bg-background'>
         <FmGoldenGridLoader size='lg' />
@@ -631,6 +635,21 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  diagInfo('app.rendering');
+
+  // Start health monitor after initial load
+  useEffect(() => {
+    // Give init 5 seconds to complete, then start monitoring
+    const timer = setTimeout(() => {
+      initDiagnostics.startHealthMonitor(60000); // Check every 60 seconds
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      initDiagnostics.stopHealthMonitor();
+    };
+  }, []);
+
   // Force dark mode by adding class to html element
   if (typeof document !== 'undefined') {
     document.documentElement.classList.add('dark');

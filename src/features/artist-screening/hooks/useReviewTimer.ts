@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { logger } from '@/shared';
-import type { ReviewTimerState } from '../types';
+import type { ReviewTimerState, CompletedTimerEntry } from '../types';
 
 /**
  * Artist Screening - Review Timer Hook
@@ -43,6 +43,7 @@ import type { ReviewTimerState } from '../types';
 const STORAGE_KEY = 'fm_review_timer';
 const TIMER_DURATION_SECONDS = 1200; // 20 minutes
 const TICK_INTERVAL_MS = 1000; // Update every second
+const STALE_THRESHOLD_MS = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
 
 // ============================================================================
 // localStorage Utilities
@@ -54,6 +55,8 @@ const TICK_INTERVAL_MS = 1000; // Update every second
 export interface PendingTimerRequest {
   submissionId: string;
   submissionTitle: string;
+  artistName: string;
+  coverArtUrl: string | null;
   recordingUrl: string;
 }
 
@@ -80,12 +83,18 @@ function loadTimerState(): ReviewTimerState | null {
       return null;
     }
 
-    // Migrate old timer states that don't have title/url
+    // Migrate old timer states that don't have title/url/artist/cover
     if (!state.submissionTitle) {
       state.submissionTitle = 'Unknown';
     }
     if (!state.recordingUrl) {
       state.recordingUrl = '';
+    }
+    if (!state.artistName) {
+      state.artistName = 'Unknown Artist';
+    }
+    if (state.coverArtUrl === undefined) {
+      state.coverArtUrl = null;
     }
 
     return state;
@@ -127,31 +136,88 @@ function clearTimerState(): void {
 }
 
 // ============================================================================
-// Completed Timers Tracking
+// Completed Timers Tracking (with staleness)
 // ============================================================================
 
 const COMPLETED_KEY = 'fm_completed_review_timers';
 
 /**
- * Load completed submission IDs from localStorage
+ * Check if a completed timer entry is stale (older than 3 days)
  */
-function loadCompletedTimers(): Set<string> {
+function isEntryStale(entry: CompletedTimerEntry): boolean {
+  return Date.now() - entry.completedAt > STALE_THRESHOLD_MS;
+}
+
+/**
+ * Load completed timers from localStorage, with migration from old format
+ * and automatic pruning of stale entries
+ */
+function loadCompletedTimers(): CompletedTimerEntry[] {
   try {
     const stored = localStorage.getItem(COMPLETED_KEY);
-    if (!stored) return new Set();
-    const array = JSON.parse(stored) as string[];
-    return new Set(array);
+    if (!stored) return [];
+
+    const parsed = JSON.parse(stored);
+
+    // Check if old format (array of strings) and migrate
+    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'string') {
+      logger.info('Migrating completed timers from old format', {
+        source: 'useReviewTimer.loadCompletedTimers',
+        count: parsed.length,
+      });
+      // Migrate: convert string IDs to new format with current timestamp
+      // These migrated entries will expire in 3 days from migration
+      const migrated: CompletedTimerEntry[] = (parsed as string[]).map(submissionId => ({
+        submissionId,
+        submissionTitle: 'Migrated submission',
+        artistName: 'Unknown Artist',
+        coverArtUrl: null,
+        recordingUrl: '',
+        completedAt: Date.now(),
+      }));
+      saveCompletedTimersArray(migrated);
+      return migrated;
+    }
+
+    // New format: array of CompletedTimerEntry
+    // Migrate entries missing new fields (artistName, coverArtUrl)
+    let needsSave = false;
+    const entries = (parsed as CompletedTimerEntry[]).map(entry => {
+      if (!entry.artistName || entry.coverArtUrl === undefined) {
+        needsSave = true;
+        return {
+          ...entry,
+          artistName: entry.artistName || 'Unknown Artist',
+          coverArtUrl: entry.coverArtUrl ?? null,
+        };
+      }
+      return entry;
+    });
+
+    // Prune stale entries
+    const validEntries = entries.filter(entry => !isEntryStale(entry));
+    if (validEntries.length !== entries.length || needsSave) {
+      if (validEntries.length !== entries.length) {
+        logger.info('Pruned stale completed timers', {
+          source: 'useReviewTimer.loadCompletedTimers',
+          removed: entries.length - validEntries.length,
+        });
+      }
+      saveCompletedTimersArray(validEntries);
+    }
+
+    return validEntries;
   } catch {
-    return new Set();
+    return [];
   }
 }
 
 /**
- * Save completed submission IDs to localStorage
+ * Save completed timers array to localStorage
  */
-function saveCompletedTimers(completed: Set<string>): void {
+function saveCompletedTimersArray(entries: CompletedTimerEntry[]): void {
   try {
-    localStorage.setItem(COMPLETED_KEY, JSON.stringify([...completed]));
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(entries));
   } catch (error) {
     logger.error('Failed to save completed timers', {
       error: error instanceof Error ? error.message : 'Unknown',
@@ -161,20 +227,54 @@ function saveCompletedTimers(completed: Set<string>): void {
 }
 
 /**
- * Mark submission timer as completed
+ * Mark submission timer as completed with full details
  */
-function markTimerCompleted(submissionId: string): void {
-  const completed = loadCompletedTimers();
-  completed.add(submissionId);
-  saveCompletedTimers(completed);
+function markTimerCompletedWithDetails(
+  submissionId: string,
+  submissionTitle: string,
+  artistName: string,
+  coverArtUrl: string | null,
+  recordingUrl: string
+): void {
+  const entries = loadCompletedTimers();
+  // Remove existing entry for this submission if any
+  const filtered = entries.filter(e => e.submissionId !== submissionId);
+  filtered.push({
+    submissionId,
+    submissionTitle,
+    artistName,
+    coverArtUrl,
+    recordingUrl,
+    completedAt: Date.now(),
+  });
+  saveCompletedTimersArray(filtered);
 }
 
 /**
- * Check if submission timer is completed
+ * Remove a completed timer entry (after review submitted)
+ */
+function removeCompletedTimer(submissionId: string): void {
+  const entries = loadCompletedTimers();
+  const filtered = entries.filter(e => e.submissionId !== submissionId);
+  saveCompletedTimersArray(filtered);
+}
+
+/**
+ * Check if submission timer is completed (and not stale)
  */
 function isSubmissionTimerCompleted(submissionId: string): boolean {
-  const completed = loadCompletedTimers();
-  return completed.has(submissionId);
+  const entries = loadCompletedTimers();
+  return entries.some(e => e.submissionId === submissionId);
+}
+
+/**
+ * Check if a specific submission's completed timer is stale
+ */
+function isSubmissionTimerStale(submissionId: string): boolean {
+  const entries = loadCompletedTimers();
+  const entry = entries.find(e => e.submissionId === submissionId);
+  if (!entry) return true; // Not found = treat as stale
+  return isEntryStale(entry);
 }
 
 // ============================================================================
@@ -203,15 +303,22 @@ interface UseReviewTimerReturn {
   pendingRequest: PendingTimerRequest | null;
 
   /**
+   * List of completed timers that can still be reviewed (within 3-day window)
+   */
+  completedTimers: CompletedTimerEntry[];
+
+  /**
    * Request to start a new timer for a submission
    * If a timer is active, sets pendingRequest for confirmation
    * Otherwise starts immediately
    * @param submissionId - Submission ID
-   * @param submissionTitle - Title for display
+   * @param submissionTitle - Recording name for display
+   * @param artistName - Artist name for display
+   * @param coverArtUrl - Cover art URL (can be null)
    * @param recordingUrl - URL to open in new tab
    * @returns 'started' | 'pending' | 'completed' | 'failed'
    */
-  requestTimer: (submissionId: string, submissionTitle: string, recordingUrl: string) => 'started' | 'pending' | 'completed' | 'failed';
+  requestTimer: (submissionId: string, submissionTitle: string, artistName: string, coverArtUrl: string | null, recordingUrl: string) => 'started' | 'pending' | 'completed' | 'failed';
 
   /**
    * Confirm the pending timer switch
@@ -249,6 +356,19 @@ interface UseReviewTimerReturn {
   isTimerCompleted: (submissionId: string) => boolean;
 
   /**
+   * Check if a specific submission's completed timer is stale (older than 3 days)
+   * @param submissionId - Submission ID to check
+   * @returns True if timer is stale or doesn't exist
+   */
+  isTimerStale: (submissionId: string) => boolean;
+
+  /**
+   * Clear a completed timer entry (call after review is submitted)
+   * @param submissionId - Submission ID to clear
+   */
+  clearCompletedTimer: (submissionId: string) => void;
+
+  /**
    * Override the active timer (admin only)
    * Marks the timer as complete immediately without waiting for the full duration
    */
@@ -262,6 +382,14 @@ export function useReviewTimer(): UseReviewTimerReturn {
   );
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [pendingRequest, setPendingRequest] = useState<PendingTimerRequest | null>(null);
+  const [completedTimersVersion, setCompletedTimersVersion] = useState(0);
+
+  // Load completed timers (reactive to version changes for refresh after mutations)
+  const completedTimers = useMemo(() => {
+    // This dependency triggers reload when timers are added/removed
+    void completedTimersVersion;
+    return loadCompletedTimers();
+  }, [completedTimersVersion]);
 
   // Calculate remaining time based on start time and duration
   const calculateRemaining = useCallback((state: ReviewTimerState): number => {
@@ -272,7 +400,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
 
   // Internal function to actually start a timer
   const doStartTimer = useCallback(
-    (submissionId: string, submissionTitle: string, recordingUrl: string): boolean => {
+    (submissionId: string, submissionTitle: string, artistName: string, coverArtUrl: string | null, recordingUrl: string): boolean => {
       try {
         // Open recording in new tab
         window.open(recordingUrl, '_blank', 'noopener,noreferrer');
@@ -281,6 +409,8 @@ export function useReviewTimer(): UseReviewTimerReturn {
         const newState: ReviewTimerState = {
           submissionId,
           submissionTitle,
+          artistName,
+          coverArtUrl,
           recordingUrl,
           startTime: Date.now(),
           duration: TIMER_DURATION_SECONDS,
@@ -318,7 +448,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
 
   // Request to start a timer - handles confirmation flow
   const requestTimer = useCallback(
-    (submissionId: string, submissionTitle: string, recordingUrl: string): 'started' | 'pending' | 'completed' | 'failed' => {
+    (submissionId: string, submissionTitle: string, artistName: string, coverArtUrl: string | null, recordingUrl: string): 'started' | 'pending' | 'completed' | 'failed' => {
       // Check if already completed
       if (isSubmissionTimerCompleted(submissionId)) {
         toast.info('Timer already completed for this submission');
@@ -327,7 +457,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
 
       // If timer already active for a different submission, queue for confirmation
       if (timerState?.isActive && timerState.submissionId !== submissionId) {
-        setPendingRequest({ submissionId, submissionTitle, recordingUrl });
+        setPendingRequest({ submissionId, submissionTitle, artistName, coverArtUrl, recordingUrl });
         return 'pending';
       }
 
@@ -339,7 +469,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
       }
 
       // Start immediately
-      const success = doStartTimer(submissionId, submissionTitle, recordingUrl);
+      const success = doStartTimer(submissionId, submissionTitle, artistName, coverArtUrl, recordingUrl);
       return success ? 'started' : 'failed';
     },
     [timerState, doStartTimer]
@@ -355,7 +485,13 @@ export function useReviewTimer(): UseReviewTimerReturn {
     clearTimerState();
 
     // Start the pending timer
-    doStartTimer(pendingRequest.submissionId, pendingRequest.submissionTitle, pendingRequest.recordingUrl);
+    doStartTimer(
+      pendingRequest.submissionId,
+      pendingRequest.submissionTitle,
+      pendingRequest.artistName,
+      pendingRequest.coverArtUrl,
+      pendingRequest.recordingUrl
+    );
     setPendingRequest(null);
   }, [pendingRequest, doStartTimer]);
 
@@ -400,13 +536,22 @@ export function useReviewTimer(): UseReviewTimerReturn {
       source: 'useReviewTimer.completeTimer',
     });
 
-    // Mark as completed
-    markTimerCompleted(timerState.submissionId);
+    // Mark as completed with full details for toolbar display
+    markTimerCompletedWithDetails(
+      timerState.submissionId,
+      timerState.submissionTitle,
+      timerState.artistName,
+      timerState.coverArtUrl,
+      timerState.recordingUrl
+    );
 
     // Clear active timer
     setTimerState(null);
     setRemainingSeconds(0);
     clearTimerState();
+
+    // Trigger refresh of completed timers list
+    setCompletedTimersVersion(v => v + 1);
 
     toast.success('Timer completed', {
       description: 'You can now submit your review.',
@@ -416,6 +561,21 @@ export function useReviewTimer(): UseReviewTimerReturn {
   // Check if submission timer is completed
   const isTimerCompleted = useCallback((submissionId: string): boolean => {
     return isSubmissionTimerCompleted(submissionId);
+  }, []);
+
+  // Check if a submission's completed timer is stale
+  const isTimerStale = useCallback((submissionId: string): boolean => {
+    return isSubmissionTimerStale(submissionId);
+  }, []);
+
+  // Clear a completed timer entry (after review is submitted)
+  const clearCompletedTimer = useCallback((submissionId: string): void => {
+    removeCompletedTimer(submissionId);
+    setCompletedTimersVersion(v => v + 1);
+    logger.info('Completed timer cleared', {
+      submissionId,
+      source: 'useReviewTimer.clearCompletedTimer',
+    });
   }, []);
 
   // Override the active timer (admin only) - marks as complete immediately
@@ -428,13 +588,22 @@ export function useReviewTimer(): UseReviewTimerReturn {
       source: 'useReviewTimer.overrideTimer',
     });
 
-    // Mark as completed
-    markTimerCompleted(timerState.submissionId);
+    // Mark as completed with full details
+    markTimerCompletedWithDetails(
+      timerState.submissionId,
+      timerState.submissionTitle,
+      timerState.artistName,
+      timerState.coverArtUrl,
+      timerState.recordingUrl
+    );
 
     // Clear active timer
     setTimerState(null);
     setRemainingSeconds(0);
     clearTimerState();
+
+    // Trigger refresh of completed timers list
+    setCompletedTimersVersion(v => v + 1);
 
     toast.success('Timer overridden', {
       description: 'You can now submit your review.',
@@ -479,6 +648,10 @@ export function useReviewTimer(): UseReviewTimerReturn {
         const newState = loadTimerState();
         setTimerState(newState);
       }
+      if (e.key === COMPLETED_KEY) {
+        // Trigger refresh of completed timers list
+        setCompletedTimersVersion(v => v + 1);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -490,6 +663,7 @@ export function useReviewTimer(): UseReviewTimerReturn {
     remainingSeconds,
     isTimerActive: timerState?.isActive ?? false,
     pendingRequest,
+    completedTimers,
     requestTimer,
     confirmPendingTimer,
     cancelPendingRequest,
@@ -497,6 +671,8 @@ export function useReviewTimer(): UseReviewTimerReturn {
     completeTimer,
     relaunchRecording,
     isTimerCompleted,
+    isTimerStale,
+    clearCompletedTimer,
     overrideTimer,
   };
 }

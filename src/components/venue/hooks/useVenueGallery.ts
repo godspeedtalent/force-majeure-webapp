@@ -73,7 +73,7 @@ export function useVenueGallery({
   const { data: galleries = [], isLoading: galleriesLoading } = useQuery({
     queryKey: ['venue-galleries', venueId],
     queryFn: async (): Promise<MediaGallery[]> => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_galleries')
         .select('*')
         .eq('venue_id', venueId)
@@ -101,7 +101,7 @@ export function useVenueGallery({
     queryFn: async (): Promise<ResolvedMediaItem[]> => {
       if (!selectedGalleryId) return [];
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_items')
         .select('*')
         .eq('gallery_id', selectedGalleryId)
@@ -131,7 +131,7 @@ export function useVenueGallery({
 
       try {
         const slug = `venue-${venueId}-default`;
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
           .from('media_galleries')
           .insert({
             slug,
@@ -184,7 +184,7 @@ export function useVenueGallery({
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '')}`;
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_galleries')
         .insert({
           slug,
@@ -216,7 +216,7 @@ export function useVenueGallery({
     async (name: string) => {
       if (!selectedGallery) return;
 
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('media_galleries')
         .update({ name: name.trim() })
         .eq('id', selectedGallery.id);
@@ -238,7 +238,7 @@ export function useVenueGallery({
   // Delete gallery
   const deleteGallery = useCallback(
     async (galleryId: string) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('media_galleries')
         .delete()
         .eq('id', galleryId);
@@ -271,7 +271,7 @@ export function useVenueGallery({
 
       try {
         // Check if this gallery has any existing items (for auto-cover logic)
-        const { data: currentItems } = await (supabase as any)
+        const { data: currentItems } = await supabase
           .from('media_items')
           .select('id')
           .eq('gallery_id', selectedGalleryId);
@@ -313,7 +313,7 @@ export function useVenueGallery({
           if (uploadError) throw uploadError;
 
           // Get max display order
-          const { data: existingItems } = await (supabase as any)
+          const { data: existingItems } = await supabase
             .from('media_items')
             .select('display_order')
             .eq('gallery_id', selectedGalleryId)
@@ -321,11 +321,11 @@ export function useVenueGallery({
             .limit(1);
 
           const nextOrder =
-            existingItems && existingItems.length > 0 ? existingItems[0].display_order + 1 : 0;
+            existingItems && existingItems.length > 0 ? (existingItems[0].display_order ?? 0) + 1 : 0;
 
           // Create media item - first image in empty gallery becomes cover
           const shouldBeCover = isFirstUpload && isFirstFile;
-          const { error: itemError } = await (supabase as any)
+          const { error: itemError } = await supabase
             .from('media_items')
             .insert({
               gallery_id: selectedGalleryId,
@@ -365,7 +365,7 @@ export function useVenueGallery({
   // Update media item
   const updateMediaItem = useCallback(
     async (itemId: string, data: Partial<MediaItem>) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('media_items')
         .update(data)
         .eq('id', itemId);
@@ -394,7 +394,7 @@ export function useVenueGallery({
       const wasCover = itemToDelete?.is_cover;
 
       // Delete the item
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('media_items')
         .delete()
         .eq('id', itemId);
@@ -413,7 +413,7 @@ export function useVenueGallery({
         if (remainingItems.length > 0) {
           // Promote the first remaining item to cover
           const newCoverId = remainingItems[0].id;
-          await (supabase as any)
+          await supabase
             .from('media_items')
             .update({ is_cover: true })
             .eq('id', newCoverId);
@@ -432,7 +432,7 @@ export function useVenueGallery({
       if (!selectedGalleryId) return;
 
       // Unset all is_cover in this gallery
-      const { error: unsetError } = await (supabase as any)
+      const { error: unsetError } = await supabase
         .from('media_items')
         .update({ is_cover: false })
         .eq('gallery_id', selectedGalleryId);
@@ -446,7 +446,7 @@ export function useVenueGallery({
       }
 
       // Set this item as cover
-      const { error: setError } = await (supabase as any)
+      const { error: setError } = await supabase
         .from('media_items')
         .update({ is_cover: true })
         .eq('id', itemId);

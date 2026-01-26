@@ -122,6 +122,7 @@ export interface Event {
   hero_image?: string | null; // Hero image URL
   hero_image_focal_x?: number | null; // Hero image focal point X (0-100)
   hero_image_focal_y?: number | null; // Hero image focal point Y (0-100)
+  max_tickets_per_order?: number | null; // Maximum tickets per order (default: 100)
   created_at: string;
   updated_at: string;
   venue?: Venue;
@@ -151,6 +152,7 @@ export interface EventFormData {
   is_tba?: boolean;
   is_after_hours?: boolean;
   looking_for_undercard?: boolean;
+  max_tickets_per_order?: number; // Maximum tickets that can be purchased in one order (default: 100)
 }
 
 export interface TicketTierFormData {

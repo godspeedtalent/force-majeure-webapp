@@ -11,7 +11,7 @@ import {
 } from './artistService';
 
 // Mock Supabase client
-vi.mock('@/shared/api/supabase/client', () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn(),
     rpc: vi.fn(),
@@ -21,7 +21,16 @@ vi.mock('@/shared/api/supabase/client', () => ({
 // Mock logger
 vi.mock('@/shared/services/logger', () => ({
   logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
     error: vi.fn(),
+    createNamespace: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }),
   },
 }));
 
@@ -31,8 +40,8 @@ vi.mock('@/shared/utils/apiLogger', () => ({
   logApi: vi.fn(),
 }));
 
-import { supabase } from '@/shared';
-import { logger } from '@/shared';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/shared/services/logger';
 
 describe('artistService', () => {
   beforeEach(() => {

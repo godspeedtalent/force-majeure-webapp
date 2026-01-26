@@ -35,8 +35,8 @@ import { cn } from '@/shared';
 const ROUTE_TO_COMPONENT_MAP: Record<string, { page: string; layout: string; file: string }> = {
   '/': { page: 'Index', layout: 'Layout', file: 'src/pages/Index.tsx' },
   '/auth': { page: 'Auth', layout: 'Layout', file: 'src/pages/Auth.tsx' },
-  '/profile': { page: 'Profile', layout: 'Layout', file: 'src/pages/Profile.tsx' },
-  '/profile/edit': { page: 'ProfileEdit', layout: 'Layout', file: 'src/pages/ProfileEdit.tsx' },
+  '/profile': { page: 'ProfileRedirect', layout: 'Layout', file: 'src/pages/users/ProfileRedirects.tsx' },
+  '/profile/edit': { page: 'ProfileEditRedirect', layout: 'Layout', file: 'src/pages/users/ProfileRedirects.tsx' },
   '/orders': { page: 'Orders', layout: 'Layout', file: 'src/pages/Orders.tsx' },
   '/contact': { page: 'Contact', layout: 'Layout', file: 'src/pages/Contact.tsx' },
   '/merch': { page: 'Merch', layout: 'Layout', file: 'src/pages/Merch.tsx' },

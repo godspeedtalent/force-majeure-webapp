@@ -440,6 +440,14 @@
       "funnel": "Conversion funnel",
       "performance": "Performance",
       "sessions": "Sessions"
+    },
+    "exportHealth": {
+      "button": "Export health report",
+      "loading": "Generating...",
+      "success": "Health report copied to clipboard",
+      "error": "Failed to generate report",
+      "copied": "Copied!",
+      "copyFailed": "Could not copy automatically. Report generated successfully."
     }
   },
   "time": {
@@ -485,6 +493,8 @@
     "adminMessagesTitle": "Admin Inbox",
     "errorLogs": "Error Logs",
     "errorLogsTitle": "Error Monitoring",
+    "diagnostics": "Diagnostics",
+    "diagnosticsTitle": "System Diagnostics",
     "mockData": "Mock Data",
     "mockDataTitle": "Mock Order Generator",
     "collapseGroup": "Collapse group",
@@ -494,6 +504,8 @@
     "showTab": "Show",
     "showAllTabs": "Show all hidden tabs",
     "hiddenTabs": "Hidden tabs",
+    "screeningReview": "DJ Review",
+    "screeningReviewTitle": "Screening Review Timer",
     "groups": {
       "organization": "Organization",
       "staff": "FM Staff",
@@ -503,6 +515,59 @@
       "dataConfig": "Data & Config",
       "admin": "Admin"
     }
+  },
+  "screeningToolbar": {
+    "noActiveTimers": "No active review timers",
+    "startListening": "Start a timer from the screening feed to review DJ sets.",
+    "viewAllScreenings": "View All Screenings",
+    "nowPlaying": "Now Playing",
+    "readyToReview": "Ready!",
+    "cancelTimer": "Cancel Timer",
+    "openRecording": "Open Recording",
+    "goToReview": "Go to Review",
+    "pendingReviews": "Pending Reviews",
+    "reviewNow": "Review",
+    "dismiss": "Dismiss",
+    "delete": "Delete",
+    "goToSubmission": "Go to Submission",
+    "submitReview": "Submit Review",
+    "reviewSubmitted": "Review submitted successfully",
+    "reviewFailed": "Failed to submit review",
+    "internalNotes": "Internal Notes",
+    "notesDescription": "Only other reviewers can see these notes.",
+    "notesPlaceholder": "Share what stood out, deal-breakers, or context to remember...",
+    "totalScore": "Total Score",
+    "submitting": "Submitting..."
+  },
+  "diagnostics": {
+    "status": {
+      "healthy": "Healthy",
+      "warning": "Warnings Detected",
+      "error": "Errors Detected",
+      "incomplete": "Initialization Incomplete"
+    },
+    "sections": {
+      "timeline": "Initialization Timeline",
+      "metrics": "Key Metrics",
+      "issues": "Active Issues"
+    },
+    "metrics": {
+      "imports": "Imports",
+      "authSession": "Auth Session",
+      "i18nInit": "i18n Init",
+      "authBootstrap": "Auth Bootstrap",
+      "totalInit": "Total Init Time"
+    },
+    "actions": {
+      "copyReport": "Copy Report",
+      "refresh": "Refresh",
+      "clear": "Clear"
+    },
+    "copied": "Copied!",
+    "noIssues": "No issues detected",
+    "errors": "error(s)",
+    "warnings": "warning(s)",
+    "stuckOperations": "Stuck Operations"
   },
   "adminMessages": {
     "loadError": "Failed to load messages",
@@ -2981,6 +3046,13 @@
     "tierDeleted": "Tier deleted successfully",
     "tierDeleteFailed": "Failed to delete tier: {{error}}",
     "tierToggleFailed": "Failed to toggle tier: {{error}}",
+    "maxTicketsPerOrder": "Max Tickets Per Order",
+    "maxTicketsPerOrderHint": "Maximum number of tickets that can be purchased in a single order (default: 100)",
+    "maxTicketsPerOrderDescription": "Control how many tickets can be purchased in a single transaction to prevent bulk buying and ensure fair distribution.",
+    "maxTicketsPerOrderLabel": "Maximum Quantity",
+    "maxTicketsPerOrderRange": "Must be between 1 and 10,000 tickets",
+    "rsvpsAvailable": "RSVPs Available",
+    "rsvpsAvailableDescription": "Allow users to RSVP for this event",
     "rsvpSettings": "RSVP Settings",
     "rsvpSettingsDescription": "Configure RSVP availability for this event",
     "rsvpsEnabled": "RSVPs Enabled",

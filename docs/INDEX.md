@@ -18,7 +18,6 @@
 
 | Document | Description |
 |----------|-------------|
-| [ARCHITECTURE.md](./architecture/ARCHITECTURE.md) | System architecture overview and design decisions |
 | [ARCHITECTURE_QUICK_REFERENCE.md](./architecture/ARCHITECTURE_QUICK_REFERENCE.md) | Condensed architecture cheat sheet |
 | [DESIGN_SYSTEM.md](./architecture/DESIGN_SYSTEM.md) | Complete design system - colors, spacing, typography, components |
 | [HOOKS_PATTERNS.md](./architecture/HOOKS_PATTERNS.md) | React hooks patterns - data fetching, mutations, form hooks |
@@ -50,6 +49,9 @@
 |----------|-------------|
 | [PERMISSION_MANAGEMENT_GUIDE.md](./security/PERMISSION_MANAGEMENT_GUIDE.md) | Role-based access control system guide |
 | [ROLE_PERMISSION_QUICK_REFERENCE.md](./security/ROLE_PERMISSION_QUICK_REFERENCE.md) | Quick reference for roles and permissions |
+| [RLS_AUDIT_FINDINGS.md](./security/RLS_AUDIT_FINDINGS.md) | RLS security audit findings and action items |
+| [RLS_COMPLIANCE_CHECKLIST.md](./security/RLS_COMPLIANCE_CHECKLIST.md) | RLS policy creation checklist |
+| [RLS_ADMIN_BYPASS_PATTERN.md](./security/RLS_ADMIN_BYPASS_PATTERN.md) | Admin bypass pattern documentation |
 
 ---
 
@@ -58,7 +60,6 @@
 | Document | Description |
 |----------|-------------|
 | [ERROR_HANDLING_GUIDE.md](./error-handling/ERROR_HANDLING_GUIDE.md) | Error handling patterns and best practices |
-| [ERROR_HANDLING_README.md](./error-handling/ERROR_HANDLING_README.md) | Error handling README overview |
 | [examples/ERROR_HANDLER_MIGRATION.md](./error-handling/examples/ERROR_HANDLER_MIGRATION.md) | Migration examples for error handling |
 
 ---
@@ -70,6 +71,7 @@
 | [EDGE_FUNCTIONS.md](./backend/EDGE_FUNCTIONS.md) | Supabase Edge Functions API documentation |
 | [DATABASE_MIGRATION_STRATEGY.md](./backend/DATABASE_MIGRATION_STRATEGY.md) | Database migration approach and strategy |
 | [RLS_AND_GRANTS_GUIDE.md](./backend/RLS_AND_GRANTS_GUIDE.md) | **CRITICAL**: RLS policies AND GRANTs for table access |
+| [RLS_OPTIMIZATION_REPORT.md](./backend/RLS_OPTIMIZATION_REPORT.md) | RLS policy performance optimization (Jan 2026) |
 | [ENVIRONMENT_SYSTEM.md](./backend/ENVIRONMENT_SYSTEM.md) | Environment configuration system |
 | [EVENT_VIEWS_SETUP.md](./backend/EVENT_VIEWS_SETUP.md) | Event views database setup |
 | [IMAGE_UPLOAD_SETUP.md](./backend/IMAGE_UPLOAD_SETUP.md) | Image upload configuration guide |
@@ -111,7 +113,7 @@ Active refactoring plans and guides:
 
 ## Archive (`docs/archive/`)
 
-Completed work preserved for historical reference:
+Completed work and historical documents:
 
 | Document | Description |
 |----------|-------------|
@@ -122,6 +124,13 @@ Completed work preserved for historical reference:
 | [TICKETING_IMPLEMENTATION_SUMMARY.md](./archive/TICKETING_IMPLEMENTATION_SUMMARY.md) | Physical ticketing system (completed) |
 | [MIGRATION_COMPLETE.md](./archive/MIGRATION_COMPLETE.md) | Feature structure migration (completed Nov 2025) |
 | [MIGRATION-CONSOLIDATION.md](./archive/MIGRATION-CONSOLIDATION.md) | Database consolidation (completed Nov 2025) |
+| [ARCHITECTURE.md](./archive/ARCHITECTURE.md) | Legacy architecture doc (superseded by CLAUDE.md) |
+| [AUDIO_PLAYER_PLAN.md](./archive/AUDIO_PLAYER_PLAN.md) | Audio player feature plan (incomplete) |
+| [EDGE_FUNCTION_CONSOLIDATION_PLAN.md](./archive/EDGE_FUNCTION_CONSOLIDATION_PLAN.md) | Edge function consolidation working doc |
+| [RLS_TEST_SUITE.md](./archive/RLS_TEST_SUITE.md) | RLS test suite framework (not implemented) |
+| [DEPLOYMENT_CHECKLIST.md](./archive/DEPLOYMENT_CHECKLIST.md) | RLS optimization deployment checklist |
+| [adversarial-testing-summary.md](./archive/adversarial-testing-summary.md) | Adversarial testing report (Jan 2026) |
+| [business-logic-decisions-approved.md](./archive/business-logic-decisions-approved.md) | Business logic decisions (Jan 2026) |
 
 ---
 
@@ -132,14 +141,14 @@ docs/
 ├── INDEX.md                 # This file
 ├── AI_INSTRUCTIONS.md       # AI assistant standards
 ├── LOVABLE.md               # Lovable AI notes
-├── architecture/            # System design docs (5)
-├── backend/                 # Infrastructure docs (9)
-├── error-handling/          # Error handling docs (3)
+├── architecture/            # System design docs (4)
+├── backend/                 # Infrastructure docs (10)
+├── error-handling/          # Error handling docs (2)
 ├── features/                # Feature-specific docs (11)
 ├── refactoring/             # Active refactoring plans (5)
-├── security/                # Auth & permissions (2)
+├── security/                # Auth & permissions (5)
 ├── testing/                 # Testing docs (1)
-└── archive/                 # Completed/historical (7)
+└── archive/                 # Completed/historical (14)
 ```
 
 ---
@@ -150,8 +159,8 @@ docs/
 
 1. [README.md](../README.md)
 2. [CLAUDE.md](../CLAUDE.md)
-3. [architecture/ARCHITECTURE.md](./architecture/ARCHITECTURE.md)
-4. [architecture/DESIGN_SYSTEM.md](./architecture/DESIGN_SYSTEM.md)
+3. [architecture/DESIGN_SYSTEM.md](./architecture/DESIGN_SYSTEM.md)
+4. [architecture/ARCHITECTURE_QUICK_REFERENCE.md](./architecture/ARCHITECTURE_QUICK_REFERENCE.md)
 
 ### AI Assistants
 
@@ -173,4 +182,4 @@ docs/
 
 ---
 
-*Last updated: January 20, 2026*
+*Last updated: January 26, 2026*

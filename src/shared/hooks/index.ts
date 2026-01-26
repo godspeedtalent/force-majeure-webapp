@@ -20,17 +20,9 @@ export {
  * The recommended hook for async mutations is useAsyncMutation.
  * It provides loading state, error handling, toast notifications,
  * and optional React Query cache invalidation.
- *
- * Legacy hooks (deprecated):
- * - useAsyncAction - Use useAsyncMutation with throwOnError: true instead
- * - useMutationWithToast - Use useAsyncMutation with invalidateKeys instead
  */
 export { useAsyncMutation, useAsyncMutationSimple } from './useAsyncMutation';
 export type { UseAsyncMutationOptions, UseAsyncMutationReturn } from './useAsyncMutation';
-
-/** @deprecated Use useAsyncMutation instead */
-export { useAsyncAction } from './useAsyncAction';
-export type { UseAsyncActionOptions } from './useAsyncAction';
 
 export { useAsyncOperation } from './useAsyncOperation';
 export type { UseAsyncOperationReturn } from './useAsyncOperation';
@@ -75,3 +67,6 @@ export type { DevBookmark } from './useDevBookmarks';
 
 // Event access control hook
 export { useCanManageEvent, eventAccessKeys } from './useCanManageEvent';
+
+// Diagnostics hook
+export { useDiagnostics, getMetricDuration, getTimingColor } from './useDiagnostics';

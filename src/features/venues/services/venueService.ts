@@ -1,6 +1,6 @@
-import { supabase } from '@/shared';
-import { logger } from '@/shared';
-import { createService } from '@/shared';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/shared/services/logger';
+import { createService } from '@/shared/services/createService';
 import type { Venue } from '@/features/events/types';
 
 /**

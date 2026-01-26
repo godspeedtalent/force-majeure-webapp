@@ -7,7 +7,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase, logger, handleError } from '@/shared';
+import { supabase, handleError } from '@/shared';
 import { getImageUrl } from '@/shared/utils/imageUtils';
 import { toast } from 'sonner';
 import type {
@@ -91,19 +91,13 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const galleriesQuery = useQuery({
     queryKey: ['galleries-management'],
     queryFn: async (): Promise<MediaGallery[]> => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_galleries')
         .select('*')
         .order('name', { ascending: true });
 
-      if (error) {
-        logger.error('Failed to fetch galleries', {
-          error: error.message,
-          source: 'useGalleryManagement',
-        });
-        throw error;
-      }
-      return data || [];
+      if (error) throw error;
+      return (data || []) as MediaGallery[];
     },
   });
 
@@ -113,19 +107,13 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
     queryFn: async (): Promise<ResolvedMediaItem[]> => {
       if (!selectedGallery) return [];
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('media_items')
         .select('*')
         .eq('gallery_id', selectedGallery.id)
         .order('display_order', { ascending: true });
 
-      if (error) {
-        logger.error('Failed to fetch gallery items', {
-          error: error.message,
-          source: 'useGalleryManagement',
-        });
-        throw error;
-      }
+      if (error) throw error;
 
       return ((data || []) as MediaItem[]).map(item => ({
         ...item,
@@ -142,7 +130,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const createGallery = useCallback(
     async (input: CreateGalleryInput): Promise<MediaGallery | null> => {
       try {
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
           .from('media_galleries')
           .insert({
             slug: input.slug,
@@ -157,8 +145,8 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
 
         toast.success('Gallery created');
         queryClient.invalidateQueries({ queryKey: ['galleries-management'] });
-        return data;
-      } catch (error) {
+        return data as MediaGallery;
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to create gallery',
           context: 'useGalleryManagement.createGallery',
@@ -174,7 +162,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const updateGallery = useCallback(
     async (id: string, input: UpdateGalleryInput): Promise<boolean> => {
       try {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('media_galleries')
           .update(input)
           .eq('id', id);
@@ -184,7 +172,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         toast.success('Gallery updated');
         queryClient.invalidateQueries({ queryKey: ['galleries-management'] });
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to update gallery',
           context: 'useGalleryManagement.updateGallery',
@@ -200,7 +188,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const deleteGallery = useCallback(
     async (id: string): Promise<boolean> => {
       try {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('media_galleries')
           .delete()
           .eq('id', id);
@@ -213,7 +201,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
           setSelectedGallery(null);
         }
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to delete gallery',
           context: 'useGalleryManagement.deleteGallery',
@@ -230,7 +218,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
     async (input: CreateMediaItemInput): Promise<MediaItem | null> => {
       try {
         // Get max display order
-        const { data: existingItems } = await (supabase as any)
+        const { data: existingItems } = await supabase
           .from('media_items')
           .select('display_order')
           .eq('gallery_id', input.gallery_id)
@@ -239,10 +227,10 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
 
         const nextOrder =
           existingItems && existingItems.length > 0
-            ? existingItems[0].display_order + 1
+            ? (existingItems[0].display_order ?? 0) + 1
             : 0;
 
-        const { data, error } = await (supabase as any)
+        const { data, error } = await supabase
           .from('media_items')
           .insert({
             gallery_id: input.gallery_id,
@@ -266,8 +254,8 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
           queryKey: ['gallery-items-management'],
         });
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
-        return data;
-      } catch (error) {
+        return data as MediaItem;
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to add media',
           context: 'useGalleryManagement.createMediaItem',
@@ -283,7 +271,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const updateMediaItem = useCallback(
     async (id: string, input: UpdateMediaItemInput): Promise<boolean> => {
       try {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('media_items')
           .update(input)
           .eq('id', id);
@@ -296,7 +284,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         });
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to update media',
           context: 'useGalleryManagement.updateMediaItem',
@@ -312,7 +300,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
   const deleteMediaItem = useCallback(
     async (id: string): Promise<boolean> => {
       try {
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('media_items')
           .delete()
           .eq('id', id);
@@ -325,7 +313,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         });
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to delete media',
           context: 'useGalleryManagement.deleteMediaItem',
@@ -347,7 +335,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         }));
 
         for (const update of updates) {
-          const { error } = await (supabase as any)
+          const { error } = await supabase
             .from('media_items')
             .update({ display_order: update.display_order })
             .eq('id', update.id);
@@ -360,7 +348,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         });
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to reorder',
           context: 'useGalleryManagement.reorderMediaItems',
@@ -379,7 +367,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
 
       try {
         // First, unset all is_cover in this gallery
-        const { error: unsetError } = await (supabase as any)
+        const { error: unsetError } = await supabase
           .from('media_items')
           .update({ is_cover: false })
           .eq('gallery_id', selectedGallery.id);
@@ -387,7 +375,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         if (unsetError) throw unsetError;
 
         // Then set this item as cover
-        const { error: setError } = await (supabase as any)
+        const { error: setError } = await supabase
           .from('media_items')
           .update({ is_cover: true })
           .eq('id', id);
@@ -401,7 +389,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         queryClient.invalidateQueries({ queryKey: ['gallery'] });
         queryClient.invalidateQueries({ queryKey: ['artist-gallery-images'] });
         return true;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to set cover image',
           context: 'useGalleryManagement.setCoverItem',
@@ -427,7 +415,7 @@ export const useGalleryManagement = (): UseGalleryManagementResult => {
         if (uploadError) throw uploadError;
 
         return fileName;
-      } catch (error) {
+      } catch (error: unknown) {
         handleError(error, {
           title: 'Failed to upload file',
           context: 'useGalleryManagement.uploadFile',

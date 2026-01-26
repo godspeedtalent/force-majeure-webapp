@@ -151,7 +151,10 @@ export function useArtistRegistrationSubmit() {
     try {
       // Must be authenticated to submit
       if (!user?.id) {
-        toast.error(t('errors.notAuthenticated'));
+        handleError(new Error('User not authenticated'), {
+          title: t('errors.notAuthenticated'),
+          context: 'ArtistRegistrationSubmit.submitRegistration',
+        });
         navigate('/auth', { replace: true });
         setIsSubmitting(false);
         return false;
@@ -248,10 +251,12 @@ export function useArtistRegistrationSubmit() {
         }
       } catch (invokeError) {
         if (invokeError instanceof Error && invokeError.name === 'AbortError') {
-          logger.error('Artist registration request timed out', {
-            source: 'useArtistRegistrationSubmit',
+          handleError(invokeError, {
+            title: t('errors.requestTimeout'),
+            context: 'ArtistRegistrationSubmit.submitRegistration',
+            endpoint: '/functions/v1/artist-registration',
+            method: 'POST',
           });
-          toast.error(t('errors.requestTimeout'));
           setIsSubmitting(false);
           return false;
         }

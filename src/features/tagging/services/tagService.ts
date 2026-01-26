@@ -114,7 +114,7 @@ export async function searchTags(
     if (error) throw error;
 
     return ((data as TagRow[]) || []).map(rowToTag);
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to search tags',
       context: 'tagService.searchTags',
@@ -159,7 +159,7 @@ export async function createTag(input: CreateTagInput): Promise<Tag> {
     });
 
     return rowToTag(row);
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to create tag',
       context: 'tagService.createTag',
@@ -194,7 +194,7 @@ export async function getAllTags(entityType?: TagEntityType): Promise<Tag[]> {
     if (error) throw error;
 
     return ((data as TagRow[]) || []).map(rowToTag);
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to fetch tags',
       context: 'tagService.getAllTags',
@@ -238,7 +238,7 @@ export async function applyTagToSubmission(
       context: 'tagService.applyTagToSubmission',
       details: { submissionId, tagId },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to apply tag',
       context: 'tagService.applyTagToSubmission',
@@ -276,7 +276,7 @@ export async function removeTagFromSubmission(
       context: 'tagService.removeTagFromSubmission',
       details: { submissionId, tagId },
     });
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to remove tag',
       context: 'tagService.removeTagFromSubmission',
@@ -303,7 +303,7 @@ export async function getSubmissionTags(submissionId: string): Promise<Tag[]> {
     if (error) throw error;
 
     return ((data as SubmissionTagJoinRow[]) || []).map(row => rowToTag(row.tags));
-  } catch (error) {
+  } catch (error: unknown) {
     handleError(error, {
       title: 'Failed to fetch submission tags',
       context: 'tagService.getSubmissionTags',

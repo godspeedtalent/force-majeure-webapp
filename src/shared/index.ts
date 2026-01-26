@@ -281,6 +281,16 @@ export { imageUploadService } from './services/imageUploadService';
 // Role management service
 export { RoleManagementService } from './services/roleManagementService';
 
+// Initialization diagnostics
+export {
+  initDiagnostics,
+  diagStart,
+  diagComplete,
+  diagError,
+  diagWarn,
+  diagInfo,
+} from './services/initDiagnostics';
+
 // ============================================================================
 // Hooks
 // ============================================================================
@@ -306,8 +316,6 @@ export {
   type UseAsyncMutationOptions,
   type UseAsyncMutationReturn,
 } from './hooks/useAsyncMutation';
-/** @deprecated Use useAsyncMutation instead */
-export { useAsyncAction, type UseAsyncActionOptions } from './hooks/useAsyncAction';
 export { useAsyncOperation, type UseAsyncOperationReturn } from './hooks/useAsyncOperation';
 export {
   useDeleteConfirmation,

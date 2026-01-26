@@ -43,7 +43,7 @@ const DeveloperCreateEventPage = () => {
 
   return (
     <>
-      {isLoading && <FmCommonLoadingOverlay message={t('developerPages.createEvent.loading')} />}
+      {isLoading && <FmCommonLoadingOverlay />}
       <DemoLayout
         title={t('developerPages.createEvent.title')}
         description={t('developerPages.createEvent.description')}

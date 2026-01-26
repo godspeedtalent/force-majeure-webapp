@@ -346,13 +346,15 @@
     "mockModeActive": "模拟支付模式 - 不会产生实际扣款",
     "validation": {
       "fullNameRequired": "请填写姓名",
+      "nameTooLong": "姓名不能超过100个字符",
       "validEmailRequired": "请输入有效的邮箱地址",
       "addressRequired": "请填写地址",
       "cityRequired": "请填写城市",
       "stateRequired": "请填写省份",
       "validZipRequired": "请输入有效的邮政编码",
       "paymentLoading": "请等待支付系统加载",
-      "mustAcceptTerms": "您必须接受条款才能继续"
+      "mustAcceptTerms": "您必须接受条款才能继续",
+      "maxTicketsExceeded": "每单最多{{max}}张门票"
     },
     "toast": {
       "addressNotSaved": "地址未保存",
@@ -363,7 +365,9 @@
       "paymentFailed": "支付失败",
       "paymentError": "处理您的支付时出错",
       "emailFailed": "邮件发送失败",
-      "emailFailedDescription": "您的订单成功了，但我们无法发送确认邮件。您可以在钱包中查看您的门票。"
+      "emailFailedDescription": "您的订单成功了，但我们无法发送确认邮件。您可以在钱包中查看您的门票。",
+      "tooManyTickets": "选择的门票过多",
+      "tooManyTicketsDescription": "此活动每单最多允许购买{{max}}张门票。您选择了{{total}}张门票。请减少您的选择。"
     }
   },
   "tickets": {
