@@ -10,14 +10,16 @@
 -- - tags (5 policies)
 -- - submission_tags (2 policies)
 -- - user_ignored_submissions (3 policies)
--- - screening_reviews (7 policies)
--- - screening_sample_sets (7 policies)
+-- - screening_submissions (2 policies)
+-- - screening_reviews (4 policies)
+-- - screening_config (1 policy)
+-- - venue_required_genres (1 policy)
 -- - error_logs (2 policies)
 -- - error_logs_archive (1 policy)
 -- - process_items (3 policies)
 -- - undercard_requests (4 policies)
 --
--- Total: 47 policies
+-- Total: 41 policies
 --
 -- Performance Impact:
 -- Sequential scan: O(n) - scans entire table
@@ -252,137 +254,98 @@ CREATE POLICY "Users can unignore their submissions"
   USING (user_id = (SELECT auth.uid()));
 
 -- ----------------------------------------------------------------------------
--- TABLE: screening_reviews (7 policies)
+-- TABLE: screening_submissions (2 policies)
 -- ----------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Admins and developers can view all reviews" ON screening_reviews;
-CREATE POLICY "Admins and developers can view all reviews"
-  ON screening_reviews FOR SELECT
-  TO authenticated
+-- NOTE: Other submission policies use subqueries - no optimization needed
+
+DROP POLICY IF EXISTS "Staff can view all submissions" ON screening_submissions;
+CREATE POLICY "Staff can view all submissions"
+  ON screening_submissions FOR SELECT
   USING (
+    has_role((SELECT auth.uid()), 'fm_staff') OR
     has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
+    is_dev_admin((SELECT auth.uid()))
   );
 
-DROP POLICY IF EXISTS "Users can view own reviews" ON screening_reviews;
-CREATE POLICY "Users can view own reviews"
+DROP POLICY IF EXISTS "Staff can update submissions" ON screening_submissions;
+CREATE POLICY "Staff can update submissions"
+  ON screening_submissions FOR UPDATE
+  USING (
+    has_role((SELECT auth.uid()), 'fm_staff') OR
+    has_role((SELECT auth.uid()), 'admin') OR
+    is_dev_admin((SELECT auth.uid()))
+  );
+
+-- ----------------------------------------------------------------------------
+-- TABLE: screening_reviews (4 policies)
+-- ----------------------------------------------------------------------------
+
+DROP POLICY IF EXISTS "Reviewers can view own reviews" ON screening_reviews;
+CREATE POLICY "Reviewers can view own reviews"
   ON screening_reviews FOR SELECT
-  TO authenticated
   USING (reviewer_id = (SELECT auth.uid()));
 
-DROP POLICY IF EXISTS "Admins can create reviews" ON screening_reviews;
-CREATE POLICY "Admins can create reviews"
+DROP POLICY IF EXISTS "Reviewers can view others' reviews after submitting" ON screening_reviews;
+CREATE POLICY "Reviewers can view others' reviews after submitting"
+  ON screening_reviews FOR SELECT
+  USING (
+    submission_id IN (
+      SELECT submission_id
+      FROM screening_reviews
+      WHERE reviewer_id = (SELECT auth.uid())
+    )
+  );
+
+DROP POLICY IF EXISTS "Staff can insert reviews" ON screening_reviews;
+CREATE POLICY "Staff can insert reviews"
   ON screening_reviews FOR INSERT
-  TO authenticated
   WITH CHECK (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
+    reviewer_id = (SELECT auth.uid()) AND (
+      has_role((SELECT auth.uid()), 'fm_staff') OR
+      has_role((SELECT auth.uid()), 'admin') OR
+      is_dev_admin((SELECT auth.uid()))
+    )
   );
 
-DROP POLICY IF EXISTS "Users can create own reviews" ON screening_reviews;
-CREATE POLICY "Users can create own reviews"
-  ON screening_reviews FOR INSERT
-  TO authenticated
-  WITH CHECK (reviewer_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "Admins can update reviews" ON screening_reviews;
-CREATE POLICY "Admins can update reviews"
+DROP POLICY IF EXISTS "Reviewers can update own reviews" ON screening_reviews;
+CREATE POLICY "Reviewers can update own reviews"
   ON screening_reviews FOR UPDATE
-  TO authenticated
+  USING (reviewer_id = (SELECT auth.uid()));
+
+-- ----------------------------------------------------------------------------
+-- TABLE: submission_scores (1 policy)
+-- ----------------------------------------------------------------------------
+
+-- NOTE: "View scores for accessible submissions" doesn't use auth functions directly -
+--       it uses a subquery to screening_submissions which has its own optimized policies
+
+-- ----------------------------------------------------------------------------
+-- TABLE: screening_config (1 policy)
+-- ----------------------------------------------------------------------------
+
+-- NOTE: "Everyone can view config" doesn't use auth functions - no optimization needed
+
+DROP POLICY IF EXISTS "Admins can update config" ON screening_config;
+CREATE POLICY "Admins can update config"
+  ON screening_config FOR UPDATE
   USING (
     has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
-  );
-
-DROP POLICY IF EXISTS "Users can update own reviews" ON screening_reviews;
-CREATE POLICY "Users can update own reviews"
-  ON screening_reviews FOR UPDATE
-  TO authenticated
-  USING (reviewer_id = (SELECT auth.uid()))
-  WITH CHECK (reviewer_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "Admins can delete reviews" ON screening_reviews;
-CREATE POLICY "Admins can delete reviews"
-  ON screening_reviews FOR DELETE
-  TO authenticated
-  USING (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
+    is_dev_admin((SELECT auth.uid()))
   );
 
 -- ----------------------------------------------------------------------------
--- TABLE: screening_sample_sets (7 policies)
+-- TABLE: venue_required_genres (1 policy)
 -- ----------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Admins and developers can view all sample sets" ON screening_sample_sets;
-CREATE POLICY "Admins and developers can view all sample sets"
-  ON screening_sample_sets FOR SELECT
-  TO authenticated
+-- NOTE: "Everyone can view venue genres" doesn't use auth functions - no optimization needed
+
+DROP POLICY IF EXISTS "Admins can manage venue genres" ON venue_required_genres;
+CREATE POLICY "Admins can manage venue genres"
+  ON venue_required_genres FOR ALL
   USING (
     has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
-  );
-
-DROP POLICY IF EXISTS "Artists can view their sample sets" ON screening_sample_sets;
-CREATE POLICY "Artists can view their sample sets"
-  ON screening_sample_sets FOR SELECT
-  TO authenticated
-  USING (
-    artist_id IN (
-      SELECT id FROM artists WHERE profile_id = (SELECT auth.uid())
-    )
-  );
-
-DROP POLICY IF EXISTS "Admins can create sample sets" ON screening_sample_sets;
-CREATE POLICY "Admins can create sample sets"
-  ON screening_sample_sets FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
-  );
-
-DROP POLICY IF EXISTS "Artists can create own sample sets" ON screening_sample_sets;
-CREATE POLICY "Artists can create own sample sets"
-  ON screening_sample_sets FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    artist_id IN (
-      SELECT id FROM artists WHERE profile_id = (SELECT auth.uid())
-    )
-  );
-
-DROP POLICY IF EXISTS "Admins can update sample sets" ON screening_sample_sets;
-CREATE POLICY "Admins can update sample sets"
-  ON screening_sample_sets FOR UPDATE
-  TO authenticated
-  USING (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
-  );
-
-DROP POLICY IF EXISTS "Artists can update own sample sets" ON screening_sample_sets;
-CREATE POLICY "Artists can update own sample sets"
-  ON screening_sample_sets FOR UPDATE
-  TO authenticated
-  USING (
-    artist_id IN (
-      SELECT id FROM artists WHERE profile_id = (SELECT auth.uid())
-    )
-  )
-  WITH CHECK (
-    artist_id IN (
-      SELECT id FROM artists WHERE profile_id = (SELECT auth.uid())
-    )
-  );
-
-DROP POLICY IF EXISTS "Admins can delete sample sets" ON screening_sample_sets;
-CREATE POLICY "Admins can delete sample sets"
-  ON screening_sample_sets FOR DELETE
-  TO authenticated
-  USING (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
+    is_dev_admin((SELECT auth.uid()))
   );
 
 -- ----------------------------------------------------------------------------
@@ -514,8 +477,9 @@ CREATE POLICY "Admins and devs can delete undercard requests"
 -- Verify policy changes:
 -- SELECT tablename, COUNT(*) as policy_count
 -- FROM pg_policies
--- WHERE tablename IN ('organization_staff', 'tags', 'entity_tags',
---                     'screening_reviews', 'screening_sample_sets',
+-- WHERE tablename IN ('organization_staff', 'tags', 'submission_tags',
+--                     'user_ignored_submissions', 'screening_submissions',
+--                     'screening_reviews', 'screening_config', 'venue_required_genres',
 --                     'error_logs', 'error_logs_archive', 'process_items',
 --                     'undercard_requests')
 -- GROUP BY tablename
