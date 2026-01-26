@@ -4,12 +4,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import { diagStart, diagComplete, diagError, diagWarn } from '@/shared/services/initDiagnostics';
 
-// Bundle English translations directly for instant loading
-// Other languages (es, zh) load via HTTP on-demand
-import commonEn from '../../public/locales/en/common.json';
-import pagesEn from '../../public/locales/en/pages.json';
-import validationEn from '../../public/locales/en/validation.json';
-import toastsEn from '../../public/locales/en/toasts.json';
+// Bundle English translations directly for instant loading (from src/locales)
+// Other languages (es, zh) load via HTTP on-demand (from public/locales)
+import commonEn from '@/locales/en/common.json';
+import pagesEn from '@/locales/en/pages.json';
+import validationEn from '@/locales/en/validation.json';
+import toastsEn from '@/locales/en/toasts.json';
 
 export const SUPPORTED_LOCALES = ['en', 'es', 'zh'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
