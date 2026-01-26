@@ -8,7 +8,8 @@
 -- Tables in this phase:
 -- - organization_staff (13 policies)
 -- - tags (5 policies)
--- - entity_tags (5 policies)
+-- - submission_tags (2 policies)
+-- - user_ignored_submissions (3 policies)
 -- - screening_reviews (7 policies)
 -- - screening_sample_sets (7 policies)
 -- - error_logs (2 policies)
@@ -208,41 +209,47 @@ CREATE POLICY "Admins and FM staff can delete tags"
   );
 
 -- ----------------------------------------------------------------------------
--- TABLE: entity_tags (5 policies)
+-- TABLE: submission_tags (3 policies)
 -- ----------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Users can view entity tags" ON entity_tags;
-CREATE POLICY "Users can view entity tags"
-  ON entity_tags FOR SELECT
-  USING ((SELECT auth.uid()) IS NOT NULL);
+-- NOTE: "Anyone can view submission tags" doesn't use auth functions - no optimization needed
 
-DROP POLICY IF EXISTS "Users can add entity tags" ON entity_tags;
-CREATE POLICY "Users can add entity tags"
-  ON entity_tags FOR INSERT
-  TO authenticated
-  WITH CHECK (user_id = (SELECT auth.uid()));
+DROP POLICY IF EXISTS "Staff can tag submissions" ON submission_tags;
+CREATE POLICY "Staff can tag submissions"
+  ON submission_tags FOR INSERT
+  WITH CHECK (
+    has_role((SELECT auth.uid()), 'fm_staff') OR
+    has_role((SELECT auth.uid()), 'admin') OR
+    is_dev_admin((SELECT auth.uid()))
+  );
 
-DROP POLICY IF EXISTS "Users can update own entity tags" ON entity_tags;
-CREATE POLICY "Users can update own entity tags"
-  ON entity_tags FOR UPDATE
-  TO authenticated
-  USING (user_id = (SELECT auth.uid()))
-  WITH CHECK (user_id = (SELECT auth.uid()));
+DROP POLICY IF EXISTS "Staff can remove submission tags" ON submission_tags;
+CREATE POLICY "Staff can remove submission tags"
+  ON submission_tags FOR DELETE
+  USING (
+    has_role((SELECT auth.uid()), 'fm_staff') OR
+    has_role((SELECT auth.uid()), 'admin') OR
+    is_dev_admin((SELECT auth.uid()))
+  );
 
-DROP POLICY IF EXISTS "Users can delete own entity tags" ON entity_tags;
-CREATE POLICY "Users can delete own entity tags"
-  ON entity_tags FOR DELETE
-  TO authenticated
+-- ----------------------------------------------------------------------------
+-- TABLE: user_ignored_submissions (3 policies)
+-- ----------------------------------------------------------------------------
+
+DROP POLICY IF EXISTS "Users can view their own ignored submissions" ON user_ignored_submissions;
+CREATE POLICY "Users can view their own ignored submissions"
+  ON user_ignored_submissions FOR SELECT
   USING (user_id = (SELECT auth.uid()));
 
-DROP POLICY IF EXISTS "Admins can manage all entity tags" ON entity_tags;
-CREATE POLICY "Admins can manage all entity tags"
-  ON entity_tags FOR ALL
-  TO authenticated
-  USING (
-    has_role((SELECT auth.uid()), 'admin') OR
-    has_role((SELECT auth.uid()), 'developer')
-  );
+DROP POLICY IF EXISTS "Users can ignore submissions" ON user_ignored_submissions;
+CREATE POLICY "Users can ignore submissions"
+  ON user_ignored_submissions FOR INSERT
+  WITH CHECK (user_id = (SELECT auth.uid()));
+
+DROP POLICY IF EXISTS "Users can unignore their submissions" ON user_ignored_submissions;
+CREATE POLICY "Users can unignore their submissions"
+  ON user_ignored_submissions FOR DELETE
+  USING (user_id = (SELECT auth.uid()));
 
 -- ----------------------------------------------------------------------------
 -- TABLE: screening_reviews (7 policies)
