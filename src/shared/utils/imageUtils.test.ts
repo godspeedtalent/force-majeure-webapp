@@ -240,7 +240,7 @@ describe('getImageUrl', () => {
     });
   });
 
-  describe('storage paths', () => {
+  describe('storage paths with images/ prefix', () => {
     it('gets public URL for images/ prefixed paths', async () => {
       const { supabase } = await import('@/shared');
 
@@ -265,14 +265,79 @@ describe('getImageUrl', () => {
     });
   });
 
-  describe('other paths', () => {
-    it('assumes other paths are in images bucket', async () => {
+  describe('bucket detection from path', () => {
+    it('uses event-images bucket for events/ paths', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('events/123/photo.jpg');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('event-images');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('events/123/photo.jpg');
+    });
+
+    it('uses event-images bucket for misc/ paths', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('misc/photo.jpg');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('event-images');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('misc/photo.jpg');
+    });
+
+    it('uses artist-images bucket for artists/ paths', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('artists/456/photo.jpg');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('artist-images');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('artists/456/photo.jpg');
+    });
+
+    it('uses profile-images bucket for profiles/ paths', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('profiles/789/avatar.jpg');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('profile-images');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('profiles/789/avatar.jpg');
+    });
+
+    it('uses images bucket for venues/ paths (gallery system)', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('venues/123/gallery/photo.jpg');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('images');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('venues/123/gallery/photo.jpg');
+    });
+
+    it('uses images bucket for other unknown paths', async () => {
       const { supabase } = await import('@/shared');
 
       getImageUrl('some-other-path/photo.jpg');
 
       expect(supabase.storage.from).toHaveBeenCalledWith('images');
       expect(mockGetPublicUrl).toHaveBeenCalledWith('some-other-path/photo.jpg');
+    });
+  });
+
+  describe('explicit bucket parameter', () => {
+    it('uses provided bucket when specified', async () => {
+      const { supabase } = await import('@/shared');
+
+      getImageUrl('some/path.jpg', 'custom-bucket');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('custom-bucket');
+      expect(mockGetPublicUrl).toHaveBeenCalledWith('some/path.jpg');
+    });
+
+    it('prefers explicit bucket over auto-detection', async () => {
+      const { supabase } = await import('@/shared');
+
+      // Path would auto-detect to event-images, but explicit bucket overrides
+      getImageUrl('events/123/photo.jpg', 'custom-bucket');
+
+      expect(supabase.storage.from).toHaveBeenCalledWith('custom-bucket');
     });
   });
 });

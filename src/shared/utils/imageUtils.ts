@@ -81,7 +81,30 @@ export const convertHeicToJpeg = async (file: File): Promise<File> => {
   }
 };
 
-export const getImageUrl = (imagePath: string | null): string => {
+/**
+ * Determines the correct storage bucket based on the image path prefix.
+ *
+ * Bucket mapping:
+ * - events/, misc/ → event-images (main upload bucket via imageUploadService)
+ * - artists/ → artist-images
+ * - profiles/ → profile-images
+ * - venues/, galleries/, or other → images (gallery system)
+ */
+const getBucketFromPath = (path: string): string => {
+  if (path.startsWith('events/') || path.startsWith('misc/')) {
+    return 'event-images';
+  }
+  if (path.startsWith('artists/')) {
+    return 'artist-images';
+  }
+  if (path.startsWith('profiles/')) {
+    return 'profile-images';
+  }
+  // Default to 'images' bucket for gallery system (venues/) and other paths
+  return 'images';
+};
+
+export const getImageUrl = (imagePath: string | null, bucket?: string): string => {
   if (!imagePath) {
     return '/placeholder.svg';
   }
@@ -94,16 +117,20 @@ export const getImageUrl = (imagePath: string | null): string => {
     return imagePath;
   }
 
-  // If it's a storage path, get the public URL
+  // Determine the bucket to use
+  let targetBucket = bucket;
+  let storagePath = imagePath;
+
+  // If path has a bucket prefix like "images/", extract it
   if (imagePath.startsWith('images/')) {
-    const { data } = supabase.storage
-      .from('images')
-      .getPublicUrl(imagePath.replace('images/', ''));
-    return data.publicUrl;
+    targetBucket = targetBucket || 'images';
+    storagePath = imagePath.replace('images/', '');
+  } else if (!targetBucket) {
+    // Auto-detect bucket from path prefix
+    targetBucket = getBucketFromPath(imagePath);
   }
 
-  // For other paths, assume they're in the images bucket
-  const { data } = supabase.storage.from('images').getPublicUrl(imagePath);
+  const { data } = supabase.storage.from(targetBucket).getPublicUrl(storagePath);
   return data.publicUrl;
 };
 

@@ -72,6 +72,8 @@ export class AnalyticsService {
   private currentBatchedPageViewIndex: number = -1; // Track index for batched updates
   private pageLoadTime: number = Date.now();
   private sessionInitialized: boolean = false;
+  private sessionInitFailed: boolean = false; // Track if init failed to avoid retrying endlessly
+  private sessionInitPromise: Promise<void> | null = null; // Prevent concurrent init calls
   private previousPagePath: string | null = null;
   private currentUserId: string | null = null;
 
@@ -116,6 +118,9 @@ export class AnalyticsService {
     if (!this.config.enabled) return false;
     if (!isSessionSampled(this.config.sampleRate)) return false;
 
+    // Skip if session init previously failed (prevents blocking page loads)
+    if (this.sessionInitFailed) return false;
+
     // Check if current user is excluded
     if (this.currentUserId && this.config.excludedUserIds.includes(this.currentUserId)) {
       this.logToConsole('Skipping tracking for excluded user', { userId: this.currentUserId });
@@ -149,8 +154,23 @@ export class AnalyticsService {
    * Initialize session with device and UTM information
    */
   async initSession(): Promise<void> {
-    if (this.sessionInitialized || !this.shouldTrack()) return;
+    // Don't retry if already initialized or previously failed
+    if (this.sessionInitialized || this.sessionInitFailed) return;
+    if (!this.config.enabled || !isSessionSampled(this.config.sampleRate)) return;
 
+    // If init is already in progress, wait for it instead of starting another
+    if (this.sessionInitPromise) {
+      return this.sessionInitPromise;
+    }
+
+    this.sessionInitPromise = this.doInitSession();
+    return this.sessionInitPromise;
+  }
+
+  /**
+   * Internal session init implementation
+   */
+  private async doInitSession(): Promise<void> {
     try {
       const deviceInfo = getDeviceInfo();
       const utmParams = getUtmParams();
@@ -170,12 +190,24 @@ export class AnalyticsService {
 
       this.logToConsole('Initializing session', sessionEntry);
 
-      await this.adapter.initSession(sessionEntry);
-      this.sessionInitialized = true;
+      const result = await this.adapter.initSession(sessionEntry);
+      if (result.success) {
+        this.sessionInitialized = true;
+      } else {
+        // Mark as failed to prevent retrying on every page view
+        this.sessionInitFailed = true;
+        analyticsLogger.warn('Analytics session init failed, disabling for this session', {
+          error: result.error,
+        });
+      }
     } catch (err) {
-      analyticsLogger.error('Failed to initialize session', {
+      // Mark as failed to prevent retrying on every page view
+      this.sessionInitFailed = true;
+      analyticsLogger.warn('Analytics session init failed, disabling for this session', {
         error: err instanceof Error ? err.message : 'Unknown error',
       });
+    } finally {
+      this.sessionInitPromise = null;
     }
   }
 
