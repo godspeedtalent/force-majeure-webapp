@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/shared';
 import { getImageUrl } from '@/shared';
+import { withQueryTimeout, isQueryTimeoutError } from '@/shared';
 import { diagStart, diagComplete, diagError } from '@/shared/services/initDiagnostics';
 
 import { ArtistSummary, EventDetailsRecord, EventStatus, VenueDetails } from '../types';
@@ -177,7 +178,8 @@ const fetchEventDetails = async (
   diagStart(diagKey, { eventId });
 
   try {
-    const { data, error } = await supabase
+    // Create the query promise - executes when awaited
+    const queryPromise = supabase
       .from('events')
       .select(
         `
@@ -209,6 +211,9 @@ const fetchEventDetails = async (
       )
       .eq('id', eventId)
       .maybeSingle();
+
+    // Wrap query in timeout to prevent indefinite hangs (10 second timeout)
+    const { data, error } = await withQueryTimeout(queryPromise, 'eventDetails');
 
     if (error) {
       diagError(diagKey, error, { eventId });
@@ -242,6 +247,14 @@ export const useEventDetails = (eventId: string | undefined) => {
         throw new Error('Event ID is required');
       }
       return fetchEventDetails(eventId);
+    },
+    // Don't retry on timeout errors - if the connection is hanging, retries won't help
+    // For other errors (network glitches), allow 1 retry
+    retry: (failureCount, error) => {
+      if (isQueryTimeoutError(error)) {
+        return false; // No retries for timeouts
+      }
+      return failureCount < 1; // One retry for other errors
     },
   });
 };

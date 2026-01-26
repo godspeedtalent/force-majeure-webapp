@@ -12,7 +12,7 @@ import { PageErrorBoundary } from '@/components/common/feedback/PageErrorBoundar
 import { TopographicBackground } from '@/components/common/misc/TopographicBackground';
 import { SEOHead } from '@/components/common/seo/SEOHead';
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
-import { ROLES, PERMISSIONS, useEventViews } from '@/shared';
+import { ROLES, PERMISSIONS, useEventViews, isQueryTimeoutError } from '@/shared';
 import { useAnalytics } from '@/features/analytics';
 
 import { EventHero, EventHeroActions } from './EventHero';
@@ -82,6 +82,15 @@ export const EventDetailsPage = () => {
   }
 
   if (error || !event) {
+    // Show user-friendly message for timeout errors
+    const isTimeout = isQueryTimeoutError(error);
+    const errorMessage = isTimeout
+      ? t('eventDetails.connectionTimeout')
+      : (error?.message || t('eventDetails.eventNotFound'));
+    const errorSubtext = isTimeout
+      ? t('eventDetails.connectionTimeoutSubtext')
+      : t('eventDetails.eventRemoved');
+
     return (
       <div className='min-h-screen flex items-center justify-center bg-background relative overflow-hidden'>
         <TopographicBackground opacity={0.25} />
@@ -89,10 +98,10 @@ export const EventDetailsPage = () => {
         <div className='text-center relative z-10'>
           <h1 className='text-6xl font-canela mb-4 text-fm-gold'>{t('eventDetails.error')}</h1>
           <p className='text-xl text-foreground mb-4'>
-            {error?.message || t('eventDetails.eventNotFound')}
+            {errorMessage}
           </p>
           <p className='text-sm text-muted-foreground mb-8'>
-            {t('eventDetails.eventRemoved')}
+            {errorSubtext}
           </p>
           <FmCommonButton asChild variant='default'>
             <Link to='/'>

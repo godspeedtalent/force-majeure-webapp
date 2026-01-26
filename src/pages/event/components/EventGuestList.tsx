@@ -354,11 +354,6 @@ export const EventGuestList = ({
               )}
             </div>
 
-            {/* Encouraging message */}
-            <p className='text-xs text-muted-foreground/70 leading-relaxed'>
-              {t('guestList.joinTheCrowd')}
-            </p>
-
             {/* CTA */}
             <div className='mt-[10px] flex items-center gap-2'>
               <span className='text-xs text-muted-foreground/50 group-hover:text-fm-gold/70 transition-colors duration-300 flex items-center gap-1'>

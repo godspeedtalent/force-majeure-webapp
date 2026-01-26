@@ -214,6 +214,9 @@ export { formatTimeDisplay, parseTimeToMinutes } from './utils/timeUtils';
 // Queue utils
 export * from './utils/queueUtils';
 
+// Async utils (timeouts, race conditions)
+export * from './utils/asyncUtils';
+
 // Session persistence
 export { sessionPersistence } from './utils/sessionPersistence';
 

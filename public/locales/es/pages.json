@@ -58,6 +58,8 @@
     "eventNotFound": "Evento no encontrado",
     "eventRemoved": "El evento que buscas no existe o ha sido eliminado",
     "eventNotAvailable": "El evento que buscas no existe o aún no está disponible",
+    "connectionTimeout": "Conexión agotada",
+    "connectionTimeoutSubtext": "Por favor, verifica tu conexión a internet e intenta de nuevo",
     "back": "Volver",
     "manage": "Administrar",
     "getTickets": "Obtener Entradas",

@@ -58,6 +58,8 @@
     "eventNotFound": "未找到活动",
     "eventRemoved": "您要找的活动不存在或已被删除",
     "eventNotAvailable": "您要找的活动不存在或尚未上线",
+    "connectionTimeout": "连接超时",
+    "connectionTimeoutSubtext": "请检查您的网络连接并重试",
     "back": "返回",
     "manage": "管理",
     "getTickets": "获取门票",

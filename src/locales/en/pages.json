@@ -58,6 +58,8 @@
     "eventNotFound": "Event not found",
     "eventRemoved": "The event you're looking for doesn't exist or has been removed",
     "eventNotAvailable": "The event you're looking for doesn't exist or is not yet available",
+    "connectionTimeout": "Connection timed out",
+    "connectionTimeoutSubtext": "Please check your internet connection and try again",
     "back": "Back",
     "manage": "Manage",
     "getTickets": "Get Tickets",
