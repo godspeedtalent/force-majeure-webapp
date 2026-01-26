@@ -12,6 +12,7 @@ import { Button } from '@/components/common/shadcn/button';
 import { Layout } from '@/components/layout/Layout';
 import { FmI18nCommon } from '@/components/common/i18n';
 import { useAnalytics } from '@/features/analytics';
+import { logger } from '@/shared';
 
 export default function CheckoutCancel() {
   const navigate = useNavigate();
@@ -23,7 +24,12 @@ export default function CheckoutCancel() {
     if (!tracked.current) {
       tracked.current = true;
       // Note: In a real implementation, you'd get the event ID from session/cart
-      trackCheckoutAbandon('unknown');
+      trackCheckoutAbandon('unknown').catch(err => {
+        logger.warn('Failed to track checkout abandon', {
+          error: err instanceof Error ? err.message : 'Unknown',
+          source: 'CheckoutCancel',
+        });
+      });
     }
   }, [trackCheckoutAbandon]);
 

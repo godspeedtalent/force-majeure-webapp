@@ -499,11 +499,29 @@ export class AnalyticsService {
       performanceMetrics: performanceMetrics.length,
     });
 
-    await Promise.all([
-      pageViews.length > 0 && this.adapter.writePageViewBatch(pageViews),
-      funnelEvents.length > 0 && this.adapter.writeFunnelEventBatch(funnelEvents),
-      performanceMetrics.length > 0 && this.adapter.writePerformanceBatch(performanceMetrics),
-    ]);
+    // Wrap flush with timeout to prevent indefinite hangs during page unload
+    try {
+      await Promise.race([
+        Promise.all([
+          pageViews.length > 0 && this.adapter.writePageViewBatch(pageViews),
+          funnelEvents.length > 0 && this.adapter.writeFunnelEventBatch(funnelEvents),
+          performanceMetrics.length > 0 && this.adapter.writePerformanceBatch(performanceMetrics),
+        ]),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Flush timeout after 5000ms')), 5000)
+        ),
+      ]);
+    } catch (err) {
+      // Log error but continue - we don't want to block page cleanup
+      analyticsLogger.warn('Analytics flush failed or timed out', {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        queueSizes: {
+          pageViews: pageViews.length,
+          funnelEvents: funnelEvents.length,
+          performanceMetrics: performanceMetrics.length,
+        },
+      });
+    }
   }
 
   // ============================================================

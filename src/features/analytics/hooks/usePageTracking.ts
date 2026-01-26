@@ -9,6 +9,9 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { AnalyticsService } from '../services/AnalyticsService';
 import { getPageType, getResourceId } from '../utils';
+import { logger } from '@/shared/services/logger';
+
+const analyticsLogger = logger.createNamespace('usePageTracking');
 
 interface UsePageTrackingOptions {
   /** Track scroll depth (default: true) */
@@ -72,6 +75,13 @@ export function usePageTracking({ service, trackScrollDepth = true }: UsePageTra
         if (viewId && viewId !== 'batched') {
           currentViewId.current = viewId;
         }
+      })
+      .catch(err => {
+        analyticsLogger.warn('Failed to track page view', {
+          error: err instanceof Error ? err.message : 'Unknown',
+          pagePath,
+          pageType,
+        });
       });
 
     // Set up scroll tracking

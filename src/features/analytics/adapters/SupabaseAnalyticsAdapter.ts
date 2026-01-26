@@ -37,27 +37,48 @@ type AnySupabase = any;
 
 export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
   // ============================================================
+  // Timeout Configuration
+  // ============================================================
+
+  private readonly RPC_TIMEOUT_MS = 5000; // 5 second timeout for RPC calls
+
+  /**
+   * Wrap a promise with a timeout to prevent indefinite hangs
+   */
+  private withTimeout<T>(promise: Promise<T>, timeoutMs: number = this.RPC_TIMEOUT_MS): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) =>
+        setTimeout(() => reject(new Error(`RPC timeout after ${timeoutMs}ms`)), timeoutMs)
+      ),
+    ]);
+  }
+
+  // ============================================================
   // Write Methods
   // ============================================================
 
   async initSession(entry: SessionEntry): Promise<AdapterResult<string>> {
     try {
-      const { data, error } = await (supabase as AnySupabase).rpc('init_analytics_session', {
-        p_session_id: entry.sessionId,
-        p_entry_page: entry.entryPage || null,
-        p_referrer: entry.referrer || null,
-        p_utm_source: entry.utmSource || null,
-        p_utm_medium: entry.utmMedium || null,
-        p_utm_campaign: entry.utmCampaign || null,
-        p_utm_term: entry.utmTerm || null,
-        p_utm_content: entry.utmContent || null,
-        p_user_agent: entry.userAgent || null,
-        p_device_type: entry.deviceType || null,
-        p_browser: entry.browser || null,
-        p_os: entry.os || null,
-        p_screen_width: entry.screenWidth || null,
-        p_screen_height: entry.screenHeight || null,
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('init_analytics_session', {
+          p_session_id: entry.sessionId,
+          p_entry_page: entry.entryPage || null,
+          p_referrer: entry.referrer || null,
+          p_utm_source: entry.utmSource || null,
+          p_utm_medium: entry.utmMedium || null,
+          p_utm_campaign: entry.utmCampaign || null,
+          p_utm_term: entry.utmTerm || null,
+          p_utm_content: entry.utmContent || null,
+          p_user_agent: entry.userAgent || null,
+          p_device_type: entry.deviceType || null,
+          p_browser: entry.browser || null,
+          p_os: entry.os || null,
+          p_screen_width: entry.screenWidth || null,
+          p_screen_height: entry.screenHeight || null,
+        })
+      );
+      const { data, error } = result as { data: string; error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to init session', { error: error.message });
@@ -74,18 +95,21 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
 
   async writePageView(entry: PageViewEntry & { timeOnPageMs?: number; scrollDepthPercent?: number }): Promise<AdapterResult<string>> {
     try {
-      const { data, error } = await (supabase as AnySupabase).rpc('record_page_view', {
-        p_session_id: entry.sessionId,
-        p_page_path: entry.pagePath,
-        p_page_title: entry.pageTitle || null,
-        p_page_type: entry.pageType || null,
-        p_resource_id: entry.resourceId || null,
-        p_source: entry.source || 'internal',
-        p_referrer_page: entry.referrerPage || null,
-        p_user_agent: entry.userAgent || null,
-        p_viewport_width: entry.viewportWidth || null,
-        p_viewport_height: entry.viewportHeight || null,
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('record_page_view', {
+          p_session_id: entry.sessionId,
+          p_page_path: entry.pagePath,
+          p_page_title: entry.pageTitle || null,
+          p_page_type: entry.pageType || null,
+          p_resource_id: entry.resourceId || null,
+          p_source: entry.source || 'internal',
+          p_referrer_page: entry.referrerPage || null,
+          p_user_agent: entry.userAgent || null,
+          p_viewport_width: entry.viewportWidth || null,
+          p_viewport_height: entry.viewportHeight || null,
+        })
+      );
+      const { data, error } = result as { data: string; error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to record page view', { error: error.message });
@@ -142,11 +166,14 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
     scrollDepthPercent?: number
   ): Promise<AdapterResult> {
     try {
-      const { error } = await (supabase as AnySupabase).rpc('update_page_view_duration', {
-        p_view_id: viewId,
-        p_time_on_page_ms: timeOnPageMs,
-        p_scroll_depth_percent: scrollDepthPercent ?? null,
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('update_page_view_duration', {
+          p_view_id: viewId,
+          p_time_on_page_ms: timeOnPageMs,
+          p_scroll_depth_percent: scrollDepthPercent ?? null,
+        })
+      );
+      const { error } = result as { error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to update page view duration', { error: error.message });
@@ -163,17 +190,20 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
 
   async writeFunnelEvent(entry: FunnelEventEntry): Promise<AdapterResult<string>> {
     try {
-      const { data, error } = await (supabase as AnySupabase).rpc('record_funnel_event', {
-        p_session_id: entry.sessionId,
-        p_event_type: entry.eventType,
-        p_event_id: entry.eventId,
-        p_ticket_tier_id: entry.ticketTierId || null,
-        p_order_id: entry.orderId || null,
-        p_cart_id: entry.cartId || null,
-        p_quantity: entry.quantity || null,
-        p_value_cents: entry.valueCents || null,
-        p_metadata: entry.metadata || {},
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('record_funnel_event', {
+          p_session_id: entry.sessionId,
+          p_event_type: entry.eventType,
+          p_event_id: entry.eventId,
+          p_ticket_tier_id: entry.ticketTierId || null,
+          p_order_id: entry.orderId || null,
+          p_cart_id: entry.cartId || null,
+          p_quantity: entry.quantity || null,
+          p_value_cents: entry.valueCents || null,
+          p_metadata: entry.metadata || {},
+        })
+      );
+      const { data, error } = result as { data: string; error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to record funnel event', { error: error.message });
@@ -203,15 +233,18 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
 
   async writePerformanceMetric(entry: PerformanceEntry): Promise<AdapterResult<string>> {
     try {
-      const { data, error } = await (supabase as AnySupabase).rpc('record_performance_metric', {
-        p_session_id: entry.sessionId,
-        p_metric_type: entry.metricType,
-        p_metric_value: entry.metricValue,
-        p_page_path: entry.pagePath,
-        p_metric_rating: entry.metricRating || null,
-        p_endpoint: entry.endpoint || null,
-        p_metadata: entry.metadata || {},
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('record_performance_metric', {
+          p_session_id: entry.sessionId,
+          p_metric_type: entry.metricType,
+          p_metric_value: entry.metricValue,
+          p_page_path: entry.pagePath,
+          p_metric_rating: entry.metricRating || null,
+          p_endpoint: entry.endpoint || null,
+          p_metadata: entry.metadata || {},
+        })
+      );
+      const { data, error } = result as { data: string; error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to record performance metric', { error: error.message });
@@ -243,9 +276,12 @@ export class SupabaseAnalyticsAdapter implements AnalyticsAdapter {
 
   async endSession(sessionId: string): Promise<AdapterResult> {
     try {
-      const { error } = await (supabase as AnySupabase).rpc('end_analytics_session', {
-        p_session_id: sessionId,
-      });
+      const result = await this.withTimeout(
+        (supabase as AnySupabase).rpc('end_analytics_session', {
+          p_session_id: sessionId,
+        })
+      );
+      const { error } = result as { error: { message: string } | null };
 
       if (error) {
         analyticsLogger.error('Failed to end session', { error: error.message });

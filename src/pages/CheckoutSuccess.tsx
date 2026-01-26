@@ -38,7 +38,13 @@ export default function CheckoutSuccess() {
       tracked.current = true;
       // Note: In a real implementation, you'd fetch the order details
       // to get the event ID and order value. For now, we track with session ID.
-      trackCheckoutComplete('unknown', sessionId, 0);
+      trackCheckoutComplete('unknown', sessionId, 0).catch(err => {
+        logger.warn('Failed to track checkout complete', {
+          error: err instanceof Error ? err.message : 'Unknown',
+          sessionId,
+          source: 'CheckoutSuccess',
+        });
+      });
     }
   }, [sessionId, navigate, trackCheckoutComplete]);
 
