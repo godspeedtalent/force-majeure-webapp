@@ -1,7 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { initDiagnostics, diagInfo } from '@/shared/services/initDiagnostics';
+import i18n from '@/i18n/config';
 
 import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadingState';
 import { FmGoldenGridLoader } from '@/components/common/feedback/FmGoldenGridLoader';
@@ -115,11 +116,79 @@ import ResetPassword from './pages/ResetPassword';
 import { queryClient } from '@/lib/queryClient';
 
 // Loading fallback for lazy-loaded components
-const LazyLoadFallback = () => (
-  <div className='min-h-screen flex items-center justify-center bg-background'>
-    <FmCommonLoadingState centered={false} size='lg' />
-  </div>
-);
+const LazyLoadFallback = () => {
+  useEffect(() => {
+    diagInfo('suspense.fallback.shown');
+    return () => {
+      diagInfo('suspense.fallback.resolved');
+    };
+  }, []);
+
+  return (
+    <div className='min-h-screen flex items-center justify-center bg-background'>
+      <FmCommonLoadingState centered={false} size='lg' />
+    </div>
+  );
+};
+
+// i18n Loading Gate - ensures translations are ready before rendering
+// Has a 2-second timeout as safety net for non-English languages
+const I18N_LOADING_TIMEOUT = 2000;
+
+const I18nLoadingGate = ({ children }: { children: React.ReactNode }) => {
+  const [isReady, setIsReady] = useState(i18n.isInitialized);
+
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      diagInfo('i18n.gate.already_ready');
+      return;
+    }
+
+    diagInfo('i18n.gate.waiting');
+
+    // Safety timeout - don't block forever if translations fail to load
+    const timeout = setTimeout(() => {
+      diagInfo('i18n.gate.timeout');
+      setIsReady(true);
+    }, I18N_LOADING_TIMEOUT);
+
+    // Listen for i18n initialization
+    const handleInitialized = () => {
+      diagInfo('i18n.gate.initialized');
+      clearTimeout(timeout);
+      setIsReady(true);
+    };
+
+    i18n.on('initialized', handleInitialized);
+
+    // Also check loaded event for language resources
+    const handleLoaded = () => {
+      if (i18n.isInitialized) {
+        diagInfo('i18n.gate.loaded');
+        clearTimeout(timeout);
+        setIsReady(true);
+      }
+    };
+
+    i18n.on('loaded', handleLoaded);
+
+    return () => {
+      clearTimeout(timeout);
+      i18n.off('initialized', handleInitialized);
+      i18n.off('loaded', handleLoaded);
+    };
+  }, []);
+
+  if (!isReady) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-background'>
+        <FmGoldenGridLoader size='lg' />
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
 
 const GlobalSearchWrapper = () => {
   const { isOpen, closeSearch } = useGlobalSearch();
@@ -657,23 +726,24 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <DemoModeProvider>
-            <MockRoleProvider>
-              <FmToolbarProvider>
-              <StripeProvider>
-                <ShoppingCartProvider>
-                  <GlobalSearchProvider>
-                    <TooltipProvider>
-                      <Sonner />
-                      <BrowserRouter>
-                        <NavigationProvider>
-                          <AnalyticsProvider>
-                            <CheckoutProvider>
-                            <Suspense fallback={<LazyLoadFallback />}>
-                              <AppRoutes />
-                            </Suspense>
+      <I18nLoadingGate>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <DemoModeProvider>
+              <MockRoleProvider>
+                <FmToolbarProvider>
+                <StripeProvider>
+                  <ShoppingCartProvider>
+                    <GlobalSearchProvider>
+                      <TooltipProvider>
+                        <Sonner />
+                        <BrowserRouter>
+                          <NavigationProvider>
+                            <AnalyticsProvider>
+                              <CheckoutProvider>
+                              <Suspense fallback={<LazyLoadFallback />}>
+                                <AppRoutes />
+                              </Suspense>
                             <FmToolbar />
                             <FmMobileDevToolbar />
                             <DemoModeOverlay />
@@ -690,8 +760,9 @@ const App = () => {
               </FmToolbarProvider>
             </MockRoleProvider>
           </DemoModeProvider>
-        </AuthProvider>
-      </QueryClientProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </I18nLoadingGate>
     </ErrorBoundary>
   );
 };

@@ -70,6 +70,8 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
   const { t } = useTranslation('common');
   const { createLink, updateLink } = useTrackingLinks(eventId);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [isCustomSource, setIsCustomSource] = useState(false);
+  const [isCustomMedium, setIsCustomMedium] = useState(false);
 
   const formSchema = createFormSchema(t);
   const form = useForm<FormData>({
@@ -102,6 +104,12 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
   // Populate form when editing
   useEffect(() => {
     if (editingLink) {
+      // Check if source/medium are custom (not in the suggestion lists)
+      const sourceIsCustom = !SOURCE_SUGGESTIONS.includes(editingLink.utm_source);
+      const mediumIsCustom = !MEDIUM_SUGGESTIONS.includes(editingLink.utm_medium);
+      setIsCustomSource(sourceIsCustom);
+      setIsCustomMedium(mediumIsCustom);
+
       form.reset({
         name: editingLink.name,
         code: editingLink.code,
@@ -116,6 +124,8 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
       });
     } else {
       form.reset();
+      setIsCustomSource(false);
+      setIsCustomMedium(false);
     }
   }, [editingLink, form]);
 
@@ -199,7 +209,18 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                         </Tooltip>
                       </TooltipProvider>
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        if (value === 'custom') {
+                          setIsCustomSource(true);
+                          field.onChange('');
+                        } else {
+                          setIsCustomSource(false);
+                          field.onChange(value);
+                        }
+                      }}
+                      value={isCustomSource ? 'custom' : field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={t('tracking.placeholders.selectSource')} />
@@ -214,9 +235,10 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                         <SelectItem value="custom">{t('tracking.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
-                    {field.value === 'custom' && (
+                    {isCustomSource && (
                       <Input
                         placeholder={t('tracking.placeholders.customSource')}
+                        value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
                         className="mt-2"
                       />
@@ -244,7 +266,18 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                         </Tooltip>
                       </TooltipProvider>
                     </FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(value) => {
+                        if (value === 'custom') {
+                          setIsCustomMedium(true);
+                          field.onChange('');
+                        } else {
+                          setIsCustomMedium(false);
+                          field.onChange(value);
+                        }
+                      }}
+                      value={isCustomMedium ? 'custom' : field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={t('tracking.placeholders.selectMedium')} />
@@ -259,9 +292,10 @@ export function CreateLinkDialog({ eventId, open, onOpenChange, editingLink }: C
                         <SelectItem value="custom">{t('tracking.custom')}</SelectItem>
                       </SelectContent>
                     </Select>
-                    {field.value === 'custom' && (
+                    {isCustomMedium && (
                       <Input
                         placeholder={t('tracking.placeholders.customMedium')}
+                        value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
                         className="mt-2"
                       />

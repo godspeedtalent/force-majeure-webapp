@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { supabase } from '@/shared';
 import { getImageUrl } from '@/shared';
+import { diagStart, diagComplete, diagError } from '@/shared/services/initDiagnostics';
 
 import { ArtistSummary, EventDetailsRecord, EventStatus, VenueDetails } from '../types';
 
@@ -172,44 +173,64 @@ const transformEvent = (row: EventRow): EventDetailsRecord => {
 const fetchEventDetails = async (
   eventId: string
 ): Promise<EventDetailsRecord> => {
-  const { data, error } = await supabase
-    .from('events')
-    .select(
+  const diagKey = `query.eventDetails.${eventId}`;
+  diagStart(diagKey, { eventId });
+
+  try {
+    const { data, error } = await supabase
+      .from('events')
+      .select(
+        `
+        id,
+        title,
+        subtitle,
+        start_time,
+        end_time,
+        is_after_hours,
+        looking_for_undercard,
+        no_headliner,
+        venue_id,
+        about_event,
+        hero_image,
+        status,
+        is_free_event,
+        is_rsvp_only_event,
+        rsvp_button_subtitle,
+        mobile_full_hero_height,
+        max_tickets_per_order,
+        venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
+        headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
+        event_artists!left(
+          set_time,
+          set_order,
+          artist:artists(id, name, genre, image_url)
+        )
       `
-      id,
-      title,
-      subtitle,
-      start_time,
-      end_time,
-      is_after_hours,
-      looking_for_undercard,
-      no_headliner,
-      venue_id,
-      about_event,
-      hero_image,
-      status,
-      is_free_event,
-      is_rsvp_only_event,
-      rsvp_button_subtitle,
-      mobile_full_hero_height,
-      max_tickets_per_order,
-      venue:venues(id, name, description, address_line_1, address_line_2, city, state, zip_code, image_url, logo_url, website, instagram_handle, facebook_url, youtube_url, tiktok_handle),
-      headliner_artist:artists!events_headliner_id_fkey(id, name, genre, image_url),
-      event_artists!left(
-        set_time,
-        set_order,
-        artist:artists(id, name, genre, image_url)
       )
-    `
-    )
-    .eq('id', eventId)
-    .maybeSingle();
+      .eq('id', eventId)
+      .maybeSingle();
 
-  if (error) throw error;
-  if (!data) throw new Error('Event not found');
+    if (error) {
+      diagError(diagKey, error, { eventId });
+      throw error;
+    }
+    if (!data) {
+      const notFoundError = new Error('Event not found');
+      diagError(diagKey, notFoundError, { eventId });
+      throw notFoundError;
+    }
 
-  // Type assertion needed due to Supabase types being out of sync
-  return transformEvent(data as any as EventRow);
+    // Type assertion needed due to Supabase types being out of sync
+    const result = transformEvent(data as unknown as EventRow);
+    diagComplete(diagKey, { eventId, found: true });
+    return result;
+  } catch (err) {
+    // Only call diagError if we haven't already (for unexpected errors)
+    if (!(err instanceof Error && (err.message === 'Event not found' || 'code' in err))) {
+      diagError(diagKey, err, { eventId });
+    }
+    throw err;
+  }
 };
 
 export const useEventDetails = (eventId: string | undefined) => {

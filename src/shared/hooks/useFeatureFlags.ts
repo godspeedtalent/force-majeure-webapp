@@ -14,6 +14,7 @@ import {
   createEmptyFeatureFlagsState,
 } from '@/shared';
 import { getFeatureFlagOverride } from '@/shared';
+import { diagStart, diagComplete, diagError } from '@/shared/services/initDiagnostics';
 
 const flagLogger = logger.createNamespace('FeatureFlags');
 
@@ -31,79 +32,90 @@ export const useFeatureFlags = () => {
   return useQuery({
     queryKey: ['feature-flags'],
     queryFn: async (): Promise<FeatureFlags> => {
-      // Fetch current environment and "all" environment in parallel
-      const [currentEnv, allEnvResult] = await Promise.all([
-        environmentService.getCurrentEnvironment(),
-        supabase.from('environments').select('id').eq('name', 'all').single(),
-      ]);
+      const diagKey = 'query.featureFlags';
+      diagStart(diagKey);
 
-      if (!currentEnv) {
-        flagLogger.warn('Could not determine environment, using defaults');
-        return createEmptyFeatureFlagsState();
-      }
+      try {
+        // Fetch current environment and "all" environment in parallel
+        const [currentEnv, allEnvResult] = await Promise.all([
+          environmentService.getCurrentEnvironment(),
+          supabase.from('environments').select('id').eq('name', 'all').single(),
+        ]);
 
-      if (allEnvResult.error) {
-        flagLogger.error('Failed to fetch "all" environment:', allEnvResult.error);
-      }
-
-      const environmentIds = [currentEnv.id];
-      if (allEnvResult.data) {
-        environmentIds.push(allEnvResult.data.id);
-      }
-
-      const { data, error } = await supabase
-        .from('feature_flags')
-        .select(
-          `
-          flag_name,
-          is_enabled,
-          environment:environments(name)
-        `
-        )
-        .in('environment_id', environmentIds);
-
-      if (error) {
-        flagLogger.error('Failed to fetch feature flags:', error);
-        throw error;
-      }
-
-      // Initialize with all flags set to false
-      const flags: FeatureFlags = createEmptyFeatureFlagsState();
-
-      (data as unknown as FeatureFlagRow[])?.forEach(flag => {
-        if (flag.flag_name in flags) {
-          flags[flag.flag_name as keyof FeatureFlags] = flag.is_enabled;
+        if (!currentEnv) {
+          flagLogger.warn('Could not determine environment, using defaults');
+          diagComplete(diagKey, { reason: 'no_environment', defaults: true });
+          return createEmptyFeatureFlagsState();
         }
-      });
 
-      // Apply local .env overrides in development only
-      if (isDevelopment()) {
-        (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
-          const override = getEnvironmentOverride(flagKey);
-          if (override !== null) {
-            flags[flagKey] = override;
+        if (allEnvResult.error) {
+          flagLogger.error('Failed to fetch "all" environment:', allEnvResult.error);
+        }
+
+        const environmentIds = [currentEnv.id];
+        if (allEnvResult.data) {
+          environmentIds.push(allEnvResult.data.id);
+        }
+
+        const { data, error } = await supabase
+          .from('feature_flags')
+          .select(
+            `
+            flag_name,
+            is_enabled,
+            environment:environments(name)
+          `
+          )
+          .in('environment_id', environmentIds);
+
+        if (error) {
+          flagLogger.error('Failed to fetch feature flags:', error);
+          diagError(diagKey, error);
+          throw error;
+        }
+
+        // Initialize with all flags set to false
+        const flags: FeatureFlags = createEmptyFeatureFlagsState();
+
+        (data as unknown as FeatureFlagRow[])?.forEach(flag => {
+          if (flag.flag_name in flags) {
+            flags[flag.flag_name as keyof FeatureFlags] = flag.is_enabled;
           }
         });
-      }
 
-      // Apply session-based overrides (takes precedence over everything)
-      // This allows admins/developers to override feature flags for their session only
-      (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
-        const sessionOverride = getFeatureFlagOverride(flagKey);
-        if (sessionOverride !== null) {
-          flags[flagKey] = sessionOverride;
+        // Apply local .env overrides in development only
+        if (isDevelopment()) {
+          (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
+            const override = getEnvironmentOverride(flagKey);
+            if (override !== null) {
+              flags[flagKey] = override;
+            }
+          });
         }
-      });
 
-      flagLogger.debug('Feature flags loaded', {
-        environment: currentEnv.name,
-        flagCount: data?.length || 0,
-        enabledFlags: Object.entries(flags)
-          .filter(([_, enabled]) => enabled)
-          .map(([name]) => name),
-      });
+        // Apply session-based overrides (takes precedence over everything)
+        // This allows admins/developers to override feature flags for their session only
+        (Object.keys(flags) as Array<keyof FeatureFlags>).forEach(flagKey => {
+          const sessionOverride = getFeatureFlagOverride(flagKey);
+          if (sessionOverride !== null) {
+            flags[flagKey] = sessionOverride;
+          }
+        });
 
-      return flags;
+        flagLogger.debug('Feature flags loaded', {
+          environment: currentEnv.name,
+          flagCount: data?.length || 0,
+          enabledFlags: Object.entries(flags)
+            .filter(([_, enabled]) => enabled)
+            .map(([name]) => name),
+        });
+
+        diagComplete(diagKey, { environment: currentEnv.name, flagCount: data?.length || 0 });
+        return flags;
+      } catch (err) {
+        diagError(diagKey, err);
+        throw err;
+      }
     },
     // Feature flags rarely change mid-session - cache for 5 minutes
     staleTime: 5 * 60 * 1000,

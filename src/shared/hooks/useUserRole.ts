@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { logger } from '@/shared';
 import { debugAccessService } from '@/shared/services/debugAccessService';
+import { diagStart, diagComplete, diagError } from '@/shared/services/initDiagnostics';
 
 import { useAuthSafe } from '@/features/auth/services/AuthContext';
 import { supabase } from '@/shared';
@@ -46,6 +47,9 @@ export const useUserRole = () => {
     queryFn: async () => {
       if (!user) return [];
 
+      const diagKey = `query.userRoles.${user.id}`;
+      diagStart(diagKey, { userId: user.id });
+
       try {
         // Use the new helper function
         const { data, error } = await supabase.rpc('get_user_roles', {
@@ -64,31 +68,37 @@ export const useUserRole = () => {
               });
 
               if (!retry.error) {
-                return (retry.data || []).map(role => ({
+                const roles = (retry.data || []).map(role => ({
                   role_name: role.role_name,
                   display_name: role.display_name,
                   permission_names: Array.isArray(role.permission_names)
                     ? role.permission_names
                     : [],
                 })) as UserRole[];
+                diagComplete(diagKey, { userId: user.id, roleCount: roles.length, retried: true });
+                return roles;
               }
             }
           }
 
           logger.error('Error fetching user roles:', { error });
+          diagError(diagKey, error, { userId: user.id });
           return [];
         }
 
         // Map database response to UserRole interface
-        return (data || []).map(role => ({
+        const roles = (data || []).map(role => ({
           role_name: role.role_name,
           display_name: role.display_name,
           permission_names: Array.isArray(role.permission_names)
             ? role.permission_names
             : [],
         })) as UserRole[];
+        diagComplete(diagKey, { userId: user.id, roleCount: roles.length });
+        return roles;
       } catch (error) {
         logger.error('Unexpected error fetching user roles:', { error });
+        diagError(diagKey, error, { userId: user.id });
         return [];
       }
     },

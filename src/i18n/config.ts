@@ -4,6 +4,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 import { diagStart, diagComplete, diagError, diagWarn } from '@/shared/services/initDiagnostics';
 
+// Bundle English translations directly for instant loading
+// Other languages (es, zh) load via HTTP on-demand
+import commonEn from '../../public/locales/en/common.json';
+import pagesEn from '../../public/locales/en/pages.json';
+import validationEn from '../../public/locales/en/validation.json';
+import toastsEn from '../../public/locales/en/toasts.json';
+
 export const SUPPORTED_LOCALES = ['en', 'es', 'zh'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -52,6 +59,19 @@ i18n
     supportedLngs: [...SUPPORTED_LOCALES],
     ns: ['common', 'pages', 'validation', 'toasts'],
     defaultNS: 'common',
+
+    // Bundle English translations - available instantly, no network request
+    // Other languages (es, zh) load via HttpBackend on-demand
+    resources: {
+      en: {
+        common: commonEn,
+        pages: pagesEn,
+        validation: validationEn,
+        toasts: toastsEn,
+      },
+    },
+    partialBundledLanguages: true, // Allow HTTP loading for non-bundled languages
+
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
@@ -64,6 +84,9 @@ i18n
       escapeValue: false, // React already handles XSS protection
     },
     react: {
+      // Safe to use Suspense now because:
+      // 1. English is bundled - loads instantly (no network)
+      // 2. App.tsx has a loading gate with timeout for other languages
       useSuspense: true,
     },
   })
