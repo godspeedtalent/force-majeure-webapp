@@ -14,6 +14,7 @@ import {
   Code,
   FileSpreadsheet,
   Mail,
+  TrendingUp,
   // Admin icons
   Shield,
   Sliders,
@@ -85,6 +86,12 @@ export function useDeveloperNavigation({
   const navigationGroups: FmCommonSideNavGroup<DeveloperTab>[] = useMemo(() => {
     // Developer Tools group - sorted alphabetically
     const devToolsItems: FmCommonSideNavItem<DeveloperTab>[] = [
+      {
+        id: 'delphi',
+        label: t('developerIndex.delphi'),
+        icon: TrendingUp,
+        description: t('developerIndex.delphiDescription'),
+      },
       {
         id: 'dev_demo',
         label: t('developerIndex.demoTools'),

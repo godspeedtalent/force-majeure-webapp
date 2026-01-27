@@ -5,5 +5,6 @@ export { DeveloperDatabaseRecordingsTab } from './DeveloperDatabaseRecordingsTab
 export { DeveloperDatabaseOverviewTab } from './DeveloperDatabaseOverviewTab';
 export { ActivityLogsTab } from './ActivityLogsTab';
 export { DemoToolsTab } from './DemoToolsTab';
+export { DelphiTab } from './DelphiTab';
 export { UserRoleMatrixTab } from './UserRoleMatrixTab';
 export { ResendDashboardTab } from './ResendDashboardTab';

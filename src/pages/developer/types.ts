@@ -6,6 +6,7 @@ export type DeveloperTab =
   // Developer Tools
   | 'dev_demo'
   | 'dev_order_import'
+  | 'delphi'
   // Admin Controls
   | 'admin_settings'
   | 'admin_ticketing'
@@ -32,6 +33,7 @@ export type DeveloperTab =
 export const VALID_TABS: DeveloperTab[] = [
   'dev_demo',
   'dev_order_import',
+  'delphi',
   'admin_settings',
   'admin_ticketing',
   'admin_role_matrix',

@@ -40,6 +40,7 @@ import {
   DeveloperDatabaseRecordingsTab,
   ActivityLogsTab,
   DemoToolsTab,
+  DelphiTab,
   UserRoleMatrixTab,
   ResendDashboardTab,
 } from './tabs';
@@ -178,6 +179,11 @@ export default function DeveloperHome() {
           </PageErrorBoundary>
         )}
 
+        {activeTab === 'delphi' && (
+          <PageErrorBoundary section="Delphi">
+            <DelphiTab />
+          </PageErrorBoundary>
+        )}
 
         {/* ======================== DASHBOARDS ======================== */}
         {activeTab === 'dash_email_traffic' && (

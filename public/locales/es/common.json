@@ -3601,6 +3601,8 @@
     "description": "Recursos para desarrolladores, documentación de componentes y utilidades de prueba",
     "databaseManager": "Gestor de Base de Datos",
     "databaseManagerDescription": "Gestionar recursos de base de datos incluyendo artistas, eventos, venues y organizaciones con potentes herramientas de búsqueda y edición",
+    "delphi": "Delphi",
+    "delphiDescription": "Herramienta de pronóstico de ventas de entradas usando métricas de canales y factores de ponderación configurables",
     "demoTools": "Herramientas de Demostración",
     "demoToolsDescription": "Probar funciones de la aplicación incluyendo flujo de compra de entradas, plantillas de email y demos interactivas",
     "documentationViewer": "Visor de Documentación",

@@ -3611,6 +3611,8 @@
     "description": "Developer resources, component documentation, and testing utilities",
     "databaseManager": "Database Manager",
     "databaseManagerDescription": "Manage database resources including artists, events, venues, and organizations with powerful search and editing tools",
+    "delphi": "Delphi",
+    "delphiDescription": "Ticket sales forecasting tool using channel metrics and configurable weighting factors",
     "demoTools": "Demo Tools",
     "demoToolsDescription": "Test application features including event checkout flow, email templates, and interactive demos",
     "documentationViewer": "Documentation Viewer",

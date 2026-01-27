@@ -3601,6 +3601,8 @@
     "description": "开发者资源、组件文档和测试工具",
     "databaseManager": "数据库管理器",
     "databaseManagerDescription": "使用强大的搜索和编辑工具管理数据库资源，包括艺人、活动、场地和组织",
+    "delphi": "Delphi",
+    "delphiDescription": "使用渠道指标和可配置权重因子的门票销售预测工具",
     "demoTools": "演示工具",
     "demoToolsDescription": "测试应用程序功能，包括活动结账流程、邮件模板和交互式演示",
     "documentationViewer": "文档查看器",
