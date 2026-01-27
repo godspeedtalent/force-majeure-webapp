@@ -3,11 +3,13 @@
  *
  * Provides comprehensive check-in statistics for an event.
  * Combines ticket check-in status with scan event data.
+ * Uses adaptive polling to reduce unnecessary API requests.
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { logger } from '@/shared';
+import { useAdaptivePolling, POLLING_PRESETS } from '@/shared/hooks/useAdaptivePolling';
 import { useScanStatistics, useRecentScans, type ScanStatistics } from './useScanStatistics';
 
 const checkInLogger = logger.createNamespace('CheckInStats');
@@ -61,11 +63,17 @@ export interface CheckInStatsOptions {
   /**
    * Refresh interval in milliseconds
    * Default: 30000 (30 seconds) for normal mode
-   * Set to 2000 for "live mode" during event
+   * Set to 5000 for "live mode" during event (reduced from 2000 for better performance)
    */
   refreshInterval?: number;
   /** Whether the query is enabled */
   enabled?: boolean;
+  /**
+   * Whether to use adaptive polling (recommended)
+   * When true, uses smart backoff and tab visibility detection
+   * @default true
+   */
+  useAdaptive?: boolean;
 }
 
 /**
@@ -189,33 +197,53 @@ function transformRecentScans(rawScans: unknown[]): RecentScanEvent[] {
  *
  * @example
  * ```tsx
- * // Normal mode (30s refresh)
+ * // Normal mode (30s refresh with adaptive polling)
  * const { data } = useCheckInStats({ eventId });
  *
- * // Live mode (2s refresh for day-of-event)
- * const { data } = useCheckInStats({ eventId, refreshInterval: 2000 });
+ * // Live mode (5s refresh for day-of-event)
+ * const { data } = useCheckInStats({ eventId, refreshInterval: 5000 });
  * ```
  */
 export function useCheckInStats(options: CheckInStatsOptions) {
-  const { eventId, refreshInterval = 30000, enabled = true } = options;
+  const { eventId, refreshInterval = 30000, enabled = true, useAdaptive = true } = options;
 
-  // Use the existing scan statistics hook
+  // Use the existing scan statistics hook (already uses adaptive polling)
   const scanStatsQuery = useScanStatistics({
     eventId,
     refreshInterval: enabled ? refreshInterval : 0,
+    useAdaptive,
   });
 
-  // Use the existing recent scans hook
-  const recentScansQuery = useRecentScans(eventId, 20);
+  // Use the existing recent scans hook (already uses adaptive polling)
+  const recentScansQuery = useRecentScans({ eventId, limit: 20, useAdaptive });
 
   // Query for check-in data from tickets table
-  const checkInQuery = useQuery({
-    queryKey: checkInStatsKeys.byEvent(eventId),
-    queryFn: () => fetchCheckInData(eventId),
-    enabled: enabled && !!eventId,
+  // Use adaptive polling for the check-in query as well
+  const checkInQueryKey = checkInStatsKeys.byEvent(eventId);
+  const checkInQueryFn = () => fetchCheckInData(eventId);
+
+  const checkInQueryAdaptive = useAdaptivePolling(
+    checkInQueryKey,
+    checkInQueryFn,
+    {
+      ...POLLING_PRESETS.REALTIME,
+      baseInterval: refreshInterval,
+    },
+    {
+      enabled: enabled && !!eventId && useAdaptive,
+    }
+  );
+
+  const checkInQueryStandard = useQuery({
+    queryKey: checkInQueryKey,
+    queryFn: checkInQueryFn,
+    enabled: enabled && !!eventId && !useAdaptive,
     refetchInterval: refreshInterval,
     staleTime: 10000,
   });
+
+  // Use adaptive or standard query based on option
+  const checkInQuery = useAdaptive ? checkInQueryAdaptive : checkInQueryStandard;
 
   // Combine all data
   const isLoading = checkInQuery.isLoading || scanStatsQuery.isLoading || recentScansQuery.isLoading;

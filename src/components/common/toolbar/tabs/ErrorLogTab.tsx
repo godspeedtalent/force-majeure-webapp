@@ -7,8 +7,8 @@
  */
 
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useAdaptivePolling, POLLING_PRESETS } from '@/shared/hooks/useAdaptivePolling';
 import {
   AlertTriangle,
   XCircle,
@@ -225,10 +225,11 @@ export function ErrorLogTabContent() {
     });
   };
 
-  // Fetch recent error logs
-  const { data: logs = [], isLoading, error } = useQuery({
-    queryKey: ['error-logs'],
-    queryFn: async () => {
+  // Fetch recent error logs with adaptive polling
+  // Uses MONITORING preset: 60s base, backs off to 5min when idle
+  const { data: logs = [], isLoading, error } = useAdaptivePolling<ErrorLogRow[]>(
+    ['error-logs'],
+    async () => {
       const { data, error: queryError } = await supabase
         .from('error_logs')
         .select('id, level, source, message, endpoint, method, status_code, details, user_id, page_url, created_at')
@@ -238,8 +239,8 @@ export function ErrorLogTabContent() {
       if (queryError) throw queryError;
       return (data || []) as ErrorLogRow[];
     },
-    refetchInterval: 30000,
-  });
+    POLLING_PRESETS.MONITORING
+  );
 
   // Filter logs by enabled levels
   const filteredLogs = useMemo(() => {

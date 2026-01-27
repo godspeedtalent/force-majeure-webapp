@@ -512,9 +512,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
     }
 
-    // 7. Force page reload to trigger route guards
-    // This ensures protected routes redirect unauthenticated users
-    window.location.reload();
+    // 7. Navigate to home page
+    // Since we've cleared all auth state and React Query cache,
+    // protected routes will automatically redirect via ProtectedRoute component.
+    // Using href instead of reload for cleaner navigation without full page refresh.
+    window.location.href = '/';
   };
 
   const updateProfile = async (updates: Partial<Profile>) => {

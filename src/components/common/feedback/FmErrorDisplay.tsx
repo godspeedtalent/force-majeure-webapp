@@ -33,12 +33,16 @@ interface FmErrorDisplayProps {
  *
  * Usage:
  * ```tsx
+ * // With custom retry handler (preferred - avoids page reload)
  * <FmErrorDisplay
  *   error={error}
  *   errorInfo={errorInfo}
- *   onReset={() => window.location.reload()}
- *   onGoBack={() => window.history.back()}
+ *   onReset={() => refetch()}  // Use query refetch instead of reload
+ *   onGoBack={() => navigate(-1)}
  * />
+ *
+ * // Without handlers (falls back to reload/history.back)
+ * <FmErrorDisplay error={error} />
  * ```
  */
 export const FmErrorDisplay = ({

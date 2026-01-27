@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logger } from '@/shared';
-import { supabase } from '@/shared';
 import { toast } from 'sonner';
+import { useVenueCapacity } from '@/shared/api/queries/venueQueries';
 
 /**
  * Shared state and types for event forms
@@ -90,45 +89,37 @@ export function useEventFormState(initialState?: Partial<EventFormState>) {
   const [rsvpCapacity, setRsvpCapacity] = useState<number | null>(initialState?.rsvpCapacity ?? null);
   const [maxTicketsPerOrder, setMaxTicketsPerOrder] = useState<number>(initialState?.maxTicketsPerOrder || 100);
 
-  // Fetch venue capacity when venue changes
+  // Fetch venue capacity using React Query (cached)
+  const { data: fetchedVenueCapacity, error: venueCapacityError } = useVenueCapacity(venueId || undefined);
+
+  // Update venue capacity when fetched
   useEffect(() => {
-    if (venueId) {
-      supabase
-        .from('venues')
-        .select('capacity')
-        .eq('id', venueId)
-        .single()
-        .then(({ data, error }) => {
-          if (error) {
-            logger.error('Error fetching venue capacity:', { error, venueId });
-            toast.error(t('eventForm.venueCapacityFailed'), {
-              description: t('eventForm.venueCapacityDefault'),
-            });
-            setVenueCapacity(100);
-            return;
-          }
-
-          if (data && data.capacity) {
-            setVenueCapacity(data.capacity);
-
-            // Only initialize default tiers if no tiers exist (for create mode)
-            if (ticketTiers.length === 0) {
-              const capacity = data.capacity;
-
-              setTicketTiers([
-                {
-                  name: 'GA',
-                  description: '',
-                  priceInCents: 0,
-                  quantity: capacity,
-                  hideUntilPreviousSoldOut: false,
-                },
-              ]);
-            }
-          }
-        });
+    if (venueCapacityError) {
+      toast.error(t('eventForm.venueCapacityFailed'), {
+        description: t('eventForm.venueCapacityDefault'),
+      });
+      setVenueCapacity(100);
+      return;
     }
-  }, [venueId]); // Don't include ticketTiers to avoid infinite loop
+
+    if (fetchedVenueCapacity !== undefined) {
+      setVenueCapacity(fetchedVenueCapacity);
+
+      // Only initialize default tiers if no tiers exist (for create mode)
+      if (ticketTiers.length === 0) {
+        setTicketTiers([
+          {
+            name: 'GA',
+            description: '',
+            priceInCents: 0,
+            quantity: fetchedVenueCapacity,
+            hideUntilPreviousSoldOut: false,
+          },
+        ]);
+      }
+    }
+  }, [fetchedVenueCapacity, venueCapacityError, t]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Note: Intentionally excluding ticketTiers from deps to avoid infinite loop
 
   // Reset form helper
   const resetForm = useCallback(() => {

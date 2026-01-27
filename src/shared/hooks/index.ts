@@ -70,3 +70,7 @@ export { useCanManageEvent, eventAccessKeys } from './useCanManageEvent';
 
 // Diagnostics hook
 export { useDiagnostics, getMetricDuration, getTimingColor } from './useDiagnostics';
+
+// Adaptive polling hook for reducing unnecessary API requests
+export { useAdaptivePolling, POLLING_PRESETS } from './useAdaptivePolling';
+export type { AdaptivePollingOptions } from './useAdaptivePolling';

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/shared';
 import { logger } from '@/shared/services/logger';
+import { useAdaptivePolling, POLLING_PRESETS } from '@/shared/hooks/useAdaptivePolling';
 import { ticketTierService } from '@/features/ticketing/services/ticketTierService';
 import type { TicketTier } from '@/features/events/types';
 
@@ -193,10 +194,16 @@ export const eventInventoryKeys = {
 /**
  * Hook for fetching and computing event inventory statistics
  *
+ * Uses adaptive polling to reduce unnecessary API requests:
+ * - Pauses when browser tab is hidden
+ * - Backs off when inventory data hasn't changed
+ * - Speeds up when user is actively engaged
+ *
  * @param eventId - The event ID to fetch inventory for
  * @param options - Optional configuration
- * @param options.refetchInterval - How often to refetch (default: 30000ms for admin, set to 60000 for public)
+ * @param options.refetchInterval - Base refresh interval (default: 30000ms)
  * @param options.enabled - Whether the query is enabled
+ * @param options.useAdaptive - Whether to use adaptive polling (default: true)
  *
  * @example
  * ```tsx
@@ -215,24 +222,41 @@ export function useEventInventory(
   options?: {
     refetchInterval?: number;
     enabled?: boolean;
+    useAdaptive?: boolean;
   }
 ) {
-  const { refetchInterval = 30000, enabled = true } = options ?? {};
+  const { refetchInterval = 30000, enabled = true, useAdaptive = true } = options ?? {};
 
-  return useQuery<EventInventoryStats, Error>({
-    queryKey: eventInventoryKeys.byEvent(eventId ?? ''),
-    queryFn: async () => {
-      if (!eventId) {
-        throw new Error('Event ID is required');
+  const queryKey = eventInventoryKeys.byEvent(eventId ?? '');
+  const queryFn = async () => {
+    if (!eventId) {
+      throw new Error('Event ID is required');
+    }
+    return fetchEventInventory(eventId);
+  };
+
+  // Use adaptive polling for smarter request management
+  if (useAdaptive && refetchInterval > 0) {
+    return useAdaptivePolling<EventInventoryStats, Error>(
+      queryKey,
+      queryFn,
+      {
+        ...POLLING_PRESETS.INVENTORY,
+        baseInterval: refetchInterval,
+      },
+      {
+        enabled: enabled && !!eventId,
       }
+    );
+  }
 
-      // Use dynamic counting from database function (accurate)
-      // with fallback to stored counters if function not available
-      return fetchEventInventory(eventId);
-    },
+  // Fallback to standard polling
+  return useQuery<EventInventoryStats, Error>({
+    queryKey,
+    queryFn,
     enabled: enabled && !!eventId,
-    refetchInterval,
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchInterval: refetchInterval > 0 ? refetchInterval : false,
+    staleTime: 10000,
   });
 }
 

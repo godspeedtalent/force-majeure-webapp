@@ -282,7 +282,7 @@ export function ScreeningQueueView() {
       return (
         <FmCommonCard variant="frosted" className="p-[20px] text-center">
           <p className="text-muted-foreground mb-[20px]">Failed to load submissions</p>
-          <FmCommonButton variant="default" onClick={() => window.location.reload()}>
+          <FmCommonButton variant="default" onClick={() => refetch()}>
             Retry
           </FmCommonButton>
         </FmCommonCard>
