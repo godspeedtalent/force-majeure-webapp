@@ -43,7 +43,6 @@ export const FmArtistRow = ({ artist, onSelect, variant = 'default' }: FmArtistR
           )}
         >
           {artist.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={artist.image}
               alt={artist.name}

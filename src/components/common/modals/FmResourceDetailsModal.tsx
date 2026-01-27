@@ -113,7 +113,6 @@ export const FmResourceDetailsModal = ({
             {isImageLoading && (
               <Skeleton className='absolute inset-0 w-full h-full rounded-none' />
             )}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
               alt={title}
@@ -225,7 +224,6 @@ export const FmResourceDetailsModal = ({
                 {isImageLoading && (
                   <Skeleton className={cn(imageAspectRatio, 'absolute inset-0 w-full rounded-none')} />
                 )}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
                   alt={title}
