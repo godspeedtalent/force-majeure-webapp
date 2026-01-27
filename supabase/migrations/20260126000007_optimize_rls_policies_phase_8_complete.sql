@@ -207,22 +207,27 @@ CREATE POLICY "Only admins can update analytics sessions"
   );
 
 -- ----------------------------------------------------------------------------
--- TABLE: app_settings (2 policies)
+-- TABLE: app_settings (2 policies) - Only if table exists
 -- ----------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Admins can delete app settings" ON app_settings;
-CREATE POLICY "Admins can delete app settings"
-  ON app_settings FOR DELETE
-  USING (
-    (((SELECT auth.uid()) IS NOT NULL) AND (has_role((SELECT auth.uid()), 'admin'::text) OR is_dev_admin((SELECT auth.uid()))))
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'app_settings') THEN
+    DROP POLICY IF EXISTS "Admins can delete app settings" ON app_settings;
+    CREATE POLICY "Admins can delete app settings"
+      ON app_settings FOR DELETE
+      USING (
+        (((SELECT auth.uid()) IS NOT NULL) AND (has_role((SELECT auth.uid()), 'admin'::text) OR is_dev_admin((SELECT auth.uid()))))
+      );
 
-DROP POLICY IF EXISTS "Admins can update app settings" ON app_settings;
-CREATE POLICY "Admins can update app settings"
-  ON app_settings FOR UPDATE
-  USING (
-    (((SELECT auth.uid()) IS NOT NULL) AND (has_role((SELECT auth.uid()), 'admin'::text) OR is_dev_admin((SELECT auth.uid()))))
-  );
+    DROP POLICY IF EXISTS "Admins can update app settings" ON app_settings;
+    CREATE POLICY "Admins can update app settings"
+      ON app_settings FOR UPDATE
+      USING (
+        (((SELECT auth.uid()) IS NOT NULL) AND (has_role((SELECT auth.uid()), 'admin'::text) OR is_dev_admin((SELECT auth.uid()))))
+      );
+  END IF;
+END $$;
 
 -- ----------------------------------------------------------------------------
 -- TABLE: artist_genres (1 policy)

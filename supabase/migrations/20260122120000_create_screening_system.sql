@@ -9,7 +9,7 @@
 -- ============================================================================
 
 -- Core submission table (replaces/merges undercard_requests)
-CREATE TABLE screening_submissions (
+CREATE TABLE IF NOT EXISTS screening_submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   artist_id UUID NOT NULL REFERENCES artists(id) ON DELETE CASCADE,
   recording_id UUID NOT NULL REFERENCES artist_recordings(id) ON DELETE CASCADE,
@@ -49,7 +49,7 @@ COMMENT ON COLUMN screening_submissions.has_genre_mismatch IS 'Auto-calculated: 
 COMMENT ON COLUMN screening_submissions.decision_note IS 'Optional note from staff shown to artist after approval/rejection';
 
 -- Staff reviews (hidden until you submit your own)
-CREATE TABLE screening_reviews (
+CREATE TABLE IF NOT EXISTS screening_reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   submission_id UUID NOT NULL REFERENCES screening_submissions(id) ON DELETE CASCADE,
   reviewer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -74,7 +74,7 @@ COMMENT ON COLUMN screening_reviews.listen_duration_seconds IS 'Actual time revi
 COMMENT ON COLUMN screening_reviews.internal_notes IS 'Private comments visible only to other FM staff members';
 
 -- Materialized scoring data (auto-calculated via triggers)
-CREATE TABLE submission_scores (
+CREATE TABLE IF NOT EXISTS submission_scores (
   submission_id UUID PRIMARY KEY REFERENCES screening_submissions(id) ON DELETE CASCADE,
 
   -- Raw metrics
@@ -104,7 +104,7 @@ COMMENT ON COLUMN submission_scores.indexed_score IS 'All-time ranking score sca
 COMMENT ON COLUMN submission_scores.hot_indexed_score IS 'Time-decayed trending score scaled 1-100 (decays over time)';
 
 -- System configuration (single row, admin-editable)
-CREATE TABLE screening_config (
+CREATE TABLE IF NOT EXISTS screening_config (
   id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),  -- Singleton table
 
   -- Review requirements
@@ -128,10 +128,10 @@ CREATE TABLE screening_config (
 COMMENT ON TABLE screening_config IS 'System-wide configuration for artist screening (singleton table). Admin-editable thresholds and scoring parameters.';
 
 -- Insert default config
-INSERT INTO screening_config (id) VALUES (1);
+INSERT INTO screening_config (id) VALUES (1) ON CONFLICT DO NOTHING;
 
 -- Venue genre requirements (new feature)
-CREATE TABLE venue_required_genres (
+CREATE TABLE IF NOT EXISTS venue_required_genres (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   venue_id UUID NOT NULL REFERENCES venues(id) ON DELETE CASCADE,
   genre_id UUID NOT NULL REFERENCES genres(id) ON DELETE CASCADE,
@@ -146,20 +146,20 @@ COMMENT ON TABLE venue_required_genres IS 'Genre requirements for venue bookings
 -- ============================================================================
 
 -- Submission indexes
-CREATE INDEX idx_submissions_status ON screening_submissions(status);
-CREATE INDEX idx_submissions_context_status ON screening_submissions(context_type, status);
-CREATE INDEX idx_submissions_event ON screening_submissions(event_id) WHERE event_id IS NOT NULL;
-CREATE INDEX idx_submissions_venue ON screening_submissions(venue_id) WHERE venue_id IS NOT NULL;
-CREATE INDEX idx_submissions_artist ON screening_submissions(artist_id);
-CREATE INDEX idx_submissions_created_at ON screening_submissions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_submissions_status ON screening_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_submissions_context_status ON screening_submissions(context_type, status);
+CREATE INDEX IF NOT EXISTS idx_submissions_event ON screening_submissions(event_id) WHERE event_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_submissions_venue ON screening_submissions(venue_id) WHERE venue_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_submissions_artist ON screening_submissions(artist_id);
+CREATE INDEX IF NOT EXISTS idx_submissions_created_at ON screening_submissions(created_at DESC);
 
 -- Review indexes
-CREATE INDEX idx_reviews_submission ON screening_reviews(submission_id);
-CREATE INDEX idx_reviews_reviewer ON screening_reviews(reviewer_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_submission ON screening_reviews(submission_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_reviewer ON screening_reviews(reviewer_id);
 
 -- Score indexes (for leaderboards)
-CREATE INDEX idx_scores_indexed_desc ON submission_scores(indexed_score DESC) WHERE indexed_score IS NOT NULL;
-CREATE INDEX idx_scores_hot_indexed_desc ON submission_scores(hot_indexed_score DESC) WHERE hot_indexed_score IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_scores_indexed_desc ON submission_scores(indexed_score DESC) WHERE indexed_score IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_scores_hot_indexed_desc ON submission_scores(hot_indexed_score DESC) WHERE hot_indexed_score IS NOT NULL;
 
 -- ============================================================================
 -- DATABASE FUNCTIONS
@@ -331,16 +331,19 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS recalculate_score_after_review_insert ON screening_reviews;
 CREATE TRIGGER recalculate_score_after_review_insert
 AFTER INSERT ON screening_reviews
 FOR EACH ROW
 EXECUTE FUNCTION trigger_recalculate_score();
 
+DROP TRIGGER IF EXISTS recalculate_score_after_review_update ON screening_reviews;
 CREATE TRIGGER recalculate_score_after_review_update
 AFTER UPDATE ON screening_reviews
 FOR EACH ROW
 EXECUTE FUNCTION trigger_recalculate_score();
 
+DROP TRIGGER IF EXISTS recalculate_score_after_review_delete ON screening_reviews;
 CREATE TRIGGER recalculate_score_after_review_delete
 AFTER DELETE ON screening_reviews
 FOR EACH ROW
@@ -357,11 +360,13 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS check_genre_mismatch_on_insert ON screening_submissions;
 CREATE TRIGGER check_genre_mismatch_on_insert
 BEFORE INSERT ON screening_submissions
 FOR EACH ROW
 EXECUTE FUNCTION trigger_check_genre_mismatch();
 
+DROP TRIGGER IF EXISTS check_genre_mismatch_on_update ON screening_submissions;
 CREATE TRIGGER check_genre_mismatch_on_update
 BEFORE UPDATE OF venue_id, artist_id ON screening_submissions
 FOR EACH ROW
@@ -380,11 +385,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Update timestamps
+DROP TRIGGER IF EXISTS set_timestamp_submissions ON screening_submissions;
 CREATE TRIGGER set_timestamp_submissions
 BEFORE UPDATE ON screening_submissions
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
+DROP TRIGGER IF EXISTS set_timestamp_reviews ON screening_reviews;
 CREATE TRIGGER set_timestamp_reviews
 BEFORE UPDATE ON screening_reviews
 FOR EACH ROW
@@ -413,6 +420,7 @@ GRANT SELECT ON venue_required_genres TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON venue_required_genres TO authenticated;
 
 -- Submissions: Artists see own, staff see all, public see approved
+DROP POLICY IF EXISTS "Artists can view own submissions" ON screening_submissions;
 CREATE POLICY "Artists can view own submissions"
   ON screening_submissions FOR SELECT
   USING (
@@ -423,6 +431,7 @@ CREATE POLICY "Artists can view own submissions"
     )
   );
 
+DROP POLICY IF EXISTS "Staff can view all submissions" ON screening_submissions;
 CREATE POLICY "Staff can view all submissions"
   ON screening_submissions FOR SELECT
   USING (
@@ -431,10 +440,12 @@ CREATE POLICY "Staff can view all submissions"
     is_dev_admin(auth.uid())
   );
 
+DROP POLICY IF EXISTS "Public can view approved submissions" ON screening_submissions;
 CREATE POLICY "Public can view approved submissions"
   ON screening_submissions FOR SELECT
   USING (status = 'approved');
 
+DROP POLICY IF EXISTS "Artists can insert submissions" ON screening_submissions;
 CREATE POLICY "Artists can insert submissions"
   ON screening_submissions FOR INSERT
   WITH CHECK (
@@ -445,6 +456,7 @@ CREATE POLICY "Artists can insert submissions"
     )
   );
 
+DROP POLICY IF EXISTS "Staff can update submissions" ON screening_submissions;
 CREATE POLICY "Staff can update submissions"
   ON screening_submissions FOR UPDATE
   USING (
@@ -454,10 +466,12 @@ CREATE POLICY "Staff can update submissions"
   );
 
 -- Reviews: Hidden until you submit your own
+DROP POLICY IF EXISTS "Reviewers can view own reviews" ON screening_reviews;
 CREATE POLICY "Reviewers can view own reviews"
   ON screening_reviews FOR SELECT
   USING (reviewer_id = auth.uid());
 
+DROP POLICY IF EXISTS "Reviewers can view others' reviews after submitting" ON screening_reviews;
 CREATE POLICY "Reviewers can view others' reviews after submitting"
   ON screening_reviews FOR SELECT
   USING (
@@ -468,6 +482,7 @@ CREATE POLICY "Reviewers can view others' reviews after submitting"
     )
   );
 
+DROP POLICY IF EXISTS "Staff can insert reviews" ON screening_reviews;
 CREATE POLICY "Staff can insert reviews"
   ON screening_reviews FOR INSERT
   WITH CHECK (
@@ -478,11 +493,13 @@ CREATE POLICY "Staff can insert reviews"
     )
   );
 
+DROP POLICY IF EXISTS "Reviewers can update own reviews" ON screening_reviews;
 CREATE POLICY "Reviewers can update own reviews"
   ON screening_reviews FOR UPDATE
   USING (reviewer_id = auth.uid());
 
 -- Scores: Same as submissions
+DROP POLICY IF EXISTS "View scores for accessible submissions" ON submission_scores;
 CREATE POLICY "View scores for accessible submissions"
   ON submission_scores FOR SELECT
   USING (
@@ -493,19 +510,23 @@ CREATE POLICY "View scores for accessible submissions"
   );
 
 -- Config: Everyone reads, only admins write
+DROP POLICY IF EXISTS "Everyone can view config" ON screening_config;
 CREATE POLICY "Everyone can view config"
   ON screening_config FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admins can update config" ON screening_config;
 CREATE POLICY "Admins can update config"
   ON screening_config FOR UPDATE
   USING (has_role(auth.uid(), 'admin') OR is_dev_admin(auth.uid()));
 
 -- Venue genres: Public read, admin write
+DROP POLICY IF EXISTS "Everyone can view venue genres" ON venue_required_genres;
 CREATE POLICY "Everyone can view venue genres"
   ON venue_required_genres FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admins can manage venue genres" ON venue_required_genres;
 CREATE POLICY "Admins can manage venue genres"
   ON venue_required_genres FOR ALL
   USING (has_role(auth.uid(), 'admin') OR is_dev_admin(auth.uid()));

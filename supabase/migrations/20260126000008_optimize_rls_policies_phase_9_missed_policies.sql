@@ -37,15 +37,20 @@ CREATE POLICY "Authenticated users can insert their own analytics sessions"
   );
 
 -- ----------------------------------------------------------------------------
--- TABLE: app_settings (1 policy)
+-- TABLE: app_settings (1 policy) - Only if table exists
 -- ----------------------------------------------------------------------------
 
-DROP POLICY IF EXISTS "Admins can insert app settings" ON app_settings;
-CREATE POLICY "Admins can insert app settings"
-  ON app_settings FOR INSERT
-  WITH CHECK (
-    (((select auth.uid()) IS NOT NULL) AND (has_role((select auth.uid()), 'admin'::text) OR is_dev_admin((select auth.uid()))))
-  );
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'app_settings') THEN
+    DROP POLICY IF EXISTS "Admins can insert app settings" ON app_settings;
+    CREATE POLICY "Admins can insert app settings"
+      ON app_settings FOR INSERT
+      WITH CHECK (
+        (((select auth.uid()) IS NOT NULL) AND (has_role((select auth.uid()), 'admin'::text) OR is_dev_admin((select auth.uid()))))
+      );
+  END IF;
+END $$;
 
 -- ----------------------------------------------------------------------------
 -- TABLE: artists (1 policy)
