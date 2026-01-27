@@ -27,6 +27,8 @@ dist-ssr
 # Environment files
 .env
 .env.local
+.env.staging
+.env.production
 
 # Backup and archived files
 *.backup
