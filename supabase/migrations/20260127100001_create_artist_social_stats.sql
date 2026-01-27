@@ -32,7 +32,10 @@ CREATE INDEX IF NOT EXISTS idx_artist_social_stats_artist_id
 -- Enable Row Level Security
 ALTER TABLE artist_social_stats ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies (using optimized auth pattern per CLAUDE.md guidelines)
+-- Drop existing policies first (idempotent)
+DROP POLICY IF EXISTS "Anyone can read artist stats" ON artist_social_stats;
+
+DROP POLICY IF EXISTS "Admins and developers can manage stats" ON artist_social_stats;
 
 -- Anyone can read artist stats (public data)
 CREATE POLICY "Anyone can read artist stats"
@@ -51,7 +54,7 @@ CREATE POLICY "Admins and developers can manage stats"
     has_role((SELECT auth.uid()), 'developer')
   );
 
--- Grants
+-- Grants (idempotent)
 GRANT SELECT ON artist_social_stats TO authenticated, anon;
 GRANT INSERT, UPDATE, DELETE ON artist_social_stats TO authenticated;
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronDown, Gift, LogIn, Tag, Ticket } from 'lucide-react';
 
 import { FmCommonCard, FmCommonCardHeader, FmCommonCardTitle, FmCommonCardDescription, FmCommonCardContent } from '@/components/common/display/FmCommonCard';
@@ -19,6 +19,7 @@ import { Separator } from '@/components/common/shadcn/separator';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn } from '@/shared';
 import { formatHeader } from '@/shared';
+import { navigateToAuth } from '@/shared/utils/authNavigation';
 import { formatDollars } from '@/lib/utils/currency';
 
 import { FmTicketTierList } from '@/components/ticketing/FmTicketTierList';
@@ -71,6 +72,7 @@ export const TicketingPanel = ({
   const { calculateFees, getTotalFees } = useTicketFees();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setSelections(initialSelections ?? {});
@@ -434,7 +436,7 @@ export const TicketingPanel = ({
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={() => navigate('/auth')}
+                    onClick={() => navigateToAuth(navigate, { location })}
                     className='text-xs h-8 border-fm-gold text-fm-gold hover:bg-fm-gold/10'
                   >
                     <LogIn className='h-3 w-3 mr-1' />

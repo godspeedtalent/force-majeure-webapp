@@ -24,6 +24,9 @@ export const FEATURE_FLAGS = {
   RECORDING_RATINGS: 'recording_ratings',
   CONVERSION_FUNNEL: 'conversion_funnel',
 
+  // Analytics features
+  SITE_ANALYTICS: 'site_analytics',
+
   // Sharing features
   INSTAGRAM_SHARING: 'instagram_sharing',
 } as const;
@@ -72,6 +75,10 @@ export const FEATURE_FLAG_METADATA: Record<
   [FEATURE_FLAGS.CONVERSION_FUNNEL]: {
     displayName: 'Conversion Funnel',
     description: 'Enables the conversion funnel analytics tab in site analytics',
+  },
+  [FEATURE_FLAGS.SITE_ANALYTICS]: {
+    displayName: 'Site Analytics',
+    description: 'Enables site-wide analytics tracking (page views, sessions, Web Vitals)',
   },
   [FEATURE_FLAGS.INSTAGRAM_SHARING]: {
     displayName: 'Instagram Sharing',

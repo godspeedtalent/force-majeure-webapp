@@ -4,6 +4,7 @@ import { FmCommonLoadingState } from '@/components/common/feedback/FmCommonLoadi
 import { useUserPermissions } from '@/shared/hooks/useUserRole';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { Permission, Role } from '@/shared';
+import { navigateToAuth } from '@/shared/utils/authNavigation';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -80,10 +81,11 @@ export const ProtectedRoute = ({
 
     // Not authenticated - redirect to auth page
     if (!user) {
-      navigate(redirectTo || '/auth', {
-        replace: true,
-        state: { from: location },
-      });
+      if (!redirectTo || redirectTo === '/auth') {
+        navigateToAuth(navigate, { location, replace: true });
+      } else {
+        navigate(redirectTo, { replace: true });
+      }
       return;
     }
 
@@ -130,9 +132,12 @@ export const ProtectedRoute = ({
   }
 
   if (!user) {
-    return (
-      <Navigate to={redirectTo || '/auth'} state={{ from: location }} replace />
-    );
+    const authTarget = redirectTo || '/auth';
+    // Include search params to preserve query strings like ?event_id=xxx
+    const fullPath = location.pathname + location.search;
+    const authState =
+      authTarget === '/auth' ? { returnTo: fullPath } : undefined;
+    return <Navigate to={authTarget} state={authState} replace />;
   }
 
   // If no permission/role requirements, just need to be authenticated

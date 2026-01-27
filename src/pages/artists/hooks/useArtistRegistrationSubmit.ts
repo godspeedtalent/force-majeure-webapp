@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { logger } from '@/shared';
 import { handleError } from '@/shared/services/errorHandler';
+import { navigateToAuth } from '@/shared/utils/authNavigation';
 import type { ArtistRegistrationFormData } from '../types/registration';
 
 /** Supabase auth token storage key */
@@ -71,7 +72,8 @@ function handleRegistrationError(
   details: RegistrationErrorDetails | undefined,
   errorMessage: string,
   t: ReturnType<typeof useTranslation>['t'],
-  navigate: ReturnType<typeof useNavigate>
+  navigate: ReturnType<typeof useNavigate>,
+  returnUrl: string
 ): void {
   switch (reason) {
     case 'linked_artist':
@@ -117,7 +119,7 @@ function handleRegistrationError(
 
     case 'unauthorized':
       toast.error(t('errors.notAuthenticated'), { duration: 6000 });
-      navigate('/auth', { replace: true });
+      navigateToAuth(navigate, { returnTo: returnUrl, replace: true });
       break;
 
     default:
@@ -138,8 +140,12 @@ function handleRegistrationError(
 export function useArtistRegistrationSubmit() {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Build return URL preserving query params (e.g., ?event_id=xxx)
+  const returnUrl = location.pathname + location.search;
 
   const submitRegistration = async (
     formData: ArtistRegistrationFormData,
@@ -155,7 +161,7 @@ export function useArtistRegistrationSubmit() {
           title: t('errors.notAuthenticated'),
           context: 'ArtistRegistrationSubmit.submitRegistration',
         });
-        navigate('/auth', { replace: true });
+        navigateToAuth(navigate, { returnTo: returnUrl, replace: true });
         setIsSubmitting(false);
         return false;
       }
@@ -286,7 +292,8 @@ export function useArtistRegistrationSubmit() {
           data?.details,
           data?.error || 'Unknown error',
           t,
-          navigate
+          navigate,
+          returnUrl
         );
         setIsSubmitting(false);
         return false;
@@ -298,11 +305,25 @@ export function useArtistRegistrationSubmit() {
         undercardRequestId: data.data?.undercardRequestId,
       });
 
-      toast.success(t('artistRegistrationErrors.submitSuccess'), { duration: 6000 });
+      // Show appropriate success message
+      if (eventId) {
+        toast.success(t('artistRegistrationErrors.submitSuccessWithUndercard'), {
+          duration: 6000,
+          description: t('artistRegistrationErrors.undercardRequestSubmitted'),
+        });
+      } else {
+        toast.success(t('artistRegistrationErrors.submitSuccess'), { duration: 6000 });
+      }
 
-      // Navigate to profile after a short delay
+      // Navigate after a short delay
+      // If coming from an event, go back to that event so user can RSVP
+      // Otherwise, go to profile edit page
       setTimeout(() => {
-        navigate('/profile/edit', { state: { activeTab: 'artist' } });
+        if (eventId) {
+          navigate(`/events/${eventId}`);
+        } else {
+          navigate('/profile/edit', { state: { activeTab: 'artist' } });
+        }
       }, 1000);
 
       return true;

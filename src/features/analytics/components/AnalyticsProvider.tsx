@@ -14,6 +14,7 @@ import { DEFAULT_ANALYTICS_CONFIG } from '../types';
 import { usePageTracking } from '../hooks/usePageTracking';
 import { usePerformanceTracking } from '../hooks/usePerformanceTracking';
 import { supabase } from '@/shared';
+import { useFeatureFlagHelpers, FEATURE_FLAGS } from '@/shared';
 
 export interface AnalyticsContextValue {
   service: AnalyticsService;
@@ -65,9 +66,9 @@ function AnalyticsTracking({
 }
 
 /**
- * Analytics Provider component
+ * Inner Analytics Provider component (does actual work)
  */
-export function AnalyticsProvider({
+function AnalyticsProviderInner({
   children,
   config = {},
   useConsoleAdapter = import.meta.env.DEV,
@@ -163,4 +164,27 @@ export function AnalyticsProvider({
       {children}
     </AnalyticsContext.Provider>
   );
+}
+
+/**
+ * Analytics Provider component
+ *
+ * Wraps the app with analytics tracking. Can be disabled via the
+ * SITE_ANALYTICS feature flag for debugging performance issues.
+ */
+export function AnalyticsProvider(props: AnalyticsProviderProps) {
+  const { isFeatureEnabled, isLoading } = useFeatureFlagHelpers();
+
+  // While loading feature flags, render children without analytics
+  // to avoid blocking the app render
+  if (isLoading) {
+    return <>{props.children}</>;
+  }
+
+  // If analytics is disabled via feature flag, skip all analytics
+  if (!isFeatureEnabled(FEATURE_FLAGS.SITE_ANALYTICS)) {
+    return <>{props.children}</>;
+  }
+
+  return <AnalyticsProviderInner {...props} />;
 }

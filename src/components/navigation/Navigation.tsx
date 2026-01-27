@@ -5,7 +5,7 @@ import {
   ShoppingCart,
   User,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Breadcrumbs } from '@/components/primitives/Breadcrumbs';
@@ -21,14 +21,16 @@ import {
 } from '@/components/common/shadcn/tooltip';
 import { useAuth } from '@/features/auth/services/AuthContext';
 import { cn, useIsMobile, FEATURE_FLAGS } from '@/shared';
+import { navigateToAuth } from '@/shared/utils/authNavigation';
 import { useCheckoutTimer } from '@/contexts/CheckoutContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { FeatureGuard } from '@/components/common/guards/FeatureGuard';
 import { useGlobalSearch } from '@/contexts/GlobalSearchContext';
 
 export const Navigation = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation('common');
   const { isCheckoutActive, endCheckout, redirectUrl } = useCheckoutTimer();
   const { backButton } = useNavigation();
@@ -155,14 +157,16 @@ export const Navigation = () => {
             {/* Vertical Divider */}
             <div className='h-6 w-px bg-border/50' />
 
-            {user ? (
+            {authLoading ? (
+              <div className='h-8 w-8 bg-white/10 animate-pulse' />
+            ) : user ? (
               <UserMenuDropdown />
             ) : (
               <Button
                 variant='ghost'
                 size='sm'
                 className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                onClick={() => navigate('/auth')}
+                onClick={() => navigateToAuth(navigate, { location })}
               >
                 <User className='h-4 w-4' />
               </Button>
@@ -180,14 +184,16 @@ export const Navigation = () => {
             >
               <Search className='h-5 w-5' />
             </Button>
-            {user ? (
+            {authLoading ? (
+              <div className='h-8 w-8 bg-white/10 animate-pulse' />
+            ) : user ? (
               <UserMenuDropdown onOpenChange={setIsMobileMenuOpen} />
             ) : (
               <Button
                 variant='ghost'
                 size='sm'
                 className='text-foreground hover:text-fm-gold hover:bg-hover-overlay'
-                onClick={() => navigate('/auth')}
+                onClick={() => navigateToAuth(navigate, { location })}
               >
                 <User className='h-4 w-4' />
               </Button>

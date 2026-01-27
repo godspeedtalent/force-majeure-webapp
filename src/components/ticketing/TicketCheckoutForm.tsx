@@ -19,8 +19,9 @@ import { Label } from '@/components/common/shadcn/label';
 import { FmCommonFormCheckbox } from '@/components/common/forms/FmCommonFormCheckbox';
 import { FmTextLink } from '@/components/common/display/FmTextLink';
 import { useAuth } from '@/features/auth/services/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { logger } from '@/shared';
+import { navigateToAuth } from '@/shared/utils/authNavigation';
 import { TermsAndConditionsModal } from './TermsAndConditionsModal';
 import { toast } from 'sonner';
 import {
@@ -78,6 +79,7 @@ export const TicketCheckoutForm = ({
   const { t } = useTranslation('pages');
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     processPayment,
     loadSavedCards,
@@ -415,7 +417,7 @@ export const TicketCheckoutForm = ({
               <FmCommonButton
                 size='sm'
                 variant='secondary'
-                onClick={() => navigate('/auth')}
+                onClick={() => navigateToAuth(navigate, { location })}
                 className='border-fm-gold text-fm-gold hover:bg-fm-gold/10'
               >
                 {t('checkout.signIn')}

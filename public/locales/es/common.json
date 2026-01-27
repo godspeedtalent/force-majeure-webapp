@@ -3027,6 +3027,8 @@
     "registrationPending": "Ya hay un registro con este nombre de artista pendiente de revisión. Si eres tú, envía un email a management@forcemajeure.vip para ayuda.",
     "submitFailed": "Error al enviar el registro. Por favor intenta de nuevo.",
     "submitSuccess": "¡Gracias por registrarte! Si tu sonido encaja con un evento futuro, ¡nos pondremos en contacto contigo!",
+    "submitSuccessWithUndercard": "¡Tu perfil de artista y solicitud de undercard han sido enviados!",
+    "undercardRequestSubmitted": "Serás notificado cuando tu solicitud sea revisada. Ahora puedes confirmar asistencia al evento.",
     "userAlreadyHasArtist": "Ya tienes un perfil de artista vinculado a tu cuenta. Puedes gestionarlo desde la configuración de tu perfil.",
     "userHasPendingRegistration": "Ya tienes un registro de artista pendiente. Por favor espera a que sea revisado antes de enviar otro.",
     "deniedWaitingPeriod": "Tu registro anterior fue rechazado. Puedes enviar una nueva solicitud en {{time}}.",

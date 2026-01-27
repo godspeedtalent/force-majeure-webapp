@@ -226,6 +226,13 @@ export { claimScavengerReward, type ClaimResult } from './utils/scavengerApi';
 // Style utils
 export * from './utils/styleUtils';
 
+// Auth navigation utils
+export {
+  navigateToAuth,
+  getReturnUrl,
+  type AuthNavigationState,
+} from './utils/authNavigation';
+
 // Error context utils
 export {
   extractErrorContext,

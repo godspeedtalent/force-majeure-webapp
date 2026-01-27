@@ -3028,6 +3028,8 @@
     "registrationPending": "A registration with this artist name is already pending review. If this is you, please email management@forcemajeure.vip for help.",
     "submitFailed": "Failed to submit registration. Please try again.",
     "submitSuccess": "Thank you for registering! If your sound is a good fit for a future event, we'll reach out to you!",
+    "submitSuccessWithUndercard": "Your artist profile and undercard request have been submitted!",
+    "undercardRequestSubmitted": "You'll be notified when your request is reviewed. You can now RSVP to the event.",
     "userAlreadyHasArtist": "You already have an artist profile linked to your account. You can manage it from your profile settings.",
     "userHasPendingRegistration": "You already have a pending artist registration. Please wait for it to be reviewed before submitting another.",
     "deniedWaitingPeriod": "Your previous registration was denied. You can submit a new application in {{time}}.",

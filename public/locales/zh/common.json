@@ -3027,6 +3027,8 @@
     "registrationPending": "已有同名艺人注册正在审核中。如果这是您本人，请发送邮件至 management@forcemajeure.vip 以获取帮助。",
     "submitFailed": "提交注册失败，请重试。",
     "submitSuccess": "感谢您的注册！如果您的音乐风格适合未来的活动，我们会与您联系！",
+    "submitSuccessWithUndercard": "您的艺人资料和开场嘉宾申请已提交！",
+    "undercardRequestSubmitted": "申请审核完成后会通知您。您现在可以确认出席活动。",
     "userAlreadyHasArtist": "您的账户已关联艺人资料。您可以在个人设置中管理它。",
     "userHasPendingRegistration": "您已有一个待审核的艺人注册申请。请等待审核完成后再提交新申请。",
     "deniedWaitingPeriod": "您之前的申请已被拒绝。您可以在{{time}}后提交新申请。",
