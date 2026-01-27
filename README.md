@@ -1,5 +1,7 @@
 # Force Majeure
 
+[![CI](https://github.com/Godspeed-Talent-LLC/force-majeure-webapp/actions/workflows/ci.yml/badge.svg)](https://github.com/Godspeed-Talent-LLC/force-majeure-webapp/actions/workflows/ci.yml)
+
 A modern event ticketing and artist management platform built with React, TypeScript, and Supabase.
 
 ## Tech Stack
